@@ -17,7 +17,7 @@ cgen(Node *n, Node *res)
 	Node *nl, *nr, *r;
 	Node n1, n2;
 	int a, f;
-	Prog *p1, *p2, *p3;
+	Prog *p1;
 	Addr addr;
 
 	if(debug['g']) {
@@ -197,7 +197,6 @@ cgen(Node *n, Node *res)
 		fatal("cgen: unknown op %+hN", n);
 		break;
 
-	// these call bgen to get a bool value
 	case OOROR:
 	case OANDAND:
 	case OEQ:
@@ -207,14 +206,7 @@ cgen(Node *n, Node *res)
 	case OGE:
 	case OGT:
 	case ONOT:
-		p1 = gbranch(AJMP, T, 0);
-		p2 = pc;
-		gmove(nodbool(1), res);
-		p3 = gbranch(AJMP, T, 0);
-		patch(p1, pc);
-		bgen(n, 1, 0, p2);
-		gmove(nodbool(0), res);
-		patch(p3, pc);
+		bvgen(n, res, 1);
 		goto ret;
 
 	case OPLUS:
@@ -1033,7 +1025,8 @@ bgen(Node *n, int true, int likely, Prog *to)
 	Prog *p1, *p2;
 
 	if(debug['g']) {
-		dump("\nbgen", n);
+		print("\nbgen true=%d likely=%d to=%P", true, likely, to);
+		dump("\nn", n);
 	}
 
 	if(n == N)
@@ -1266,6 +1259,223 @@ bgen(Node *n, int true, int likely, Prog *to)
 			}
 		} else
 			patch(gbranch(optoas(a, nr->type), nr->type, likely), to);
+		regfree(&n1);
+		regfree(&n2);
+		break;
+	}
+	goto ret;
+
+ret:
+	;
+}
+
+/*
+ * evaluate (n == true), storing 0 or 1 in res.
+ */
+void
+bvgen(Node *n, Node *res, int true)
+{
+	int et, a;
+	Node *nl, *nr, *l, *r;
+	Node n1, n2, tmp;
+	Prog *p1, *p2, *p3;
+
+	if(debug['g']) {
+		print("\nbvgen true=%d\n", true);
+		dump("n", n);
+		dump("res", res);
+	}
+
+	if(n->ninit != nil)
+		genlist(n->ninit);
+
+	if(n->type == T) {
+		convlit(&n, types[TBOOL]);
+		if(n->type == T)
+			goto ret;
+	}
+
+	et = n->type->etype;
+	if(et != TBOOL) {
+		yyerror("bvgen: bad type %T for %O", n->type, n->op);
+		goto ret;
+	}
+
+	while(n->op == OCONVNOP) {
+		n = n->left;
+		if(n->ninit != nil)
+			genlist(n->ninit);
+	}
+
+	nr = N;
+
+	switch(n->op) {
+	default:
+		cgen(n, res);
+		if(!true)
+			gins(AXORB, nodintconst(1), res); // res = !res
+		goto ret;
+
+	case OLITERAL:
+		cgen(nodbool(!true == !n->val.u.bval), res);
+		goto ret;
+
+	case ONOT:
+		bvgen(n->left, res, !true);
+		break;
+
+	case OANDAND:
+		if(!true)
+			goto caseor;
+
+	caseand:
+		p1 = gjmp(P);
+		p2 = pc;
+		cgen(nodbool(0), res);
+		p3 = gjmp(P);
+		patch(p1, pc);
+		bgen(n->left, !true, 0, p2);
+		bvgen(n->right, res, true);
+		patch(p3, pc);
+		goto ret;
+
+	case OOROR:
+		if(!true)
+			goto caseand;
+
+	caseor:
+		p1 = gjmp(P);
+		p2 = pc;
+		cgen(nodbool(1), res);
+		p3 = gjmp(P);
+		patch(p1, pc);
+		bgen(n->left, true, 0, p2);
+		bvgen(n->right, res, true);
+		patch(p3, pc);
+		goto ret;
+
+	case OEQ:
+	case ONE:
+	case OLT:
+	case OGT:
+	case OLE:
+	case OGE:
+		nl = n->left;
+		nr = n->right;
+
+		a = n->op;
+		if(!true) {
+			if(isfloat[nr->type->etype]) {
+				// brcom is not valid on floats when NaN is involved.
+				bvgen(n, res, 1);
+				gins(AXORB, nodintconst(1), res); // res = !res
+				goto ret;
+			}
+			a = brcom(a);
+		}
+
+		// make simplest on right
+		if(nl->op == OLITERAL || (nl->ullman < nr->ullman && nl->ullman < UINF)) {
+			a = brrev(a);
+			r = nl;
+			nl = nr;
+			nr = r;
+		}
+
+		if(isslice(nl->type)) {
+			// front end should only leave cmp to literal nil
+			if((a != OEQ && a != ONE) || nr->op != OLITERAL) {
+				yyerror("illegal slice comparison");
+				break;
+			}
+			a = optoas(a, types[tptr]);
+			igen(nl, &n1, N);
+			n1.xoffset += Array_array;
+			n1.type = types[tptr];
+			nodconst(&tmp, types[tptr], 0);
+			gins(optoas(OCMP, types[tptr]), &n1, &tmp);
+			gins(jmptoset(a), N, res);
+			regfree(&n1);
+			break;
+		}
+		if(isinter(nl->type)) {
+			// front end should only leave cmp to literal nil
+			if((a != OEQ && a != ONE) || nr->op != OLITERAL) {
+				yyerror("illegal interface comparison");
+				break;
+			}
+			a = optoas(a, types[tptr]);
+			igen(nl, &n1, N);
+			n1.type = types[tptr];
+			nodconst(&tmp, types[tptr], 0);
+			gins(optoas(OCMP, types[tptr]), &n1, &tmp);
+			gins(jmptoset(a), N, res);
+			regfree(&n1);
+			break;
+		}
+		if(iscomplex[nl->type->etype]) {
+			complexboolv(a, nl, nr, res);
+			break;
+		}
+
+		if(nr->ullman >= UINF) {
+			regalloc(&n1, nl->type, N);
+			cgen(nl, &n1);
+			tempname(&tmp, nl->type);
+			gmove(&n1, &tmp);
+			regfree(&n1);
+
+			regalloc(&n2, nr->type, N);
+			cgen(nr, &n2);
+
+			regalloc(&n1, nl->type, N);
+			cgen(&tmp, &n1);
+
+			goto cmp;
+		}
+
+		regalloc(&n1, nl->type, N);
+		cgen(nl, &n1);
+
+		if(smallintconst(nr)) {
+			gins(optoas(OCMP, nr->type), &n1, nr);
+			gins(jmptoset(optoas(a, nr->type)), N, res);
+			regfree(&n1);
+			break;
+		}
+
+		regalloc(&n2, nr->type, N);
+		cgen(nr, &n2);
+	cmp:
+		// only < and <= work right with NaN; reverse if needed
+		l = &n1;
+		r = &n2;
+		if(isfloat[nl->type->etype] && (a == OGT || a == OGE)) {
+			l = &n2;
+			r = &n1;
+			a = brrev(a);
+		}
+
+		gins(optoas(OCMP, nr->type), l, r);
+
+		if(isfloat[nr->type->etype] && (n->op == OEQ || n->op == ONE)) {
+			if(n->op == OEQ) {
+				// need both EQ and !P
+				regalloc(&tmp, types[TBOOL], N);
+				gins(ASETEQ, N, &tmp);
+				gins(ASETPC, N, res);
+				gins(AANDB, &tmp, res);
+				regfree(&tmp);
+			} else {
+				// need either NE or P
+				regalloc(&tmp, types[TBOOL], N);
+				gins(ASETNE, N, &tmp);
+				gins(ASETPS, N, res);
+				gins(AORB, &tmp, res);
+				regfree(&tmp);
+			}
+		} else
+			gins(jmptoset(optoas(a, nr->type)), N, res);
 		regfree(&n1);
 		regfree(&n2);
 		break;

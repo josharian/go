@@ -82,6 +82,7 @@ vlong	convvtox(vlong, int);
 void	fnparam(Type*, int, int);
 Prog*	gop(int, Node*, Node*, Node*);
 int	optoas(int, Type*);
+int	jmptoset(int);	// convert AJxx to ASETxx
 void	ginit(void);
 void	gclean(void);
 void	regalloc(Node*, Type*, Node*);

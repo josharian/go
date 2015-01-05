@@ -327,6 +327,68 @@ complexbool(int op, Node *nl, Node *nr, int true, int likely, Prog *to)
 }
 
 void
+complexboolv(int op, Node *nl, Node *nr, Node *res)
+{
+	Node tnl, tnr;
+	Node n1, n2, n3, n4;
+	Node na, nb, nc;
+
+	// make both sides addable in ullman order
+	if(nr != N) {
+		if(nl->ullman > nr->ullman && !nl->addable) {
+			tempname(&tnl, nl->type);
+			cgen(nl, &tnl);
+			nl = &tnl;
+		}
+		if(!nr->addable) {
+			tempname(&tnr, nr->type);
+			cgen(nr, &tnr);
+			nr = &tnr;
+		}
+	}
+	if(!nl->addable) {
+		tempname(&tnl, nl->type);
+		cgen(nl, &tnl);
+		nl = &tnl;
+	}
+
+	// build tree
+	// real(l) == real(r) & imag(l) == imag(r)
+
+	// It is safe to not short-circuit here, so use OAND
+	// instead of OANDAND to generate jump-free code.
+
+	subnode(&n1, &n2, nl);
+	subnode(&n3, &n4, nr);
+
+	memset(&na, 0, sizeof(na));
+	na.op = OAND;
+	na.left = &nb;
+	na.right = &nc;
+	na.type = types[TBOOL];
+
+	memset(&nb, 0, sizeof(na));
+	nb.op = OEQ;
+	nb.left = &n1;
+	nb.right = &n3;
+	nb.type = types[TBOOL];
+
+	memset(&nc, 0, sizeof(na));
+	nc.op = OEQ;
+	nc.left = &n2;
+	nc.right = &n4;
+	nc.type = types[TBOOL];
+
+	if(op == ONE) {
+		na.op = OOR;
+		nb.op = ONE;
+		nc.op = ONE;
+	}
+
+	return bvgen(&na, res, 1);
+}
+
+void
 nodfconst(Node *n, Type *t, Mpflt* fval)
 {
 	memset(n, 0, sizeof(*n));

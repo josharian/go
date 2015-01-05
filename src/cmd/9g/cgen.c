@@ -17,7 +17,7 @@ cgen(Node *n, Node *res)
 	Node *nl, *nr, *r;
 	Node n1, n2;
 	int a, f;
-	Prog *p1, *p2, *p3;
+	Prog *p1;
 	Addr addr;
 
 //print("cgen %N(%d) -> %N(%d)\n", n, n->addable, res, res->addable);
@@ -210,7 +210,6 @@ cgen(Node *n, Node *res)
 		fatal("cgen: unknown op %+hN", n);
 		break;
 
-	// these call bgen to get a bool value
 	case OOROR:
 	case OANDAND:
 	case OEQ:
@@ -220,14 +219,7 @@ cgen(Node *n, Node *res)
 	case OGE:
 	case OGT:
 	case ONOT:
-		p1 = gbranch(ABR, T, 0);
-		p2 = pc;
-		gmove(nodbool(1), res);
-		p3 = gbranch(ABR, T, 0);
-		patch(p1, pc);
-		bgen(n, 1, 0, p2);
-		gmove(nodbool(0), res);
-		patch(p3, pc);
+		bvgen(n, res, 1);
 		goto ret;
 
 	case OPLUS:
@@ -1289,6 +1281,25 @@ bgen(Node *n, int true, int likely, Prog *to)
 
 ret:
 	;
+}
+
+/*
+ * evaluate (n == true), storing 0 or 1 in res.
+ */
+void
+bvgen(Node *n, Node *res, int true)
+{
+	Prog *p1, *p2, *p3;
+
+	// TODO: Jump-free implementation?
+	p1 = gbranch(ABR, T, 0);
+	p2 = pc;
+	gmove(nodbool(1), res);
+	p3 = gbranch(ABR, T, 0);
+	patch(p1, pc);
+	bgen(n, true, 0, p2);
+	gmove(nodbool(0), res);
+	patch(p3, pc);
 }
 
 /*

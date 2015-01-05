@@ -1640,6 +1640,7 @@ optoas(int op, Type *t)
 		a = ANEGQ;
 		break;
 
+	case CASE(OAND, TBOOL):
 	case CASE(OAND, TINT8):
 	case CASE(OAND, TUINT8):
 		a = AANDB;
@@ -1662,6 +1663,7 @@ optoas(int op, Type *t)
 		a = AANDQ;
 		break;
 
+	case CASE(OOR, TBOOL):
 	case CASE(OOR, TINT8):
 	case CASE(OOR, TUINT8):
 		a = AORB;
@@ -1920,6 +1922,71 @@ optoas(int op, Type *t)
 		a = ADIVSD;
 		break;
 
+	}
+	return a;
+}
+
+/*
+ * return ASETxx for AJxx.
+ */
+int
+jmptoset(int j)
+{
+	int a;
+
+	a = AGOK;
+	switch(j) {
+	default:
+		fatal("jmptoset: no entry %O", j);
+		break;
+	case AJEQ:
+		a = ASETEQ;
+		break;
+	case AJNE:
+		a = ASETNE;
+		break;
+	case AJLT:
+		a = ASETLT;
+		break;
+	case AJCS:
+		a = ASETCS;
+		break;
+	case AJLE:
+		a = ASETLE;
+		break;
+	case AJLS:
+		a = ASETLS;
+		break;
+	case AJGT:
+		a = ASETGT;
+		break;
+	case AJHI:
+		a = ASETHI;
+		break;
+	case AJGE:
+		a = ASETGE;
+		break;
+	case AJCC:
+		a = ASETCC;
+		break;
+	case AJMI:
+		a = ASETMI;
+		break;
+	case AJOC:
+		a = ASETOC;
+		break;
+	case AJOS:
+		a = ASETOS;
+		break;
+	case AJPC:
+		a = ASETPC;
+		break;
+	case AJPL:
+		a = ASETPL;
+		break;
+	case AJPS:
+		a = ASETPS;
+		break;
 	}
 	return a;
 }

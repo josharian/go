@@ -17,7 +17,7 @@ cgen(Node *n, Node *res)
 	Node *nl, *nr, *r;
 	Node n1, n2, f0, f1;
 	int a, w, rg;
-	Prog *p1, *p2, *p3;
+	Prog *p1;
 	Addr addr;
 
 	if(debug['g']) {
@@ -205,7 +205,6 @@ cgen(Node *n, Node *res)
 		fatal("unexpected complex");
 		break;
 
-	// these call bgen to get a bool value
 	case OOROR:
 	case OANDAND:
 	case OEQ:
@@ -215,14 +214,7 @@ cgen(Node *n, Node *res)
 	case OGE:
 	case OGT:
 	case ONOT:
-		p1 = gbranch(AB, T, 0);
-		p2 = pc;
-		gmove(nodbool(1), res);
-		p3 = gbranch(AB, T, 0);
-		patch(p1, pc);
-		bgen(n, 1, 0, p2);
-		gmove(nodbool(0), res);
-		patch(p3, pc);
+		bvgen(n, res, 1);
 		goto ret;
 
 	case OPLUS:
@@ -1346,6 +1338,25 @@ bgen(Node *n, int true, int likely, Prog *to)
 
 ret:
 	;
+}
+
+/*
+ * evaluate (n == true), storing 0 or 1 in res.
+ */
+void
+bvgen(Node *n, Node *res, int true)
+{
+	Prog *p1, *p2, *p3;
+
+	// TODO: Jump-free implementation?
+	p1 = gbranch(AB, T, 0);
+	p2 = pc;
+	gmove(nodbool(1), res);
+	p3 = gbranch(AB, T, 0);
+	patch(p1, pc);
+	bgen(n, true, 0, p2);
+	gmove(nodbool(0), res);
+	patch(p3, pc);
 }
 
 /*
