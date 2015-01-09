@@ -9,6 +9,8 @@
 #include "gg.h"
 #include "opt.h"
 
+static vlong duffzerodidelta(int64 q);
+static vlong duffzerooff(int64 q);
 static Prog *appendpp(Prog*, int, int, vlong, int, vlong);
 static Prog *zerorange(Prog *p, vlong frame, vlong lo, vlong hi, uint32 *ax);
 
@@ -61,6 +63,39 @@ defframe(Prog *ptxt)
 	zerorange(p, frame, lo, hi, &ax);
 }
 
+static vlong
+duffzerodidelta(int64 q) {
+	if(q < 4)
+		return 0;
+	q -= 4;
+	if(q%4 == 0)
+		return 0;
+	return -8*(4-q%4);
+}
+
+static vlong
+duffzerooff(int64 q) {
+	// duffzero consists of repeated blocks of 4 MOVs + ADD,
+	// with 4 STOSQs at the very end.
+	// 31 = number of blocks
+	// 19 = size of single block
+	// 4 = size of single ADD instruction
+	// 4 = size of single MOV instruction w/ offset
+	// 4 = number of final STOSQ instructions
+	// 2 = size of single STOSQ instruction
+	// see ../../pkg/runtime/asm_amd64.s
+	vlong off;
+	off = 19*31 + 4*2;
+	if(q < 4)
+		return off - q*2;
+	off -= 4*2;
+	q -= 4;
+	off -= 19 * (q/4);
+	if((q % 4) > 0) 
+		off -= 4 + 4*(q%4);
+	return off;
+}
+
 static Prog*
 zerorange(Prog *p, vlong frame, vlong lo, vlong hi, uint32 *ax)
 {
@@ -87,7 +122,9 @@ zerorange(Prog *p, vlong frame, vlong lo, vlong hi, uint32 *ax)
 		}
 	} else if(!nacl && (cnt <= 128*widthreg)) {
 		p = appendpp(p, leaptr, D_SP+D_INDIR, frame+lo, D_DI, 0);
-		p = appendpp(p, ADUFFZERO, D_NONE, 0, D_ADDR, 2*(128-cnt/widthreg));
+		if(duffzerodidelta(cnt/widthreg) != 0)
+			p = appendpp(p, AADDQ, D_CONST, duffzerodidelta(cnt/widthreg), D_DI, 0);
+		p = appendpp(p, ADUFFZERO, D_NONE, 0, D_ADDR, duffzerooff(cnt/widthreg));
 		p->to.sym = linksym(pkglookup("duffzero", runtimepkg));
 	} else {
 		p = appendpp(p, AMOVQ, D_CONST, cnt/widthreg, D_CX, 0);
@@ -1159,11 +1196,12 @@ clearfat(Node *nl)
 		gins(AREP, N, N);	// repeat
 		gins(ASTOSQ, N, N);	// STOQ AL,*(DI)+
 	} else {
+		if(duffzerodidelta(q))
+			gconreg(addptr, duffzerodidelta(q), D_DI);
 		p = gins(ADUFFZERO, N, N);
 		p->to.type = D_ADDR;
 		p->to.sym = linksym(pkglookup("duffzero", runtimepkg));
-		// 2 and 128 = magic constants: see ../../runtime/asm_amd64.s
-		p->to.offset = 2*(128-q);
+		p->to.offset = duffzerooff(q);
 	}
 
 	z = ax;
