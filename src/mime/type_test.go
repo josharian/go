@@ -52,3 +52,11 @@ func TestLookupMallocs(t *testing.T) {
 		t.Errorf("allocs = %v; want 0", n)
 	}
 }
+
+func BenchmarkTypeByExtension(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			TypeByExtension(".html")
+		}
+	})
+}

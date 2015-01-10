@@ -9,11 +9,29 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"sync/atomic"
 )
 
 var (
-	mimeLock       sync.RWMutex
-	mimeTypesLower = map[string]string{
+	mimeTypesValue      atomic.Value // of map[string]string
+	mimeTypesLowerValue atomic.Value // of map[string]string
+	mimemu              sync.Mutex   // serializes mime type additions
+	once                sync.Once    // guards initMime
+)
+
+func mimeTypes() map[string]string      { return mimeTypesValue.Load().(map[string]string) }
+func mimeTypesLower() map[string]string { return mimeTypesLowerValue.Load().(map[string]string) }
+
+func clone(m map[string]string) map[string]string {
+	m2 := make(map[string]string, len(m))
+	for k, v := range m {
+		m2[k] = v
+	}
+	return m2
+}
+
+func initMime() {
+	baseMimeTypes := map[string]string{
 		".css":  "text/css; charset=utf-8",
 		".gif":  "image/gif",
 		".htm":  "text/html; charset=utf-8",
@@ -24,21 +42,15 @@ var (
 		".png":  "image/png",
 		".xml":  "text/xml; charset=utf-8",
 	}
-	mimeTypes = clone(mimeTypesLower)
-)
-
-func clone(m map[string]string) map[string]string {
-	m2 := make(map[string]string, len(m))
-	for k, v := range m {
-		m2[k] = v
+	for k := range baseMimeTypes {
 		if strings.ToLower(k) != k {
 			panic("keys in mimeTypesLower must be lowercase")
 		}
 	}
-	return m2
+	mimeTypesValue.Store(clone(baseMimeTypes))
+	mimeTypesLowerValue.Store(clone(baseMimeTypes))
+	initMimePlatform()
 }
-
-var once sync.Once // guards initMime
 
 // TypeByExtension returns the MIME type associated with the file extension ext.
 // The extension ext should begin with a leading dot, as in ".html".
@@ -59,11 +71,9 @@ var once sync.Once // guards initMime
 // Text types have the charset parameter set to "utf-8" by default.
 func TypeByExtension(ext string) string {
 	once.Do(initMime)
-	mimeLock.RLock()
-	defer mimeLock.RUnlock()
 
 	// Case-sensitive lookup.
-	v := mimeTypes[ext]
+	v := mimeTypes()[ext]
 	if v != "" {
 		return v
 	}
@@ -78,7 +88,7 @@ func TypeByExtension(ext string) string {
 		c := ext[i]
 		if c >= utf8RuneSelf {
 			// Slow path.
-			return mimeTypesLower[strings.ToLower(ext)]
+			return mimeTypesLower()[strings.ToLower(ext)]
 		}
 		if 'A' <= c && c <= 'Z' {
 			lower = append(lower, c+('a'-'A'))
@@ -88,7 +98,7 @@ func TypeByExtension(ext string) string {
 	}
 	// The conversion from []byte to string doesn't allocate in
 	// a map lookup.
-	return mimeTypesLower[string(lower)]
+	return mimeTypesLower()[string(lower)]
 }
 
 // AddExtensionType sets the MIME type associated with
@@ -99,6 +109,8 @@ func AddExtensionType(ext, typ string) error {
 		return fmt.Errorf(`mime: extension %q misses dot`, ext)
 	}
 	once.Do(initMime)
+	mimemu.Lock()
+	defer mimemu.Unlock()
 	return setExtensionType(ext, typ)
 }
 
@@ -113,9 +125,12 @@ func setExtensionType(extension, mimeType string) error {
 	}
 	extLower := strings.ToLower(extension)
 
-	mimeLock.Lock()
-	mimeTypes[extension] = mimeType
-	mimeTypesLower[extLower] = mimeType
-	mimeLock.Unlock()
+	new := clone(mimeTypes())
+	new[extension] = mimeType
+	mimeTypesValue.Store(new)
+
+	newLower := clone(mimeTypesLower())
+	newLower[extLower] = mimeType
+	mimeTypesLowerValue.Store(newLower)
 	return nil
 }

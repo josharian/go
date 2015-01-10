@@ -37,7 +37,7 @@ func loadMimeFile(filename string) {
 	}
 }
 
-func initMime() {
+func initMimePlatform() {
 	for _, filename := range typeFiles {
 		loadMimeFile(filename)
 	}
