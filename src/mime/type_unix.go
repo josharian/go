@@ -18,7 +18,7 @@ var typeFiles = []string{
 	"/etc/apache/mime.types",
 }
 
-func loadMimeFile(filename string) {
+func loadMimeFile(filename string, typs map[string]string) {
 	f, err := os.Open(filename)
 	if err != nil {
 		return
@@ -36,7 +36,7 @@ func loadMimeFile(filename string) {
 			if ext[0] == '#' {
 				break
 			}
-			setExtensionType("."+ext, mimeType)
+			typs["."+ext] = mimeType
 		}
 	}
 	if err := scanner.Err(); err != nil {
@@ -44,10 +44,12 @@ func loadMimeFile(filename string) {
 	}
 }
 
-func initMimePlatform() {
+func initMimePlatform() map[string]string {
+	typs := make(map[string]string)
 	for _, filename := range typeFiles {
-		loadMimeFile(filename)
+		loadMimeFile(filename, typs)
 	}
+	return typs
 }
 
 func initMimeForTests() map[string]string {

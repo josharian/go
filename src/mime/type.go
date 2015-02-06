@@ -44,12 +44,22 @@ func initMime() {
 	}
 	for k := range baseMimeTypes {
 		if strings.ToLower(k) != k {
-			panic("keys in mimeTypesLower must be lowercase")
+			panic("keys in baseMimeTypes must be lowercase")
 		}
 	}
-	mimeTypesValue.Store(clone(baseMimeTypes))
-	mimeTypesLowerValue.Store(clone(baseMimeTypes))
-	initMimePlatform()
+
+	baseMimeTypesLower := clone(baseMimeTypes)
+	for ext, typ := range initMimePlatform() {
+		typ, err := formatMimeType(typ)
+		if err != nil {
+			continue
+		}
+		baseMimeTypes[ext] = typ
+		baseMimeTypesLower[strings.ToLower(ext)] = typ
+	}
+
+	mimeTypesValue.Store(baseMimeTypes)
+	mimeTypesLowerValue.Store(baseMimeTypesLower)
 }
 
 // TypeByExtension returns the MIME type associated with the file extension ext.
@@ -114,23 +124,30 @@ func AddExtensionType(ext, typ string) error {
 	return setExtensionType(ext, typ)
 }
 
-func setExtensionType(extension, mimeType string) error {
+func formatMimeType(mimeType string) (string, error) {
 	_, param, err := ParseMediaType(mimeType)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if strings.HasPrefix(mimeType, "text/") && param["charset"] == "" {
 		param["charset"] = "utf-8"
 		mimeType = FormatMediaType(mimeType, param)
 	}
-	extLower := strings.ToLower(extension)
+	return mimeType, nil
+}
+
+func setExtensionType(extension, mimeType string) error {
+	mimeType, err := formatMimeType(mimeType)
+	if err != nil {
+		return err
+	}
 
 	new := clone(mimeTypes())
 	new[extension] = mimeType
 	mimeTypesValue.Store(new)
 
-	newLower := clone(mimeTypesLower())
-	newLower[extLower] = mimeType
-	mimeTypesLowerValue.Store(newLower)
+	new = clone(mimeTypesLower())
+	new[strings.ToLower(extension)] = mimeType
+	mimeTypesLowerValue.Store(new)
 	return nil
 }

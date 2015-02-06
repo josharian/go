@@ -9,7 +9,7 @@ import (
 	"unsafe"
 )
 
-func initMimePlatform() {
+func initMimePlatform() map[string]string {
 	var root syscall.Handle
 	rootpathp, _ := syscall.UTF16PtrFromString(`\`)
 	if syscall.RegOpenKeyEx(syscall.HKEY_CLASSES_ROOT, rootpathp,
@@ -21,6 +21,7 @@ func initMimePlatform() {
 	if syscall.RegQueryInfoKey(root, nil, nil, nil, &count, nil, nil, nil, nil, nil, nil, nil) != nil {
 		return
 	}
+	typs := make(map[string]string)
 	var buf [1 << 10]uint16
 	for i := uint32(0); i < count; i++ {
 		n := uint32(len(buf))
@@ -52,8 +53,9 @@ func initMimePlatform() {
 			continue
 		}
 		mimeType := syscall.UTF16ToString(buf[:])
-		setExtensionType(ext, mimeType)
+		typs[ext] = mimeType
 	}
+	return typs
 }
 
 func initMimeForTests() map[string]string {

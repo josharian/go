@@ -14,7 +14,7 @@ var typeFiles = []string{
 	"/sys/lib/mimetypes",
 }
 
-func loadMimeFile(filename string) {
+func loadMimeFile(filename string, typs map[string]string) {
 	f, err := os.Open(filename)
 	if err != nil {
 		return
@@ -30,17 +30,19 @@ func loadMimeFile(filename string) {
 		if fields[1] == "-" || fields[2] == "-" {
 			continue
 		}
-		setExtensionType(fields[0], fields[1]+"/"+fields[2])
+		typs[fields[0]] = fields[1] + "/" + fields[2]
 	}
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
 }
 
-func initMimePlatform() {
+func initMimePlatform() map[string]string {
+	typs := make(map[string]string)
 	for _, filename := range typeFiles {
-		loadMimeFile(filename)
+		loadMimeFile(filename, typs)
 	}
+	return typs
 }
 
 func initMimeForTests() map[string]string {
