@@ -951,12 +951,31 @@ func walkexpr(np **Node, init **NodeList) {
 		walkexpr(&n.Left, init)
 
 		// Optimize convT2E as a two-word copy when T is pointer-shaped.
-		if isnilinter(n.Type) && isdirectiface(n.Left.Type) {
-			l := Nod(OEFACE, typename(n.Left.Type), n.Left)
-			l.Type = n.Type
-			l.Typecheck = n.Typecheck
-			n = l
-			goto ret
+		if isnilinter(n.Type) {
+			if isdirectiface(n.Left.Type) {
+				l := Nod(OEFACE, typename(n.Left.Type), n.Left)
+				l.Type = n.Type
+				l.Typecheck = n.Typecheck
+				n = l
+				goto ret
+			} else if !Isinter(n.Left.Type) {
+				x := temp(Ptrto(n.Left.Type))
+				as := Nod(OAS, x, callnew(n.Left.Type))
+				typecheck(&as, Etop)
+				*init = list(*init, as)
+				walkexpr(&as, init)
+
+				as2 := Nod(OAS, Nod(OIND, x, nil), n.Left)
+				typecheck(&as2, Etop)
+				*init = list(*init, as2)
+				walkexpr(&as2, init)
+
+				l := Nod(OEFACE, typename(n.Left.Type), x)
+				l.Type = n.Type
+				l.Typecheck = n.Typecheck
+				n = l
+				goto ret
+			}
 		}
 
 		// Build name of function: convI2E etc.
