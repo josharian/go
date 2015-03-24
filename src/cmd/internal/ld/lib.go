@@ -725,8 +725,7 @@ func hostlink() {
 	case '8':
 		argv = append(argv, "-m32")
 
-	case '6',
-		'9':
+	case '6', '9':
 		argv = append(argv, "-m64")
 
 	case '5':
@@ -1192,10 +1191,7 @@ func stkcheck(up *Chain, depth int) int {
 			r = &s.R[ri]
 			switch r.Type {
 			// Direct call.
-			case R_CALL,
-				R_CALLARM,
-				R_CALLARM64,
-				R_CALLPOWER:
+			case R_CALL, R_CALLARM, R_CALLARM64, R_CALLPOWER:
 				ch.limit = int(int32(limit) - pcsp.value - int32(callsize()))
 
 				ch.sym = r.Sym
@@ -1376,8 +1372,7 @@ func genasmsym(put func(*LSym, string, int, int64, int64, int, *LSym)) {
 			put(s, s.Name, 'D', Symaddr(s), s.Size, int(s.Version), s.Gotype)
 			continue
 
-		case SBSS,
-			SNOPTRBSS:
+		case SBSS, SNOPTRBSS:
 			if !s.Reachable {
 				continue
 			}
