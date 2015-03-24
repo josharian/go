@@ -140,9 +140,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 		default:
 			gc.Convconst(&con, t.Type, &f.Val)
 
-		case gc.TINT32,
-			gc.TINT16,
-			gc.TINT8:
+		case gc.TINT32, gc.TINT16, gc.TINT8:
 			var con gc.Node
 			gc.Convconst(&con, gc.Types[gc.TINT64], &f.Val)
 			var r1 gc.Node
@@ -152,9 +150,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 			gc.Regfree(&r1)
 			return
 
-		case gc.TUINT32,
-			gc.TUINT16,
-			gc.TUINT8:
+		case gc.TUINT32, gc.TUINT16, gc.TUINT8:
 			var con gc.Node
 			gc.Convconst(&con, gc.Types[gc.TUINT64], &f.Val)
 			var r1 gc.Node
@@ -520,16 +516,13 @@ func rawgins(as int, f *gc.Node, t *gc.Node) *obj.Prog {
 
 	w := int32(0)
 	switch as {
-	case arm64.AMOVB,
-		arm64.AMOVBU:
+	case arm64.AMOVB, arm64.AMOVBU:
 		w = 1
 
-	case arm64.AMOVH,
-		arm64.AMOVHU:
+	case arm64.AMOVH, arm64.AMOVHU:
 		w = 2
 
-	case arm64.AMOVW,
-		arm64.AMOVWU:
+	case arm64.AMOVW, arm64.AMOVWU:
 		w = 4
 
 	case arm64.AMOVD:

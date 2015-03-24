@@ -167,8 +167,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 		default:
 			gc.Convconst(&con, t.Type, &f.Val)
 
-		case gc.TINT16,
-			gc.TINT8:
+		case gc.TINT16, gc.TINT8:
 			var con gc.Node
 			gc.Convconst(&con, gc.Types[gc.TINT32], &f.Val)
 			var r1 gc.Node
@@ -178,8 +177,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 			gc.Regfree(&r1)
 			return
 
-		case gc.TUINT16,
-			gc.TUINT8:
+		case gc.TUINT16, gc.TUINT8:
 			var con gc.Node
 			gc.Convconst(&con, gc.Types[gc.TUINT32], &f.Val)
 			var r1 gc.Node
@@ -480,9 +478,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 		gins(fa, f, &r1)        // load to fpu
 		p1 := gins(a, &r1, &r1) // convert to w
 		switch tt {
-		case gc.TUINT8,
-			gc.TUINT16,
-			gc.TUINT32:
+		case gc.TUINT8, gc.TUINT16, gc.TUINT32:
 			p1.Scond |= arm.C_UBIT
 		}
 
@@ -538,9 +534,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 		gins(arm.AMOVW, &r1, &r2) // copy to fpu
 		p1 := gins(a, &r2, &r2)   // convert
 		switch ft {
-		case gc.TUINT8,
-			gc.TUINT16,
-			gc.TUINT32:
+		case gc.TUINT8, gc.TUINT16, gc.TUINT32:
 			p1.Scond |= arm.C_UBIT
 		}
 
@@ -1151,8 +1145,7 @@ func sudoaddable(as int, n *gc.Node, a *obj.Addr) bool {
 		gc.Naddr(a, n)
 		return true
 
-	case gc.ODOT,
-		gc.ODOTPTR:
+	case gc.ODOT, gc.ODOTPTR:
 		cleani += 2
 		reg := &clean[cleani-1]
 		reg1 := &clean[cleani-2]

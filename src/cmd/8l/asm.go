@@ -190,8 +190,7 @@ func adddynrel(s *ld.LSym, r *ld.Reloc) {
 	}
 
 	switch r.Type {
-	case ld.R_CALL,
-		ld.R_PCREL:
+	case ld.R_CALL, ld.R_PCREL:
 		addpltsym(ld.Ctxt, targ)
 		r.Sym = ld.Linklookup(ld.Ctxt, ".plt", 0)
 		r.Add = int64(targ.Plt)
@@ -261,16 +260,14 @@ func elfreloc1(r *ld.Reloc, sectoff int64) int {
 			return -1
 		}
 
-	case ld.R_CALL,
-		ld.R_PCREL:
+	case ld.R_CALL, ld.R_PCREL:
 		if r.Siz == 4 {
 			ld.Thearch.Lput(ld.R_386_PC32 | uint32(elfsym)<<8)
 		} else {
 			return -1
 		}
 
-	case ld.R_TLS_LE,
-		ld.R_TLS_IE:
+	case ld.R_TLS_LE, ld.R_TLS_IE:
 		if r.Siz == 4 {
 			ld.Thearch.Lput(ld.R_386_TLS_LE | uint32(elfsym)<<8)
 		} else {
@@ -309,8 +306,7 @@ func machoreloc1(r *ld.Reloc, sectoff int64) int {
 	case ld.R_ADDR:
 		v |= ld.MACHO_GENERIC_RELOC_VANILLA << 28
 
-	case ld.R_CALL,
-		ld.R_PCREL:
+	case ld.R_CALL, ld.R_PCREL:
 		v |= 1 << 24 // pc-relative bit
 		v |= ld.MACHO_GENERIC_RELOC_VANILLA << 28
 	}
@@ -357,8 +353,7 @@ func pereloc1(r *ld.Reloc, sectoff int64) bool {
 	case ld.R_ADDR:
 		v = ld.IMAGE_REL_I386_DIR32
 
-	case ld.R_CALL,
-		ld.R_PCREL:
+	case ld.R_CALL, ld.R_PCREL:
 		v = ld.IMAGE_REL_I386_REL32
 	}
 

@@ -134,19 +134,16 @@ func cgen_hmul(nl *gc.Node, nr *gc.Node, res *gc.Node) {
 	gc.Regalloc(&n2, t, nil)
 	gc.Cgen(nr, &n2)
 	switch gc.Simtype[t.Etype] {
-	case gc.TINT8,
-		gc.TINT16:
+	case gc.TINT8, gc.TINT16:
 		gins(optoas(gc.OMUL, t), &n2, &n1)
 		gshift(arm.AMOVW, &n1, arm.SHIFT_AR, int32(w), &n1)
 
-	case gc.TUINT8,
-		gc.TUINT16:
+	case gc.TUINT8, gc.TUINT16:
 		gins(optoas(gc.OMUL, t), &n2, &n1)
 		gshift(arm.AMOVW, &n1, arm.SHIFT_LR, int32(w), &n1)
 
 		// perform a long multiplication.
-	case gc.TINT32,
-		gc.TUINT32:
+	case gc.TINT32, gc.TUINT32:
 		var p *obj.Prog
 		if gc.Issigned[t.Etype] {
 			p = gins(arm.AMULL, &n2, nil)

@@ -155,10 +155,7 @@ func proginfo(p *obj.Prog) {
 	}
 
 	switch p.As {
-	case arm.ADIV,
-		arm.ADIVU,
-		arm.AMOD,
-		arm.AMODU:
+	case arm.ADIV, arm.ADIVU, arm.AMOD, arm.AMODU:
 		info.Regset |= RtoB(arm.REG_R12)
 	}
 }

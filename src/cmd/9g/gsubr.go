@@ -180,9 +180,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 		default:
 			gc.Convconst(&con, t.Type, &f.Val)
 
-		case gc.TINT32,
-			gc.TINT16,
-			gc.TINT8:
+		case gc.TINT32, gc.TINT16, gc.TINT8:
 			var con gc.Node
 			gc.Convconst(&con, gc.Types[gc.TINT64], &f.Val)
 			var r1 gc.Node
@@ -192,9 +190,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 			gc.Regfree(&r1)
 			return
 
-		case gc.TUINT32,
-			gc.TUINT16,
-			gc.TUINT8:
+		case gc.TUINT32, gc.TUINT16, gc.TUINT8:
 			var con gc.Node
 			gc.Convconst(&con, gc.Types[gc.TUINT64], &f.Val)
 			var r1 gc.Node
@@ -608,26 +604,16 @@ func rawgins(as int, f *gc.Node, t *gc.Node) *obj.Prog {
 
 	w := int32(0)
 	switch as {
-	case ppc64.AMOVB,
-		ppc64.AMOVBU,
-		ppc64.AMOVBZ,
-		ppc64.AMOVBZU:
+	case ppc64.AMOVB, ppc64.AMOVBU, ppc64.AMOVBZ, ppc64.AMOVBZU:
 		w = 1
 
-	case ppc64.AMOVH,
-		ppc64.AMOVHU,
-		ppc64.AMOVHZ,
-		ppc64.AMOVHZU:
+	case ppc64.AMOVH, ppc64.AMOVHU, ppc64.AMOVHZ, ppc64.AMOVHZU:
 		w = 2
 
-	case ppc64.AMOVW,
-		ppc64.AMOVWU,
-		ppc64.AMOVWZ,
-		ppc64.AMOVWZU:
+	case ppc64.AMOVW, ppc64.AMOVWU, ppc64.AMOVWZ, ppc64.AMOVWZU:
 		w = 4
 
-	case ppc64.AMOVD,
-		ppc64.AMOVDU:
+	case ppc64.AMOVD, ppc64.AMOVDU:
 		if p.From.Type == obj.TYPE_CONST || p.From.Type == obj.TYPE_ADDR {
 			break
 		}

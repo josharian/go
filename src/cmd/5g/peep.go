@@ -67,9 +67,7 @@ loop1:
 		//				t++;
 		//				break;
 		//			}
-		case arm.ASLL,
-			arm.ASRL,
-			arm.ASRA:
+		case arm.ASLL, arm.ASRL, arm.ASRA:
 			break
 
 		case arm.AMOVB,
@@ -95,10 +93,7 @@ loop1:
 				}
 			}
 
-		case arm.AMOVHS,
-			arm.AMOVHU,
-			arm.AMOVBS,
-			arm.AMOVBU:
+		case arm.AMOVHS, arm.AMOVHU, arm.AMOVBS, arm.AMOVBU:
 			if p.From.Type == obj.TYPE_REG {
 				if shortprop(r) {
 					t++
@@ -142,10 +137,7 @@ loop1:
 	for r := (*gc.Flow)(g.Start); r != nil; r = r.Link {
 		p = r.Prog
 		switch p.As {
-		case arm.AMOVW,
-			arm.AMOVB,
-			arm.AMOVBS,
-			arm.AMOVBU:
+		case arm.AMOVW, arm.AMOVB, arm.AMOVBS, arm.AMOVBU:
 			if p.From.Type == obj.TYPE_MEM && p.From.Offset == 0 {
 				xtramodes(g, r, &p.From)
 			} else if p.To.Type == obj.TYPE_MEM && p.To.Offset == 0 {
@@ -279,9 +271,7 @@ func subprop(r0 *gc.Flow) bool {
 		}
 
 		switch p.As {
-		case arm.AMULLU,
-			arm.AMULA,
-			arm.AMVN:
+		case arm.AMULLU, arm.AMULA, arm.AMVN:
 			return false
 		}
 
@@ -535,12 +525,10 @@ gotit:
 		fmt.Printf("shortprop\n%v\n%v", p1, p)
 	}
 	switch p.As {
-	case arm.AMOVBS,
-		arm.AMOVBU:
+	case arm.AMOVBS, arm.AMOVBU:
 		p.As = arm.AMOVB
 
-	case arm.AMOVHS,
-		arm.AMOVHU:
+	case arm.AMOVHS, arm.AMOVHU:
 		p.As = arm.AMOVH
 	}
 
@@ -674,10 +662,7 @@ func shiftprop(r *gc.Flow) bool {
 		}
 		fallthrough
 
-	case arm.ABIC,
-		arm.ATST,
-		arm.ACMP,
-		arm.ACMN:
+	case arm.ABIC, arm.ATST, arm.ACMP, arm.ACMN:
 		if int(p1.Reg) == n {
 			if gc.Debug['P'] != 0 {
 				fmt.Printf("\tcan't swap; FAILURE\n")
@@ -978,8 +963,7 @@ func xtramodes(g *gc.Graph, r *gc.Flow, a *obj.Addr) bool {
 							fallthrough
 
 							/* immediate offset */
-						case obj.TYPE_CONST,
-							obj.TYPE_ADDR:
+						case obj.TYPE_CONST, obj.TYPE_ADDR:
 							a.Offset = p1.From.Offset
 						}
 
@@ -1161,9 +1145,7 @@ func copyu(p *obj.Prog, v *obj.Addr, s *obj.Addr) int {
 		return 0
 
 	case arm.AMULLU, /* read, read, write, write */
-		arm.AMULL,
-		arm.AMULA,
-		arm.AMVN:
+		arm.AMULL, arm.AMULA, arm.AMVN:
 		return 2
 
 	case arm.AADD, /* read, read, write */
@@ -1362,10 +1344,7 @@ func copyu(p *obj.Prog, v *obj.Addr, s *obj.Addr) int {
 		}
 		return 0
 
-	case obj.APCDATA,
-		obj.AFUNCDATA,
-		obj.AVARDEF,
-		obj.AVARKILL:
+	case obj.APCDATA, obj.AFUNCDATA, obj.AVARDEF, obj.AVARKILL:
 		return 0
 	}
 }

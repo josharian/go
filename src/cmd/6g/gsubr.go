@@ -60,9 +60,7 @@ func gconreg(as int, c int64, reg int) {
 	var nr gc.Node
 
 	switch as {
-	case x86.AADDL,
-		x86.AMOVL,
-		x86.ALEAL:
+	case x86.AADDL, x86.AMOVL, x86.ALEAL:
 		gc.Nodreg(&nr, gc.Types[gc.TINT32], reg)
 
 	default:
@@ -80,9 +78,7 @@ func ginscon(as int, c int64, n2 *gc.Node) {
 	var n1 gc.Node
 
 	switch as {
-	case x86.AADDL,
-		x86.AMOVL,
-		x86.ALEAL:
+	case x86.AADDL, x86.AMOVL, x86.ALEAL:
 		gc.Nodconst(&n1, gc.Types[gc.TINT32], c)
 
 	default:
@@ -1229,8 +1225,7 @@ func sudoaddable(as int, n *gc.Node, a *obj.Addr) bool {
 		gc.Naddr(a, n)
 		return true
 
-	case gc.ODOT,
-		gc.ODOTPTR:
+	case gc.ODOT, gc.ODOTPTR:
 		cleani += 2
 		reg := &clean[cleani-1]
 		reg1 := &clean[cleani-2]

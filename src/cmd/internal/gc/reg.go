@@ -339,8 +339,7 @@ func mkvar(f *Flow, a *obj.Addr) Bits {
 			// removed entirely.
 			return zbits
 
-		case obj.NAME_PARAM,
-			obj.NAME_AUTO:
+		case obj.NAME_PARAM, obj.NAME_AUTO:
 			n = int(a.Name)
 		}
 	}

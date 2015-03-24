@@ -732,9 +732,7 @@ func cgen64(n *gc.Node, res *gc.Node) {
 	//			splitclean();
 	//			goto out;
 	//		}
-	case gc.OXOR,
-		gc.OAND,
-		gc.OOR:
+	case gc.OXOR, gc.OAND, gc.OOR:
 		var n1 gc.Node
 		gc.Regalloc(&n1, lo1.Type, nil)
 
@@ -816,8 +814,7 @@ func cmp64(nl *gc.Node, nr *gc.Node, op int, likely int, to *obj.Prog) {
 	// cmp lo
 	// bge to (or bgt to)
 	// L:
-	case gc.OGE,
-		gc.OGT:
+	case gc.OGE, gc.OGT:
 		gc.Patch(gc.Gbranch(optoas(gc.OGT, t), nil, likely), to)
 
 		br = gc.Gbranch(optoas(gc.OLT, t), nil, -likely)
@@ -828,8 +825,7 @@ func cmp64(nl *gc.Node, nr *gc.Node, op int, likely int, to *obj.Prog) {
 	// cmp lo
 	// ble to (or jlt to)
 	// L:
-	case gc.OLE,
-		gc.OLT:
+	case gc.OLE, gc.OLT:
 		gc.Patch(gc.Gbranch(optoas(gc.OLT, t), nil, likely), to)
 
 		br = gc.Gbranch(optoas(gc.OGT, t), nil, -likely)

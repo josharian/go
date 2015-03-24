@@ -96,10 +96,7 @@ func archinit() {
 			log.Fatalf("cannot use -linkmode=external with -H %s", ld.Headstr(int(ld.HEADTYPE)))
 		}
 
-	case ld.Hlinux,
-		ld.Hfreebsd,
-		ld.Hnacl,
-		ld.Hdarwin:
+	case ld.Hlinux, ld.Hfreebsd, ld.Hnacl, ld.Hdarwin:
 		break
 	}
 
@@ -123,9 +120,7 @@ func archinit() {
 		}
 
 	case ld.Hlinux, /* arm elf */
-		ld.Hfreebsd,
-		ld.Hnetbsd,
-		ld.Hopenbsd:
+		ld.Hfreebsd, ld.Hnetbsd, ld.Hopenbsd:
 		ld.Debug['d'] = 0
 		// with dynamic linking
 		ld.Elfinit()

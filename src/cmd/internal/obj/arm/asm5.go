@@ -321,8 +321,7 @@ func asmoutnacl(ctxt *obj.Link, origPC int32, p *obj.Prog, o *Optab, out []uint3
 			asmout(ctxt, p, o, out)
 		}
 
-	case obj.AUNDEF,
-		APLD:
+	case obj.AUNDEF, APLD:
 		size = 4
 		if out != nil {
 			switch p.As {
@@ -1033,8 +1032,7 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 
 	case obj.TYPE_MEM:
 		switch a.Name {
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			if a.Sym == nil || a.Sym.Name == "" {
 				fmt.Printf("null sym external\n")
 				return C_GOK
@@ -1126,8 +1124,7 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 	case obj.TYPE_TEXTSIZE:
 		return C_TEXTSIZE
 
-	case obj.TYPE_CONST,
-		obj.TYPE_ADDR:
+	case obj.TYPE_CONST, obj.TYPE_ADDR:
 		switch a.Name {
 		case obj.TYPE_NONE:
 			ctxt.Instoffset = a.Offset
@@ -1145,8 +1142,7 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 			}
 			return C_LCON
 
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			s := a.Sym
 			if s == nil {
 				break

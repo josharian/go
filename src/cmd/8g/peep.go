@@ -132,9 +132,7 @@ loop1:
 	for r = g.Start; r != nil; r = r.Link {
 		p = r.Prog
 		switch p.As {
-		case x86.AMOVL,
-			x86.AMOVSS,
-			x86.AMOVSD:
+		case x86.AMOVL, x86.AMOVSS, x86.AMOVSD:
 			if regtyp(&p.To) {
 				if regtyp(&p.From) {
 					if copyprop(g, r) {
@@ -147,10 +145,7 @@ loop1:
 				}
 			}
 
-		case x86.AMOVBLZX,
-			x86.AMOVWLZX,
-			x86.AMOVBLSX,
-			x86.AMOVWLSX:
+		case x86.AMOVBLZX, x86.AMOVWLZX, x86.AMOVBLSX, x86.AMOVWLSX:
 			if regtyp(&p.To) {
 				r1 = rnops(gc.Uniqs(r))
 				if r1 != nil {
@@ -162,8 +157,7 @@ loop1:
 				}
 			}
 
-		case x86.AADDL,
-			x86.AADDW:
+		case x86.AADDL, x86.AADDW:
 			if p.From.Type != obj.TYPE_CONST || needc(p.Link) {
 				break
 			}
@@ -187,8 +181,7 @@ loop1:
 				break
 			}
 
-		case x86.ASUBL,
-			x86.ASUBW:
+		case x86.ASUBL, x86.ASUBW:
 			if p.From.Type != obj.TYPE_CONST || needc(p.Link) {
 				break
 			}
@@ -266,20 +259,16 @@ func elimshortmov(g *gc.Graph) {
 		p = r.Prog
 		if regtyp(&p.To) {
 			switch p.As {
-			case x86.AINCB,
-				x86.AINCW:
+			case x86.AINCB, x86.AINCW:
 				p.As = x86.AINCL
 
-			case x86.ADECB,
-				x86.ADECW:
+			case x86.ADECB, x86.ADECW:
 				p.As = x86.ADECL
 
-			case x86.ANEGB,
-				x86.ANEGW:
+			case x86.ANEGB, x86.ANEGW:
 				p.As = x86.ANEGL
 
-			case x86.ANOTB,
-				x86.ANOTW:
+			case x86.ANOTB, x86.ANOTW:
 				p.As = x86.ANOTL
 			}
 
@@ -289,44 +278,35 @@ func elimshortmov(g *gc.Graph) {
 				// we don't switch to 32-bit arithmetic if it can
 				// change how the carry bit is set (and the carry bit is needed).
 				switch p.As {
-				case x86.AMOVB,
-					x86.AMOVW:
+				case x86.AMOVB, x86.AMOVW:
 					p.As = x86.AMOVL
 
-				case x86.AADDB,
-					x86.AADDW:
+				case x86.AADDB, x86.AADDW:
 					if !needc(p.Link) {
 						p.As = x86.AADDL
 					}
 
-				case x86.ASUBB,
-					x86.ASUBW:
+				case x86.ASUBB, x86.ASUBW:
 					if !needc(p.Link) {
 						p.As = x86.ASUBL
 					}
 
-				case x86.AMULB,
-					x86.AMULW:
+				case x86.AMULB, x86.AMULW:
 					p.As = x86.AMULL
 
-				case x86.AIMULB,
-					x86.AIMULW:
+				case x86.AIMULB, x86.AIMULW:
 					p.As = x86.AIMULL
 
-				case x86.AANDB,
-					x86.AANDW:
+				case x86.AANDB, x86.AANDW:
 					p.As = x86.AANDL
 
-				case x86.AORB,
-					x86.AORW:
+				case x86.AORB, x86.AORW:
 					p.As = x86.AORL
 
-				case x86.AXORB,
-					x86.AXORW:
+				case x86.AXORB, x86.AXORW:
 					p.As = x86.AXORL
 
-				case x86.ASHLB,
-					x86.ASHLW:
+				case x86.ASHLB, x86.ASHLW:
 					p.As = x86.ASHLL
 				}
 			} else {

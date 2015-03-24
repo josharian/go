@@ -202,8 +202,7 @@ func adddynrel(s *ld.LSym, r *ld.Reloc) {
 	}
 
 	switch r.Type {
-	case ld.R_CALL,
-		ld.R_PCREL:
+	case ld.R_CALL, ld.R_PCREL:
 		if ld.HEADTYPE == ld.Hwindows {
 			// nothing to do, the relocation will be laid out in pereloc1
 			return
@@ -428,8 +427,7 @@ func pereloc1(r *ld.Reloc, sectoff int64) bool {
 			v = ld.IMAGE_REL_AMD64_ADDR32
 		}
 
-	case ld.R_CALL,
-		ld.R_PCREL:
+	case ld.R_CALL, ld.R_PCREL:
 		v = ld.IMAGE_REL_AMD64_REL32
 	}
 
@@ -700,8 +698,7 @@ func asmb() {
 		ld.Diag("unknown header type %d", ld.HEADTYPE)
 		fallthrough
 
-	case ld.Hplan9,
-		ld.Helf:
+	case ld.Hplan9, ld.Helf:
 		break
 
 	case ld.Hdarwin:
@@ -715,8 +712,7 @@ func asmb() {
 		ld.Hsolaris:
 		ld.Debug['8'] = 1 /* 64-bit addresses */
 
-	case ld.Hnacl,
-		ld.Hwindows:
+	case ld.Hnacl, ld.Hwindows:
 		break
 	}
 
@@ -731,8 +727,7 @@ func asmb() {
 		ld.Bflush(&ld.Bso)
 		switch ld.HEADTYPE {
 		default:
-		case ld.Hplan9,
-			ld.Helf:
+		case ld.Hplan9, ld.Helf:
 			ld.Debug['s'] = 1
 			symo = int64(ld.Segdata.Fileoff + ld.Segdata.Filelen)
 

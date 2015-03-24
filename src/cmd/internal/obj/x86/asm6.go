@@ -2027,15 +2027,13 @@ func oclass(ctxt *obj.Link, p *obj.Prog, a *obj.Addr) int {
 
 	case obj.TYPE_ADDR:
 		switch a.Name {
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			if a.Sym != nil && isextern(a.Sym) || p.Mode == 32 {
 				return Yi32
 			}
 			return Yiauto // use pc-relative addressing
 
-		case obj.NAME_AUTO,
-			obj.NAME_PARAM:
+		case obj.NAME_AUTO, obj.NAME_PARAM:
 			return Yiauto
 		}
 
@@ -2436,8 +2434,7 @@ func vaddr(ctxt *obj.Link, p *obj.Prog, a *obj.Addr, r *obj.Reloc) int64 {
 	}
 
 	switch a.Name {
-	case obj.NAME_STATIC,
-		obj.NAME_EXTERN:
+	case obj.NAME_STATIC, obj.NAME_EXTERN:
 		s := a.Sym
 		if r == nil {
 			ctxt.Diag("need reloc for %v", obj.Dconv(p, a))
@@ -2518,16 +2515,14 @@ func asmandsz(ctxt *obj.Link, p *obj.Prog, a *obj.Addr, r int, rex int, m64 int)
 	if a.Index != REG_NONE && a.Index != REG_TLS {
 		base := int(a.Reg)
 		switch a.Name {
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			if !isextern(a.Sym) && p.Mode == 64 {
 				goto bad
 			}
 			base = REG_NONE
 			v = int32(vaddr(ctxt, p, a, &rel))
 
-		case obj.NAME_AUTO,
-			obj.NAME_PARAM:
+		case obj.NAME_AUTO, obj.NAME_PARAM:
 			base = REG_SP
 		}
 
@@ -2563,16 +2558,14 @@ func asmandsz(ctxt *obj.Link, p *obj.Prog, a *obj.Addr, r int, rex int, m64 int)
 
 	base = int(a.Reg)
 	switch a.Name {
-	case obj.NAME_STATIC,
-		obj.NAME_EXTERN:
+	case obj.NAME_STATIC, obj.NAME_EXTERN:
 		if a.Sym == nil {
 			ctxt.Diag("bad addr: %v", p)
 		}
 		base = REG_NONE
 		v = int32(vaddr(ctxt, p, a, &rel))
 
-	case obj.NAME_AUTO,
-		obj.NAME_PARAM:
+	case obj.NAME_AUTO, obj.NAME_PARAM:
 		base = REG_SP
 	}
 
@@ -3767,8 +3760,7 @@ func doasm(ctxt *obj.Link, p *obj.Prog) {
 						default:
 							log.Fatalf("unknown TLS base location for %s", obj.Headstr(ctxt.Headtype))
 
-						case obj.Hlinux,
-							obj.Hnacl:
+						case obj.Hlinux, obj.Hnacl:
 							// ELF TLS base is 0(GS).
 							pp.From = p.From
 
@@ -4170,8 +4162,7 @@ func asmins(ctxt *obj.Link, p *obj.Prog) {
 			ctxt.Andptr = ctxt.Andptr[len(naclret8):]
 			return
 
-		case obj.ACALL,
-			obj.AJMP:
+		case obj.ACALL, obj.AJMP:
 			if p.To.Type == obj.TYPE_REG && REG_AX <= p.To.Reg && p.To.Reg <= REG_DI {
 				ctxt.Andptr[0] = 0x83
 				ctxt.Andptr = ctxt.Andptr[1:]
@@ -4219,8 +4210,7 @@ func asmins(ctxt *obj.Link, p *obj.Prog) {
 			ctxt.Andptr = ctxt.Andptr[len(naclret):]
 			return
 
-		case obj.ACALL,
-			obj.AJMP:
+		case obj.ACALL, obj.AJMP:
 			if p.To.Type == obj.TYPE_REG && REG_AX <= p.To.Reg && p.To.Reg <= REG_DI {
 				// ANDL $~31, reg
 				ctxt.Andptr[0] = 0x83

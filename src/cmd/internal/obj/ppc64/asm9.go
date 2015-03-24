@@ -579,8 +579,7 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 
 	case obj.TYPE_MEM:
 		switch a.Name {
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			if a.Sym == nil {
 				break
 			}
@@ -620,8 +619,7 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 	case obj.TYPE_TEXTSIZE:
 		return C_TEXTSIZE
 
-	case obj.TYPE_CONST,
-		obj.TYPE_ADDR:
+	case obj.TYPE_CONST, obj.TYPE_ADDR:
 		switch a.Name {
 		case obj.TYPE_NONE:
 			ctxt.Instoffset = a.Offset
@@ -637,8 +635,7 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 
 			goto consize
 
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			s := a.Sym
 			if s == nil {
 				break

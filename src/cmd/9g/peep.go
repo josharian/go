@@ -166,8 +166,7 @@ loop1:
 				continue
 
 				/* the conditions can be complex and these are currently little used */
-			case ppc64.ABCL,
-				ppc64.ABC:
+			case ppc64.ABCL, ppc64.ABC:
 				continue
 
 			case ppc64.ABEQ,
@@ -198,10 +197,7 @@ loop1:
 			}
 			switch p1.As {
 			/* irregular instructions */
-			case ppc64.ASUB,
-				ppc64.AADD,
-				ppc64.AXOR,
-				ppc64.AOR:
+			case ppc64.ASUB, ppc64.AADD, ppc64.AXOR, ppc64.AOR:
 				if p1.From.Type == obj.TYPE_CONST || p1.From.Type == obj.TYPE_ADDR {
 					continue
 				}
@@ -211,8 +207,7 @@ loop1:
 			default:
 				continue
 
-			case ppc64.AMOVW,
-				ppc64.AMOVD:
+			case ppc64.AMOVW, ppc64.AMOVD:
 				if p1.From.Type != obj.TYPE_REG {
 					continue
 				}
@@ -949,10 +944,7 @@ func copyu(p *obj.Prog, v *obj.Addr, s *obj.Addr) int {
 		}
 		return 0
 
-	case obj.APCDATA,
-		obj.AFUNCDATA,
-		obj.AVARDEF,
-		obj.AVARKILL:
+	case obj.APCDATA, obj.AFUNCDATA, obj.AVARDEF, obj.AVARKILL:
 		return 0
 	}
 }

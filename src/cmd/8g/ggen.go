@@ -678,24 +678,20 @@ func cgen_floatsse(n *gc.Node, res *gc.Node) {
 		gc.Fatal("cgen_floatsse %v", gc.Oconv(int(n.Op), 0))
 		return
 
-	case gc.OMINUS,
-		gc.OCOM:
+	case gc.OMINUS, gc.OCOM:
 		nr = gc.Nodintconst(-1)
 		gc.Convlit(&nr, n.Type)
 		a = foptoas(gc.OMUL, nl.Type, 0)
 		goto sbop
 
 		// symmetric binary
-	case gc.OADD,
-		gc.OMUL:
+	case gc.OADD, gc.OMUL:
 		a = foptoas(int(n.Op), nl.Type, 0)
 
 		goto sbop
 
 		// asymmetric binary
-	case gc.OSUB,
-		gc.OMOD,
-		gc.ODIV:
+	case gc.OSUB, gc.OMOD, gc.ODIV:
 		a = foptoas(int(n.Op), nl.Type, 0)
 
 		goto abop

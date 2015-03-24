@@ -456,8 +456,7 @@ func foptoas(op int, t *gc.Type, flg int) int {
 
 	// clear Frev if unneeded
 	switch op {
-	case gc.OADD,
-		gc.OMUL:
+	case gc.OADD, gc.OMUL:
 		flg &^= Frev
 	}
 
@@ -1672,9 +1671,7 @@ func gins(as int, f *gc.Node, t *gc.Node) *obj.Prog {
 	}
 
 	switch as {
-	case x86.AMOVB,
-		x86.AMOVW,
-		x86.AMOVL:
+	case x86.AMOVB, x86.AMOVW, x86.AMOVL:
 		if f != nil && t != nil && samaddr(f, t) {
 			return nil
 		}

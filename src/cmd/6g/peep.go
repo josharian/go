@@ -97,8 +97,7 @@ func peep(firstp *obj.Prog) {
 	for r := (*gc.Flow)(g.Start); r != nil; r = r.Link {
 		p = r.Prog
 		switch p.As {
-		case x86.ALEAL,
-			x86.ALEAQ:
+		case x86.ALEAL, x86.ALEAQ:
 			if regtyp(&p.To) {
 				if p.From.Sym != nil {
 					if p.From.Index == x86.REG_NONE {
@@ -134,10 +133,7 @@ loop1:
 	for r = g.Start; r != nil; r = r.Link {
 		p = r.Prog
 		switch p.As {
-		case x86.AMOVL,
-			x86.AMOVQ,
-			x86.AMOVSS,
-			x86.AMOVSD:
+		case x86.AMOVL, x86.AMOVQ, x86.AMOVSS, x86.AMOVSD:
 			if regtyp(&p.To) {
 				if regtyp(&p.From) {
 					if copyprop(g, r) {
@@ -150,10 +146,7 @@ loop1:
 				}
 			}
 
-		case x86.AMOVBLZX,
-			x86.AMOVWLZX,
-			x86.AMOVBLSX,
-			x86.AMOVWLSX:
+		case x86.AMOVBLZX, x86.AMOVWLZX, x86.AMOVBLSX, x86.AMOVWLSX:
 			if regtyp(&p.To) {
 				r1 = rnops(gc.Uniqs(r))
 				if r1 != nil {
@@ -183,9 +176,7 @@ loop1:
 				}
 			}
 
-		case x86.AADDL,
-			x86.AADDQ,
-			x86.AADDW:
+		case x86.AADDL, x86.AADDQ, x86.AADDW:
 			if p.From.Type != obj.TYPE_CONST || needc(p.Link) {
 				break
 			}
@@ -213,9 +204,7 @@ loop1:
 				break
 			}
 
-		case x86.ASUBL,
-			x86.ASUBQ,
-			x86.ASUBW:
+		case x86.ASUBL, x86.ASUBQ, x86.ASUBW:
 			if p.From.Type != obj.TYPE_CONST || needc(p.Link) {
 				break
 			}
@@ -409,20 +398,16 @@ func elimshortmov(g *gc.Graph) {
 		p = r.Prog
 		if regtyp(&p.To) {
 			switch p.As {
-			case x86.AINCB,
-				x86.AINCW:
+			case x86.AINCB, x86.AINCW:
 				p.As = x86.AINCQ
 
-			case x86.ADECB,
-				x86.ADECW:
+			case x86.ADECB, x86.ADECW:
 				p.As = x86.ADECQ
 
-			case x86.ANEGB,
-				x86.ANEGW:
+			case x86.ANEGB, x86.ANEGW:
 				p.As = x86.ANEGQ
 
-			case x86.ANOTB,
-				x86.ANOTW:
+			case x86.ANOTB, x86.ANOTW:
 				p.As = x86.ANOTQ
 			}
 
@@ -432,44 +417,35 @@ func elimshortmov(g *gc.Graph) {
 				// we don't switch to 64-bit arithmetic if it can
 				// change how the carry bit is set (and the carry bit is needed).
 				switch p.As {
-				case x86.AMOVB,
-					x86.AMOVW:
+				case x86.AMOVB, x86.AMOVW:
 					p.As = x86.AMOVQ
 
-				case x86.AADDB,
-					x86.AADDW:
+				case x86.AADDB, x86.AADDW:
 					if !needc(p.Link) {
 						p.As = x86.AADDQ
 					}
 
-				case x86.ASUBB,
-					x86.ASUBW:
+				case x86.ASUBB, x86.ASUBW:
 					if !needc(p.Link) {
 						p.As = x86.ASUBQ
 					}
 
-				case x86.AMULB,
-					x86.AMULW:
+				case x86.AMULB, x86.AMULW:
 					p.As = x86.AMULQ
 
-				case x86.AIMULB,
-					x86.AIMULW:
+				case x86.AIMULB, x86.AIMULW:
 					p.As = x86.AIMULQ
 
-				case x86.AANDB,
-					x86.AANDW:
+				case x86.AANDB, x86.AANDW:
 					p.As = x86.AANDQ
 
-				case x86.AORB,
-					x86.AORW:
+				case x86.AORB, x86.AORW:
 					p.As = x86.AORQ
 
-				case x86.AXORB,
-					x86.AXORW:
+				case x86.AXORB, x86.AXORW:
 					p.As = x86.AXORQ
 
-				case x86.ASHLB,
-					x86.ASHLW:
+				case x86.ASHLB, x86.ASHLW:
 					p.As = x86.ASHLQ
 				}
 			} else if p.From.Type != obj.TYPE_REG {
@@ -494,9 +470,7 @@ func regconsttyp(a *obj.Addr) bool {
 		return true
 	}
 	switch a.Type {
-	case obj.TYPE_CONST,
-		obj.TYPE_FCONST,
-		obj.TYPE_SCONST,
+	case obj.TYPE_CONST, obj.TYPE_FCONST, obj.TYPE_SCONST,
 		obj.TYPE_ADDR: // TODO(rsc): Not all TYPE_ADDRs are constants.
 		return true
 	}

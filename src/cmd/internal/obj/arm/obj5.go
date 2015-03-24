@@ -46,10 +46,7 @@ func progedit(ctxt *obj.Link, p *obj.Prog) {
 
 	// Rewrite B/BL to symbol as TYPE_BRANCH.
 	switch p.As {
-	case AB,
-		ABL,
-		obj.ADUFFZERO,
-		obj.ADUFFCOPY:
+	case AB, ABL, obj.ADUFFZERO, obj.ADUFFCOPY:
 		if p.To.Type == obj.TYPE_MEM && (p.To.Name == obj.NAME_EXTERN || p.To.Name == obj.NAME_STATIC) && p.To.Sym != nil {
 			p.To.Type = obj.TYPE_BRANCH
 		}
@@ -299,10 +296,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym) {
 			}
 			continue
 
-		case ABL,
-			ABX,
-			obj.ADUFFZERO,
-			obj.ADUFFCOPY:
+		case ABL, ABX, obj.ADUFFZERO, obj.ADUFFCOPY:
 			cursym.Text.Mark &^= LEAF
 			fallthrough
 

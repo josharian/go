@@ -139,9 +139,7 @@ func archinit() {
 		}
 
 	case ld.Hlinux, /* elf32 executable */
-		ld.Hfreebsd,
-		ld.Hnetbsd,
-		ld.Hopenbsd:
+		ld.Hfreebsd, ld.Hnetbsd, ld.Hopenbsd:
 		ld.Elfinit()
 
 		ld.HEADR = ld.ELFRESERVE

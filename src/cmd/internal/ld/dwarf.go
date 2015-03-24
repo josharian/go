@@ -1134,14 +1134,12 @@ func defgotype(gotype *LSym) *DWDie {
 		newattr(die, DW_AT_encoding, DW_CLS_CONSTANT, DW_ATE_unsigned, 0)
 		newattr(die, DW_AT_byte_size, DW_CLS_CONSTANT, bytesize, 0)
 
-	case obj.KindFloat32,
-		obj.KindFloat64:
+	case obj.KindFloat32, obj.KindFloat64:
 		die = newdie(&dwtypes, DW_ABRV_BASETYPE, name)
 		newattr(die, DW_AT_encoding, DW_CLS_CONSTANT, DW_ATE_float, 0)
 		newattr(die, DW_AT_byte_size, DW_CLS_CONSTANT, bytesize, 0)
 
-	case obj.KindComplex64,
-		obj.KindComplex128:
+	case obj.KindComplex64, obj.KindComplex128:
 		die = newdie(&dwtypes, DW_ABRV_BASETYPE, name)
 		newattr(die, DW_AT_encoding, DW_CLS_CONSTANT, DW_ATE_complex_float, 0)
 		newattr(die, DW_AT_byte_size, DW_CLS_CONSTANT, bytesize, 0)

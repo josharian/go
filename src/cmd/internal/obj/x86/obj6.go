@@ -41,10 +41,7 @@ import (
 func canuselocaltls(ctxt *obj.Link) bool {
 	if ctxt.Arch.Regsize == 4 {
 		switch ctxt.Headtype {
-		case obj.Hlinux,
-			obj.Hnacl,
-			obj.Hplan9,
-			obj.Hwindows:
+		case obj.Hlinux, obj.Hnacl, obj.Hplan9, obj.Hwindows:
 			return false
 		}
 
@@ -52,8 +49,7 @@ func canuselocaltls(ctxt *obj.Link) bool {
 	}
 
 	switch ctxt.Headtype {
-	case obj.Hplan9,
-		obj.Hwindows:
+	case obj.Hplan9, obj.Hwindows:
 		return false
 	case obj.Hlinux:
 		return ctxt.Flag_shared == 0

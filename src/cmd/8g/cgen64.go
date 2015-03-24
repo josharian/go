@@ -390,9 +390,7 @@ func cgen64(n *gc.Node, res *gc.Node) {
 		gc.Patch(p2, gc.Pc)
 
 		// make constant the right side (it usually is anyway).
-	case gc.OXOR,
-		gc.OAND,
-		gc.OOR:
+	case gc.OXOR, gc.OAND, gc.OOR:
 		if lo1.Op == gc.OLITERAL {
 			nswap(&lo1, &lo2)
 			nswap(&hi1, &hi2)
@@ -555,8 +553,7 @@ func cmp64(nl *gc.Node, nr *gc.Node, op int, likely int, to *obj.Prog) {
 	// cmp lo
 	// jge to (or jgt to)
 	// L:
-	case gc.OGE,
-		gc.OGT:
+	case gc.OGE, gc.OGT:
 		gc.Patch(gc.Gbranch(optoas(gc.OGT, t), nil, likely), to)
 
 		br = gc.Gbranch(optoas(gc.OLT, t), nil, -likely)
@@ -567,8 +564,7 @@ func cmp64(nl *gc.Node, nr *gc.Node, op int, likely int, to *obj.Prog) {
 	// cmp lo
 	// jle to (or jlt to)
 	// L:
-	case gc.OLE,
-		gc.OLT:
+	case gc.OLE, gc.OLT:
 		gc.Patch(gc.Gbranch(optoas(gc.OLT, t), nil, likely), to)
 
 		br = gc.Gbranch(optoas(gc.OGT, t), nil, -likely)
