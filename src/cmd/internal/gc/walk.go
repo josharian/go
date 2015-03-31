@@ -950,8 +950,14 @@ func walkexpr(np **Node, init **NodeList) {
 	case OCONVIFACE:
 		walkexpr(&n.Left, init)
 
+		// Build name of function: convI2E etc.
+		// Not all names are possible
+		// (e.g., we'll never generate convE2E or convE2I).
+		from := type2IET(n.Left.Type)
+		to := type2IET(n.Type)
+
 		// Optimize convT2E as a two-word copy when T is pointer-shaped.
-		if isnilinter(n.Type) && isdirectiface(n.Left.Type) {
+		if from == "T" && to == "E" && isdirectiface(n.Left.Type) {
 			l := Nod(OEFACE, typename(n.Left.Type), n.Left)
 			l.Type = n.Type
 			l.Typecheck = n.Typecheck
@@ -959,76 +965,96 @@ func walkexpr(np **Node, init **NodeList) {
 			goto ret
 		}
 
-		// Build name of function: convI2E etc.
-		// Not all names are possible
-		// (e.g., we'll never generate convE2E or convE2I).
-		buf := "conv" + type2IET(n.Left.Type) + "2" + type2IET(n.Type)
-		fn := syslook(buf, 1)
 		var ll *NodeList
-		if !Isinter(n.Left.Type) {
+		if from == "T" {
 			ll = list(ll, typename(n.Left.Type))
 		}
-		if !isnilinter(n.Type) {
+		if to == "I" {
 			ll = list(ll, typename(n.Type))
 		}
-		if !Isinter(n.Left.Type) && !isnilinter(n.Type) {
-			sym := Pkglookup(Tconv(n.Left.Type, obj.FmtLeft)+"."+Tconv(n.Type, obj.FmtLeft), itabpkg)
-			if sym.Def == nil {
+
+		var tabsym *Sym
+		if from == "T" && to == "I" {
+			tabsym = Pkglookup(Tconv(n.Left.Type, obj.FmtLeft)+"."+Tconv(n.Type, obj.FmtLeft), itabpkg)
+			if tabsym.Def == nil {
 				l := Nod(ONAME, nil, nil)
-				l.Sym = sym
+				l.Sym = tabsym
 				l.Type = Ptrto(Types[TUINT8])
 				l.Addable = 1
 				l.Class = PEXTERN
 				l.Xoffset = 0
-				sym.Def = l
-				ggloblsym(sym, int32(Widthptr), obj.DUPOK|obj.NOPTR)
+				tabsym.Def = l
+				ggloblsym(tabsym, int32(Widthptr), obj.DUPOK|obj.NOPTR)
 			}
 
-			l := Nod(OADDR, sym.Def, nil)
+			l := Nod(OADDR, tabsym.Def, nil)
 			l.Addable = 1
 			ll = list(ll, l)
-
-			if isdirectiface(n.Left.Type) {
-				/* For pointer types, we can make a special form of optimization
-				 *
-				 * These statements are put onto the expression init list:
-				 * 	Itab *tab = atomicloadtype(&cache);
-				 * 	if(tab == nil)
-				 * 		tab = typ2Itab(type, itype, &cache);
-				 *
-				 * The CONVIFACE expression is replaced with this:
-				 * 	OEFACE{tab, ptr};
-				 */
-				l := temp(Ptrto(Types[TUINT8]))
-
-				n1 := Nod(OAS, l, sym.Def)
-				typecheck(&n1, Etop)
-				*init = list(*init, n1)
-
-				fn := syslook("typ2Itab", 1)
-				n1 = Nod(OCALL, fn, nil)
-				n1.List = ll
-				typecheck(&n1, Erv)
-				walkexpr(&n1, init)
-
-				n2 := Nod(OIF, nil, nil)
-				n2.Ntest = Nod(OEQ, l, nodnil())
-				n2.Nbody = list1(Nod(OAS, l, n1))
-				n2.Likely = -1
-				typecheck(&n2, Etop)
-				*init = list(*init, n2)
-
-				l = Nod(OEFACE, l, n.Left)
-				l.Typecheck = n.Typecheck
-				l.Type = n.Type
-				n = l
-				goto ret
-			}
 		}
 
-		if Isinter(n.Left.Type) {
-			ll = list(ll, n.Left)
-		} else {
+		dowidth(n.Left.Type)
+		noesc := n.Esc == EscNone && n.Left.Type.Width <= 1024
+
+		var tab *Node
+		if from == "T" && to == "I" && (isdirectiface(n.Left.Type) || noesc) {
+			// For pointer types and non-escaping values,
+			// we can replace CONVIFACE with OEFACE{tab, ptr}.
+			// To enable this (below), we add to the expression init:
+			//
+			// 	Itab *tab = atomicloadtype(&cache)
+			// 	if tab == nil {
+			// 		tab = typ2Itab(type, itype, &cache)
+			//  }
+			tab = temp(Ptrto(Types[TUINT8]))
+
+			n1 := Nod(OAS, tab, tabsym.Def)
+			typecheck(&n1, Etop)
+			*init = list(*init, n1)
+
+			fn := syslook("typ2Itab", 1)
+			n1 = Nod(OCALL, fn, nil)
+			n1.List = ll
+			typecheck(&n1, Erv)
+			walkexpr(&n1, init)
+
+			n2 := Nod(OIF, nil, nil)
+			n2.Ntest = Nod(OEQ, tab, nodnil())
+			n2.Nbody = list1(Nod(OAS, tab, n1))
+			n2.Likely = -1
+			typecheck(&n2, Etop)
+			*init = list(*init, n2)
+		}
+
+		if from == "T" && to == "I" && isdirectiface(n.Left.Type) {
+			l := Nod(OEFACE, tab, n.Left)
+			l.Typecheck = n.Typecheck
+			l.Type = n.Type
+			n = l
+			goto ret
+		}
+
+		if from == "T" && noesc {
+			// Allocate stack buffer for value stored in interface.
+			tmp := temp(n.Left.Type)
+			as := Nod(OAS, tmp, n.Left)
+			typecheck(&as, Etop)
+			*init = list(*init, as)
+			walkexpr(&as, init)
+
+			ptmp := Nod(OADDR, tmp, nil)
+			typecheck(&ptmp, Erv)
+
+			if to == "E" {
+				tab = typename(n.Left.Type)
+			}
+			ef := Nod(OEFACE, tab, ptmp)
+			ef.Type = n.Type
+			ef.Typecheck = n.Typecheck
+			n = ef
+			goto ret
+		}
+
+		if from == "T" {
 			// regular types are passed by reference to avoid C vararg calls
 			// orderexpr arranged for n.Left to be a temporary for all
 			// the conversions it could see. comparison of an interface
@@ -1040,25 +1066,14 @@ func walkexpr(np **Node, init **NodeList) {
 			} else {
 				ll = list(ll, Nod(OADDR, copyexpr(n.Left, n.Left.Type, init), nil))
 			}
-			dowidth(n.Left.Type)
-			r := nodnil()
-			if n.Esc == EscNone && n.Left.Type.Width <= 1024 {
-				// Allocate stack buffer for value stored in interface.
-				r = temp(n.Left.Type)
-				r = Nod(OAS, r, nil) // zero temp
-				typecheck(&r, Etop)
-				*init = list(*init, r)
-				r = Nod(OADDR, r.Left, nil)
-				typecheck(&r, Erv)
-			}
-			ll = list(ll, r)
+		} else {
+			ll = list(ll, n.Left)
 		}
 
-		if !Isinter(n.Left.Type) {
-			substArgTypes(fn, n.Left.Type, n.Left.Type, n.Type)
-		} else {
-			substArgTypes(fn, n.Left.Type, n.Type)
-		}
+		// Make runtime call.
+		buf := "conv" + from + "2" + to
+		fn := syslook(buf, 1)
+		substArgTypes(fn, n.Left.Type, n.Type)
 		dowidth(fn.Type)
 		n = Nod(OCALL, fn, nil)
 		n.List = ll

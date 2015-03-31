@@ -137,7 +137,8 @@ var i9 interface{}
 func f9() bool {
 	g8()
 	x := i9
-	return x != interface{}(99.0i) // ERROR "live at call to convT2E: x"
+	var large [1024]complex128
+	return x != interface{}(large) // ERROR "live at call to convT2E: x"
 }
 
 // liveness formerly confused by UNDEF followed by RET,
