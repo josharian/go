@@ -115,13 +115,13 @@ func bignodes() {
 	bignodes_did = 1
 
 	gc.Nodconst(&bigi, gc.Types[gc.TUINT64], 1)
-	gc.Mpshiftfix(bigi.Val.U.Xval, 63)
+	gc.Mpshiftfix(bigi.Val.U.(*gc.Mpint), 63)
 
 	bigf = bigi
 	bigf.Type = gc.Types[gc.TFLOAT64]
 	bigf.Val.Ctype = gc.CTFLT
-	bigf.Val.U.Fval = new(gc.Mpflt)
-	gc.Mpmovefixflt(bigf.Val.U.Fval, bigi.Val.U.Xval)
+	bigf.Val.U = new(gc.Mpflt)
+	gc.Mpmovefixflt(bigf.Val.U.(*gc.Mpflt), bigi.Val.U.(*gc.Mpint))
 }
 
 /*
@@ -166,10 +166,10 @@ func gmove(f *gc.Node, t *gc.Node) {
 			// 64-bit immediates are really 32-bit sign-extended
 			// unless moving into a register.
 			if gc.Isint[tt] {
-				if gc.Mpcmpfixfix(con.Val.U.Xval, gc.Minintval[gc.TINT32]) < 0 {
+				if gc.Mpcmpfixfix(con.Val.U.(*gc.Mpint), gc.Minintval[gc.TINT32]) < 0 {
 					goto hard
 				}
-				if gc.Mpcmpfixfix(con.Val.U.Xval, gc.Maxintval[gc.TINT32]) > 0 {
+				if gc.Mpcmpfixfix(con.Val.U.(*gc.Mpint), gc.Maxintval[gc.TINT32]) > 0 {
 					goto hard
 				}
 			}
@@ -526,7 +526,7 @@ func samaddr(f *gc.Node, t *gc.Node) bool {
 
 	switch f.Op {
 	case gc.OREGISTER:
-		if f.Val.U.Reg != t.Val.U.Reg {
+		if f.Val.U.(int16) != t.Val.U.(int16) {
 			break
 		}
 		return true
@@ -1176,7 +1176,7 @@ func sudoaddable(as int, n *gc.Node, a *obj.Addr) bool {
 		if !gc.Isconst(n, gc.CTINT) {
 			break
 		}
-		v := gc.Mpgetfix(n.Val.U.Xval)
+		v := gc.Mpgetfix(n.Val.U.(*gc.Mpint))
 		if v >= 32000 || v <= -32000 {
 			break
 		}

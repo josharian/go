@@ -188,11 +188,11 @@ func cgen64(n *gc.Node, res *gc.Node) {
 		p1 := gins(arm.AMULLU, nil, nil)
 
 		p1.From.Type = obj.TYPE_REG
-		p1.From.Reg = bl.Val.U.Reg
-		p1.Reg = cl.Val.U.Reg
+		p1.From.Reg = bl.Val.U.(int16)
+		p1.Reg = cl.Val.U.(int16)
 		p1.To.Type = obj.TYPE_REGREG
-		p1.To.Reg = ah.Val.U.Reg
-		p1.To.Offset = int64(al.Val.U.Reg)
+		p1.To.Reg = ah.Val.U.(int16)
+		p1.To.Offset = int64(al.Val.U.(int16))
 
 		//print("%P\n", p1);
 
@@ -200,11 +200,11 @@ func cgen64(n *gc.Node, res *gc.Node) {
 		p1 = gins(arm.AMULA, nil, nil)
 
 		p1.From.Type = obj.TYPE_REG
-		p1.From.Reg = bl.Val.U.Reg
-		p1.Reg = ch.Val.U.Reg
+		p1.From.Reg = bl.Val.U.(int16)
+		p1.Reg = ch.Val.U.(int16)
 		p1.To.Type = obj.TYPE_REGREG2
-		p1.To.Reg = ah.Val.U.Reg
-		p1.To.Offset = int64(ah.Val.U.Reg)
+		p1.To.Reg = ah.Val.U.(int16)
+		p1.To.Offset = int64(ah.Val.U.(int16))
 
 		//print("%P\n", p1);
 
@@ -212,11 +212,11 @@ func cgen64(n *gc.Node, res *gc.Node) {
 		p1 = gins(arm.AMULA, nil, nil)
 
 		p1.From.Type = obj.TYPE_REG
-		p1.From.Reg = bh.Val.U.Reg
-		p1.Reg = cl.Val.U.Reg
+		p1.From.Reg = bh.Val.U.(int16)
+		p1.Reg = cl.Val.U.(int16)
 		p1.To.Type = obj.TYPE_REGREG2
-		p1.To.Reg = ah.Val.U.Reg
-		p1.To.Offset = int64(ah.Val.U.Reg)
+		p1.To.Reg = ah.Val.U.(int16)
+		p1.To.Offset = int64(ah.Val.U.(int16))
 
 		//print("%P\n", p1);
 
@@ -237,7 +237,7 @@ func cgen64(n *gc.Node, res *gc.Node) {
 	//	shld hi:lo, c
 	//	shld lo:t, c
 	case gc.OLROT:
-		v := uint64(gc.Mpgetfix(r.Val.U.Xval))
+		v := uint64(gc.Mpgetfix(r.Val.U.(*gc.Mpint)))
 
 		var bl gc.Node
 		gc.Regalloc(&bl, lo1.Type, nil)
@@ -291,7 +291,7 @@ func cgen64(n *gc.Node, res *gc.Node) {
 		var p4 *obj.Prog
 		var p5 *obj.Prog
 		if r.Op == gc.OLITERAL {
-			v := uint64(gc.Mpgetfix(r.Val.U.Xval))
+			v := uint64(gc.Mpgetfix(r.Val.U.(*gc.Mpint)))
 			if v >= 64 {
 				// TODO(kaib): replace with gins(AMOVW, nodintconst(0), &al)
 				// here and below (verify it optimizes to EOR)
@@ -452,7 +452,7 @@ func cgen64(n *gc.Node, res *gc.Node) {
 		var creg gc.Node
 		var p3 *obj.Prog
 		if r.Op == gc.OLITERAL {
-			v := uint64(gc.Mpgetfix(r.Val.U.Xval))
+			v := uint64(gc.Mpgetfix(r.Val.U.(*gc.Mpint)))
 			if v >= 64 {
 				if bh.Type.Etype == gc.TINT32 {
 					//	MOVW	bh->31, al

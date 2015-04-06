@@ -132,13 +132,13 @@ func bignodes() {
 	bignodes_did = 1
 
 	gc.Nodconst(&bigi, gc.Types[gc.TUINT64], 1)
-	gc.Mpshiftfix(bigi.Val.U.Xval, 63)
+	gc.Mpshiftfix(bigi.Val.U.(*gc.Mpint), 63)
 
 	bigf = bigi
 	bigf.Type = gc.Types[gc.TFLOAT64]
 	bigf.Val.Ctype = gc.CTFLT
-	bigf.Val.U.Fval = new(gc.Mpflt)
-	gc.Mpmovefixflt(bigf.Val.U.Fval, bigi.Val.U.Xval)
+	bigf.Val.U = new(gc.Mpflt)
+	gc.Mpmovefixflt(bigf.Val.U.(*gc.Mpflt), bigi.Val.U.(*gc.Mpint))
 }
 
 /*
@@ -524,9 +524,9 @@ func intLiteral(n *gc.Node) (x int64, ok bool) {
 	}
 	switch n.Val.Ctype {
 	case gc.CTINT, gc.CTRUNE:
-		return gc.Mpgetfix(n.Val.U.Xval), true
+		return gc.Mpgetfix(n.Val.U.(*gc.Mpint)), true
 	case gc.CTBOOL:
-		return int64(n.Val.U.Bval), true
+		return int64(n.Val.U.(int16)), true
 	}
 	return
 }
@@ -645,7 +645,7 @@ func fixlargeoffset(n *gc.Node) {
 	if n.Op != gc.OINDREG {
 		return
 	}
-	if n.Val.U.Reg == ppc64.REGSP { // stack offset cannot be large
+	if n.Val.U.(int16) == ppc64.REGSP { // stack offset cannot be large
 		return
 	}
 	if n.Xoffset != int64(int32(n.Xoffset)) {

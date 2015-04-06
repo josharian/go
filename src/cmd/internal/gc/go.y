@@ -1130,13 +1130,13 @@ hidden_importsym:
 	{
 		var p *Pkg
 
-		if $2.U.Sval == "" {
+		if $2.U.(string) == "" {
 			p = importpkg;
 		} else {
-			if isbadimport($2.U.Sval) {
+			if isbadimport($2.U.(string)) {
 				errorexit();
 			}
-			p = mkpkg($2.U.Sval);
+			p = mkpkg($2.U.(string));
 		}
 		$$ = Pkglookup($4.Name, p);
 	}
@@ -1144,13 +1144,13 @@ hidden_importsym:
 	{
 		var p *Pkg
 
-		if $2.U.Sval == "" {
+		if $2.U.(string) == "" {
 			p = importpkg;
 		} else {
-			if isbadimport($2.U.Sval) {
+			if isbadimport($2.U.(string)) {
 				errorexit();
 			}
-			p = mkpkg($2.U.Sval);
+			p = mkpkg($2.U.(string));
 		}
 		$$ = Pkglookup("?", p);
 	}
@@ -1944,7 +1944,7 @@ oliteral:
 hidden_import:
 	LIMPORT LNAME LLITERAL ';'
 	{
-		importimport($2, $3.U.Sval);
+		importimport($2, $3.U.(string));
 	}
 |	LVAR hidden_pkg_importsym hidden_type ';'
 	{
@@ -2171,14 +2171,14 @@ hidden_literal:
 		$$ = nodlit($2);
 		switch($$.Val.Ctype){
 		case CTINT, CTRUNE:
-			mpnegfix($$.Val.U.Xval);
+			mpnegfix($$.Val.U.(*Mpint));
 			break;
 		case CTFLT:
-			mpnegflt($$.Val.U.Fval);
+			mpnegflt($$.Val.U.(*Mpflt));
 			break;
 		case CTCPLX:
-			mpnegflt(&$$.Val.U.Cval.Real);
-			mpnegflt(&$$.Val.U.Cval.Imag);
+			mpnegflt(&$$.Val.U.(*Mpcplx).Real);
+			mpnegflt(&$$.Val.U.(*Mpcplx).Imag);
 			break;
 		default:
 			Yyerror("bad negated constant");
@@ -2198,11 +2198,11 @@ hidden_constant:
 	{
 		if $2.Val.Ctype == CTRUNE && $4.Val.Ctype == CTINT {
 			$$ = $2;
-			mpaddfixfix($2.Val.U.Xval, $4.Val.U.Xval, 0);
+			mpaddfixfix($2.Val.U.(*Mpint), $4.Val.U.(*Mpint), 0);
 			break;
 		}
-		$4.Val.U.Cval.Real = $4.Val.U.Cval.Imag;
-		Mpmovecflt(&$4.Val.U.Cval.Imag, 0.0);
+		$4.Val.U.(*Mpcplx).Real = $4.Val.U.(*Mpcplx).Imag;
+		Mpmovecflt(&$4.Val.U.(*Mpcplx).Imag, 0.0);
 		$$ = nodcplxlit($2.Val, $4.Val);
 	}
 

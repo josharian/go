@@ -155,11 +155,11 @@ func cgen_hmul(nl *gc.Node, nr *gc.Node, res *gc.Node) {
 		}
 
 		// n2 * n1 -> (n1 n2)
-		p.Reg = n1.Val.U.Reg
+		p.Reg = n1.Val.U.(int16)
 
 		p.To.Type = obj.TYPE_REGREG
-		p.To.Reg = n1.Val.U.Reg
-		p.To.Offset = int64(n2.Val.U.Reg)
+		p.To.Reg = n1.Val.U.(int16)
+		p.To.Offset = int64(n2.Val.U.(int16))
 
 	default:
 		gc.Fatal("cgen_hmul %v", gc.Tconv(t, 0))
@@ -183,7 +183,7 @@ func cgen_shift(op int, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) {
 	w := int(nl.Type.Width * 8)
 
 	if op == gc.OLROT {
-		v := int(gc.Mpgetfix(nr.Val.U.Xval))
+		v := int(gc.Mpgetfix(nr.Val.U.(*gc.Mpint)))
 		var n1 gc.Node
 		gc.Regalloc(&n1, nl.Type, res)
 		if w == 32 {
@@ -210,7 +210,7 @@ func cgen_shift(op int, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) {
 		var n1 gc.Node
 		gc.Regalloc(&n1, nl.Type, res)
 		gc.Cgen(nl, &n1)
-		sc := uint64(gc.Mpgetfix(nr.Val.U.Xval))
+		sc := uint64(gc.Mpgetfix(nr.Val.U.(*gc.Mpint)))
 		if sc == 0 {
 		} else // nothing to do
 		if sc >= uint64(nl.Type.Width*8) {
@@ -349,10 +349,10 @@ func clearfat(nl *gc.Node) {
 	var r0 gc.Node
 	r0.Op = gc.OREGISTER
 
-	r0.Val.U.Reg = arm.REG_R0
+	r0.Val.U = int16(arm.REG_R0)
 	var r1 gc.Node
 	r1.Op = gc.OREGISTER
-	r1.Val.U.Reg = arm.REG_R1
+	r1.Val.U = int16(arm.REG_R1)
 	var dst gc.Node
 	gc.Regalloc(&dst, gc.Types[gc.Tptr], &r1)
 	gc.Agen(nl, &dst)

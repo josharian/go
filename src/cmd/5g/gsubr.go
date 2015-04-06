@@ -53,7 +53,7 @@ func ncon(i uint32) *gc.Node {
 	if ncon_n.Type == nil {
 		gc.Nodconst(&ncon_n, gc.Types[gc.TUINT32], 0)
 	}
-	gc.Mpmovecfix(ncon_n.Val.U.Xval, int64(i))
+	gc.Mpmovecfix(ncon_n.Val.U.(*gc.Mpint), int64(i))
 	return &ncon_n
 }
 
@@ -112,7 +112,7 @@ func split64(n *gc.Node, lo *gc.Node, hi *gc.Node) {
 	case gc.OLITERAL:
 		var n1 gc.Node
 		gc.Convconst(&n1, n.Type, &n.Val)
-		i := gc.Mpgetfix(n1.Val.U.Xval)
+		i := gc.Mpgetfix(n1.Val.U.(*gc.Mpint))
 		gc.Nodconst(lo, gc.Types[gc.TUINT32], int64(uint32(i)))
 		i >>= 32
 		if n.Type.Etype == gc.TINT64 {
@@ -399,7 +399,7 @@ func gmove(f *gc.Node, t *gc.Node) {
 		gmove(f, &r1)
 		p1 := gins(arm.AMOVW, &r1, &r2)
 		p1.From.Type = obj.TYPE_SHIFT
-		p1.From.Offset = 2<<5 | 31<<7 | int64(r1.Val.U.Reg)&15 // r1->31
+		p1.From.Offset = 2<<5 | 31<<7 | int64(r1.Val.U.(int16))&15 // r1->31
 		p1.From.Reg = 0
 
 		//print("gmove: %P\n", p1);
@@ -623,7 +623,7 @@ func samaddr(f *gc.Node, t *gc.Node) bool {
 
 	switch f.Op {
 	case gc.OREGISTER:
-		if f.Val.U.Reg != t.Val.U.Reg {
+		if f.Val.U.(int16) != t.Val.U.(int16) {
 			break
 		}
 		return true
@@ -741,7 +741,7 @@ func gshift(as int, lhs *gc.Node, stype int32, sval int32, rhs *gc.Node) *obj.Pr
 
 	p := gins(as, nil, rhs)
 	p.From.Type = obj.TYPE_SHIFT
-	p.From.Offset = int64(stype) | int64(sval)<<7 | int64(lhs.Val.U.Reg)&15
+	p.From.Offset = int64(stype) | int64(sval)<<7 | int64(lhs.Val.U.(int16))&15
 	return p
 }
 
@@ -750,7 +750,7 @@ func gshift(as int, lhs *gc.Node, stype int32, sval int32, rhs *gc.Node) *obj.Pr
 func gregshift(as int, lhs *gc.Node, stype int32, reg *gc.Node, rhs *gc.Node) *obj.Prog {
 	p := gins(as, nil, rhs)
 	p.From.Type = obj.TYPE_SHIFT
-	p.From.Offset = int64(stype) | (int64(reg.Val.U.Reg)&15)<<8 | 1<<4 | int64(lhs.Val.U.Reg)&15
+	p.From.Offset = int64(stype) | (int64(reg.Val.U.(int16))&15)<<8 | 1<<4 | int64(lhs.Val.U.(int16))&15
 	return p
 }
 
@@ -1118,7 +1118,7 @@ func sudoaddable(as int, n *gc.Node, a *obj.Addr) bool {
 		if !gc.Isconst(n, gc.CTINT) {
 			break
 		}
-		v := gc.Mpgetfix(n.Val.U.Xval)
+		v := gc.Mpgetfix(n.Val.U.(*gc.Mpint))
 		if v >= 32000 || v <= -32000 {
 			break
 		}

@@ -536,7 +536,7 @@ func Cgen(n *Node, res *Node) {
 			var n1 Node
 			Regalloc(&n1, Types[Tptr], res)
 			p1 := Thearch.Gins(Thearch.Optoas(OAS, n1.Type), nil, &n1)
-			Datastring(nl.Val.U.Sval, &p1.From)
+			Datastring(nl.Val.U.(string), &p1.From)
 			p1.From.Type = obj.TYPE_ADDR
 			Thearch.Gmove(&n1, res)
 			Regfree(&n1)
@@ -802,7 +802,7 @@ func Mgen(n *Node, n1 *Node, rg *Node) {
 	if n.Addable {
 		*n1 = *n
 		if n1.Op == OREGISTER || n1.Op == OINDREG {
-			reg[n.Val.U.Reg-int16(Thearch.REGMIN)]++
+			reg[n.Val.U.(int16)-int16(Thearch.REGMIN)]++
 		}
 		return
 	}
@@ -941,7 +941,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 				if Isconst(nl, CTSTR) {
 					Fatal("constant string constant index")
 				}
-				v := uint64(Mpgetfix(nr.Val.U.Xval))
+				v := uint64(Mpgetfix(nr.Val.U.(*Mpint)))
 				var n2 Node
 				if Isslice(nl.Type) || nl.Type.Etype == TSTRING {
 					if Debug['B'] == 0 && !n.Bounded {
@@ -982,7 +982,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 			if Debug['B'] == 0 && !n.Bounded {
 				// check bounds
 				if Isconst(nl, CTSTR) {
-					Nodconst(&n4, Types[TUINT32], int64(len(nl.Val.U.Sval)))
+					Nodconst(&n4, Types[TUINT32], int64(len(nl.Val.U.(string))))
 				} else if Isslice(nl.Type) || nl.Type.Etype == TSTRING {
 					n1 = n3
 					n1.Op = OINDREG
@@ -1009,7 +1009,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 			if Isconst(nl, CTSTR) {
 				Regalloc(&n3, Types[Tptr], res)
 				p1 := Thearch.Gins(Thearch.Optoas(OAS, Types[Tptr]), nil, &n3)
-				Datastring(nl.Val.U.Sval, &p1.From)
+				Datastring(nl.Val.U.(string), &p1.From)
 				p1.From.Type = obj.TYPE_ADDR
 			} else if Isslice(nl.Type) || nl.Type.Etype == TSTRING {
 				n1 = n3
@@ -1094,7 +1094,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 				if Isconst(nl, CTSTR) {
 					Fatal("constant string constant index") // front end should handle
 				}
-				v := uint64(Mpgetfix(nr.Val.U.Xval))
+				v := uint64(Mpgetfix(nr.Val.U.(*Mpint)))
 				if Isslice(nl.Type) || nl.Type.Etype == TSTRING {
 					if Debug['B'] == 0 && !n.Bounded {
 						nlen := n3
@@ -1140,7 +1140,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 
 				var nlen Node
 				if Isconst(nl, CTSTR) {
-					Nodconst(&nlen, t, int64(len(nl.Val.U.Sval)))
+					Nodconst(&nlen, t, int64(len(nl.Val.U.(string))))
 				} else if Isslice(nl.Type) || nl.Type.Etype == TSTRING {
 					nlen = n3
 					nlen.Type = t
@@ -1161,7 +1161,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 			if Isconst(nl, CTSTR) {
 				Regalloc(&n3, Types[Tptr], res)
 				p1 := Thearch.Gins(Thearch.Optoas(OAS, Types[Tptr]), nil, &n3)
-				Datastring(nl.Val.U.Sval, &p1.From)
+				Datastring(nl.Val.U.(string), &p1.From)
 				p1.From.Type = obj.TYPE_ADDR
 				Thearch.Gins(Thearch.Optoas(OADD, n3.Type), &n2, &n3)
 				goto indexdone1
@@ -1281,7 +1281,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 			if Isconst(nl, CTSTR) {
 				Fatal("constant string constant index") // front end should handle
 			}
-			v := uint64(Mpgetfix(nr.Val.U.Xval))
+			v := uint64(Mpgetfix(nr.Val.U.(*Mpint)))
 			if Isslice(nl.Type) || nl.Type.Etype == TSTRING {
 				if Debug['B'] == 0 && !n.Bounded {
 					if nlen.Op != OREGISTER && (Ctxt.Arch.Thechar == '7' || Ctxt.Arch.Thechar == '9') {
@@ -1337,7 +1337,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 				t = Types[TUINT64]
 			}
 			if Isconst(nl, CTSTR) {
-				Nodconst(&nlen, t, int64(len(nl.Val.U.Sval)))
+				Nodconst(&nlen, t, int64(len(nl.Val.U.(string))))
 			} else if Isslice(nl.Type) || nl.Type.Etype == TSTRING {
 				if Is64(nr.Type) || Ctxt.Arch.Thechar == '7' || Ctxt.Arch.Thechar == '9' {
 					var n5 Node
@@ -1366,7 +1366,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 		if Isconst(nl, CTSTR) {
 			Regalloc(&n3, Types[Tptr], res)
 			p1 := Thearch.Gins(Thearch.Optoas(OAS, n3.Type), nil, &n3) // XXX was LEAQ!
-			Datastring(nl.Val.U.Sval, &p1.From)
+			Datastring(nl.Val.U.(string), &p1.From)
 			p1.From.Type = obj.TYPE_ADDR
 			Thearch.Gins(Thearch.Optoas(OADD, n3.Type), &n2, &n3)
 			goto indexdone
@@ -1557,8 +1557,8 @@ func Igen(n *Node, a *Node, res *Node) {
 	case OINDREG:
 		// Increase the refcount of the register so that igen's caller
 		// has to call Regfree.
-		if n.Val.U.Reg != int16(Thearch.REGSP) {
-			reg[n.Val.U.Reg-int16(Thearch.REGMIN)]++
+		if n.Val.U.(int16) != int16(Thearch.REGSP) {
+			reg[n.Val.U.(int16)-int16(Thearch.REGMIN)]++
 		}
 		*a = *n
 		return
@@ -1595,7 +1595,7 @@ func Igen(n *Node, a *Node, res *Node) {
 		fp := Structfirst(&flist, Getoutarg(n.Left.Type))
 		*a = Node{}
 		a.Op = OINDREG
-		a.Val.U.Reg = int16(Thearch.REGSP)
+		a.Val.U = int16(Thearch.REGSP)
 		a.Addable = true
 		a.Xoffset = fp.Width
 		if HasLinkRegister() {
@@ -1627,7 +1627,7 @@ func Igen(n *Node, a *Node, res *Node) {
 				// Compute &a[i] as &a + i*width.
 				a.Type = n.Type
 
-				a.Xoffset += Mpgetfix(n.Right.Val.U.Xval) * n.Type.Width
+				a.Xoffset += Mpgetfix(n.Right.Val.U.(*Mpint)) * n.Type.Width
 				Fixlargeoffset(a)
 				return
 			}
@@ -1690,7 +1690,7 @@ func Bgen(n *Node, true_ bool, likely int, to *obj.Prog) {
 
 		// need to ask if it is bool?
 	case OLITERAL:
-		if !true_ == (n.Val.U.Bval == 0) {
+		if true_ == n.Val.U.(bool) {
 			Patch(Gbranch(obj.AJMP, nil, likely), to)
 		}
 		return
@@ -1996,7 +1996,7 @@ func stkof(n *Node) int64 {
 			return off
 		}
 		if Isconst(n.Right, CTINT) {
-			return off + t.Type.Width*Mpgetfix(n.Right.Val.U.Xval)
+			return off + t.Type.Width*Mpgetfix(n.Right.Val.U.(*Mpint))
 		}
 		return 1000
 
@@ -2149,7 +2149,7 @@ func Ginscall(f *Node, proc int) {
 
 		// size of arguments at 0(SP)
 		stk.Op = OINDREG
-		stk.Val.U.Reg = int16(Thearch.REGSP)
+		stk.Val.U = int16(Thearch.REGSP)
 		stk.Xoffset = 0
 		if HasLinkRegister() {
 			stk.Xoffset += int64(Ctxt.Arch.Ptrsize)
@@ -2337,9 +2337,8 @@ func cgen_callret(n *Node, res *Node) {
 
 	var nod Node
 	nod.Op = OINDREG
-	nod.Val.U.Reg = int16(Thearch.REGSP)
+	nod.Val.U = int16(Thearch.REGSP)
 	nod.Addable = true
-
 	nod.Xoffset = fp.Width
 	if HasLinkRegister() {
 		nod.Xoffset += int64(Ctxt.Arch.Ptrsize)
@@ -2367,7 +2366,7 @@ func cgen_aret(n *Node, res *Node) {
 
 	var nod1 Node
 	nod1.Op = OINDREG
-	nod1.Val.U.Reg = int16(Thearch.REGSP)
+	nod1.Val.U = int16(Thearch.REGSP)
 	nod1.Addable = true
 	nod1.Xoffset = fp.Width
 	if HasLinkRegister() {
@@ -2433,7 +2432,7 @@ func cgen_div(op int, nl *Node, nr *Node, res *Node) {
 	case TUINT64:
 		var m Magic
 		m.W = w
-		m.Ud = uint64(Mpgetfix(nr.Val.U.Xval))
+		m.Ud = uint64(Mpgetfix(nr.Val.U.(*Mpint)))
 		Umagic(&m)
 		if m.Bad != 0 {
 			break
@@ -2471,7 +2470,7 @@ func cgen_div(op int, nl *Node, nr *Node, res *Node) {
 	case TINT64:
 		var m Magic
 		m.W = w
-		m.Sd = Mpgetfix(nr.Val.U.Xval)
+		m.Sd = Mpgetfix(nr.Val.U.(*Mpint))
 		Smagic(&m)
 		if m.Bad != 0 {
 			break
@@ -2560,7 +2559,7 @@ func Fixlargeoffset(n *Node) {
 	if n.Op != OINDREG {
 		return
 	}
-	if n.Val.U.Reg == int16(Thearch.REGSP) { // stack offset cannot be large
+	if n.Val.U.(int16) == int16(Thearch.REGSP) { // stack offset cannot be large
 		return
 	}
 	if n.Xoffset != int64(int32(n.Xoffset)) {

@@ -141,9 +141,9 @@ func dodiv(op int, nl *gc.Node, nr *gc.Node, res *gc.Node) {
 	check := 0
 	if gc.Issigned[t.Etype] {
 		check = 1
-		if gc.Isconst(nl, gc.CTINT) && gc.Mpgetfix(nl.Val.U.Xval) != -(1<<uint64(t.Width*8-1)) {
+		if gc.Isconst(nl, gc.CTINT) && gc.Mpgetfix(nl.Val.U.(*gc.Mpint)) != -(1<<uint64(t.Width*8-1)) {
 			check = 0
-		} else if gc.Isconst(nr, gc.CTINT) && gc.Mpgetfix(nr.Val.U.Xval) != -1 {
+		} else if gc.Isconst(nr, gc.CTINT) && gc.Mpgetfix(nr.Val.U.(*gc.Mpint)) != -1 {
 			check = 0
 		}
 	}
@@ -230,7 +230,7 @@ func dodiv(op int, nl *gc.Node, nr *gc.Node, res *gc.Node) {
 		// TODO(minux): add gins3?
 		p1.Reg = p1.To.Reg
 
-		p1.To.Reg = tm.Val.U.Reg
+		p1.To.Reg = tm.Val.U.(int16)
 		gins(optoas(gc.OMUL, t), &tr, &tm)
 		gc.Regfree(&tr)
 		gins(optoas(gc.OSUB, t), &tm, &tl)
@@ -308,7 +308,7 @@ func cgen_shift(op int, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) {
 		var n1 gc.Node
 		gc.Regalloc(&n1, nl.Type, res)
 		gc.Cgen(nl, &n1)
-		sc := uint64(uint64(gc.Mpgetfix(nr.Val.U.Xval)))
+		sc := uint64(uint64(gc.Mpgetfix(nr.Val.U.(*gc.Mpint))))
 		if sc >= uint64(nl.Type.Width*8) {
 			// large shift gets 2 shifts by width-1
 			var n3 gc.Node

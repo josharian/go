@@ -336,21 +336,22 @@ func Clearslim(n *Node) {
 
 	switch Simtype[n.Type.Etype] {
 	case TCOMPLEX64, TCOMPLEX128:
-		z.Val.U.Cval = new(Mpcplx)
-		Mpmovecflt(&z.Val.U.Cval.Real, 0.0)
-		Mpmovecflt(&z.Val.U.Cval.Imag, 0.0)
+		z.Val.U = new(Mpcplx)
+		Mpmovecflt(&z.Val.U.(*Mpcplx).Real, 0.0)
+		Mpmovecflt(&z.Val.U.(*Mpcplx).Imag, 0.0)
 
 	case TFLOAT32, TFLOAT64:
 		var zero Mpflt
 		Mpmovecflt(&zero, 0.0)
 		z.Val.Ctype = CTFLT
-		z.Val.U.Fval = &zero
+		z.Val.U = &zero
 
 	case TPTR32, TPTR64, TCHAN, TMAP:
 		z.Val.Ctype = CTNIL
 
 	case TBOOL:
 		z.Val.Ctype = CTBOOL
+		z.Val.U = false
 
 	case TINT8,
 		TINT16,
@@ -361,8 +362,8 @@ func Clearslim(n *Node) {
 		TUINT32,
 		TUINT64:
 		z.Val.Ctype = CTINT
-		z.Val.U.Xval = new(Mpint)
-		Mpmovecfix(z.Val.U.Xval, 0)
+		z.Val.U = new(Mpint)
+		Mpmovecfix(z.Val.U.(*Mpint), 0)
 
 	default:
 		Fatal("clearslim called on type %v", Tconv(n.Type, 0))
@@ -1267,7 +1268,7 @@ func Componentgen(nr *Node, nl *Node) bool {
 		if isConstString {
 			Regalloc(&nodr, Types[Tptr], nil)
 			p := Thearch.Gins(Thearch.Optoas(OAS, Types[Tptr]), nil, &nodr)
-			Datastring(nr.Val.U.Sval, &p.From)
+			Datastring(nr.Val.U.(string), &p.From)
 			p.From.Type = obj.TYPE_ADDR
 			Regfree(&nodr)
 		} else if nr != nil {
@@ -1281,7 +1282,7 @@ func Componentgen(nr *Node, nl *Node) bool {
 		nodl.Type = Types[Simtype[TUINT]]
 
 		if isConstString {
-			Nodconst(&nodr, nodl.Type, int64(len(nr.Val.U.Sval)))
+			Nodconst(&nodr, nodl.Type, int64(len(nr.Val.U.(string))))
 		} else if nr != nil {
 			nodr.Xoffset += int64(Array_nel) - int64(Array_array)
 			nodr.Type = nodl.Type
