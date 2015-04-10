@@ -369,12 +369,20 @@ func mkvar(f *Flow, a *obj.Addr) Bits {
 		v = &vars[i]
 		if v.node == node && int(v.name) == n {
 			if v.offset == o {
-				if int(v.etype) == et {
-					if int64(v.width) == w {
+				if int64(v.width) == w {
+					if int(v.etype) == et {
 						// TODO(rsc): Remove special case for arm here.
 						if flag == 0 || Thearch.Thechar != '5' {
 							return blsh(uint(i))
 						}
+					}
+					if Debug_registerization > 0 && v.etype != TSTRUCT && v.etype != TARRAY && et != TSTRUCT && et != TARRAY {
+						Warn("missed registerization: etype of %v (%v) should match %v (%v)",
+							Nconv(v.node, obj.FmtLong),
+							Econv(int(v.etype), 0),
+							Nconv(node, obj.FmtLong),
+							Econv(int(et), 0),
+						)
 					}
 				}
 			}

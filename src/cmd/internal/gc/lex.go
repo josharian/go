@@ -43,9 +43,10 @@ var debugtab = []struct {
 	name string
 	val  *int
 }{
-	{"nil", &Debug_checknil},          // print information about nil checks
-	{"typeassert", &Debug_typeassert}, // print information about type assertion inlining
-	{"disablenil", &Disable_checknil}, // disable nil checks
+	{"nil", &Debug_checknil},                    // print information about nil checks
+	{"typeassert", &Debug_typeassert},           // print information about type assertion inlining
+	{"disablenil", &Disable_checknil},           // disable nil checks
+	{"registerization", &Debug_registerization}, // print information about registerization
 }
 
 // Our own isdigit, isspace, isalpha, isalnum that take care
