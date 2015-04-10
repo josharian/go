@@ -16,7 +16,7 @@ import (
 )
 
 var cmdGet = &Command{
-	UsageLine: "get [-d] [-f] [-fix] [-insecure] [-t] [-u] [build flags] [packages]",
+	UsageLine: "get [-d] [-f] [-fix] [-insecure] [-t] [-u] [-nodeps] [build flags] [packages]",
 	Short:     "download and install packages and dependencies",
 	Long: `
 Get downloads the packages named by the import paths, along with their
@@ -24,6 +24,9 @@ dependencies. It then installs the named packages, like 'go install'.
 
 The -d flag instructs get to stop after downloading the packages; that is,
 it instructs get not to install the packages.
+
+The -nodeps flag causes get not to download package
+dependencies. It implies the -d flag.
 
 The -f flag, valid only when -u is set, forces get -u not to verify that
 each package has been checked out from the source control repository
@@ -77,6 +80,7 @@ var getT = cmdGet.Flag.Bool("t", false, "")
 var getU = cmdGet.Flag.Bool("u", false, "")
 var getFix = cmdGet.Flag.Bool("fix", false, "")
 var getInsecure = cmdGet.Flag.Bool("insecure", false, "")
+var getNoDeps = cmdGet.Flag.Bool("nodeps", false, "")
 
 func init() {
 	addBuildFlags(cmdGet)
@@ -86,6 +90,9 @@ func init() {
 func runGet(cmd *Command, args []string) {
 	if *getF && !*getU {
 		fatalf("go get: cannot use -f flag without -u")
+	}
+	if *getNoDeps {
+		*getD = true
 	}
 
 	// Disable any prompting for passwords by Git.
@@ -315,31 +322,33 @@ func download(arg string, parent *Package, stk *importStack, mode int) {
 		}
 
 		// Process dependencies, now that we know what they are.
-		for _, path := range p.Imports {
-			if path == "C" {
-				continue
-			}
-			// Don't get test dependencies recursively.
-			// Imports is already vendor-expanded.
-			download(path, p, stk, 0)
-		}
-		if mode&getTestDeps != 0 {
-			// Process test dependencies when -t is specified.
-			// (Don't get test dependencies for test dependencies.)
-			// We pass useVendor here because p.load does not
-			// vendor-expand TestImports and XTestImports.
-			// The call to loadImport inside download needs to do that.
-			for _, path := range p.TestImports {
+		if !*getNoDeps {
+			for _, path := range p.Imports {
 				if path == "C" {
 					continue
 				}
-				download(path, p, stk, useVendor)
+				// Don't get test dependencies recursively.
+				// Imports is already vendor-expanded.
+				download(path, p, stk, 0)
 			}
-			for _, path := range p.XTestImports {
-				if path == "C" {
-					continue
+			if mode&getTestDeps != 0 {
+				// Process test dependencies when -t is specified.
+				// (Don't get test dependencies for test dependencies.)
+				// We pass useVendor here because p.load does not
+				// vendor-expand TestImports and XTestImports.
+				// The call to loadImport inside download needs to do that.
+				for _, path := range p.TestImports {
+					if path == "C" {
+						continue
+					}
+					download(path, p, stk, useVendor)
 				}
-				download(path, p, stk, useVendor)
+				for _, path := range p.XTestImports {
+					if path == "C" {
+						continue
+					}
+					download(path, p, stk, useVendor)
+				}
 			}
 		}
 
