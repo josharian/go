@@ -797,6 +797,7 @@ func (b *builder) test(p *Package) (buildAction, runAction, printAction *action,
 	computeStale(pmain)
 
 	if ptest != p {
+		// Put the package into action cache with correct parameters.
 		a := b.action(modeBuild, modeBuild, ptest)
 		a.objdir = testDir + string(filepath.Separator) + "_obj_test" + string(filepath.Separator)
 		a.objpkg = ptestObj
@@ -805,6 +806,7 @@ func (b *builder) test(p *Package) (buildAction, runAction, printAction *action,
 	}
 
 	if pxtest != nil {
+		// Put the package into action cache with correct parameters.
 		a := b.action(modeBuild, modeBuild, pxtest)
 		a.objdir = testDir + string(filepath.Separator) + "_obj_xtest" + string(filepath.Separator)
 		a.objpkg = buildToolchain.pkgpath(testDir, pxtest)
@@ -874,14 +876,9 @@ func (b *builder) test(p *Package) (buildAction, runAction, printAction *action,
 			p:          p,
 			ignoreFail: true,
 		}
-		cleanAction := &action{
-			f:    (*builder).cleanTest,
-			deps: []*action{runAction},
-			p:    p,
-		}
 		printAction = &action{
 			f:    (*builder).printTest,
-			deps: []*action{cleanAction},
+			deps: []*action{runAction},
 			p:    p,
 		}
 	}
@@ -978,6 +975,8 @@ func declareCoverVars(importPath string, files ...string) map[string]*CoverVar {
 
 // runTest is the action for running a test binary.
 func (b *builder) runTest(a *action) error {
+	defer b.cleanTest(a)
+
 	args := stringList(findExecCmd(), a.deps[0].target, testArgs)
 	a.testOutput = new(bytes.Buffer)
 
@@ -1105,20 +1104,18 @@ func coveragePercentage(out []byte) string {
 }
 
 // cleanTest is the action for cleaning up after a test.
-func (b *builder) cleanTest(a *action) error {
+func (b *builder) cleanTest(a *action) {
 	if buildWork {
-		return nil
+		return
 	}
 	run := a.deps[0]
 	testDir := filepath.Join(b.work, filepath.FromSlash(run.p.ImportPath+"/_test"))
 	os.RemoveAll(testDir)
-	return nil
 }
 
 // printTest is the action for printing a test result.
 func (b *builder) printTest(a *action) error {
-	clean := a.deps[0]
-	run := clean.deps[0]
+	run := a.deps[0]
 	os.Stdout.Write(run.testOutput.Bytes())
 	run.testOutput = nil
 	return nil

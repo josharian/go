@@ -532,6 +532,7 @@ type action struct {
 
 	f          func(*builder, *action) error // the action itself (nil = no-op)
 	ignoreFail bool                          // whether to run f even if dependencies fail
+	weight     int                           // estimated execution time (unitless)
 
 	// Generated files, directories.
 	link   bool   // target is executable, not just package
@@ -789,31 +790,57 @@ func actionList(root *action) []*action {
 	return all
 }
 
-// do runs the action graph rooted at root.
-func (b *builder) do(root *action) {
-	// Build list of all actions, assigning depth-first post-order priority.
-	// The original implementation here was a true queue
-	// (using a channel) but it had the effect of getting
-	// distracted by low-level leaf actions to the detriment
-	// of completing higher-level actions.  The order of
-	// work does not matter much to overall execution time,
-	// but when running "go test std" it is nice to see each test
-	// results as soon as possible.  The priorities assigned
-	// ensure that, all else being equal, the execution prefers
-	// to do what it would have done first in a simple depth-first
-	// dependency order traversal.
-	all := actionList(root)
-	for i, a := range all {
-		a.priority = i
+func assignPriorities(all []*action) {
+	for _, a := range all {
+		a.weight = 1 // TODO: better weight estimation
+		a.priority = -1
 	}
 
-	b.readySema = make(chan bool, len(all))
+	for assigned := 0; assigned < len(all); {
+		for _, a := range all {
+			if a.priority != -1 {
+				continue
+			}
+			assigned++
+			a.priority = 0
+			for _, a1 := range a.triggers {
+				if a1.priority == -1 {
+					assigned--
+					a.priority = -1
+					break
+				}
+				if a.priority < a1.priority+1 {
+					a.priority = a1.priority + a.weight
+				}
+			}
+		}
+	}
 
-	// Initialize per-action execution state.
+	// TODO: DELETE
+	// aq := actionQueue(all)
+	// sort.Sort(&aq)
+	// for _, a := range aq {
+	// 	if a.p != nil {
+	// 		fmt.Println("*** ", a.p.ImportPath, a.priority)
+	// 	} else {
+	// 		fmt.Println("--- ", a.objpkg, a.priority)
+	// 	}
+	// }
+}
+
+// do runs the action graph rooted at root.
+func (b *builder) do(root *action) {
+	all := actionList(root)
 	for _, a := range all {
 		for _, a1 := range a.deps {
 			a1.triggers = append(a1.triggers, a)
 		}
+	}
+	assignPriorities(all)
+
+	// Initialize per-action execution state.
+	b.readySema = make(chan bool, len(all))
+	for _, a := range all {
 		a.pending = len(a.deps)
 		if a.pending == 0 {
 			b.ready.push(a)
@@ -2761,7 +2788,7 @@ type actionQueue []*action
 // Implement heap.Interface
 func (q *actionQueue) Len() int           { return len(*q) }
 func (q *actionQueue) Swap(i, j int)      { (*q)[i], (*q)[j] = (*q)[j], (*q)[i] }
-func (q *actionQueue) Less(i, j int) bool { return (*q)[i].priority < (*q)[j].priority }
+func (q *actionQueue) Less(i, j int) bool { return (*q)[i].priority > (*q)[j].priority }
 func (q *actionQueue) Push(x interface{}) { *q = append(*q, x.(*action)) }
 func (q *actionQueue) Pop() interface{} {
 	n := len(*q) - 1
