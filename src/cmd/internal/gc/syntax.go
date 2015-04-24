@@ -369,7 +369,7 @@ func list1(n *Node) *NodeList {
 		return l
 	}
 
-	l := new(NodeList)
+	l := newNodeList()
 	l.N = n
 	l.End = l
 	return l
@@ -378,6 +378,30 @@ func list1(n *Node) *NodeList {
 // list returns the result of appending n to l.
 func list(l *NodeList, n *Node) *NodeList {
 	return concat(l, list1(n))
+}
+
+// nodelistcache amortizes the cost of allocating NodeLists.
+var nodelistcache []NodeList
+
+func newNodeList() *NodeList {
+	if len(nodelistcache) == 0 {
+		nodelistcache = make([]NodeList, 256)
+	}
+	l := &nodelistcache[0]
+	nodelistcache = nodelistcache[1:]
+	return l
+}
+
+// nodecache amortizes the cost of allocating Nodes.
+var nodecache []Node
+
+func newNode() *Node {
+	if len(nodecache) == 0 {
+		nodecache = make([]Node, 256)
+	}
+	n := &nodecache[0]
+	nodecache = nodecache[1:]
+	return n
 }
 
 // listsort sorts *l in place according to the 3-way comparison function f.

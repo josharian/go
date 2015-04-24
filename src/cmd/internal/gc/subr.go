@@ -369,7 +369,7 @@ func gethunk() {
 }
 
 func Nod(op int, nleft *Node, nright *Node) *Node {
-	n := new(Node)
+	n := newNode()
 	n.Op = uint8(op)
 	n.Left = nleft
 	n.Right = nright

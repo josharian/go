@@ -193,7 +193,7 @@ func typecheck(np **Node, top int) *Node {
 		l = typecheck_tcfree
 		typecheck_tcfree = l.Next
 	} else {
-		l = new(NodeList)
+		l = newNodeList()
 	}
 	l.Next = typecheck_tcstack
 	l.N = n
@@ -3714,7 +3714,7 @@ func typecheckdef(n *Node) *Node {
 		return n
 	}
 
-	l := new(NodeList)
+	l := newNodeList()
 	l.N = n
 	l.Next = typecheckdefstack
 	typecheckdefstack = l

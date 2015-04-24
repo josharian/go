@@ -339,8 +339,20 @@ func (p *Prog) String() string {
 }
 
 func (ctxt *Link) NewProg() *Prog {
-	p := new(Prog) // should be the only call to this; all others should use ctxt.NewProg
+	p := newProg() // should be the only call to this; all others should use ctxt.NewProg
 	p.Ctxt = ctxt
+	return p
+}
+
+// progcache amortizes the cost of allocating progs.
+var progcache []Prog
+
+func newProg() *Prog {
+	if len(progcache) == 0 {
+		progcache = make([]Prog, 256)
+	}
+	p := &progcache[0]
+	progcache = progcache[1:]
 	return p
 }
 

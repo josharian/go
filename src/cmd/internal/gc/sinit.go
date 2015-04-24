@@ -127,7 +127,7 @@ func init1(n *Node, out **NodeList) {
 	// reached a new unvisited node.
 	n.Initorder = InitPending
 
-	l := new(NodeList)
+	l := newNodeList()
 	if l == nil {
 		Flusherrors()
 		Yyerror("out of memory")

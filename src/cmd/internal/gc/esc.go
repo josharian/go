@@ -84,7 +84,7 @@ func (v *bottomUpVisitor) visit(n *Node) uint32 {
 	v.visitgen++
 	min := v.visitgen
 
-	l := new(NodeList)
+	l := newNodeList()
 	l.Next = v.stack
 	l.N = n
 	v.stack = l

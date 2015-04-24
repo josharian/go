@@ -70,7 +70,7 @@ func ordertemp(t *Type, order *Order, clear bool) *Node {
 
 	l := order.free
 	if l == nil {
-		l = new(NodeList)
+		l = newNodeList()
 	}
 	order.free = l.Next
 	l.Next = order.temp
