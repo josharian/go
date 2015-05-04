@@ -1719,6 +1719,7 @@ func mkdotargslice(lr0 *NodeList, nn *NodeList, l *Type, fp int, init **NodeList
 	tslice := typ(TARRAY)
 	tslice.Type = l.Type.Type
 	tslice.Bound = -1
+	tslice.Noalg = true
 
 	var n *Node
 	if count(lr0) == 0 {
