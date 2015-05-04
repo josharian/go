@@ -88,6 +88,7 @@ func mapbucket(t *Type) *Type {
 	arr.Type = keytype
 	arr.Bound = BUCKETSIZE
 	field = append(field, makefield("keys", arr))
+	arr.Noalg = true
 	arr = typ(TARRAY)
 	arr.Type = valtype
 	arr.Bound = BUCKETSIZE
