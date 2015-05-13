@@ -5,10 +5,13 @@
 package testing
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
 	"runtime"
+	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -17,6 +20,7 @@ import (
 var matchBenchmarks = flag.String("test.bench", "", "regular expression to select benchmarks to run")
 var benchTime = flag.Duration("test.benchtime", 1*time.Second, "approximate run time for each benchmark")
 var benchmarkMemory = flag.Bool("test.benchmem", false, "print memory allocations for benchmarks")
+var benchmarkServe = flag.Bool("test.benchserve", false, "run an interactive benchmark server")
 
 // Global lock to ensure only one benchmark runs at a time.
 var benchmarkLock sync.Mutex
@@ -288,9 +292,151 @@ func benchmarkName(name string, n int) string {
 	return name
 }
 
+type server struct {
+	benchmarks []InternalBenchmark
+}
+
+func (s *server) cmdHelp([]string) { fmt.Fprintln(os.Stderr, "commands: help, list, run, quit, exit") }
+func (s *server) cmdQuit([]string) { os.Exit(0) }
+func (s *server) cmdList([]string) {
+	// Since benchmarks are function names, we can easily output json manually.
+	// This helps automated readers know when the response is complete.
+	fmt.Println("[")
+	for i, b := range s.benchmarks {
+		fmt.Print("\t\"", b.Name, "\"")
+		if i == len(s.benchmarks)-1 {
+			fmt.Println()
+		} else {
+			fmt.Println(",")
+		}
+	}
+	fmt.Println("]")
+}
+
+func (s *server) cmdRun(args []string) {
+	if len(args) < 2 {
+		fmt.Fprintln(os.Stderr, "run <name>[-cpu] <iterations or duration>")
+		return
+	}
+
+	name := args[0]
+	procs := 1
+	if i := strings.IndexByte(name, '-'); i != -1 {
+		var err error
+		procs, err = strconv.Atoi(name[i+1:])
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "bad cpu value:", err)
+			return
+		}
+		name = name[:i]
+	}
+
+	var bench InternalBenchmark
+	for _, x := range s.benchmarks {
+		if x.Name == name {
+			bench = x
+			break
+		}
+	}
+	if bench.Name == "" {
+		fmt.Fprintln(os.Stderr, "benchmark not found:", name)
+		return
+	}
+
+	length := args[1]
+	var dur time.Duration
+	var durErr error
+	var iters int
+	var itersErr error
+	dur, durErr = time.ParseDuration(length)
+	iters, itersErr = strconv.Atoi(length)
+	if durErr != nil && itersErr != nil {
+		fmt.Fprintln(os.Stderr, "length %q is neither a duration (%v) nor an iteration count (%v)", length, durErr, itersErr)
+		return
+	}
+	if durErr == nil && dur <= 0 {
+		fmt.Fprintf(os.Stderr, "duration must be positive, got %v\n", dur)
+		return
+	}
+	if itersErr == nil && iters <= 0 {
+		fmt.Fprintf(os.Stderr, "iterations must be positive, got %v\n", iters)
+		return
+	}
+
+	benchName := benchmarkName(bench.Name, procs)
+	fmt.Printf("%s\t", benchName)
+
+	runtime.GOMAXPROCS(procs)
+	b := &B{
+		common: common{
+			signal: make(chan interface{}),
+		},
+		benchmark: bench,
+	}
+	var r BenchmarkResult
+	if durErr == nil {
+		*benchTime = dur
+		r = b.run()
+	} else {
+		go func() {
+			defer func() { b.signal <- b }()
+			b.runN(iters)
+			r = BenchmarkResult{b.N, b.duration, b.bytes, b.netAllocs, b.netBytes}
+		}()
+		<-b.signal
+	}
+
+	if b.failed {
+		fmt.Fprintf(os.Stderr, "--- FAIL: %s\n%s", benchName, b.output)
+		return
+	}
+	results := r.String()
+	if *benchmarkMemory || b.showAllocResult {
+		results += "\t" + r.MemString()
+	}
+	fmt.Println(results)
+	if len(b.output) > 0 {
+		b.trimOutput()
+		fmt.Fprintf(os.Stderr, "--- BENCH: %s\n%s", benchName, b.output)
+	}
+	if p := runtime.GOMAXPROCS(-1); p != procs {
+		fmt.Fprintf(os.Stderr, "testing: %s left GOMAXPROCS set to %d\n", benchName, p)
+	}
+}
+
+func (s *server) serve() {
+	// TODO: command to set benchmem (other testing flags?)
+	// TODO: omit "run" keyword and instead interpret BenchmarkXXX as run that benchmark?
+	cmds := map[string]func([]string){
+		"help": s.cmdHelp,
+		"quit": s.cmdQuit,
+		"exit": s.cmdQuit,
+		"list": s.cmdList,
+		"run":  s.cmdRun,
+	}
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) == 0 {
+			s.cmdHelp(nil)
+			continue
+		}
+		cmd := cmds[fields[0]]
+		if cmd == nil {
+			s.cmdHelp(nil)
+			continue
+		}
+		cmd(fields[1:])
+	}
+}
+
 // An internal function but exported because it is cross-package; part of the implementation
 // of the "go test" command.
 func RunBenchmarks(matchString func(pat, str string) (bool, error), benchmarks []InternalBenchmark) {
+	if *benchmarkServe {
+		s := server{benchmarks: benchmarks}
+		s.serve() // does not return
+	}
 	// If no flag was specified, don't run benchmarks.
 	if len(*matchBenchmarks) == 0 {
 		return
