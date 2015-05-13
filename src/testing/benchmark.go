@@ -187,8 +187,15 @@ func roundUp(n int) int {
 
 // run times the benchmark function in a separate goroutine.
 func (b *B) run() BenchmarkResult {
-	go b.launch()
-	<-b.signal
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		// Signal that we're done whether we return normally
+		// or by FailNow's runtime.Goexit.
+		defer wg.Done()
+		b.launch()
+	}()
+	wg.Wait()
 	return b.result
 }
 
@@ -200,13 +207,6 @@ func (b *B) run() BenchmarkResult {
 func (b *B) launch() {
 	// Run the benchmark for a single iteration in case it's expensive.
 	n := 1
-
-	// Signal that we're done whether we return normally
-	// or by FailNow's runtime.Goexit.
-	defer func() {
-		b.signal <- b
-	}()
-
 	b.runN(n)
 	// Run the benchmark for at least the specified amount of time.
 	d := *benchTime
@@ -332,12 +332,7 @@ func RunBenchmarks(matchString func(pat, str string) (bool, error), benchmarks [
 	for _, Benchmark := range bs {
 		for _, procs := range cpuList {
 			runtime.GOMAXPROCS(procs)
-			b := &B{
-				common: common{
-					signal: make(chan interface{}),
-				},
-				benchmark: Benchmark,
-			}
+			b := &B{benchmark: Benchmark}
 			benchName := benchmarkName(Benchmark.Name, procs)
 			fmt.Printf("%-*s\t", maxlen, benchName)
 			r := b.run()
@@ -467,11 +462,6 @@ func (b *B) SetParallelism(p int) {
 // Benchmark benchmarks a single function. Useful for creating
 // custom benchmarks that do not use the "go test" command.
 func Benchmark(f func(b *B)) BenchmarkResult {
-	b := &B{
-		common: common{
-			signal: make(chan interface{}),
-		},
-		benchmark: InternalBenchmark{"", f},
-	}
+	b := &B{benchmark: InternalBenchmark{"", f}}
 	return b.run()
 }
