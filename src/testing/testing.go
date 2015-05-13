@@ -200,8 +200,6 @@ type common struct {
 
 	start    time.Time // Time test or benchmark started
 	duration time.Duration
-	self     interface{}      // To be sent on signal channel when done.
-	signal   chan interface{} // Output for serial tests.
 }
 
 // Short reports whether the -test.short flag is set.
@@ -282,8 +280,9 @@ var _ TB = (*B)(nil)
 // Logs are accumulated during execution and dumped to standard error when done.
 type T struct {
 	common
-	name          string    // Name of test.
-	startParallel chan bool // Parallel tests will wait on this.
+	name          string           // Name of test.
+	startParallel chan bool        // Parallel tests will wait on this.
+	signal        chan interface{} // Output for serial tests.
 }
 
 func (c *common) private() {}
@@ -315,21 +314,6 @@ func (c *common) FailNow() {
 	// will run the deferred functions in this goroutine,
 	// which will eventually run the deferred lines in tRunner,
 	// which will signal to the test loop that this test is done.
-	//
-	// A previous version of this code said:
-	//
-	//	c.duration = ...
-	//	c.signal <- c.self
-	//	runtime.Goexit()
-	//
-	// This previous version duplicated code (those lines are in
-	// tRunner no matter what), but worse the goroutine teardown
-	// implicit in runtime.Goexit was not guaranteed to complete
-	// before the test exited.  If a test deferred an important cleanup
-	// function (like removing temporary files), there was no guarantee
-	// it would run on a test failure.  Because we send on c.signal during
-	// a top-of-stack deferred function now, we know that the send
-	// only happens after any other stacked defers have completed.
 	c.finished = true
 	runtime.Goexit()
 }
@@ -549,13 +533,10 @@ func RunTests(matchString func(pat, str string) (bool, error), tests []InternalT
 				testName = fmt.Sprintf("%s-%d", tests[i].Name, procs)
 			}
 			t := &T{
-				common: common{
-					signal: make(chan interface{}),
-				},
+				signal:        make(chan interface{}),
 				name:          testName,
 				startParallel: startParallel,
 			}
-			t.self = t
 			if *chatty {
 				fmt.Printf("=== RUN   %s\n", t.name)
 			}
