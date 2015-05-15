@@ -79,7 +79,7 @@ func closurebody(body *NodeList) *Node {
 	return func_
 }
 
-func typecheckclosure(func_ *Node, top int) {
+func typecheckclosure(func_ *Node, top TypecheckCtxt) {
 	var n *Node
 
 	for l := func_.Func.Cvars; l != nil; l = l.Next {

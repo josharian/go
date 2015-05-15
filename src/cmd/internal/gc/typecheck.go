@@ -38,7 +38,7 @@ func resolve(n *Node) *Node {
 	return n
 }
 
-func typechecklist(l *NodeList, top int) {
+func typechecklist(l *NodeList, top TypecheckCtxt) {
 	for ; l != nil; l = l.Next {
 		typecheck(&l.N, top)
 	}
@@ -116,7 +116,7 @@ func sprint_depchain(fmt_ *string, stack *NodeList, cur *Node, first *Node) {
 var typecheck_tcstack *NodeList
 var typecheck_tcfree *NodeList
 
-func typecheck(np **Node, top int) *Node {
+func typecheck(np **Node, top TypecheckCtxt) *Node {
 	// cannot type check until all the source has been parsed
 	if typecheckok == 0 {
 		Fatal("early typecheck")
@@ -266,7 +266,7 @@ func indexlit(np **Node) {
 	defaultlit(np, nil)
 }
 
-func typecheck1(np **Node, top int) {
+func typecheck1(np **Node, top TypecheckCtxt) {
 	n := *np
 	defer func() {
 		*np = n
@@ -286,7 +286,7 @@ func typecheck1(np **Node, top int) {
 		}
 	}
 
-	ok := 0
+	var ok TypecheckCtxt
 OpSwitch:
 	switch n.Op {
 	// until typecheck is complete, do nothing.

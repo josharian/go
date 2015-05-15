@@ -114,9 +114,9 @@ type Param struct {
 	Stackparam *Node // OPARAM node referring to stack copy of param
 
 	// ONAME closure param with PPARAMREF
-	Outer   *Node // outer PPARAMREF in nested closure
-	Closure *Node // ONAME/PHEAP <-> ONAME/PPARAMREF
-	Top     int   // top context (Ecall, Eproc, etc)
+	Outer   *Node         // outer PPARAMREF in nested closure
+	Closure *Node         // ONAME/PHEAP <-> ONAME/PPARAMREF
+	Top     TypecheckCtxt // top context (Ecall, Eproc, etc)
 }
 
 // Func holds Node fields used only with function-like nodes.

@@ -63,7 +63,7 @@ func typecheckswitch(n *Node) {
 	typechecklist(n.Ninit, Etop)
 
 	var nilonly string
-	var top int
+	var top TypecheckCtxt
 	var t *Type
 
 	if n.Ntest != nil && n.Ntest.Op == OTYPESW {
