@@ -63,6 +63,13 @@ func mkEnv() []envVar {
 		env = append(env, envVar{"CGO_ENABLED", "0"})
 	}
 
+	switch goarch {
+	case "386":
+		env = append(env, envVar{"GO386", "sse2"})
+	case "arm":
+		env = append(env, envVar{"GOARM", "7"})
+	}
+
 	return env
 }
 
