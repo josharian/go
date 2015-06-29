@@ -642,6 +642,16 @@ func clearfat(nl *gc.Node) {
 			p.To.Scale = 1
 			p.To.Offset = c - 4
 		}
+	} else if c >= 2 {
+		di.Op = gc.OINDREG
+		z.Type = gc.Types[gc.TINT16]
+		di.Type = z.Type
+		gins(x86.AMOVW, &z, &di)
+		if c > 2 {
+			p := gins(x86.AMOVW, &z, &di)
+			p.To.Scale = 1
+			p.To.Offset = c - 2
+		}
 	} else {
 		for c > 0 {
 			gins(x86.ASTOSB, nil, nil) // STOB AL,*(DI)+
