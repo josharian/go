@@ -3048,7 +3048,7 @@ func eqfor(t *Type, needsize *int) *Node {
 		return n
 	}
 
-	sym := typesymprefix(".eq", t)
+	sym := namedsymprefix(".eq", algname(t))
 	n := newname(sym)
 	n.Class = PFUNC
 	ntype := Nod(OTFUNC, nil, nil)

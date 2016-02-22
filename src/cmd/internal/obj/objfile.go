@@ -180,7 +180,7 @@ func flushplist(ctxt *Link, freeProgs bool) {
 					fmt.Printf("duplicate %v\n", p)
 				}
 				if s.Onlist != 0 {
-					log.Fatalf("symbol %s listed multiple times", s.Name)
+					log.Fatalf("global symbol %s listed multiple times", s.Name)
 				}
 				s.Onlist = 1
 				if ctxt.Data == nil {
@@ -226,7 +226,7 @@ func flushplist(ctxt *Link, freeProgs bool) {
 					log.Fatalf("duplicate TEXT for %s", s.Name)
 				}
 				if s.Onlist != 0 {
-					log.Fatalf("symbol %s listed multiple times", s.Name)
+					log.Fatalf("text symbol %s listed multiple times", s.Name)
 				}
 				s.Onlist = 1
 				if text == nil {
