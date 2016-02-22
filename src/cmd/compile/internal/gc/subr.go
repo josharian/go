@@ -2253,6 +2253,99 @@ func structargs(tl **Type, mustname int) *NodeList {
 	return args
 }
 
+func algfieldname(t *Type) string {
+	switch a := algtype(t); a {
+	default:
+		Fatalf("algfieldname %v %v", a, t)
+	case ANOEQ:
+		Fatalf("algfieldname noeq %v", t)
+	case -1:
+		return algname(t)
+
+	case AMEM:
+		return fmt.Sprintf("m%d", t.Width)
+	case AMEM0:
+		return "m0"
+	case AMEM8:
+		// This name and the other names below are in bytes rather than bits.
+		// (1) It is shorter.
+		// (2) It matches the units of Type.Width.
+		return "m1"
+	case AMEM16:
+		return "m2"
+	case AMEM32:
+		return "m4"
+	case AMEM64:
+		return "m8"
+	case AMEM128:
+		return "m16"
+	case ASTRING:
+		return "s"
+	case AINTER:
+		return "i"
+	case ANILINTER:
+		return "e"
+	case AFLOAT32:
+		return "f4"
+	case AFLOAT64:
+		return "f8"
+	case ACPLX64:
+		return "c8"
+	case ACPLX128:
+		return "c16"
+	}
+
+	panic("unreachable")
+}
+
+func algname(t *Type) string {
+	var buf bytes.Buffer
+
+	switch t.Etype {
+	default:
+		Fatalf("algname %v", t)
+
+	case TARRAY:
+		if Isslice(t) {
+			Fatalf("algname %v", t)
+		}
+		fmt.Fprintf(&buf, "[%d]%s", t.Bound, algfieldname(t.Type))
+	case TSTRUCT:
+		fmt.Fprint(&buf, "{")
+		t1 := t.Type
+		var comma string
+		for {
+			first, size, next := memrun(t, t1)
+			t1 = next
+
+			// memequal for fields up to this one.
+			if first != nil {
+				fmt.Fprintf(&buf, "%s%dm%d", comma, first.Width, size)
+				comma = ","
+			}
+
+			if t1 == nil {
+				break
+			}
+			if isblanksym(t1.Sym) {
+				t1 = t1.Down
+				continue
+			}
+			if algtype1(t1.Type, nil) == AMEM {
+				continue
+			}
+			fmt.Fprintf(&buf, "%s%d%v", comma, t1.Width, algfieldname(t1.Type))
+			comma = ","
+			t1 = t1.Down
+		}
+		fmt.Fprint(&buf, "}")
+	}
+	if Debug['r'] != 0 {
+		fmt.Printf("algname(%v)=%s\n", Tconv(t, obj.FmtLong), buf.String())
+	}
+	return buf.String()
+}
+
 // Generate a wrapper function to convert from
 // a receiver of type T to a receiver of type U.
 // That is,
@@ -2455,7 +2548,7 @@ func hashfor(t *Type) *Node {
 		sym = Pkglookup("c128hash", Runtimepkg)
 
 	default:
-		sym = typesymprefix(".hash", t)
+		sym = namedsymprefix(".hash", algname(t))
 	}
 
 	n := newname(sym)
