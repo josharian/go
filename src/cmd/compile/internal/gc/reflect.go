@@ -828,6 +828,10 @@ func typelinksym(t *Type) *Sym {
 	return s
 }
 
+func namedsymprefix(prefix, name string) *Sym {
+	return Pkglookup(prefix+"."+name, typepkg)
+}
+
 func typesymprefix(prefix string, t *Type) *Sym {
 	p := prefix + "." + Tconv(t, obj.FmtLeft)
 	s := Pkglookup(p, typepkg)
@@ -1328,12 +1332,17 @@ func dalgsym(t *Type) *Sym {
 		ggloblsym(eqfunc, int32(ot), obj.DUPOK|obj.RODATA)
 	} else {
 		// generate an alg table specific to this type
-		s = typesymprefix(".alg", t)
+		name := algname(t)
+		s = namedsymprefix(".alg", name)
+		if s.Flags&SymAlgGen != 0 {
+			return s
+		}
+		s.Flags |= SymAlgGen
 
-		hash := typesymprefix(".hash", t)
-		eq := typesymprefix(".eq", t)
-		hashfunc = typesymprefix(".hashfunc", t)
-		eqfunc = typesymprefix(".eqfunc", t)
+		hash := namedsymprefix(".hash", name)
+		eq := namedsymprefix(".eq", name)
+		hashfunc = namedsymprefix(".hashfunc", name)
+		eqfunc = namedsymprefix(".eqfunc", name)
 
 		genhash(hash, t)
 		geneq(eq, t)
