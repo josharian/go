@@ -65,22 +65,11 @@ func algtype1(t *Type, bad **Type) int {
 
 		return -1
 
-	case TINT8,
-		TUINT8,
-		TINT16,
-		TUINT16,
-		TINT32,
-		TUINT32,
-		TINT64,
-		TUINT64,
-		TINT,
-		TUINT,
-		TUINTPTR,
-		TBOOL,
-		TPTR32,
-		TPTR64,
-		TCHAN,
-		TUNSAFEPTR:
+	case TINT8, TUINT8, TINT16, TUINT16,
+		TINT32, TUINT32, TINT64, TUINT64,
+		TINT, TUINT, TUINTPTR,
+		TBOOL, TPTR32, TPTR64,
+		TCHAN, TUNSAFEPTR:
 		return AMEM
 
 	case TFUNC, TMAP:
@@ -546,7 +535,6 @@ func eqfield(p *Node, q *Node, field *Node) *Node {
 // eqmem returns the node
 // 	memequal(&p.field, &q.field [, size])
 func eqmem(p *Node, q *Node, field *Node, size int64) *Node {
-	var needsize int
 
 	nx := Nod(OADDR, Nod(OXDOT, p, field), nil)
 	nx.Etype = 1 // does not escape
@@ -555,31 +543,30 @@ func eqmem(p *Node, q *Node, field *Node, size int64) *Node {
 	typecheck(&nx, Erv)
 	typecheck(&ny, Erv)
 
+	var needsize bool
 	call := Nod(OCALL, eqmemfunc(size, nx.Type.Type, &needsize), nil)
 	appendNodeSeqNode(&call.List, nx)
 	appendNodeSeqNode(&call.List, ny)
-	if needsize != 0 {
+	if needsize {
 		appendNodeSeqNode(&call.List, Nodintconst(size))
 	}
 
 	return call
 }
 
-func eqmemfunc(size int64, type_ *Type, needsize *int) *Node {
+func eqmemfunc(size int64, t *Type, needsize *bool) *Node {
 	var fn *Node
-
 	switch size {
 	default:
 		fn = syslook("memequal")
-		*needsize = 1
-
+		*needsize = true
 	case 1, 2, 4, 8, 16:
 		buf := fmt.Sprintf("memequal%d", int(size)*8)
 		fn = syslook(buf)
-		*needsize = 0
+		*needsize = false
 	}
 
-	substArgTypes(&fn, type_, type_)
+	substArgTypes(&fn, t, t)
 	return fn
 }
 
