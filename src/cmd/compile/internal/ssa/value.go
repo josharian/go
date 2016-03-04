@@ -111,6 +111,16 @@ func (v *Value) AuxValAndOff() ValAndOff {
 
 // long form print.  v# = opcode <type> [aux] args [: reg]
 func (v *Value) LongString() string {
+	return v.longString(0)
+}
+
+// very long form print.  v# = opcode <type> [aux] args [: reg]
+// but print each arg using LongString.
+func (v *Value) LongLongString() string {
+	return v.longString(1)
+}
+
+func (v *Value) longString(rec int) string {
 	s := fmt.Sprintf("v%d = %s", v.ID, v.Op.String())
 	s += " <" + v.Type.String() + ">"
 	switch opcodeTable[v.Op].auxType {
@@ -148,7 +158,11 @@ func (v *Value) LongString() string {
 		s += fmt.Sprintf(" [%s]", v.AuxValAndOff())
 	}
 	for _, a := range v.Args {
-		s += fmt.Sprintf(" %v", a)
+		if rec == 0 {
+			s += fmt.Sprintf(" %v", a)
+		} else {
+			s += " <<" + a.longString(rec-1) + ">>" // todo: small unicode << and >>
+		}
 	}
 	r := v.Block.Func.RegAlloc
 	if int(v.ID) < len(r) && r[v.ID] != nil {

@@ -80,7 +80,7 @@ func dse(f *Func) {
 			// Clear all shadowed addresses.
 			shadowed.clear()
 		}
-		if v.Op == OpStore || v.Op == OpZero {
+		if v.Op == OpStore || v.Op == OpZero /*|| v.Op == OpMove  ??? */ {
 			if shadowed.contains(v.Args[0].ID) {
 				// Modify store into a copy
 				if v.Op == OpStore {

@@ -175,10 +175,12 @@ var passes = [...]pass{
 	{name: "short circuit", fn: shortcircuit},
 	{name: "decompose user", fn: decomposeUser, required: true},
 	{name: "decompose builtin", fn: decomposeBuiltIn, required: true},
+	// {name: "loadelim", fn: loadelim},
 	{name: "opt", fn: opt, required: true},           // TODO: split required rules and optimizing rules
 	{name: "zero arg cse", fn: zcse, required: true}, // required to merge OpSB values
 	{name: "opt deadcode", fn: deadcode},             // remove any blocks orphaned during opt
 	{name: "generic cse", fn: cse},
+	// {name: "loadelim", fn: loadelim},
 	{name: "phiopt", fn: phiopt},
 	{name: "nilcheckelim", fn: nilcheckelim},
 	{name: "prove", fn: prove},
@@ -186,6 +188,7 @@ var passes = [...]pass{
 	{name: "late opt", fn: opt}, // TODO: split required rules and optimizing rules
 	{name: "generic deadcode", fn: deadcode},
 	{name: "fuse", fn: fuse},
+	{name: "loadelim", fn: loadelim},
 	{name: "dse", fn: dse},
 	{name: "tighten", fn: tighten}, // move values closer to their uses
 	{name: "lower", fn: lower, required: true},
