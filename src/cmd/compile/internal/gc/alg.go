@@ -4,7 +4,10 @@
 
 package gc
 
-import "fmt"
+import (
+	"cmd/internal/obj"
+	"fmt"
+)
 
 const (
 	// These values are known by runtime.
@@ -155,6 +158,317 @@ func algtype1(t *Type, bad **Type) int {
 
 	Fatalf("algtype1: unexpected type %v", t)
 	return 0
+}
+
+// alggen holds state needed to generate an eq or a hash alg.
+type alggen struct {
+	t       *Type // the type in question
+	fn      *Node // the function being generated
+	p, q, h *Node // local variables in the generated code
+}
+
+func newAlg(t *Type) *alggen {
+	return &alggen{t: t}
+}
+
+// eq generates a helper function to check equality of two values of type t.
+func (a *alggen) eq() {
+	sym := a.sym(".eq.")
+	if Debug['r'] != 0 {
+		fmt.Printf("geneq %v %v\n", sym, a.t)
+	}
+	a.declare(sym, true)
+	a.eqbody(a.t)
+	if Debug['r'] != 0 {
+		dumplist("geneq body", a.fn.Nbody)
+	}
+	a.compile()
+}
+
+func (a *alggen) hash() {
+	sym := a.sym(".hash.")
+	if Debug['r'] != 0 {
+		fmt.Printf("genhash %v %v\n", sym, a.t)
+	}
+	a.declare(sym, false)
+	a.hashbody(a.t)
+	if Debug['r'] != 0 {
+		dumplist("genhash body", a.fn.Nbody)
+	}
+	a.compile()
+}
+
+// declarefn prepares to generate an alg function.
+func (a *alggen) declare(sym *Sym, eq bool) {
+	lineno = 1 // less confusing than end of input
+	dclcontext = PEXTERN
+	markdcl()
+
+	a.p = newname(Lookup("p"))
+	a.q = newname(Lookup("q"))
+	a.h = newname(Lookup("h"))
+	tptr := typenod(Ptrto(a.t))
+
+	a.fn = Nod(ODCLFUNC, nil, nil)
+	a.fn.Func.Nname = newname(sym)
+	a.fn.Func.Nname.Class = PFUNC
+	tfn := Nod(OTFUNC, nil, nil)
+	a.fn.Func.Nname.Name.Param.Ntype = tfn
+
+	if eq {
+		// func sym(p, q *T) bool
+		appendNodeSeqNode(&tfn.List, Nod(ODCLFIELD, a.p, tptr))
+		appendNodeSeqNode(&tfn.List, Nod(ODCLFIELD, a.q, tptr))
+		appendNodeSeqNode(&tfn.Rlist, Nod(ODCLFIELD, nil, typenod(Types[TBOOL]))) // return value
+	} else {
+		// func sym(p *T, h uintptr) uintptr
+		appendNodeSeqNode(&tfn.List, Nod(ODCLFIELD, a.p, tptr))
+		appendNodeSeqNode(&tfn.List, Nod(ODCLFIELD, a.h, typenod(Types[TUINTPTR])))
+		appendNodeSeqNode(&tfn.Rlist, Nod(ODCLFIELD, nil, typenod(Types[TUINTPTR]))) // return value
+	}
+
+	funchdr(a.fn)
+	typecheck(&tfn, Etype)
+}
+
+func (a *alggen) compile() {
+	funcbody(a.fn)
+	Curfn = a.fn
+	a.fn.Func.Dupok = true
+	typecheck(&a.fn, Etop)
+	typechecklist(a.fn.Nbody, Etop)
+	Curfn = nil
+
+	// Disable safemode while compiling this code: the code we
+	// generate internally can refer to unsafe.Pointer.
+	// In this case it can happen if we need to generate an ==
+	// for a struct containing a reflect.Value, which itself has
+	// an unexported field of type unsafe.Pointer.
+	// Also disable checknils while compiling this code.
+	old_safemode := safemode
+	safemode = 0
+	Disable_checknil++
+
+	funccompile(a.fn)
+
+	Disable_checknil--
+	safemode = old_safemode
+}
+
+func (a *alggen) hashbody(t *Type) {
+	// genhash is only called for types that have equality but
+	// cannot be handled by the standard algorithms,
+	// so t must be either an array or a struct.
+	switch t.Etype {
+	default:
+		Fatalf("genhash %v", t)
+
+	case TARRAY:
+		if Isslice(t) {
+			Fatalf("genhash %v", t)
+		}
+
+		// An array of pure memory would be handled by the
+		// standard algorithm, so the element type must not be
+		// pure memory.
+		hashel := hashfor(t.Type)
+
+		n := Nod(ORANGE, nil, Nod(OIND, a.p, nil))
+		ni := newname(Lookup("i"))
+		ni.Type = Types[TINT]
+		setNodeSeq(&n.List, []*Node{ni})
+		n.Colas = true
+		colasdefn(n.List, n)
+		ni = nodeSeqFirst(n.List)
+
+		// h = hashel(&p[i], h)
+		call := Nod(OCALL, hashel, nil)
+
+		nx := Nod(OINDEX, a.p, ni)
+		nx.Bounded = true
+		na := Nod(OADDR, nx, nil)
+		na.Etype = 1 // no escape to heap
+		appendNodeSeqNode(&call.List, na)
+		appendNodeSeqNode(&call.List, a.h)
+		n.Nbody.Append(Nod(OAS, a.h, call))
+
+		a.fn.Nbody.Append(n)
+
+	// Walk the struct using memhash for runs of AMEM
+	// and calling specific hash functions for the others.
+	case TSTRUCT:
+		var call *Node
+		var nx *Node
+		var na *Node
+		var hashel *Node
+
+		t1 := t.Type
+		for {
+			first, size, next := memrun(t, t1)
+			t1 = next
+
+			// Run memhash for fields up to this one.
+			if first != nil {
+				hashel = hashmem(first.Type)
+
+				// h = hashel(&p.first, size, h)
+				call = Nod(OCALL, hashel, nil)
+
+				nx = Nod(OXDOT, a.p, newname(first.Sym)) // TODO: fields from other packages?
+				na = Nod(OADDR, nx, nil)
+				na.Etype = 1 // no escape to heap
+				appendNodeSeqNode(&call.List, na)
+				appendNodeSeqNode(&call.List, a.h)
+				appendNodeSeqNode(&call.List, Nodintconst(size))
+				a.fn.Nbody.Append(Nod(OAS, a.h, call))
+			}
+
+			if t1 == nil {
+				break
+			}
+			if isblanksym(t1.Sym) {
+				t1 = t1.Down
+				continue
+			}
+			if algtype1(t1.Type, nil) == AMEM {
+				// Our memory run might have been stopped by padding or a blank field.
+				// If the next field is memory-ish, it could be the start of a new run.
+				continue
+			}
+
+			hashel = hashfor(t1.Type)
+			call = Nod(OCALL, hashel, nil)
+			nx = Nod(OXDOT, a.p, newname(t1.Sym)) // TODO: fields from other packages?
+			na = Nod(OADDR, nx, nil)
+			na.Etype = 1 // no escape to heap
+			appendNodeSeqNode(&call.List, na)
+			appendNodeSeqNode(&call.List, a.h)
+			a.fn.Nbody.Append(Nod(OAS, a.h, call))
+
+			t1 = t1.Down
+		}
+	}
+
+	r := Nod(ORETURN, nil, nil)
+	appendNodeSeqNode(&r.List, a.h)
+	a.fn.Nbody.Append(r)
+}
+
+func (a *alggen) eqbody(t *Type) {
+	// geneq is only called for types that have equality but
+	// cannot be handled by the standard algorithms,
+	// so t must be either an array or a struct.
+	switch t.Etype {
+	default:
+		Fatalf("geneq %v", t)
+
+	case TARRAY:
+		if Isslice(t) {
+			Fatalf("geneq %v", t)
+		}
+
+		// An array of pure memory would be handled by the
+		// standard memequal, so the element type must not be
+		// pure memory. Even if we unrolled the range loop,
+		// each iteration would be a function call, so don't bother
+		// unrolling.
+		nrange := Nod(ORANGE, nil, Nod(OIND, a.p, nil))
+
+		ni := newname(Lookup("i"))
+		ni.Type = Types[TINT]
+		setNodeSeq(&nrange.List, []*Node{ni})
+		nrange.Colas = true
+		colasdefn(nrange.List, nrange)
+		ni = nodeSeqFirst(nrange.List)
+
+		// if p[i] != q[i] { return false }
+		nx := Nod(OINDEX, a.p, ni)
+
+		nx.Bounded = true
+		ny := Nod(OINDEX, a.q, ni)
+		ny.Bounded = true
+
+		nif := Nod(OIF, nil, nil)
+		nif.Left = Nod(ONE, nx, ny)
+		r := Nod(ORETURN, nil, nil)
+		appendNodeSeqNode(&r.List, Nodbool(false))
+		nif.Nbody.Append(r)
+		nrange.Nbody.Append(nif)
+		a.fn.Nbody.Append(nrange)
+
+		// return true
+		ret := Nod(ORETURN, nil, nil)
+		appendNodeSeqNode(&ret.List, Nodbool(true))
+		a.fn.Nbody.Append(ret)
+
+	// Walk the struct using memequal for runs of AMEM
+	// and calling specific equality tests for the others.
+	// Skip blank-named fields.
+	case TSTRUCT:
+		var conjuncts []*Node
+
+		t1 := t.Type
+		for {
+			first, size, next := memrun(t, t1)
+			t1 = next
+
+			// Run memequal for fields up to this one.
+			// TODO(rsc): All the calls to newname are wrong for
+			// cross-package unexported fields.
+			if first != nil {
+				if first.Down == t1 {
+					conjuncts = append(conjuncts, eqfield(a.p, a.q, newname(first.Sym)))
+				} else if first.Down.Down == t1 {
+					conjuncts = append(conjuncts, eqfield(a.p, a.q, newname(first.Sym)))
+					first = first.Down
+					if !isblanksym(first.Sym) {
+						conjuncts = append(conjuncts, eqfield(a.p, a.q, newname(first.Sym)))
+					}
+				} else {
+					// More than two fields: use memequal.
+					conjuncts = append(conjuncts, eqmem(a.p, a.q, newname(first.Sym), size))
+				}
+			}
+
+			if t1 == nil {
+				break
+			}
+			if isblanksym(t1.Sym) {
+				t1 = t1.Down
+				continue
+			}
+			if algtype1(t1.Type, nil) == AMEM {
+				// Our memory run might have been stopped by padding or a blank field.
+				// If the next field is memory-ish, it could be the start of a new run.
+				continue
+			}
+
+			// Check this field, which is not just memory.
+			conjuncts = append(conjuncts, eqfield(a.p, a.q, newname(t1.Sym)))
+			t1 = t1.Down
+		}
+
+		var and *Node
+		switch len(conjuncts) {
+		case 0:
+			and = Nodbool(true)
+		case 1:
+			and = conjuncts[0]
+		default:
+			and = Nod(OANDAND, conjuncts[0], conjuncts[1])
+			for _, conjunct := range conjuncts[2:] {
+				and = Nod(OANDAND, and, conjunct)
+			}
+		}
+
+		ret := Nod(ORETURN, nil, nil)
+		appendNodeSeqNode(&ret.List, and)
+		a.fn.Nbody.Append(ret)
+	}
+}
+
+func (a *alggen) sym(prefix string) *Sym {
+	return Pkglookup(prefix+Tconv(a.t, obj.FmtLeft), typepkg)
 }
 
 // Generate a helper function to compute the hash of a value of type t.
