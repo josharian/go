@@ -6,6 +6,7 @@ package gc
 
 import (
 	"bytes"
+	"cmd/internal/obj"
 	"fmt"
 )
 
@@ -159,54 +160,21 @@ func algtype1(t *Type, bad **Type) int {
 	return 0
 }
 
-func algfieldname(t *Type) string {
-	switch a := algtype(t); a {
-	default:
-		Fatalf("algfieldname %v %v", a, t)
-	case ANOEQ:
-		Fatalf("algfieldname noeq %v", t)
-	case -1:
-		return algname(t)
-
-	case AMEM:
-		return fmt.Sprintf("m%d", t.Width)
-	case AMEM0:
-		return "m0"
-	case AMEM8:
-		// This name and the other names below are in bytes rather than bits.
-		// (1) It is shorter.
-		// (2) It matches the units of Type.Width.
-		return "m1"
-	case AMEM16:
-		return "m2"
-	case AMEM32:
-		return "m4"
-	case AMEM64:
-		return "m8"
-	case AMEM128:
-		return "m16"
-	case ASTRING:
-		return "s"
-	case AINTER:
-		return "i"
-	case ANILINTER:
-		return "e"
-	case AFLOAT32:
-		return "f4"
-	case AFLOAT64:
-		return "f8"
-	case ACPLX64:
-		return "c8"
-	case ACPLX128:
-		return "c16"
+func algname(t *Type) string {
+	var a algnamegen
+	a.name(t)
+	if Debug['r'] != 0 {
+		fmt.Printf("algname(%v)=%s\n", Tconv(t, obj.FmtLong), a.buf.String())
 	}
-
-	panic("unreachable")
+	return a.buf.String()
 }
 
-func algname(t *Type) string {
-	var buf bytes.Buffer
+type algnamegen struct {
+	// prev
+	buf bytes.Buffer
+}
 
+func (a *algnamegen) name(t *Type) {
 	switch t.Etype {
 	default:
 		Fatalf("algname %v", t)
@@ -215,9 +183,9 @@ func algname(t *Type) string {
 		if Isslice(t) {
 			Fatalf("algname %v", t)
 		}
-		fmt.Fprintf(&buf, "[%d]%s", t.Bound, algfieldname(t.Type))
+		fmt.Fprintf(&a.buf, "[%d]%s", t.Bound, algfieldname(t.Type))
 	case TSTRUCT:
-		fmt.Fprint(&buf, "{")
+		fmt.Fprint(&a.buf, "{")
 		t1 := t.Type
 		var comma string
 		for {
@@ -226,7 +194,7 @@ func algname(t *Type) string {
 
 			// memequal for fields up to this one.
 			if first != nil {
-				fmt.Fprintf(&buf, "%s%dm%d", comma, first.Width, size)
+				fmt.Fprintf(&a.buf, "%s%dm%d", comma, first.Width, size)
 				comma = ","
 			}
 
@@ -240,16 +208,47 @@ func algname(t *Type) string {
 			if algtype1(t1.Type, nil) == AMEM {
 				continue
 			}
-			fmt.Fprintf(&buf, "%s%d%v", comma, t1.Width, algfieldname(t1.Type))
+			fmt.Fprintf(&a.buf, "%s%d%v", comma, t1.Width, algfieldname(t1.Type))
 			comma = ","
 			t1 = t1.Down
 		}
-		fmt.Fprint(&buf, "}")
+		fmt.Fprint(&a.buf, "}")
 	}
-	if Debug['r'] != 0 {
-		fmt.Printf("algname(%v)=%s\n", Tconv(t, obj.FmtLong), buf.String())
+}
+
+func algfieldname(t *Type) string {
+	// The names below are in bytes rather than bits.
+	// (1) It is shorter.
+	// (2) It matches the units of Type.Width.
+
+	// We assume t is comparable and has been vetted by algtype/algtype1.
+	switch t.Etype {
+	default:
+		Fatalf("algfieldname %v", t)
+	case TINT8, TUINT8, TINT16, TUINT16, TINT32, TUINT32, TINT64, TUINT64, TINT, TUINT, TUINTPTR, TBOOL:
+		return fmt.Sprintf("i%d", t.Width)
+	case TPTR32, TPTR64, TCHAN, TUNSAFEPTR:
+		return "p"
+	case TFLOAT32:
+		return "f4"
+	case TFLOAT64:
+		return "f8"
+	case TCOMPLEX64:
+		return "c8"
+	case TCOMPLEX128:
+		return "c16"
+	case TSTRING:
+		return "s"
+	case TINTER:
+		if isnilinter(t) {
+			return "e"
+		}
+		return "i"
+	case TARRAY, TSTRUCT:
+		return algname(t)
 	}
-	return buf.String()
+
+	panic("unreachable")
 }
 
 // Generate a helper function to compute the hash of a value of type t.
