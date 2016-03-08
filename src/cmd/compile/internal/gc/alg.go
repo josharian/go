@@ -160,6 +160,13 @@ func algtype1(t *Type, bad **Type) int {
 	return 0
 }
 
+// next steps:
+// * merge algfieldtype and algname into a single recursive function
+// * merge runs of similar types by adding ints (or make a sequence of letter/number pairs?)
+// * explicitly represent padding/gaps
+// * measure impact
+// * NOSPLIT when no sub-arrays/structs
+
 func algname(t *Type) string {
 	var a algnamegen
 	a.name(t)
