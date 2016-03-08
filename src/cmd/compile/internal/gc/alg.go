@@ -59,10 +59,9 @@ func algtype1(t *Type, bad **Type) int {
 	}
 
 	switch t.Etype {
-	// will be defined later.
 	case TANY, TFORW:
+		// will be defined later.
 		*bad = t
-
 		return -1
 
 	case TINT8, TUINT8, TINT16, TUINT16,
@@ -108,8 +107,11 @@ func algtype1(t *Type, bad **Type) int {
 		}
 
 		a := algtype1(t.Type, bad)
-		if a == ANOEQ || a == AMEM {
-			if a == ANOEQ && bad != nil {
+		if a == AMEM {
+			return a
+		}
+		if a == ANOEQ {
+			if bad != nil {
 				*bad = t
 			}
 			return a
@@ -133,11 +135,10 @@ func algtype1(t *Type, bad **Type) int {
 		}
 
 		ret := AMEM
-		var a int
 		for t1 := t.Type; t1 != nil; t1 = t1.Down {
-			// All fields must be comparable.
-			a = algtype1(t1.Type, bad)
+			a := algtype1(t1.Type, bad)
 
+			// All fields must be comparable.
 			if a == ANOEQ {
 				return ANOEQ
 			}
@@ -146,7 +147,6 @@ func algtype1(t *Type, bad **Type) int {
 			// equality need special compare.
 			if a != AMEM || isblanksym(t1.Sym) || ispaddedfield(t1, t.Width) {
 				ret = -1
-				continue
 			}
 		}
 
