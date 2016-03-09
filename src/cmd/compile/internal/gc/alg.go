@@ -166,96 +166,81 @@ func algtype1(t *Type, bad **Type) int {
 // * explicitly represent padding/gaps
 // * measure impact
 // * NOSPLIT when no sub-arrays/structs
+// * blank symbol with size 0 should not disrupt memory runs
+// * algs for 1 elem struct/array of special type (eine ist kleine)
 
 func algname(t *Type) string {
-	var a algnamegen
-	a.name(t)
+	var buf bytes.Buffer
+	appendAlgname(&buf, t)
+	s := buf.String()
 	if Debug['r'] != 0 {
-		fmt.Printf("algname(%v)=%s\n", Tconv(t, obj.FmtLong), a.buf.String())
+		fmt.Printf("algname(%v)=%s\n", Tconv(t, obj.FmtLong), s)
 	}
-	return a.buf.String()
+	// if s == "[2]ei" {
+	// 	fmt.Printf("algname(%v)=%s\n", Tconv(t, obj.FmtLong), s)
+	// }
+	// fmt.Printf("algname=%s\n", s)
+	return s
 }
 
-type algnamegen struct {
-	// prev
-	buf bytes.Buffer
-}
-
-func (a *algnamegen) name(t *Type) {
-	switch t.Etype {
-	default:
-		Fatalf("algname %v", t)
-
-	case TARRAY:
-		if Isslice(t) {
-			Fatalf("algname %v", t)
-		}
-		fmt.Fprintf(&a.buf, "[%d]%s", t.Bound, algfieldname(t.Type))
-	case TSTRUCT:
-		fmt.Fprint(&a.buf, "{")
-		t1 := t.Type
-		var comma string
-		for {
-			first, size, next := memrun(t, t1)
-			t1 = next
-
-			// memequal for fields up to this one.
-			if first != nil {
-				fmt.Fprintf(&a.buf, "%s%dm%d", comma, first.Width, size)
-				comma = ","
-			}
-
-			if t1 == nil {
-				break
-			}
-			if isblanksym(t1.Sym) {
-				t1 = t1.Down
-				continue
-			}
-			if algtype1(t1.Type, nil) == AMEM {
-				continue
-			}
-			fmt.Fprintf(&a.buf, "%s%d%v", comma, t1.Width, algfieldname(t1.Type))
-			comma = ","
-			t1 = t1.Down
-		}
-		fmt.Fprint(&a.buf, "}")
-	}
-}
-
-func algfieldname(t *Type) string {
+func appendAlgname(buf *bytes.Buffer, t *Type) {
 	// The names below are in bytes rather than bits.
 	// (1) It is shorter.
 	// (2) It matches the units of Type.Width.
 
 	// We assume t is comparable and has been vetted by algtype/algtype1.
+
 	switch t.Etype {
 	default:
-		Fatalf("algfieldname %v", t)
-	case TINT8, TUINT8, TINT16, TUINT16, TINT32, TUINT32, TINT64, TUINT64, TINT, TUINT, TUINTPTR, TBOOL:
-		return fmt.Sprintf("i%d", t.Width)
+		Fatalf("appendAlgname %v", t)
+	case TINT8, TUINT8, TBOOL:
+		buf.WriteString("b1")
+	case TINT16, TUINT16:
+		buf.WriteString("b2")
+	case TINT32, TUINT32:
+		buf.WriteString("b4")
+	case TINT64, TUINT64:
+		buf.WriteString("b8")
+	case TINT, TUINT, TUINTPTR:
+		fmt.Fprintf(buf, "b%d", t.Width)
 	case TPTR32, TPTR64, TCHAN, TUNSAFEPTR:
-		return "p"
+		buf.WriteString("p")
 	case TFLOAT32:
-		return "f4"
+		buf.WriteString("f4")
 	case TFLOAT64:
-		return "f8"
+		buf.WriteString("f8")
 	case TCOMPLEX64:
-		return "c8"
+		buf.WriteString("c8")
 	case TCOMPLEX128:
-		return "c16"
+		buf.WriteString("c16")
 	case TSTRING:
-		return "s"
+		buf.WriteString("s")
 	case TINTER:
 		if isnilinter(t) {
-			return "e"
+			buf.WriteString("e")
+			return
 		}
-		return "i"
-	case TARRAY, TSTRUCT:
-		return algname(t)
-	}
+		buf.WriteString("i")
+	case TARRAY:
+		if Isslice(t) {
+			Fatalf("appendAlgname %v", t)
+		}
+		fmt.Fprintf(buf, "[%d]", t.Bound)
+		appendAlgname(buf, t.Type)
 
-	panic("unreachable")
+	case TSTRUCT:
+		buf.WriteByte('{')
+		for f := t.Type; f != nil; {
+			if isblanksym(f.Sym) {
+				fmt.Fprintf(buf, "_%d", f.Width)
+				f = f.Down
+				continue
+			}
+			appendAlgname(buf, f.Type)
+			f = f.Down
+		}
+		buf.WriteByte('}')
+	}
 }
 
 // Generate a helper function to compute the hash of a value of type t.

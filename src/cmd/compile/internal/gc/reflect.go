@@ -1335,8 +1335,10 @@ func dalgsym(t *Type) *Sym {
 		name := algname(t)
 		s = namedsymprefix(".alg", name)
 		if s.Flags&SymAlgGen != 0 {
+			fmt.Println("DUP")
 			return s
 		}
+			fmt.Println("NEW")
 		s.Flags |= SymAlgGen
 
 		hash := namedsymprefix(".hash", name)
