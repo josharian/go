@@ -223,26 +223,36 @@ func genhash(sym *Sym, t *Type) {
 		// pure memory.
 		hashel := hashfor(t.Elem())
 
-		n := Nod(ORANGE, nil, Nod(OIND, np, nil))
-		ni := newname(Lookup("i"))
-		ni.Type = Types[TINT]
-		n.List.Set1(ni)
-		n.Colas = true
-		colasdefn(n.List.Slice(), n)
-		ni = n.List.First()
+		var ni, rg *Node
+
+		if t.NumElem() == 1 {
+			ni = Nodintconst(0)
+		} else {
+			rg = Nod(ORANGE, nil, Nod(OIND, np, nil))
+			ni = newname(Lookup("i"))
+			ni.Type = Types[TINT]
+			rg.List.Set1(ni)
+			rg.Colas = true
+			colasdefn(rg.List.Slice(), rg)
+			ni = rg.List.First()
+		}
 
 		// h = hashel(&p[i], h)
 		call := Nod(OCALL, hashel, nil)
-
 		nx := Nod(OINDEX, np, ni)
 		nx.Bounded = true
 		na := Nod(OADDR, nx, nil)
 		na.Etype = 1 // no escape to heap
 		call.List.Append(na)
 		call.List.Append(nh)
-		n.Nbody.Append(Nod(OAS, nh, call))
+		as := Nod(OAS, nh, call)
 
-		fn.Nbody.Append(n)
+		if t.NumElem() == 1 {
+			fn.Nbody.Append(as)
+		} else {
+			rg.Nbody.Append(as)
+			fn.Nbody.Append(rg)
+		}
 
 	case TSTRUCT:
 		// Walk the struct using memhash for runs of AMEM
