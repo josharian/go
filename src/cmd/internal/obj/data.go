@@ -53,14 +53,14 @@ func Symgrow(ctxt *Link, s *LSym, lsiz int64) {
 }
 
 // prepwrite prepares to write data of size siz into s at offset off.
-func (s *LSym) prepwrite(ctxt *Link, off, siz int64) {
+func (s *LSym) prepwrite(ctxt *Link, off int64, siz int) {
 	if off < 0 || siz < 0 || off >= 1<<30 || siz >= 100 {
 		log.Fatalf("prepwrite: bad off=%d siz=%d", off, siz)
 	}
 	if s.Type == SBSS || s.Type == STLSBSS {
 		ctxt.Diag("cannot supply data for BSS var")
 	}
-	Symgrow(ctxt, s, off+siz)
+	Symgrow(ctxt, s, off+int64(siz))
 }
 
 // WriteFloat32 writes f into s at offset off.
@@ -76,7 +76,7 @@ func (s *LSym) WriteFloat64(ctxt *Link, off int64, f float64) {
 }
 
 // WriteInt writes an integer i of size siz into s at offset off.
-func (s *LSym) WriteInt(ctxt *Link, off, siz int64, i int64) {
+func (s *LSym) WriteInt(ctxt *Link, off int64, siz int, i int64) {
 	s.prepwrite(ctxt, off, siz)
 	switch siz {
 	default:
@@ -94,7 +94,7 @@ func (s *LSym) WriteInt(ctxt *Link, off, siz int64, i int64) {
 
 // WriteAddr writes an address of size siz into s at offset off.
 // rsym and roff specify the relocation for the address.
-func (s *LSym) WriteAddr(ctxt *Link, off, siz int64, rsym *LSym, roff int64) {
+func (s *LSym) WriteAddr(ctxt *Link, off int64, siz int, rsym *LSym, roff int64) {
 	s.prepwrite(ctxt, off, siz)
 	r := Addrel(s)
 	r.Off = int32(off)
@@ -105,9 +105,9 @@ func (s *LSym) WriteAddr(ctxt *Link, off, siz int64, rsym *LSym, roff int64) {
 }
 
 // WriteString writes a string of size siz into s at offset off.
-func (s *LSym) WriteString(ctxt *Link, off, siz int64, str string) {
+func (s *LSym) WriteString(ctxt *Link, off int64, siz int, str string) {
 	s.prepwrite(ctxt, off, siz)
-	copy(s.P[off:off+siz], str)
+	copy(s.P[off:off+int64(siz)], str)
 }
 
 func Addrel(s *LSym) *Reloc {
