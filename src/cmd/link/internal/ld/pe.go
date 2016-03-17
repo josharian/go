@@ -1043,18 +1043,11 @@ func addpersrc() {
 	// relocation
 	var p []byte
 	var r *Reloc
-	var val uint32
 	for ri := 0; ri < len(rsrcsym.R); ri++ {
 		r = &rsrcsym.R[ri]
 		p = rsrcsym.P[r.Off:]
-		val = uint32(int64(h.VirtualAddress) + r.Add)
-
-		// 32-bit little-endian
-		p[0] = byte(val)
-
-		p[1] = byte(val >> 8)
-		p[2] = byte(val >> 16)
-		p[3] = byte(val >> 24)
+		val := uint32(int64(h.VirtualAddress) + r.Add)
+		binary.LittleEndian.PutUint32(p, val)
 	}
 
 	Cwrite(rsrcsym.P)

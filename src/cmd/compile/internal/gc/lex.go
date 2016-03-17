@@ -710,6 +710,15 @@ func (l *lexer) number(c rune) {
 		}
 
 		str = lexbuf.String()
+		// if os.Getenv("J") != nil {
+
+		// }
+		i, err := strconv.ParseInt(str, 0, 64)
+		if err == nil {
+			fmt.Println("SMALL CONST", str, i)
+		} else {
+			fmt.Println("ERROR", err)
+		}
 		x := new(Mpint)
 		mpatofix(x, str)
 		if x.Ovf {
