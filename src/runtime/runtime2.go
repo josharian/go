@@ -697,7 +697,7 @@ const (
 )
 
 // The maximum number of frames we print for a traceback
-const _TracebackMaxFrames = 100
+const _TracebackMaxFrames = 6
 
 var (
 	emptystring string

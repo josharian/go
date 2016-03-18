@@ -141,7 +141,7 @@ func gentraceback(pc0, sp0, lr0 uintptr, gp *g, skip int, pcbuf *uintptr, max in
 		// instead on the g0 stack.
 		throw("gentraceback cannot trace user goroutine on its own stack")
 	}
-	level, _, _ := gotraceback()
+	// level, _, _ := gotraceback()
 
 	// Fix up returns to the stack barrier by fetching the
 	// original return PC from gp.stkbar.
@@ -389,32 +389,31 @@ func gentraceback(pc0, sp0, lr0 uintptr, gp *g, skip int, pcbuf *uintptr, max in
 				if (n > 0 || flags&_TraceTrap == 0) && frame.pc > f.entry && !waspanic {
 					tracepc--
 				}
-				name := funcname(f)
-				if name == "runtime.gopanic" {
-					name = "panic"
-				}
-				print(name, "(")
-				argp := (*[100]uintptr)(unsafe.Pointer(frame.argp))
-				for i := uintptr(0); i < frame.arglen/sys.PtrSize; i++ {
-					if i >= 10 {
-						print(", ...")
-						break
-					}
-					if i != 0 {
-						print(", ")
-					}
-					print(hex(argp[i]))
-				}
-				print(")\n")
+				// name := funcname(f)
+				// if name == "runtime.gopanic" {
+				// 	name = "panic"
+				// }
+				// print(name, "(")
+				// argp := (*[100]uintptr)(unsafe.Pointer(frame.argp))
+				// for i := uintptr(0); i < frame.arglen/sys.PtrSize; i++ {
+				// 	if i >= 10 {
+				// 		print(", ...")
+				// 		break
+				// 	}
+				// 	if i != 0 {
+				// 		print(", ")
+				// 	}
+				// 	print(hex(argp[i]))
+				// }
+				// print(")\n")
 				file, line := funcline(f, tracepc)
-				print("\t", file, ":", line)
-				if frame.pc > f.entry {
-					print(" +", hex(frame.pc-f.entry))
-				}
-				if g.m.throwing > 0 && gp == g.m.curg || level >= 2 {
-					print(" fp=", hex(frame.fp), " sp=", hex(frame.sp))
-				}
-				print("\n")
+				print(file, ":", line, "  ")
+				// if frame.pc > f.entry {
+				// 	print(" +", hex(frame.pc-f.entry))
+				// }
+				// if g.m.throwing > 0 && gp == g.m.curg || level >= 2 {
+				// 	print(" fp=", hex(frame.fp), " sp=", hex(frame.sp))
+				// }
 				nprint++
 			}
 		}
@@ -542,6 +541,7 @@ func gentraceback(pc0, sp0, lr0 uintptr, gp *g, skip int, pcbuf *uintptr, max in
 		print("\tstack=[", hex(gp.stack.lo), "-", hex(gp.stack.hi), "] n=", n, " max=", max, "\n")
 		throw("traceback did not unwind completely")
 	}
+	print("\n")
 
 	return n
 }
@@ -691,9 +691,9 @@ func traceback1(pc, sp, lr uintptr, gp *g, flags uint) {
 	if n == 0 && (flags&_TraceRuntimeFrames) == 0 {
 		n = gentraceback(pc, sp, lr, gp, 0, nil, _TracebackMaxFrames, nil, nil, flags|_TraceRuntimeFrames)
 	}
-	if n == _TracebackMaxFrames {
-		print("...additional frames elided...\n")
-	}
+	// if n == _TracebackMaxFrames {
+	// 	print("...additional frames elided...\n")
+	// }
 	printcreatedby(gp)
 }
 
@@ -785,35 +785,35 @@ func goroutineheader(gp *g) {
 }
 
 func tracebackothers(me *g) {
-	level, _, _ := gotraceback()
+	// level, _, _ := gotraceback()
 
 	// Show the current goroutine first, if we haven't already.
 	g := getg()
 	gp := g.m.curg
 	if gp != nil && gp != me {
 		print("\n")
-		goroutineheader(gp)
+		// goroutineheader(gp)
 		traceback(^uintptr(0), ^uintptr(0), 0, gp)
 	}
 
 	lock(&allglock)
-	for _, gp := range allgs {
-		if gp == me || gp == g.m.curg || readgstatus(gp) == _Gdead || isSystemGoroutine(gp) && level < 2 {
-			continue
-		}
-		print("\n")
-		goroutineheader(gp)
-		// Note: gp.m == g.m occurs when tracebackothers is
-		// called from a signal handler initiated during a
-		// systemstack call. The original G is still in the
-		// running state, and we want to print its stack.
-		if gp.m != g.m && readgstatus(gp)&^_Gscan == _Grunning {
-			print("\tgoroutine running on other thread; stack unavailable\n")
-			printcreatedby(gp)
-		} else {
-			traceback(^uintptr(0), ^uintptr(0), 0, gp)
-		}
-	}
+	// for _, gp := range allgs {
+	// 	if gp == me || gp == g.m.curg || readgstatus(gp) == _Gdead || isSystemGoroutine(gp) && level < 2 {
+	// 		continue
+	// 	}
+	// 	print("\n")
+	// 	goroutineheader(gp)
+	// 	// Note: gp.m == g.m occurs when tracebackothers is
+	// 	// called from a signal handler initiated during a
+	// 	// systemstack call. The original G is still in the
+	// 	// running state, and we want to print its stack.
+	// 	if gp.m != g.m && readgstatus(gp)&^_Gscan == _Grunning {
+	// 		print("\tgoroutine running on other thread; stack unavailable\n")
+	// 		printcreatedby(gp)
+	// 	} else {
+	// 		traceback(^uintptr(0), ^uintptr(0), 0, gp)
+	// 	}
+	// }
 	unlock(&allglock)
 }
 

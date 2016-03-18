@@ -638,27 +638,30 @@ func tracealloc(p unsafe.Pointer, size uintptr, typ *_type) {
 	gp := getg()
 	gp.m.traceback = 2
 	if typ == nil {
-		print("tracealloc(", p, ", ", hex(size), ")\n")
+		print("alloc\t", size, "\t<unknown>\n")
 	} else {
-		print("tracealloc(", p, ", ", hex(size), ", ", typ.string(), ")\n")
+		print("alloc\t", size, "\t", typ.string(), "\n")
 	}
-	if gp.m.curg == nil || gp == gp.m.curg {
-		goroutineheader(gp)
-		pc := getcallerpc(unsafe.Pointer(&p))
-		sp := getcallersp(unsafe.Pointer(&p))
-		systemstack(func() {
-			traceback(pc, sp, 0, gp)
-		})
-	} else {
-		goroutineheader(gp.m.curg)
-		traceback(^uintptr(0), ^uintptr(0), 0, gp.m.curg)
-	}
-	print("\n")
+	// if size == 144 && typ != nil && typ.string() == "gc.Node" {
+	// 	if gp.m.curg == nil || gp == gp.m.curg {
+	// 		goroutineheader(gp)
+	// 		pc := getcallerpc(unsafe.Pointer(&p))
+	// 		sp := getcallersp(unsafe.Pointer(&p))
+	// 		systemstack(func() {
+	// 			traceback(pc, sp, 0, gp)
+	// 		})
+	// 	} else {
+	// 		goroutineheader(gp.m.curg)
+	// 		traceback(^uintptr(0), ^uintptr(0), 0, gp.m.curg)
+	// 	}
+	// 	print("\n")
+	// }
 	gp.m.traceback = 0
 	unlock(&tracelock)
 }
 
 func tracefree(p unsafe.Pointer, size uintptr) {
+	return
 	lock(&tracelock)
 	gp := getg()
 	gp.m.traceback = 2
@@ -675,6 +678,7 @@ func tracefree(p unsafe.Pointer, size uintptr) {
 }
 
 func tracegc() {
+	return
 	lock(&tracelock)
 	gp := getg()
 	gp.m.traceback = 2
