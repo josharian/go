@@ -803,7 +803,7 @@ func cgen_wbptr(n, res *Node) {
 
 	wbVar := syslook("writeBarrier")
 	wbEnabled := NodSym(ODOT, wbVar, wbVar.Type.Field(0).Sym)
-	wbEnabled = typecheck(&wbEnabled, Erv)
+	typecheck(&wbEnabled, Erv)
 	pbr := Thearch.Ginscmp(ONE, Types[TUINT8], wbEnabled, Nodintconst(0), -1)
 	Thearch.Gins(Thearch.Optoas(OAS, Types[Tptr]), &src, &dst)
 	pjmp := Gbranch(obj.AJMP, nil, 0)

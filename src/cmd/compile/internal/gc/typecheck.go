@@ -348,7 +348,8 @@ OpSwitch:
 				Yyerror("use of [...] array outside of array literal")
 			}
 		} else {
-			l := typecheck(&n.Left, Erv)
+			typecheck(&n.Left, Erv)
+			l := n.Left
 			var v Val
 			switch consttype(l) {
 			case CTINT, CTRUNE:
@@ -395,8 +396,10 @@ OpSwitch:
 
 	case OTMAP:
 		ok |= Etype
-		l := typecheck(&n.Left, Etype)
-		r := typecheck(&n.Right, Etype)
+		typecheck(&n.Left, Etype)
+		typecheck(&n.Right, Etype)
+		l := n.Left
+		r := n.Right
 		if l.Type == nil || r.Type == nil {
 			n.Type = nil
 			return
@@ -408,7 +411,8 @@ OpSwitch:
 
 	case OTCHAN:
 		ok |= Etype
-		l := typecheck(&n.Left, Etype)
+		typecheck(&n.Left, Etype)
+		l := n.Left
 		if l.Type == nil {
 			n.Type = nil
 			return
@@ -458,7 +462,8 @@ OpSwitch:
 			ntop |= Eindir
 		}
 		ntop |= top & Ecomplit
-		l := typecheck(&n.Left, ntop)
+		typecheck(&n.Left, ntop)
+		l := n.Left
 		t := l.Type
 		if t == nil {
 			n.Type = nil
@@ -513,8 +518,10 @@ OpSwitch:
 		var r *Node
 		if n.Op == OASOP {
 			ok |= Etop
-			l = typecheck(&n.Left, Erv)
-			r = typecheck(&n.Right, Erv)
+			typecheck(&n.Left, Erv)
+			typecheck(&n.Right, Erv)
+			l = n.Left
+			r = n.Right
 			checkassign(n, n.Left)
 			if l.Type == nil || r.Type == nil {
 				n.Type = nil
@@ -529,8 +536,10 @@ OpSwitch:
 			op = Op(n.Etype)
 		} else {
 			ok |= Erv
-			l = typecheck(&n.Left, Erv|top&Eiota)
-			r = typecheck(&n.Right, Erv|top&Eiota)
+			typecheck(&n.Left, Erv|top&Eiota)
+			typecheck(&n.Right, Erv|top&Eiota)
+			l = n.Left
+			r = n.Right
 			if l.Type == nil || r.Type == nil {
 				n.Type = nil
 				return
@@ -745,7 +754,8 @@ OpSwitch:
 
 	case OCOM, OMINUS, ONOT, OPLUS:
 		ok |= Erv
-		l := typecheck(&n.Left, Erv|top&Eiota)
+		typecheck(&n.Left, Erv|top&Eiota)
+		l := n.Left
 		t := l.Type
 		if t == nil {
 			n.Type = nil
@@ -1051,7 +1061,8 @@ OpSwitch:
 
 	case OSEND:
 		ok |= Etop
-		l := typecheck(&n.Left, Erv)
+		typecheck(&n.Left, Erv)
+		l := n.Left
 		typecheck(&n.Right, Erv)
 		defaultlit(&n.Left, nil)
 		l = n.Left
@@ -1453,8 +1464,10 @@ OpSwitch:
 				n.Type = nil
 				return
 			}
-			l = typecheck(&n.Left, Erv|top&Eiota)
-			r = typecheck(&n.Right, Erv|top&Eiota)
+			typecheck(&n.Left, Erv|top&Eiota)
+			typecheck(&n.Right, Erv|top&Eiota)
+			l = n.Left
+			r = n.Right
 			if l.Type == nil || r.Type == nil {
 				n.Type = nil
 				return
@@ -2902,7 +2915,8 @@ func typecheckcomplit(np **Node) {
 	*norig = *n
 
 	setlineno(n.Right)
-	l := typecheck(&n.Right, Etype|Ecomplit) // sic
+	typecheck(&n.Right, Etype|Ecomplit)
+	l := n.Right // sic
 	t := l.Type
 	if t == nil {
 		n.Type = nil

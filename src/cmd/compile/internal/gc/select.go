@@ -31,7 +31,8 @@ func typecheckselect(sel *Node) {
 		} else if ncase.List.Len() > 1 {
 			Yyerror("select cases cannot be lists")
 		} else {
-			n = typecheck(ncase.List.Addr(0), Etop)
+			typecheck(ncase.List.Addr(0), Etop)
+			n = ncase.List.Index(0)
 			ncase.Left = n
 			ncase.List.Set(nil)
 			setlineno(n)
