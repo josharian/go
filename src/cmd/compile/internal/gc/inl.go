@@ -287,11 +287,12 @@ func inlconv2stmt(n *Node) {
 }
 
 // Turn an OINLCALL into a single valued expression.
-func inlconv2expr(np **Node) {
-	n := *np
+// The result of inlconv2expr MUST be assigned back to n, e.g.
+// 	n.Left = inlconv2expr(n.Left)
+func inlconv2expr(n *Node) *Node {
 	r := n.Rlist.First()
 	addinit(&r, append(n.Ninit.Slice(), n.Nbody.Slice()...))
-	*np = r
+	return r
 }
 
 // Turn the rlist (with the return values) of the OINLCALL in
@@ -327,12 +328,12 @@ func inlnodelist(l Nodes) {
 // have to edit /this/ n, so you'd have to push that one down as well,
 // but then you may as well do it here.  so this is cleaner and
 // shorter and less complicated.
-func inlnode(np **Node) {
-	if *np == nil {
-		return
+// The result of inlnode MUST be assigned back to n, e.g.
+// 	n.Left = inlnode(n.Left)
+func inlnode(n *Node) *Node {
+	if n == nil {
+		return n
 	}
-
-	n := *np
 
 	switch n.Op {
 	// inhibit inlining of their argument
@@ -347,7 +348,7 @@ func inlnode(np **Node) {
 		// TODO do them here (or earlier),
 	// so escape analysis can avoid more heapmoves.
 	case OCLOSURE:
-		return
+		return n
 	}
 
 	lno := setlineno(n)
@@ -412,7 +413,7 @@ func inlnode(np **Node) {
 			n.Rlist.Set(inlconv2list(n.Rlist.First()))
 			n.Op = OAS2
 			n.Typecheck = 0
-			typecheck(np, Etop)
+			typecheck(&n, Etop)
 			break
 		}
 		fallthrough
@@ -444,7 +445,7 @@ func inlnode(np **Node) {
 	case OCALLFUNC, OCALLMETH:
 		// TODO(marvin): Fix Node.EType type union.
 		if n.Etype == EType(OPROC) || n.Etype == EType(ODEFER) {
-			return
+			return n
 		}
 	}
 
@@ -454,10 +455,10 @@ func inlnode(np **Node) {
 			fmt.Printf("%v:call to func %v\n", n.Line(), Nconv(n.Left, FmtSign))
 		}
 		if n.Left.Func != nil && len(n.Left.Func.Inl.Slice()) != 0 { // normal case
-			mkinlcall(np, n.Left, n.Isddd)
+			mkinlcall(&n, n.Left, n.Isddd)
 		} else if n.Left.Op == ONAME && n.Left.Left != nil && n.Left.Left.Op == OTYPE && n.Left.Right != nil && n.Left.Right.Op == ONAME { // methods called as functions
 			if n.Left.Sym.Def != nil {
-				mkinlcall(np, n.Left.Sym.Def, n.Isddd)
+				mkinlcall(&n, n.Left.Sym.Def, n.Isddd)
 			}
 		}
 
@@ -475,13 +476,16 @@ func inlnode(np **Node) {
 			Fatalf("no function definition for [%p] %v\n", n.Left.Type, Tconv(n.Left.Type, FmtSign))
 		}
 
-		mkinlcall(np, n.Left.Type.Nname, n.Isddd)
+		mkinlcall(&n, n.Left.Type.Nname, n.Isddd)
 	}
 
 	lineno = lno
+	return n
 }
 
-func mkinlcall(np **Node, fn *Node, isddd bool) {
+// The result of mkinlcall MUST be assigned back to n, e.g.
+// 	n.Left = mkinlcall(n.Left, fn, isddd)
+func mkinlcall(n *Node, fn *Node, isddd bool) *Node {
 	save_safemode := safemode
 
 	// imported functions may refer to unsafe as long as the
@@ -491,8 +495,9 @@ func mkinlcall(np **Node, fn *Node, isddd bool) {
 	if pkg != localpkg && pkg != nil {
 		safemode = 0
 	}
-	mkinlcall1(np, fn, isddd)
+	mkinlcall1(&n, fn, isddd)
 	safemode = save_safemode
+	return n
 }
 
 func tinlvar(t *Field) *Node {
@@ -513,21 +518,21 @@ var inlgen int
 // On return ninit has the parameter assignments, the nbody is the
 // inlined function body and list, rlist contain the input, output
 // parameters.
-func mkinlcall1(np **Node, fn *Node, isddd bool) {
+// The result of mkinlcall1 MUST be assigned back to n, e.g.
+// 	n.Left = mkinlcall1(n.Left, fn, isddd)
+func mkinlcall1(n *Node, fn *Node, isddd bool) *Node {
 	// For variadic fn.
 	if len(fn.Func.Inl.Slice()) == 0 {
-		return
+		return n
 	}
 
 	if fn == Curfn || fn.Name.Defn == Curfn {
-		return
+		return n
 	}
 
 	if Debug['l'] < 2 {
 		typecheckinl(fn)
 	}
-
-	n := *np
 
 	// Bingo, we have a function node, and it has an inlineable body
 	if Debug['m'] > 1 {
@@ -800,7 +805,7 @@ func mkinlcall1(np **Node, fn *Node, isddd bool) {
 
 	//dumplist("call body", body);
 
-	*np = call
+	n = call
 
 	// transitive inlining
 	// might be nice to do this before exporting the body,
@@ -819,8 +824,10 @@ func mkinlcall1(np **Node, fn *Node, isddd bool) {
 	fn.Func.Inl.Set(body)
 
 	if Debug['m'] > 2 {
-		fmt.Printf("%v: After inlining %v\n\n", n.Line(), Nconv(*np, FmtSign))
+		fmt.Printf("%v: After inlining %v\n\n", n.Line(), Nconv(n, FmtSign))
 	}
+
+	return n
 }
 
 // Every time we expand a function we generate a new set of tmpnames,

@@ -1082,10 +1082,11 @@ func assignconvfn(n *Node, t *Type, context func() string) *Node {
 // substArgTypes substitutes the given list of types for
 // successive occurrences of the "any" placeholder in the
 // type syntax expression n.Type.
-func substArgTypes(np **Node, types ...*Type) {
-	n := Nod(0, nil, nil)
-	*n = **np
-	*np = n
+// The result of substArgTypes MUST be assigned back to old, e.g.
+// 	n.Left = substArgTypes(n.Left, t1, t2)
+func substArgTypes(old *Node, types ...*Type) *Node {
+	n := Nod(OXXX, nil, nil)
+	*n = *old // make shallow copy
 
 	for _, t := range types {
 		dowidth(t)
@@ -1094,6 +1095,7 @@ func substArgTypes(np **Node, types ...*Type) {
 	if len(types) > 0 {
 		Fatalf("substArgTypes: too many argument types")
 	}
+	return n
 }
 
 // substAny walks t, replacing instances of "any" with successive
@@ -2305,25 +2307,25 @@ func mkpkg(path string) *Pkg {
 	return p
 }
 
-func addinit(np **Node, init []*Node) {
+// The result of addinit MUST be assigned back to n, e.g.
+// 	n.Left = addinit(n.Left, init)
+func addinit(n *Node, init []*Node) *Node {
 	if len(init) == 0 {
-		return
+		return n
 	}
 
-	n := *np
 	switch n.Op {
 	// There may be multiple refs to this node;
 	// introduce OCONVNOP to hold init list.
 	case ONAME, OLITERAL:
 		n = Nod(OCONVNOP, n, nil)
-
 		n.Type = n.Left.Type
 		n.Typecheck = 1
-		*np = n
 	}
 
 	n.Ninit.Set(append(init, n.Ninit.Slice()...))
 	n.Ullman = UINF
+	return n
 }
 
 var reservedimports = []string{

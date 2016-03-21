@@ -199,12 +199,11 @@ func isaddrokay(n *Node) bool {
 // Orderaddrtemp ensures that *np is okay to pass by address to runtime routines.
 // If the original argument *np is not okay, orderaddrtemp creates a tmp, emits
 // tmp = *np, and then sets *np to the tmp variable.
-func orderaddrtemp(np **Node, order *Order) {
-	n := *np
+func orderaddrtemp(n *Node, order *Order) *Node {
 	if isaddrokay(n) {
-		return
+		return n
 	}
-	*np = ordercopyexpr(n, n.Type, order, 0)
+	return ordercopyexpr(n, n.Type, order, 0)
 }
 
 type ordermarker int
@@ -277,8 +276,9 @@ func orderblockNodes(n *Nodes) {
 
 // Orderexprinplace orders the side effects in *np and
 // leaves them as the init list of the final *np.
-func orderexprinplace(np **Node, outer *Order) {
-	n := *np
+// The result of orderexprinplace MUST be assigned back to n, e.g.
+// 	n.Left = orderexprinplace(n.Left, outer)
+func orderexprinplace(n *Node, outer *Order) *Node {
 	var order Order
 	orderexpr(&n, &order, nil)
 	addinit(&n, order.out)
@@ -286,19 +286,19 @@ func orderexprinplace(np **Node, outer *Order) {
 	// insert new temporaries from order
 	// at head of outer list.
 	outer.temp = append(outer.temp, order.temp...)
-
-	*np = n
+	return n
 }
 
 // Orderstmtinplace orders the side effects of the single statement *np
 // and replaces it with the resulting statement list.
-func orderstmtinplace(np **Node) {
-	n := *np
+// The result of orderstmtinplace MUST be assigned back to n, e.g.
+// 	n.Left = orderstmtinplace(n.Left)
+func orderstmtinplace(n *Node) *Node {
 	var order Order
 	mark := marktemp(&order)
 	orderstmt(n, &order)
 	cleantemp(mark, &order)
-	*np = liststmt(order.out)
+	return liststmt(order.out)
 }
 
 // Orderinit moves n's init list to order->out.
@@ -986,10 +986,11 @@ var prealloc = map[*Node]*Node{}
 // If this is part of an assignment lhs = *np, lhs is given.
 // Otherwise lhs == nil. (When lhs != nil it may be possible
 // to avoid copying the result of the expression to a temporary.)
-func orderexpr(np **Node, order *Order, lhs *Node) {
-	n := *np
+// The result of orderexpr MUST be assigned back to n, e.g.
+// 	n.Left = orderexpr(n.Left, order, lhs)
+func orderexpr(n *Node, order *Order, lhs *Node) *Node {
 	if n == nil {
-		return
+		return n
 	}
 
 	lno := setlineno(n)
@@ -1200,6 +1201,5 @@ func orderexpr(np **Node, order *Order, lhs *Node) {
 	}
 
 	lineno = lno
-
-	*np = n
+	return n
 }

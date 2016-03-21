@@ -97,27 +97,29 @@ func NegOne(t *Type) *Node {
 
 // convert n, if literal, to type t.
 // implicit conversion.
-func convlit(np **Node, t *Type) {
-	convlit1(np, t, false)
+// The result of convlit MUST be assigned back to n, e.g.
+// 	n.Left = convlit(n.Left, t)
+func convlit(n *Node, t *Type) *Node {
+	return convlit1(n, t, false)
 }
 
 // convert n, if literal, to type t.
 // return a new node if necessary
-//(if n is a named constant, can't edit n->type directly).
-func convlit1(np **Node, t *Type, explicit bool) {
-	n := *np
+// (if n is a named constant, can't edit n->type directly).
+// The result of convlit1 MUST be assigned back to n, e.g.
+// 	n.Left = convlit1(n.Left, t, explicit)
+func convlit1(n *Node, t *Type, explicit bool) *Node {
 	if n == nil || t == nil || n.Type == nil || isideal(t) || n.Type == t {
-		return
+		return n
 	}
 	if !explicit && !isideal(n.Type) {
-		return
+		return n
 	}
 
 	if n.Op == OLITERAL {
 		nn := Nod(OXXX, nil, nil)
 		*nn = *n
 		n = nn
-		*np = n
 	}
 
 	switch n.Op {
@@ -136,14 +138,13 @@ func convlit1(np **Node, t *Type, explicit bool) {
 			n.Type = t
 		}
 
-		return
+		return n
 
 		// target is invalid type for a constant?  leave alone.
 	case OLITERAL:
 		if !okforconst[t.Etype] && n.Type.Etype != TNIL {
 			defaultlit(&n, nil)
-			*np = n
-			return
+			return n
 		}
 
 	case OLSH, ORSH:
@@ -158,7 +159,7 @@ func convlit1(np **Node, t *Type, explicit bool) {
 		}
 
 		n.Type = t
-		return
+		return n
 
 	case OCOMPLEX:
 		if n.Type.Etype == TIDEAL {
@@ -183,12 +184,12 @@ func convlit1(np **Node, t *Type, explicit bool) {
 			}
 		}
 
-		return
+		return n
 	}
 
 	// avoided repeated calculations, errors
 	if Eqtype(n.Type, t) {
-		return
+		return n
 	}
 
 	ct := consttype(n)
@@ -201,11 +202,11 @@ func convlit1(np **Node, t *Type, explicit bool) {
 	if et == TINTER {
 		if ct == CTNIL && n.Type == Types[TNIL] {
 			n.Type = t
-			return
+			return n
 		}
 
-		defaultlit(np, nil)
-		return
+		defaultlit(&n, nil)
+		return n
 	}
 
 	switch ct {
@@ -220,7 +221,7 @@ func convlit1(np **Node, t *Type, explicit bool) {
 
 			// let normal conversion code handle it
 		case TSTRING:
-			return
+			return n
 
 		case TARRAY:
 			if !Isslice(t) {
@@ -301,7 +302,7 @@ func convlit1(np **Node, t *Type, explicit bool) {
 	}
 
 	n.Type = t
-	return
+	return n
 
 bad:
 	if n.Diag == 0 {
@@ -313,8 +314,8 @@ bad:
 
 	if isideal(n.Type) {
 		defaultlit(&n, nil)
-		*np = n
 	}
+	return n
 }
 
 func copyval(v Val) Val {
@@ -1244,17 +1245,17 @@ func idealkind(n *Node) Ctype {
 	}
 }
 
-func defaultlit(np **Node, t *Type) {
-	n := *np
+// The result of defaultlit MUST be assigned back to n, e.g.
+// 	n.Left = defaultlit(n.Left, t)
+func defaultlit(n *Node, t *Type) *Node {
 	if n == nil || !isideal(n.Type) {
-		return
+		return n
 	}
 
 	if n.Op == OLITERAL {
 		nn := Nod(OXXX, nil, nil)
 		*nn = *n
 		n = nn
-		*np = n
 	}
 
 	lno := setlineno(n)
@@ -1263,8 +1264,8 @@ func defaultlit(np **Node, t *Type) {
 	switch ctype {
 	default:
 		if t != nil {
-			convlit(np, t)
-			return
+			convlit(&n, t)
+			return n
 		}
 
 		if n.Val().Ctype() == CTNIL {
@@ -1280,7 +1281,7 @@ func defaultlit(np **Node, t *Type) {
 
 		if n.Val().Ctype() == CTSTR {
 			t1 := Types[TSTRING]
-			convlit(np, t1)
+			convlit(&n, t1)
 			break
 		}
 
@@ -1294,7 +1295,7 @@ func defaultlit(np **Node, t *Type) {
 		if t != nil && t.Etype == TBOOL {
 			t1 = t
 		}
-		convlit(np, t1)
+		convlit(&n, t1)
 
 	case CTINT:
 		t1 = Types[TINT]
@@ -1314,7 +1315,7 @@ func defaultlit(np **Node, t *Type) {
 	}
 
 	lineno = lno
-	return
+	return n
 
 num:
 	// Note: n.Val().Ctype() can be CTxxx (not a constant) here
@@ -1339,9 +1340,9 @@ num:
 	if n.Val().Ctype() != CTxxx {
 		overflow(n.Val(), t1)
 	}
-	convlit(np, t1)
+	convlit(&n, t1)
 	lineno = lno
-	return
+	return n
 }
 
 // defaultlit on both nodes simultaneously;
