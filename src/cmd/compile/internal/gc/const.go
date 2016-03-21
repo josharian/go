@@ -91,7 +91,7 @@ func truncfltlit(oldv *Mpflt, t *Type) *Mpflt {
 // NegOne returns a Node of type t with value -1.
 func NegOne(t *Type) *Node {
 	n := Nodintconst(-1)
-	convlit(&n, t)
+	n = convlit(n, t)
 	return n
 }
 
@@ -133,8 +133,8 @@ func convlit1(n *Node, t *Type, explicit bool) *Node {
 		}
 
 		if n.Type.Etype == TIDEAL {
-			convlit(&n.Left, t)
-			convlit(&n.Right, t)
+			n.Left = convlit(n.Left, t)
+			n.Right = convlit(n.Right, t)
 			n.Type = t
 		}
 
@@ -143,12 +143,12 @@ func convlit1(n *Node, t *Type, explicit bool) *Node {
 		// target is invalid type for a constant?  leave alone.
 	case OLITERAL:
 		if !okforconst[t.Etype] && n.Type.Etype != TNIL {
-			defaultlit(&n, nil)
+			n = defaultlit(n, nil)
 			return n
 		}
 
 	case OLSH, ORSH:
-		convlit1(&n.Left, t, explicit && isideal(n.Left.Type))
+		n.Left = convlit1(n.Left, t, explicit && isideal(n.Left.Type))
 		t = n.Left.Type
 		if t != nil && t.Etype == TIDEAL && n.Val().Ctype() != CTINT {
 			n.SetVal(toint(n.Val()))
@@ -174,13 +174,13 @@ func convlit1(n *Node, t *Type, explicit bool) *Node {
 			case TCOMPLEX128:
 				n.Type = t
 
-				convlit(&n.Left, Types[TFLOAT64])
-				convlit(&n.Right, Types[TFLOAT64])
+				n.Left = convlit(n.Left, Types[TFLOAT64])
+				n.Right = convlit(n.Right, Types[TFLOAT64])
 
 			case TCOMPLEX64:
 				n.Type = t
-				convlit(&n.Left, Types[TFLOAT32])
-				convlit(&n.Right, Types[TFLOAT32])
+				n.Left = convlit(n.Left, Types[TFLOAT32])
+				n.Right = convlit(n.Right, Types[TFLOAT32])
 			}
 		}
 
@@ -205,7 +205,7 @@ func convlit1(n *Node, t *Type, explicit bool) *Node {
 			return n
 		}
 
-		defaultlit(&n, nil)
+		n = defaultlit(n, nil)
 		return n
 	}
 
@@ -313,7 +313,7 @@ bad:
 	}
 
 	if isideal(n.Type) {
-		defaultlit(&n, nil)
+		n = defaultlit(n, nil)
 	}
 	return n
 }
@@ -668,7 +668,7 @@ func evconst(n *Node) {
 			OCONV_ | CTFLT_,
 			OCONV_ | CTSTR_,
 			OCONV_ | CTBOOL_:
-			convlit1(&nl, n.Type, true)
+			nl = convlit1(nl, n.Type, true)
 
 			v = nl.Val()
 
@@ -749,12 +749,12 @@ func evconst(n *Node) {
 	// ideal const mixes with anything but otherwise must match.
 	default:
 		if nl.Type.Etype != TIDEAL {
-			defaultlit(&nr, nl.Type)
+			nr = defaultlit(nr, nl.Type)
 			n.Right = nr
 		}
 
 		if nr.Type.Etype != TIDEAL {
-			defaultlit(&nl, nr.Type)
+			nl = defaultlit(nl, nr.Type)
 			n.Left = nl
 		}
 
@@ -765,7 +765,7 @@ func evconst(n *Node) {
 		// right must be unsigned.
 	// left can be ideal.
 	case OLSH, ORSH:
-		defaultlit(&nr, Types[TUINT])
+		nr = defaultlit(nr, Types[TUINT])
 
 		n.Right = nr
 		if nr.Type != nil && (Issigned[nr.Type.Etype] || !Isint[nr.Type.Etype]) {
@@ -1264,7 +1264,7 @@ func defaultlit(n *Node, t *Type) *Node {
 	switch ctype {
 	default:
 		if t != nil {
-			convlit(&n, t)
+			n = convlit(n, t)
 			return n
 		}
 
@@ -1281,7 +1281,7 @@ func defaultlit(n *Node, t *Type) *Node {
 
 		if n.Val().Ctype() == CTSTR {
 			t1 := Types[TSTRING]
-			convlit(&n, t1)
+			n = convlit(n, t1)
 			break
 		}
 
@@ -1295,7 +1295,7 @@ func defaultlit(n *Node, t *Type) *Node {
 		if t != nil && t.Etype == TBOOL {
 			t1 = t
 		}
-		convlit(&n, t1)
+		n = convlit(n, t1)
 
 	case CTINT:
 		t1 = Types[TINT]
@@ -1340,7 +1340,7 @@ num:
 	if n.Val().Ctype() != CTxxx {
 		overflow(n.Val(), t1)
 	}
-	convlit(&n, t1)
+	n = convlit(n, t1)
 	lineno = lno
 	return n
 }
@@ -1356,12 +1356,12 @@ func defaultlit2(l *Node, r *Node, force bool) (*Node, *Node) {
 		return l, r
 	}
 	if !isideal(l.Type) {
-		convlit(&r, l.Type)
+		r = convlit(r, l.Type)
 		return l, r
 	}
 
 	if !isideal(r.Type) {
-		convlit(&l, r.Type)
+		l = convlit(l, r.Type)
 		return l, r
 	}
 
@@ -1370,32 +1370,32 @@ func defaultlit2(l *Node, r *Node, force bool) (*Node, *Node) {
 	}
 
 	if l.Type.Etype == TBOOL {
-		convlit(&l, Types[TBOOL])
-		convlit(&r, Types[TBOOL])
+		l = convlit(l, Types[TBOOL])
+		r = convlit(r, Types[TBOOL])
 	}
 
 	lkind := idealkind(l)
 	rkind := idealkind(r)
 	if lkind == CTCPLX || rkind == CTCPLX {
-		convlit(&l, Types[TCOMPLEX128])
-		convlit(&r, Types[TCOMPLEX128])
+		l = convlit(l, Types[TCOMPLEX128])
+		r = convlit(r, Types[TCOMPLEX128])
 		return l, r
 	}
 
 	if lkind == CTFLT || rkind == CTFLT {
-		convlit(&l, Types[TFLOAT64])
-		convlit(&r, Types[TFLOAT64])
+		l = convlit(l, Types[TFLOAT64])
+		r = convlit(r, Types[TFLOAT64])
 		return l, r
 	}
 
 	if lkind == CTRUNE || rkind == CTRUNE {
-		convlit(&l, runetype)
-		convlit(&r, runetype)
+		l = convlit(l, runetype)
+		r = convlit(r, runetype)
 		return l, r
 	}
 
-	convlit(&l, Types[TINT])
-	convlit(&r, Types[TINT])
+	l = convlit(l, Types[TINT])
+	r = convlit(r, Types[TINT])
 
 	return l, r
 }

@@ -268,7 +268,7 @@ func inlcopy(n *Node) *Node {
 func inlcalls(fn *Node) {
 	savefn := Curfn
 	Curfn = fn
-	inlnode(&fn)
+	fn = inlnode(fn)
 	if fn != Curfn {
 		Fatalf("inlnode replaced curfn")
 	}
@@ -291,7 +291,7 @@ func inlconv2stmt(n *Node) {
 // 	n.Left = inlconv2expr(n.Left)
 func inlconv2expr(n *Node) *Node {
 	r := n.Rlist.First()
-	addinit(&r, append(n.Ninit.Slice(), n.Nbody.Slice()...))
+	r = addinit(r, append(n.Ninit.Slice(), n.Nbody.Slice()...))
 	return r
 }
 
@@ -306,14 +306,14 @@ func inlconv2list(n *Node) []*Node {
 	}
 
 	s := n.Rlist.Slice()
-	addinit(&s[0], append(n.Ninit.Slice(), n.Nbody.Slice()...))
+	s[0] = addinit(s[0], append(n.Ninit.Slice(), n.Nbody.Slice()...))
 	return s
 }
 
 func inlnodelist(l Nodes) {
 	s := l.Slice()
 	for i := range s {
-		inlnode(&s[i])
+		s[i] = inlnode(s[i])
 	}
 }
 
@@ -360,17 +360,17 @@ func inlnode(n *Node) *Node {
 		}
 	}
 
-	inlnode(&n.Left)
+	n.Left = inlnode(n.Left)
 	if n.Left != nil && n.Left.Op == OINLCALL {
-		inlconv2expr(&n.Left)
+		n.Left = inlconv2expr(n.Left)
 	}
 
-	inlnode(&n.Right)
+	n.Right = inlnode(n.Right)
 	if n.Right != nil && n.Right.Op == OINLCALL {
 		if n.Op == OFOR {
 			inlconv2stmt(n.Right)
 		} else {
-			inlconv2expr(&n.Right)
+			n.Right = inlconv2expr(n.Right)
 		}
 	}
 
@@ -401,7 +401,7 @@ func inlnode(n *Node) *Node {
 		s := n.List.Slice()
 		for i1, n1 := range s {
 			if n1.Op == OINLCALL {
-				inlconv2expr(&s[i1])
+				s[i1] = inlconv2expr(s[i1])
 			}
 		}
 	}
@@ -413,7 +413,7 @@ func inlnode(n *Node) *Node {
 			n.Rlist.Set(inlconv2list(n.Rlist.First()))
 			n.Op = OAS2
 			n.Typecheck = 0
-			typecheck(&n, Etop)
+			n = typecheck(n, Etop)
 			break
 		}
 		fallthrough
@@ -425,7 +425,7 @@ func inlnode(n *Node) *Node {
 				if n.Op == OIF {
 					inlconv2stmt(n1)
 				} else {
-					inlconv2expr(&s[i1])
+					s[i1] = inlconv2expr(s[i1])
 				}
 			}
 		}
@@ -455,10 +455,10 @@ func inlnode(n *Node) *Node {
 			fmt.Printf("%v:call to func %v\n", n.Line(), Nconv(n.Left, FmtSign))
 		}
 		if n.Left.Func != nil && len(n.Left.Func.Inl.Slice()) != 0 { // normal case
-			mkinlcall(&n, n.Left, n.Isddd)
+			n = mkinlcall(n, n.Left, n.Isddd)
 		} else if n.Left.Op == ONAME && n.Left.Left != nil && n.Left.Left.Op == OTYPE && n.Left.Right != nil && n.Left.Right.Op == ONAME { // methods called as functions
 			if n.Left.Sym.Def != nil {
-				mkinlcall(&n, n.Left.Sym.Def, n.Isddd)
+				n = mkinlcall(n, n.Left.Sym.Def, n.Isddd)
 			}
 		}
 
@@ -476,7 +476,7 @@ func inlnode(n *Node) *Node {
 			Fatalf("no function definition for [%p] %v\n", n.Left.Type, Tconv(n.Left.Type, FmtSign))
 		}
 
-		mkinlcall(&n, n.Left.Type.Nname, n.Isddd)
+		n = mkinlcall(n, n.Left.Type.Nname, n.Isddd)
 	}
 
 	lineno = lno
@@ -495,7 +495,7 @@ func mkinlcall(n *Node, fn *Node, isddd bool) *Node {
 	if pkg != localpkg && pkg != nil {
 		safemode = 0
 	}
-	mkinlcall1(&n, fn, isddd)
+	n = mkinlcall1(n, fn, isddd)
 	safemode = save_safemode
 	return n
 }
@@ -508,7 +508,7 @@ func tinlvar(t *Field) *Node {
 		return t.Nname.Name.Inlvar
 	}
 
-	typecheck(&nblank, Erv|Easgn)
+	nblank = typecheck(nblank, Erv|Easgn)
 	return nblank
 }
 
@@ -570,7 +570,7 @@ func mkinlcall1(n *Node, fn *Node, isddd bool) *Node {
 			ln.Name.Inlvar = inlvar(ln)
 
 			// Typecheck because inlvar is not necessarily a function parameter.
-			typecheck(&ln.Name.Inlvar, Erv)
+			ln.Name.Inlvar = typecheck(ln.Name.Inlvar, Erv)
 
 			if ln.Class&^PHEAP != PAUTO {
 				ninit.Append(Nod(ODCL, ln.Name.Inlvar, nil)) // otherwise gen won't emit the allocations for heapallocs
@@ -583,7 +583,7 @@ func mkinlcall1(n *Node, fn *Node, isddd bool) *Node {
 	for _, t := range fn.Type.Results().Fields().Slice() {
 		if t != nil && t.Nname != nil && !isblank(t.Nname) {
 			m = inlvar(t.Nname)
-			typecheck(&m, Erv)
+			m = typecheck(m, Erv)
 			t.Nname.Name.Inlvar = m
 		} else {
 			// anonymous return values, synthesize names for use in assignment that replaces return
@@ -611,7 +611,7 @@ func mkinlcall1(n *Node, fn *Node, isddd bool) *Node {
 		}
 		as := Nod(OAS, tinlvar(t), n.Left.Left)
 		if as != nil {
-			typecheck(&as, Etop)
+			as = typecheck(as, Etop)
 			ninit.Append(as)
 		}
 	}
@@ -738,7 +738,7 @@ func mkinlcall1(n *Node, fn *Node, isddd bool) *Node {
 	}
 
 	if as.Rlist.Len() != 0 {
-		typecheck(&as, Etop)
+		as = typecheck(as, Etop)
 		ninit.Append(as)
 	}
 
@@ -758,14 +758,14 @@ func mkinlcall1(n *Node, fn *Node, isddd bool) *Node {
 			as.Right = Nod(OSLICE, as.Right, Nod(OKEY, nil, nil))
 		}
 
-		typecheck(&as, Etop)
+		as = typecheck(as, Etop)
 		ninit.Append(as)
 	}
 
 	// zero the outparams
 	for _, n := range retvars {
 		as = Nod(OAS, n, nil)
-		typecheck(&as, Etop)
+		as = typecheck(as, Etop)
 		ninit.Append(as)
 	}
 
@@ -951,12 +951,12 @@ func (subst *inlsubst) node(n *Node) *Node {
 				as.List.Append(n)
 			}
 			as.Rlist.Set(subst.list(n.List))
-			typecheck(&as, Etop)
+			as = typecheck(as, Etop)
 			m.Ninit.Append(as)
 		}
 
 		typecheckslice(m.Ninit.Slice(), Etop)
-		typecheck(&m, Etop)
+		m = typecheck(m, Etop)
 
 		//		dump("Return after substitution", m);
 		return m

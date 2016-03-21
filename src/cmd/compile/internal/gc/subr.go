@@ -484,7 +484,7 @@ func Nodbool(b bool) *Node {
 
 func aindex(b *Node, t *Type) *Type {
 	bound := int64(-1) // open bound
-	typecheck(&b, Erv)
+	b = typecheck(b, Erv)
 	if b != nil {
 		switch consttype(b) {
 		default:
@@ -1042,7 +1042,7 @@ func assignconvfn(n *Node, t *Type, context func() string) *Node {
 
 	old := n
 	old.Diag++ // silence errors about n; we'll issue one below
-	defaultlit(&n, t)
+	n = defaultlit(n, t)
 	old.Diag--
 	if t.Etype == TBLANK {
 		return n
@@ -1480,8 +1480,8 @@ func safeexpr(n *Node, init *Nodes) *Node {
 		r := Nod(OXXX, nil, nil)
 		*r = *n
 		r.Left = l
-		typecheck(&r, Erv)
-		walkexpr(&r, init)
+		r = typecheck(r, Erv)
+		r = walkexpr(r, init)
 		return r
 
 	case ODOTPTR, OIND:
@@ -1492,7 +1492,7 @@ func safeexpr(n *Node, init *Nodes) *Node {
 		a := Nod(OXXX, nil, nil)
 		*a = *n
 		a.Left = l
-		walkexpr(&a, init)
+		a = walkexpr(a, init)
 		return a
 
 	case OINDEX, OINDEXMAP:
@@ -1505,7 +1505,7 @@ func safeexpr(n *Node, init *Nodes) *Node {
 		*a = *n
 		a.Left = l
 		a.Right = r
-		walkexpr(&a, init)
+		a = walkexpr(a, init)
 		return a
 	}
 
@@ -1519,8 +1519,8 @@ func safeexpr(n *Node, init *Nodes) *Node {
 func copyexpr(n *Node, t *Type, init *Nodes) *Node {
 	l := temp(t)
 	a := Nod(OAS, l, n)
-	typecheck(&a, Etop)
-	walkexpr(&a, init)
+	a = typecheck(a, Etop)
+	a = walkexpr(a, init)
 	init.Append(a)
 	return l
 }
@@ -1686,7 +1686,7 @@ func dotpath(s *Sym, t *Type, save **Field, ignorecase bool) (path []Dlist, ambi
 // will give shortest unique addressing.
 // modify the tree with missing type names.
 func adddot(n *Node) *Node {
-	typecheck(&n.Left, Etype|Erv)
+	n.Left = typecheck(n.Left, Etype|Erv)
 	n.Diag |= n.Left.Diag
 	t := n.Left.Type
 	if t == nil {
@@ -2020,7 +2020,7 @@ func genwrapper(rcvr *Type, method *Field, newnam *Sym, iface int) {
 	if rcvr.Etype == TSTRUCT || rcvr.Etype == TINTER || Isptr[rcvr.Etype] && rcvr.Type.Etype == TSTRUCT {
 		fn.Func.Dupok = true
 	}
-	typecheck(&fn, Etop)
+	fn = typecheck(fn, Etop)
 	typecheckslice(fn.Nbody.Slice(), Etop)
 
 	inlcalls(fn)
@@ -2040,7 +2040,7 @@ func hashmem(t *Type) *Node {
 	tfn.List.Append(Nod(ODCLFIELD, nil, typenod(Types[TUINTPTR])))
 	tfn.List.Append(Nod(ODCLFIELD, nil, typenod(Types[TUINTPTR])))
 	tfn.Rlist.Append(Nod(ODCLFIELD, nil, typenod(Types[TUINTPTR])))
-	typecheck(&tfn, Etype)
+	tfn = typecheck(tfn, Etype)
 	n.Type = tfn.Type
 	return n
 }
@@ -2379,7 +2379,7 @@ func isbadimport(path string) bool {
 func checknil(x *Node, init *Nodes) {
 	if Isinter(x.Type) {
 		x = Nod(OITAB, x, nil)
-		typecheck(&x, Erv)
+		x = typecheck(x, Erv)
 	}
 
 	n := Nod(OCHECKNIL, x, nil)
