@@ -1348,53 +1348,55 @@ num:
 // if they're both ideal going in they better
 // get the same type going out.
 // force means must assign concrete (non-ideal) type.
-func defaultlit2(lp **Node, rp **Node, force bool) {
-	l := *lp
-	r := *rp
+// The results of defaultlit2 MUST be assigned back to l and r, e.g.
+// 	n.Left, n.Right = defaultlit2(n.Left, n.Right, force)
+func defaultlit2(l *Node, r *Node, force bool) (*Node, *Node) {
 	if l.Type == nil || r.Type == nil {
-		return
+		return l, r
 	}
 	if !isideal(l.Type) {
-		convlit(rp, l.Type)
-		return
+		convlit(&r, l.Type)
+		return l, r
 	}
 
 	if !isideal(r.Type) {
-		convlit(lp, r.Type)
-		return
+		convlit(&l, r.Type)
+		return l, r
 	}
 
 	if !force {
-		return
+		return l, r
 	}
 
 	if l.Type.Etype == TBOOL {
-		convlit(lp, Types[TBOOL])
-		convlit(rp, Types[TBOOL])
+		convlit(&l, Types[TBOOL])
+		convlit(&r, Types[TBOOL])
 	}
 
 	lkind := idealkind(l)
 	rkind := idealkind(r)
 	if lkind == CTCPLX || rkind == CTCPLX {
-		convlit(lp, Types[TCOMPLEX128])
-		convlit(rp, Types[TCOMPLEX128])
-		return
+		convlit(&l, Types[TCOMPLEX128])
+		convlit(&r, Types[TCOMPLEX128])
+		return l, r
 	}
 
 	if lkind == CTFLT || rkind == CTFLT {
-		convlit(lp, Types[TFLOAT64])
-		convlit(rp, Types[TFLOAT64])
-		return
+		convlit(&l, Types[TFLOAT64])
+		convlit(&r, Types[TFLOAT64])
+		return l, r
 	}
 
 	if lkind == CTRUNE || rkind == CTRUNE {
-		convlit(lp, runetype)
-		convlit(rp, runetype)
-		return
+		convlit(&l, runetype)
+		convlit(&r, runetype)
+		return l, r
 	}
 
-	convlit(lp, Types[TINT])
-	convlit(rp, Types[TINT])
+	convlit(&l, Types[TINT])
+	convlit(&r, Types[TINT])
+
+	return l, r
 }
 
 // strlit returns the value of a literal string Node as a string.

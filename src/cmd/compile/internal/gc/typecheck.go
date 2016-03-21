@@ -571,7 +571,7 @@ OpSwitch:
 		}
 
 		// ideal mixed with non-ideal
-		defaultlit2(&l, &r, false)
+		l, r = defaultlit2(l, r, false)
 
 		n.Left = l
 		n.Right = r
@@ -644,7 +644,7 @@ OpSwitch:
 		}
 
 		if t.Etype != TIDEAL && !Eqtype(l.Type, r.Type) {
-			defaultlit2(&l, &r, true)
+			l, r = defaultlit2(l, r, true)
 			if Isinter(r.Type) == Isinter(l.Type) || aop == 0 {
 				Yyerror("invalid operation: %v (mismatched types %v and %v)", n, l.Type, r.Type)
 				n.Type = nil
@@ -696,7 +696,7 @@ OpSwitch:
 			evconst(n)
 			t = idealbool
 			if n.Op != OLITERAL {
-				defaultlit2(&l, &r, true)
+				l, r = defaultlit2(l, r, true)
 				n.Left = l
 				n.Right = r
 			}
@@ -1472,7 +1472,7 @@ OpSwitch:
 				n.Type = nil
 				return
 			}
-			defaultlit2(&l, &r, false)
+			l, r = defaultlit2(l, r, false)
 			if l.Type == nil || r.Type == nil {
 				n.Type = nil
 				return
