@@ -1092,7 +1092,7 @@ func exprfmt(n *Node, prec int) string {
 		if n.Val().Ctype() == CTNIL && n.Orig != nil && n.Orig != n {
 			return exprfmt(n.Orig, prec)
 		}
-		if n.Type != nil && n.Type.Etype != TIDEAL && n.Type.Etype != TNIL && n.Type != idealbool && n.Type != idealstring {
+		if !isideal(n.Type) && (n.Sym != nil || fmtmode == FExp) {
 			// Need parens when type begins with what might
 			// be misinterpreted as a unary operator: * or <-.
 			if Isptr[n.Type.Etype] || (n.Type.Etype == TCHAN && n.Type.Chan == Crecv) {

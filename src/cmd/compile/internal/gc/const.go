@@ -103,9 +103,8 @@ func convlit(n *Node, t *Type) *Node {
 	return convlit1(n, t, false)
 }
 
-// convert n, if literal, to type t.
-// return a new node if necessary
-// (if n is a named constant, can't edit n->type directly).
+// convlit1 converts n, if literal, to type t.
+// It returns a new node if necessary.
 // The result of convlit1 MUST be assigned back to n, e.g.
 // 	n.Left = convlit1(n.Left, t, explicit)
 func convlit1(n *Node, t *Type, explicit bool) *Node {
@@ -116,7 +115,8 @@ func convlit1(n *Node, t *Type, explicit bool) *Node {
 		return n
 	}
 
-	if n.Op == OLITERAL {
+	if n.Op == OLITERAL && n.Sym != nil {
+		// If n has a name, make a copy to mutate.
 		nn := *n
 		n = &nn
 	}
@@ -1247,7 +1247,8 @@ func defaultlit(n *Node, t *Type) *Node {
 		return n
 	}
 
-	if n.Op == OLITERAL {
+	if n.Op == OLITERAL && n.Sym != nil {
+		// If n has a name, make a copy to mutate.
 		nn := *n
 		n = &nn
 	}
