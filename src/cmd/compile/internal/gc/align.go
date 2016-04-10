@@ -106,7 +106,7 @@ func dowidth(t *Type) {
 		return
 	}
 
-	if t.Width > 0 {
+	if t.WidthState&widthDone != 0 {
 		if t.Align == 0 {
 			// See issue 11354
 			Fatalf("zero alignment with nonzero size %v", t)
@@ -114,7 +114,7 @@ func dowidth(t *Type) {
 		return
 	}
 
-	if t.Width == -2 {
+	if t.WidthState&widthRecursing != 0 {
 		if !t.Broke {
 			t.Broke = true
 			yyerrorl(t.Lineno, "invalid recursive type %v", t)
@@ -126,7 +126,7 @@ func dowidth(t *Type) {
 
 	// break infinite recursion if the broken recursive type
 	// is referenced again
-	if t.Broke && t.Width == 0 {
+	if t.Broke && t.WidthState&widthDone == 0 {
 		return
 	}
 
@@ -135,7 +135,7 @@ func dowidth(t *Type) {
 
 	lno := lineno
 	lineno = t.Lineno
-	t.Width = -2
+	t.WidthState |= widthRecursing
 	t.Align = 0
 
 	et := t.Etype
@@ -294,6 +294,8 @@ func dowidth(t *Type) {
 	}
 
 	t.Width = w
+	t.WidthState &^= widthRecursing
+	t.WidthState |= widthDone
 	if t.Align == 0 {
 		if w > 8 || w&(w-1) != 0 {
 			Fatalf("invalid alignment for %v", t)
@@ -344,10 +346,10 @@ func checkwidth(t *Type) {
 		return
 	}
 
-	if t.Deferwidth {
+	if t.WidthState&widthDeferred != 0 {
 		return
 	}
-	t.Deferwidth = true
+	t.WidthState |= widthDeferred
 
 	deferredTypeStack = append(deferredTypeStack, t)
 }
@@ -367,7 +369,7 @@ func resumecheckwidth() {
 	for len(deferredTypeStack) > 0 {
 		t := deferredTypeStack[len(deferredTypeStack)-1]
 		deferredTypeStack = deferredTypeStack[:len(deferredTypeStack)-1]
-		t.Deferwidth = false
+		t.WidthState &^= widthDeferred
 		dowidth(t)
 	}
 

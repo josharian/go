@@ -120,6 +120,15 @@ var (
 	idealcomplex = typ(TIDEAL)
 )
 
+// widthState is a bitmap tracking the width/alignment processing that has been done for a type.
+type widthState uint8
+
+const (
+	widthDone      = 1 << iota // width has been calculated
+	widthRecursing             // width is being calculated
+	widthDeferred              // width calculated has been deferred
+)
+
 // A Type represents a Go type.
 type Type struct {
 	// Extra contains extra etype-specific fields.
@@ -158,7 +167,7 @@ type Type struct {
 	Trecur     uint8 // to detect loops
 	Printed    bool  // prevent duplicate export printing
 	Local      bool  // created in this file
-	Deferwidth bool
+	WidthState widthState
 	Broke      bool  // broken type definition.
 	Align      uint8 // the required alignment of this type, in bytes
 }

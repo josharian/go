@@ -3543,7 +3543,7 @@ func copytype(n *Node, t *Type) {
 	t.allMethods = Fields{}
 	t.Nod = nil
 	t.Printed = false
-	t.Deferwidth = false
+	t.WidthState &^= widthDeferred
 
 	// Update nodes waiting on this type.
 	for _, n := range l {
