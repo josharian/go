@@ -33,10 +33,10 @@ func defframe(ptxt *obj.Prog) {
 		if n.Class != gc.PAUTO {
 			gc.Fatalf("needzero class %d", n.Class)
 		}
-		if n.Type.Width%int64(gc.Widthptr) != 0 || n.Xoffset%int64(gc.Widthptr) != 0 || n.Type.Width == 0 {
-			gc.Fatalf("var %v has size %d offset %d", gc.Nconv(n, gc.FmtLong), int(n.Type.Width), int(n.Xoffset))
+		if n.Type.Width()%int64(gc.Widthptr) != 0 || n.Xoffset%int64(gc.Widthptr) != 0 || n.Type.Width() == 0 {
+			gc.Fatalf("var %v has size %d offset %d", gc.Nconv(n, gc.FmtLong), int(n.Type.Width()), int(n.Xoffset))
 		}
-		if lo != hi && n.Xoffset+n.Type.Width == lo-int64(2*gc.Widthptr) {
+		if lo != hi && n.Xoffset+n.Type.Width() == lo-int64(2*gc.Widthptr) {
 			// merge with range we already have
 			lo = n.Xoffset
 
@@ -47,7 +47,7 @@ func defframe(ptxt *obj.Prog) {
 		p = zerorange(p, int64(frame), lo, hi, &ax)
 
 		// set new range
-		hi = n.Xoffset + n.Type.Width
+		hi = n.Xoffset + n.Type.Width()
 
 		lo = n.Xoffset
 	}
@@ -106,7 +106,7 @@ func clearfat(nl *gc.Node) {
 		gc.Dump("\nclearfat", nl)
 	}
 
-	w := uint32(nl.Type.Width)
+	w := uint32(nl.Type.Width())
 
 	// Avoid taking the address for simple enough types.
 	if gc.Componentgen(nil, nl) {
@@ -203,14 +203,14 @@ func dodiv(op gc.Op, nl *gc.Node, nr *gc.Node, res *gc.Node, ax *gc.Node, dx *gc
 	check := false
 	if t.IsSigned() {
 		check = true
-		if gc.Isconst(nl, gc.CTINT) && nl.Int64() != -1<<uint64(t.Width*8-1) {
+		if gc.Isconst(nl, gc.CTINT) && nl.Int64() != -1<<uint64(t.Width()*8-1) {
 			check = false
 		} else if gc.Isconst(nr, gc.CTINT) && nr.Int64() != -1 {
 			check = false
 		}
 	}
 
-	if t.Width < 4 {
+	if t.Width() < 4 {
 		if t.IsSigned() {
 			t = gc.Types[gc.TINT32]
 		} else {
@@ -363,11 +363,11 @@ func cgen_div(op gc.Op, nl *gc.Node, nr *gc.Node, res *gc.Node) {
  *	res = nl >> nr
  */
 func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) {
-	if nl.Type.Width > 4 {
+	if nl.Type.Width() > 4 {
 		gc.Fatalf("cgen_shift %v", nl.Type)
 	}
 
-	w := int(nl.Type.Width * 8)
+	w := int(nl.Type.Width() * 8)
 
 	a := optoas(op, nl.Type)
 
@@ -379,7 +379,7 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 		gc.Regalloc(&n1, nl.Type, res)
 		gmove(&n2, &n1)
 		sc := uint64(nr.Int64())
-		if sc >= uint64(nl.Type.Width*8) {
+		if sc >= uint64(nl.Type.Width()*8) {
 			// large shift gets 2 shifts by width-1
 			gins(a, ncon(uint32(w)-1), &n1)
 
@@ -402,7 +402,7 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 
 	var n1 gc.Node
 	var nt gc.Node
-	if nr.Type.Width > 4 {
+	if nr.Type.Width() > 4 {
 		gc.Tempname(&nt, nr.Type)
 		n1 = nt
 	} else {
@@ -426,7 +426,7 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 
 	// test and fix up large shifts
 	if bounded {
-		if nr.Type.Width > 4 {
+		if nr.Type.Width() > 4 {
 			// delayed reg alloc
 			gc.Nodreg(&n1, gc.Types[gc.TUINT32], x86.REG_CX)
 
@@ -439,7 +439,7 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 		}
 	} else {
 		var p1 *obj.Prog
-		if nr.Type.Width > 4 {
+		if nr.Type.Width() > 4 {
 			// delayed reg alloc
 			gc.Nodreg(&n1, gc.Types[gc.TUINT32], x86.REG_CX)
 
@@ -548,7 +548,7 @@ func cgen_hmul(nl *gc.Node, nr *gc.Node, res *gc.Node) {
 	gins(a, &n1, nil)
 	gc.Regfree(&n2)
 
-	if t.Width == 1 {
+	if t.Width() == 1 {
 		// byte multiply behaves differently.
 		var byteAH, byteDX gc.Node
 		gc.Nodreg(&byteAH, t, x86.REG_AH)

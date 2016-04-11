@@ -213,8 +213,8 @@ func cmpstackvarlt(a, b *Node) bool {
 		return ap
 	}
 
-	if a.Type.Width != b.Type.Width {
-		return a.Type.Width > b.Type.Width
+	if a.Type.Width() != b.Type.Width() {
+		return a.Type.Width() > b.Type.Width()
 	}
 
 	return a.Sym.Name < b.Sym.Name
@@ -278,12 +278,12 @@ func allocauto(ptxt *obj.Prog) {
 		}
 
 		dowidth(n.Type)
-		w = n.Type.Width
+		w = n.Type.Width()
 		if w >= Thearch.MAXWIDTH || w < 0 {
 			Fatalf("bad width")
 		}
 		Stksize += w
-		Stksize = Rnd(Stksize, int64(n.Type.Align))
+		Stksize = Rnd(Stksize, int64(n.Type.Align()))
 		if haspointers(n.Type) {
 			stkptrsize = Stksize
 		}
@@ -477,7 +477,7 @@ func compile(fn *Node) {
 		}
 		switch n.Class {
 		case PAUTO, PPARAM, PPARAMOUT:
-			Nodconst(&nod1, Types[TUINTPTR], n.Type.Width)
+			Nodconst(&nod1, Types[TUINTPTR], n.Type.Width())
 			p := Thearch.Gins(obj.ATYPE, n, &nod1)
 			p.From.Gotype = Linksym(ngotype(n))
 		}

@@ -11,7 +11,7 @@ func overlap_cplx(f *Node, t *Node) bool {
 	// not exact, because it's hard to check for the stack register
 	// in portable code.  close enough: worst case we will allocate
 	// an extra temporary and the registerizer will clean it up.
-	return f.Op == OINDREG && t.Op == OINDREG && f.Xoffset+f.Type.Width >= t.Xoffset && t.Xoffset+t.Type.Width >= f.Xoffset
+	return f.Op == OINDREG && t.Op == OINDREG && f.Xoffset+f.Type.Width() >= t.Xoffset && t.Xoffset+t.Type.Width() >= f.Xoffset
 }
 
 func complexbool(op Op, nl, nr, res *Node, wantTrue bool, likely int, to *obj.Prog) {
@@ -99,7 +99,7 @@ func subnode(nr *Node, ni *Node, nc *Node) {
 
 	*ni = *nc
 	ni.Type = t
-	ni.Xoffset += t.Width
+	ni.Xoffset += t.Width()
 }
 
 // generate code res = -nl

@@ -61,7 +61,7 @@ func (t *Type) IncomparableField() *Field {
 func algtype(t *Type) AlgKind {
 	a, _ := algtype1(t)
 	if a == AMEM {
-		switch t.Width {
+		switch t.Width() {
 		case 0:
 			return AMEM0
 		case 1:
@@ -596,7 +596,7 @@ func ispaddedfield(t *Type, i int) bool {
 	if !t.IsStruct() {
 		Fatalf("ispaddedfield called non-struct %v", t)
 	}
-	end := t.Width
+	end := t.Width()
 	if i+1 < t.NumFields() {
 		end = t.Field(i + 1).Offset
 	}

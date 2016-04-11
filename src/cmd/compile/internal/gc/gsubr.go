@@ -224,7 +224,7 @@ func ggloblnod(nam *Node) {
 	p.From.Sym.Gotype = Linksym(ngotype(nam))
 	p.To.Sym = nil
 	p.To.Type = obj.TYPE_CONST
-	p.To.Offset = nam.Type.Width
+	p.To.Offset = nam.Type.Width()
 	p.From3 = new(obj.Addr)
 	if nam.Name.Readonly {
 		p.From3.Offset = obj.RODATA
@@ -317,7 +317,7 @@ func Naddr(a *obj.Addr, n *Node) {
 		// The type mismatches should be fixed and the clearing below removed.
 		dowidth(n.Type)
 
-		a.Width = n.Type.Width
+		a.Width = n.Type.Width()
 	}
 
 	switch n.Op {
@@ -352,7 +352,7 @@ func Naddr(a *obj.Addr, n *Node) {
 	case OPARAM:
 		a.Etype = uint8(Simtype[n.Left.Type.Etype])
 
-		a.Width = n.Left.Type.Width
+		a.Width = n.Left.Type.Width()
 		a.Offset = n.Xoffset
 		a.Sym = Linksym(n.Left.Sym)
 		a.Type = obj.TYPE_MEM

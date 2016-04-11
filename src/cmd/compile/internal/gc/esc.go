@@ -639,8 +639,8 @@ func esc(e *EscState, n *Node, up *Node) {
 	// Big stuff escapes unconditionally
 	// "Big" conditions that were scattered around in walk have been gathered here
 	if n.Esc != EscHeap && n.Type != nil &&
-		(n.Type.Width > MaxStackVarSize ||
-			n.Op == ONEW && n.Type.Elem().Width >= 1<<16 ||
+		(n.Type.Width() > MaxStackVarSize ||
+			n.Op == ONEW && n.Type.Elem().Width() >= 1<<16 ||
 			n.Op == OMAKESLICE && !isSmallMakeSlice(n)) {
 		if Debug['m'] > 2 {
 			Warnl(n.Lineno, "%v is too large for stack", n)

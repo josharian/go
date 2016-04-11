@@ -224,7 +224,7 @@ func getvariables(fn *Node) []*Node {
 			ln.SetOpt(nil)
 
 			// The compiler doesn't emit initializations for zero-width parameters or results.
-			if ln.Type.Width == 0 {
+			if ln.Type.Width() == 0 {
 				continue
 			}
 
@@ -864,7 +864,7 @@ func checkptxt(fn *Node, firstp *obj.Prog) {
 // the same type t. On https://rsc.googlecode.com/hg/testdata/slow.go, onebitwalktype1
 // accounts for 40% of the 6g execution time.
 func onebitwalktype1(t *Type, xoffset *int64, bv Bvec) {
-	if t.Align > 0 && *xoffset&int64(t.Align-1) != 0 {
+	if t.Align() > 0 && *xoffset&int64(t.Align()-1) != 0 {
 		Fatalf("onebitwalktype1: invalid initial alignment, %v", t)
 	}
 
@@ -885,7 +885,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv Bvec) {
 		TFLOAT64,
 		TCOMPLEX64,
 		TCOMPLEX128:
-		*xoffset += t.Width
+		*xoffset += t.Width()
 
 	case TPTR32,
 		TPTR64,
@@ -897,7 +897,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv Bvec) {
 			Fatalf("onebitwalktype1: invalid alignment, %v", t)
 		}
 		bvset(bv, int32(*xoffset/int64(Widthptr))) // pointer
-		*xoffset += t.Width
+		*xoffset += t.Width()
 
 	case TSTRING:
 		// struct { byte *str; intgo len; }
@@ -905,7 +905,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv Bvec) {
 			Fatalf("onebitwalktype1: invalid alignment, %v", t)
 		}
 		bvset(bv, int32(*xoffset/int64(Widthptr))) //pointer in first slot
-		*xoffset += t.Width
+		*xoffset += t.Width()
 
 	case TINTER:
 		// struct { Itab *tab;	void *data; }
@@ -916,7 +916,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv Bvec) {
 		}
 		bvset(bv, int32(*xoffset/int64(Widthptr)))   // pointer in first slot
 		bvset(bv, int32(*xoffset/int64(Widthptr)+1)) // pointer in second slot
-		*xoffset += t.Width
+		*xoffset += t.Width()
 
 	case TARRAY:
 		if t.IsSlice() {
@@ -925,7 +925,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv Bvec) {
 				Fatalf("onebitwalktype1: invalid TARRAY alignment, %v", t)
 			}
 			bvset(bv, int32(*xoffset/int64(Widthptr))) // pointer in first slot (BitsPointer)
-			*xoffset += t.Width
+			*xoffset += t.Width()
 		} else {
 			for i := int64(0); i < t.NumElem(); i++ {
 				onebitwalktype1(t.Elem(), xoffset, bv)
@@ -938,10 +938,10 @@ func onebitwalktype1(t *Type, xoffset *int64, bv Bvec) {
 			fieldoffset := t1.Offset
 			*xoffset += fieldoffset - o
 			onebitwalktype1(t1.Type, xoffset, bv)
-			o = fieldoffset + t1.Type.Width
+			o = fieldoffset + t1.Type.Width()
 		}
 
-		*xoffset += t.Width - o
+		*xoffset += t.Width() - o
 
 	default:
 		Fatalf("onebitwalktype1: unexpected type, %v", t)
@@ -1161,14 +1161,14 @@ func livenesssolve(lv *Liveness) {
 func islive(n *Node, args Bvec, locals Bvec) bool {
 	switch n.Class {
 	case PPARAM, PPARAMOUT:
-		for i := 0; int64(i) < n.Type.Width/int64(Widthptr); i++ {
+		for i := 0; int64(i) < n.Type.Width()/int64(Widthptr); i++ {
 			if bvget(args, int32(n.Xoffset/int64(Widthptr)+int64(i))) != 0 {
 				return true
 			}
 		}
 
 	case PAUTO:
-		for i := 0; int64(i) < n.Type.Width/int64(Widthptr); i++ {
+		for i := 0; int64(i) < n.Type.Width()/int64(Widthptr); i++ {
 			if bvget(locals, int32((n.Xoffset+stkptrsize)/int64(Widthptr)+int64(i))) != 0 {
 				return true
 			}

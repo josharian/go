@@ -1212,12 +1212,12 @@ func visitComponents(t *Type, startOffset int64, f func(elem *Type, elemOffset i
 		}
 
 		// Short-circuit [1e6]struct{}.
-		if t.Elem().Width == 0 {
+		if t.Elem().Width() == 0 {
 			return true
 		}
 
 		for i := int64(0); i < t.NumElem(); i++ {
-			if !visitComponents(t.Elem(), startOffset+i*t.Elem().Width, f) {
+			if !visitComponents(t.Elem(), startOffset+i*t.Elem().Width(), f) {
 				return false
 			}
 		}

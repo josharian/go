@@ -243,7 +243,7 @@ func capturevars(xfunc *Node) {
 		v.Name.Param.Outerexpr = nil
 
 		// out parameters will be assigned to implicitly upon return.
-		if outer.Class != PPARAMOUT && !v.Name.Param.Closure.Addrtaken && !v.Name.Param.Closure.Assigned && v.Type.Width <= 128 {
+		if outer.Class != PPARAMOUT && !v.Name.Param.Closure.Addrtaken && !v.Name.Param.Closure.Assigned && v.Type.Width() <= 128 {
 			v.Name.Byval = true
 		} else {
 			v.Name.Param.Closure.Addrtaken = true
@@ -259,7 +259,7 @@ func capturevars(xfunc *Node) {
 			if v.Name.Byval {
 				how = "value"
 			}
-			Warnl(v.Lineno, "%v capturing by %s: %v (addr=%v assign=%v width=%d)", name, how, v.Sym, v.Name.Param.Closure.Addrtaken, v.Name.Param.Closure.Assigned, int32(v.Type.Width))
+			Warnl(v.Lineno, "%v capturing by %s: %v (addr=%v assign=%v width=%d)", name, how, v.Sym, v.Name.Param.Closure.Addrtaken, v.Name.Param.Closure.Assigned, int32(v.Type.Width()))
 		}
 
 		outer = typecheck(outer, Erv)
@@ -336,7 +336,7 @@ func transformclosure(xfunc *Node) {
 		}
 
 		// Recalculate param offsets.
-		if f.Type.Width > 0 {
+		if f.Type.Width() > 0 {
 			Fatalf("transformclosure: width is already calculated")
 		}
 		dowidth(f.Type)
@@ -359,11 +359,11 @@ func transformclosure(xfunc *Node) {
 			if !v.Name.Byval {
 				cv.Type = Ptrto(v.Type)
 			}
-			offset = Rnd(offset, int64(cv.Type.Align))
+			offset = Rnd(offset, int64(cv.Type.Align()))
 			cv.Xoffset = offset
-			offset += cv.Type.Width
+			offset += cv.Type.Width()
 
-			if v.Name.Byval && v.Type.Width <= int64(2*Widthptr) {
+			if v.Name.Byval && v.Type.Width() <= int64(2*Widthptr) {
 				// If it is a small variable captured by value, downgrade it to PAUTO.
 				v.Class = PAUTO
 				v.Ullman = 1
@@ -601,8 +601,8 @@ func makepartialcall(fn *Node, t0 *Type, meth *Sym) *Node {
 	cv := Nod(OCLOSUREVAR, nil, nil)
 	cv.Xoffset = int64(Widthptr)
 	cv.Type = rcvrtype
-	if int(cv.Type.Align) > Widthptr {
-		cv.Xoffset = int64(cv.Type.Align)
+	if int(cv.Type.Align()) > Widthptr {
+		cv.Xoffset = int64(cv.Type.Align())
 	}
 	ptr := Nod(ONAME, nil, nil)
 	ptr.Sym = Lookup("rcvr")

@@ -15,7 +15,7 @@ func blockcopy(n, res *gc.Node, osrc, odst, w int64) {
 	// want to avoid unaligned access, so have to use
 	// smaller operations for less aligned types.
 	// for example moving [4]byte must use 4 MOVB not 1 MOVW.
-	align := int(n.Type.Align)
+	align := int(n.Type.Align())
 
 	var op obj.As
 	switch align {

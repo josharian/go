@@ -38,9 +38,9 @@ func unsafenmagic(nn *Node) *Node {
 		}
 		dowidth(tr)
 		if s.Name == "Alignof" {
-			v = int64(tr.Align)
+			v = int64(tr.Align())
 		} else {
-			v = tr.Width
+			v = tr.Width()
 		}
 
 	case "Offsetof":

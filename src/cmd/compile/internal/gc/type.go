@@ -141,7 +141,7 @@ type Type struct {
 	Extra interface{}
 
 	// Width is the width of this Type in bytes.
-	Width int64
+	width int64
 
 	methods    Fields
 	allMethods Fields
@@ -160,7 +160,7 @@ type Type struct {
 	Local      bool  // created in this file
 	Deferwidth bool
 	Broke      bool  // broken type definition.
-	Align      uint8 // the required alignment of this type, in bytes
+	align      uint8 // the required alignment of this type, in bytes
 }
 
 // MapType contains Type fields specific to maps.
@@ -313,7 +313,7 @@ type Field struct {
 
 // End returns the offset of the first byte immediately after this field.
 func (f *Field) End() int64 {
-	return f.Offset + f.Type.Width
+	return f.Offset + f.Type.Width()
 }
 
 // Fields is a pointer to a slice of *Field.
@@ -365,7 +365,7 @@ func (f *Fields) Append(s ...*Field) {
 func typ(et EType) *Type {
 	t := &Type{
 		Etype:  et,
-		Width:  BADWIDTH,
+		width:  BADWIDTH,
 		Lineno: lineno,
 	}
 	t.Orig = t
@@ -444,8 +444,8 @@ func typMap(k, v *Type) *Type {
 func typPtr(elem *Type) *Type {
 	t := typ(Tptr)
 	t.Extra = PtrType{Elem: elem}
-	t.Width = int64(Widthptr)
-	t.Align = uint8(Widthptr)
+	t.width = int64(Widthptr)
+	t.align = uint8(Widthptr)
 	return t
 }
 
@@ -853,14 +853,28 @@ func (t *Type) ArgWidth() int64 {
 	return t.Extra.(*FuncType).Argwid
 }
 
+// Width returns t's width in bytes.
+// Callers must be sure that dowidth(t) has already been called.
+// Deprecated: Callers should migrate to Size and remove their calls to dowidth.
+func (t *Type) Width() int64 {
+	return t.width
+}
+
+// Align returns t's alignment in bytes.
+// Callers must be sure that dowidth(t) has already been called.
+// Deprecated: Callers should migrate to Alignment and remove their calls to dowidth.
+func (t *Type) Align() uint8 {
+	return t.align
+}
+
 func (t *Type) Size() int64 {
 	dowidth(t)
-	return t.Width
+	return t.width
 }
 
 func (t *Type) Alignment() int64 {
 	dowidth(t)
-	return int64(t.Align)
+	return int64(t.align)
 }
 
 func (t *Type) SimpleString() string {

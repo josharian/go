@@ -80,10 +80,10 @@ func cgen_wb(n, res *Node, wb bool) {
 	}
 
 	if Isfat(n.Type) {
-		if n.Type.Width < 0 {
+		if n.Type.Width() < 0 {
 			Fatalf("forgot to compute width for %v", n.Type)
 		}
-		sgen_wb(n, res, n.Type.Width, wb)
+		sgen_wb(n, res, n.Type.Width(), wb)
 		return
 	}
 
@@ -471,20 +471,20 @@ func cgen_wb(n, res *Node, wb bool) {
 				Regalloc(&n1, nl.Type, res)
 				Thearch.Gmove(nl, &n1)
 			} else {
-				if n.Type.Width > int64(Widthptr) || Is64(nl.Type) || nl.Type.IsFloat() {
+				if n.Type.Width() > int64(Widthptr) || Is64(nl.Type) || nl.Type.IsFloat() {
 					Tempname(&n1, nl.Type)
 				} else {
 					Regalloc(&n1, nl.Type, res)
 				}
 				Cgen(nl, &n1)
 			}
-			if n.Type.Width > int64(Widthptr) || Is64(n.Type) || n.Type.IsFloat() {
+			if n.Type.Width() > int64(Widthptr) || Is64(n.Type) || n.Type.IsFloat() {
 				Tempname(&n2, n.Type)
 			} else {
 				Regalloc(&n2, n.Type, nil)
 			}
 		} else {
-			if n.Type.Width > nl.Type.Width {
+			if n.Type.Width() > nl.Type.Width() {
 				// If loading from memory, do conversion during load,
 				// so as to avoid use of 8-bit register in, say, int(*byteptr).
 				switch nl.Op {
@@ -905,7 +905,7 @@ func Mgen(n *Node, n1 *Node, rg *Node) {
 
 	Tempname(n1, n.Type)
 	Cgen(n, n1)
-	if n.Type.Width <= int64(Widthptr) || n.Type.IsFloat() {
+	if n.Type.Width() <= int64(Widthptr) || n.Type.IsFloat() {
 		n2 := *n1
 		Regalloc(n1, n.Type, rg)
 		Thearch.Gmove(&n2, n1)
@@ -983,7 +983,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 	case OINDEX:
 		if Ctxt.Arch.Family == sys.ARM {
 			var p2 *obj.Prog // to be patched to panicindex.
-			w := uint32(n.Type.Width)
+			w := uint32(n.Type.Width())
 			bounded := Debug['B'] != 0 || n.Bounded
 			var n1 Node
 			var n3 Node
@@ -1130,7 +1130,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 		}
 		if Ctxt.Arch.Family == sys.I386 {
 			var p2 *obj.Prog // to be patched to panicindex.
-			w := uint32(n.Type.Width)
+			w := uint32(n.Type.Width())
 			bounded := Debug['B'] != 0 || n.Bounded
 			var n3 Node
 			var tmp Node
@@ -1292,7 +1292,7 @@ func Agenr(n *Node, a *Node, res *Node) {
 		}
 
 		freelen := 0
-		w := uint64(n.Type.Width)
+		w := uint64(n.Type.Width())
 
 		// Generate the non-addressable child first.
 		var n3 Node
@@ -1490,7 +1490,7 @@ func Agen(n *Node, res *Node) {
 		n = n.Left
 	}
 
-	if Isconst(n, CTNIL) && n.Type.Width > int64(Widthptr) {
+	if Isconst(n, CTNIL) && n.Type.Width() > int64(Widthptr) {
 		// Use of a nil interface or nil slice.
 		// Create a temporary we can take the address of and read.
 		// The generated code is just going to panic, so it need not
@@ -1709,7 +1709,7 @@ func Igen(n *Node, a *Node, res *Node) {
 				// Compute &a[i] as &a + i*width.
 				a.Type = n.Type
 
-				a.Xoffset += n.Right.Int64() * n.Type.Width
+				a.Xoffset += n.Right.Int64() * n.Type.Width()
 				Fixlargeoffset(a)
 				return
 			}
@@ -2216,7 +2216,7 @@ func stkof(n *Node) int64 {
 			return off
 		}
 		if Isconst(n.Right, CTINT) {
-			return off + t.Elem().Width*n.Right.Int64()
+			return off + t.Elem().Width()*n.Right.Int64()
 		}
 		return +1000 // on stack but not sure exactly where
 
@@ -2635,7 +2635,7 @@ func cgen_div(op Op, nl *Node, nr *Node, res *Node) {
 	if nr.Op != OLITERAL || Ctxt.Arch.Family == sys.MIPS64 || Ctxt.Arch.Family == sys.ARM64 || Ctxt.Arch.Family == sys.PPC64 {
 		goto longdiv
 	}
-	w = int(nl.Type.Width * 8)
+	w = int(nl.Type.Width() * 8)
 
 	// Front end handled 32-bit division. We only need to handle 64-bit.
 	// try to do division by multiply by (2^w)/d
@@ -2947,7 +2947,7 @@ func cgen_append(n, res *Node) {
 		if i > 0 {
 			Thearch.Gins(Thearch.Optoas(OADD, Types[TUINT]), Nodintconst(int64(i)), &r2)
 		}
-		w := res.Type.Elem().Width
+		w := res.Type.Elem().Width()
 		if Thearch.AddIndex != nil && Thearch.AddIndex(&r2, w, &r1) {
 			// r1 updated by back end
 		} else if w == 1 {
@@ -3498,7 +3498,7 @@ func cgen_slice(n, res *Node, wb bool) {
 			if n.Op == OSLICESTR {
 				w = 1 // res is string, elem size is 1 (byte)
 			} else {
-				w = res.Type.Elem().Width // res is []T, elem size is T.width
+				w = res.Type.Elem().Width() // res is []T, elem size is T.width
 			}
 			if Isconst(&i, CTINT) {
 				ginscon(Thearch.Optoas(OADD, xbase.Type), i.Int64()*w, &xbase)

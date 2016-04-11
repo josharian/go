@@ -43,15 +43,15 @@ func widstruct(errtype *Type, t *Type, o int64, flag int) int64 {
 		}
 
 		dowidth(f.Type)
-		if int32(f.Type.Align) > maxalign {
-			maxalign = int32(f.Type.Align)
+		if int32(f.Type.align) > maxalign {
+			maxalign = int32(f.Type.align)
 		}
-		if f.Type.Width < 0 {
+		if f.Type.width < 0 {
 			Fatalf("invalid width %d", f.Type.Width)
 		}
-		w = f.Type.Width
-		if f.Type.Align > 0 {
-			o = Rnd(o, int64(f.Type.Align))
+		w = f.Type.width
+		if f.Type.align > 0 {
+			o = Rnd(o, int64(f.Type.align))
 		}
 		f.Offset = o
 		if f.Nname != nil {
@@ -89,10 +89,10 @@ func widstruct(errtype *Type, t *Type, o int64, flag int) int64 {
 	if flag != 0 {
 		o = Rnd(o, int64(maxalign))
 	}
-	t.Align = uint8(maxalign)
+	t.align = uint8(maxalign)
 
 	// type width only includes back to first field's offset
-	t.Width = o - starto
+	t.width = o - starto
 
 	return o
 }
@@ -106,27 +106,27 @@ func dowidth(t *Type) {
 		return
 	}
 
-	if t.Width > 0 {
-		if t.Align == 0 {
+	if t.width > 0 {
+		if t.align == 0 {
 			// See issue 11354
 			Fatalf("zero alignment with nonzero size %v", t)
 		}
 		return
 	}
 
-	if t.Width == -2 {
+	if t.width == -2 {
 		if !t.Broke {
 			t.Broke = true
 			yyerrorl(t.Lineno, "invalid recursive type %v", t)
 		}
 
-		t.Width = 0
+		t.width = 0
 		return
 	}
 
 	// break infinite recursion if the broken recursive type
 	// is referenced again
-	if t.Broke && t.Width == 0 {
+	if t.Broke && t.width == 0 {
 		return
 	}
 
@@ -135,8 +135,8 @@ func dowidth(t *Type) {
 
 	lno := lineno
 	lineno = t.Lineno
-	t.Width = -2
-	t.Align = 0
+	t.width = -2
+	t.align = 0
 
 	et := t.Etype
 	switch et {
@@ -168,11 +168,11 @@ func dowidth(t *Type) {
 
 	case TINT64, TUINT64, TFLOAT64, TCOMPLEX64:
 		w = 8
-		t.Align = uint8(Widthreg)
+		t.align = uint8(Widthreg)
 
 	case TCOMPLEX128:
 		w = 16
-		t.Align = uint8(Widthreg)
+		t.align = uint8(Widthreg)
 
 	case TPTR32:
 		w = 4
@@ -188,7 +188,7 @@ func dowidth(t *Type) {
 	case TINTER: // implemented as 2 pointers
 		w = 2 * int64(Widthptr)
 
-		t.Align = uint8(Widthptr)
+		t.align = uint8(Widthptr)
 		offmod(t)
 
 	case TCHAN: // implemented as pointer
@@ -204,10 +204,10 @@ func dowidth(t *Type) {
 	case TCHANARGS:
 		t1 := t.ChanArgs()
 		dowidth(t1) // just in case
-		if t1.Elem().Width >= 1<<16 {
+		if t1.Elem().width >= 1<<16 {
 			Yyerror("channel element type too large (>64kB)")
 		}
-		t.Width = 1
+		t.width = 1
 
 	case TMAP: // implemented as pointer
 		w = int64(Widthptr)
@@ -232,7 +232,7 @@ func dowidth(t *Type) {
 			Fatalf("early dowidth string")
 		}
 		w = int64(sizeof_String)
-		t.Align = uint8(Widthptr)
+		t.align = uint8(Widthptr)
 
 	case TARRAY:
 		if t.Elem() == nil {
@@ -240,19 +240,19 @@ func dowidth(t *Type) {
 		}
 		if t.IsArray() {
 			dowidth(t.Elem())
-			if t.Elem().Width != 0 {
-				cap := (uint64(Thearch.MAXWIDTH) - 1) / uint64(t.Elem().Width)
+			if t.Elem().width != 0 {
+				cap := (uint64(Thearch.MAXWIDTH) - 1) / uint64(t.Elem().width)
 				if uint64(t.NumElem()) > cap {
 					Yyerror("type %v larger than address space", Tconv(t, FmtLong))
 				}
 			}
 
-			w = t.NumElem() * t.Elem().Width
-			t.Align = t.Elem().Align
+			w = t.NumElem() * t.Elem().width
+			t.align = t.Elem().align
 		} else if t.IsSlice() {
 			w = int64(sizeof_Array)
 			checkwidth(t.Elem())
-			t.Align = uint8(Widthptr)
+			t.align = uint8(Widthptr)
 		} else if t.isDDDArray() {
 			if !t.Broke {
 				Yyerror("use of [...] array outside of array literal")
@@ -286,19 +286,19 @@ func dowidth(t *Type) {
 		if w%int64(Widthreg) != 0 {
 			Warn("bad type %v %d\n", t1, w)
 		}
-		t.Align = 1
+		t.align = 1
 	}
 
 	if Widthptr == 4 && w != int64(int32(w)) {
 		Yyerror("type %v too large", t)
 	}
 
-	t.Width = w
-	if t.Align == 0 {
+	t.width = w
+	if t.align == 0 {
 		if w > 8 || w&(w-1) != 0 {
 			Fatalf("invalid alignment for %v", t)
 		}
-		t.Align = uint8(w)
+		t.align = uint8(w)
 	}
 
 	lineno = lno

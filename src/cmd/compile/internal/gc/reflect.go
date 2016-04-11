@@ -95,10 +95,10 @@ func mapbucket(t *Type) *Type {
 	valtype := t.Val()
 	dowidth(keytype)
 	dowidth(valtype)
-	if keytype.Width > MAXKEYSIZE {
+	if keytype.Width() > MAXKEYSIZE {
 		keytype = Ptrto(keytype)
 	}
-	if valtype.Width > MAXVALSIZE {
+	if valtype.Width() > MAXVALSIZE {
 		valtype = Ptrto(valtype)
 	}
 
@@ -128,7 +128,7 @@ func mapbucket(t *Type) *Type {
 	// so if the struct needs 64-bit padding (because a key or value does)
 	// then it would end with an extra 32-bit padding field.
 	// Preempt that by emitting the padding here.
-	if int(t.Val().Align) > Widthptr || int(t.Key().Align) > Widthptr {
+	if int(t.Val().Align()) > Widthptr || int(t.Key().Align()) > Widthptr {
 		field = append(field, makefield("pad", Types[TUINTPTR]))
 	}
 
@@ -139,7 +139,7 @@ func mapbucket(t *Type) *Type {
 	// the type of the overflow field to uintptr in this case.
 	// See comment on hmap.overflow in ../../../../runtime/hashmap.go.
 	otyp := Ptrto(bucket)
-	if !haspointers(t.Val()) && !haspointers(t.Key()) && t.Val().Width <= MAXVALSIZE && t.Key().Width <= MAXKEYSIZE {
+	if !haspointers(t.Val()) && !haspointers(t.Key()) && t.Val().Width() <= MAXVALSIZE && t.Key().Width() <= MAXKEYSIZE {
 		otyp = Types[TUINTPTR]
 	}
 	ovf := makefield("overflow", otyp)
@@ -153,7 +153,7 @@ func mapbucket(t *Type) *Type {
 
 	// Double-check that overflow field is final memory in struct,
 	// with no padding at end. See comment above.
-	if ovf.Offset != bucket.Width-int64(Widthptr) {
+	if ovf.Offset != bucket.Width()-int64(Widthptr) {
 		Yyerror("bad math in mapbucket for %v", t)
 	}
 
@@ -231,8 +231,8 @@ func hiter(t *Type) *Type {
 	i.Noalg = true
 	i.SetFields(field[:])
 	dowidth(i)
-	if i.Width != int64(12*Widthptr) {
-		Yyerror("hash_iter size not correct %d %d", i.Width, 12*Widthptr)
+	if i.Width() != int64(12*Widthptr) {
+		Yyerror("hash_iter size not correct %d %d", i.Width(), 12*Widthptr)
 	}
 	t.MapType().Hiter = i
 	i.StructType().Map = t
@@ -341,7 +341,7 @@ func methods(t *Type) []*Sig {
 
 		if sig.isym.Flags&SymSiggen == 0 {
 			sig.isym.Flags |= SymSiggen
-			if !Eqtype(this, it) || this.Width < Types[Tptr].Width {
+			if !Eqtype(this, it) || this.Width() < Types[Tptr].Width() {
 				compiling_wrappers = 1
 				genwrapper(it, f, sig.isym, 1)
 				compiling_wrappers = 0
@@ -446,7 +446,7 @@ func dimportpath(p *Pkg) {
 	} else {
 		gdatastring(n, p.Path)
 	}
-	ggloblsym(n.Sym, int32(Types[TSTRING].Width), obj.DUPOK|obj.RODATA)
+	ggloblsym(n.Sym, int32(Types[TSTRING].Width()), obj.DUPOK|obj.RODATA)
 }
 
 func dgopkgpath(s *Sym, ot int, pkg *Pkg) int {
@@ -738,7 +738,7 @@ func typeptrdata(t *Type) int64 {
 			return int64(Widthptr)
 		}
 		// haspointers already eliminated t.NumElem() == 0.
-		return (t.NumElem()-1)*t.Elem().Width + typeptrdata(t.Elem())
+		return (t.NumElem()-1)*t.Elem().Width() + typeptrdata(t.Elem())
 
 	case TSTRUCT:
 		// Find the last field that has pointers.
@@ -806,7 +806,7 @@ func dcommontype(s *Sym, ot int, t *Type) int {
 	//		gcdata        *byte
 	//		string        *string
 	//	}
-	ot = duintptr(s, ot, uint64(t.Width))
+	ot = duintptr(s, ot, uint64(t.Width()))
 	ot = duintptr(s, ot, uint64(ptrdata))
 
 	ot = duint32(s, ot, typehash(t))
@@ -818,16 +818,16 @@ func dcommontype(s *Sym, ot int, t *Type) int {
 	ot = duint8(s, ot, tflag)
 
 	// runtime (and common sense) expects alignment to be a power of two.
-	i := int(t.Align)
+	i := int(t.Align())
 
 	if i == 0 {
 		i = 1
 	}
 	if i&(i-1) != 0 {
-		Fatalf("invalid alignment %d for %v", t.Align, t)
+		Fatalf("invalid alignment %d for %v", t.Align(), t)
 	}
-	ot = duint8(s, ot, t.Align) // align
-	ot = duint8(s, ot, t.Align) // fieldAlign
+	ot = duint8(s, ot, t.Align()) // align
+	ot = duint8(s, ot, t.Align()) // fieldAlign
 
 	i = kinds[t.Etype]
 	if t.IsSlice() {
@@ -1219,23 +1219,23 @@ ok:
 		ot = dsymptr(s, ot, s2, 0)
 		ot = dsymptr(s, ot, s3, 0)
 		ot = dsymptr(s, ot, s4, 0)
-		if t.Key().Width > MAXKEYSIZE {
+		if t.Key().Width() > MAXKEYSIZE {
 			ot = duint8(s, ot, uint8(Widthptr))
 			ot = duint8(s, ot, 1) // indirect
 		} else {
-			ot = duint8(s, ot, uint8(t.Key().Width))
+			ot = duint8(s, ot, uint8(t.Key().Width()))
 			ot = duint8(s, ot, 0) // not indirect
 		}
 
-		if t.Val().Width > MAXVALSIZE {
+		if t.Val().Width() > MAXVALSIZE {
 			ot = duint8(s, ot, uint8(Widthptr))
 			ot = duint8(s, ot, 1) // indirect
 		} else {
-			ot = duint8(s, ot, uint8(t.Val().Width))
+			ot = duint8(s, ot, uint8(t.Val().Width()))
 			ot = duint8(s, ot, 0) // not indirect
 		}
 
-		ot = duint16(s, ot, uint16(mapbucket(t).Width))
+		ot = duint16(s, ot, uint16(mapbucket(t).Width()))
 		ot = duint8(s, ot, uint8(obj.Bool2int(isreflexive(t.Key()))))
 		ot = duint8(s, ot, uint8(obj.Bool2int(needkeyupdate(t.Key()))))
 		ot = dextratype(s, ot, t, 0)
@@ -1403,7 +1403,7 @@ func dalgsym(t *Type) *Sym {
 
 	if algtype(t) == AMEM {
 		// we use one algorithm table for all AMEM types of a given size
-		p := fmt.Sprintf(".alg%d", t.Width)
+		p := fmt.Sprintf(".alg%d", t.Width())
 
 		s = Pkglookup(p, typepkg)
 
@@ -1413,23 +1413,23 @@ func dalgsym(t *Type) *Sym {
 		s.Flags |= SymAlgGen
 
 		// make hash closure
-		p = fmt.Sprintf(".hashfunc%d", t.Width)
+		p = fmt.Sprintf(".hashfunc%d", t.Width())
 
 		hashfunc = Pkglookup(p, typepkg)
 
 		ot := 0
 		ot = dsymptr(hashfunc, ot, Pkglookup("memhash_varlen", Runtimepkg), 0)
-		ot = duintxx(hashfunc, ot, uint64(t.Width), Widthptr) // size encoded in closure
+		ot = duintxx(hashfunc, ot, uint64(t.Width()), Widthptr) // size encoded in closure
 		ggloblsym(hashfunc, int32(ot), obj.DUPOK|obj.RODATA)
 
 		// make equality closure
-		p = fmt.Sprintf(".eqfunc%d", t.Width)
+		p = fmt.Sprintf(".eqfunc%d", t.Width())
 
 		eqfunc = Pkglookup(p, typepkg)
 
 		ot = 0
 		ot = dsymptr(eqfunc, ot, Pkglookup("memequal_varlen", Runtimepkg), 0)
-		ot = duintxx(eqfunc, ot, uint64(t.Width), Widthptr)
+		ot = duintxx(eqfunc, ot, uint64(t.Width()), Widthptr)
 		ggloblsym(eqfunc, int32(ot), obj.DUPOK|obj.RODATA)
 	} else {
 		// generate an alg table specific to this type
@@ -1556,7 +1556,7 @@ func fillptrmask(t *Type, ptrmask []byte) {
 // For non-trivial arrays, the program describes the full t.Width size.
 func dgcprog(t *Type) (*Sym, int64) {
 	dowidth(t)
-	if t.Width == BADWIDTH {
+	if t.Width() == BADWIDTH {
 		Fatalf("dgcprog: %v badwidth", t)
 	}
 	sym := typesymprefix(".gcprog", t)
@@ -1565,8 +1565,8 @@ func dgcprog(t *Type) (*Sym, int64) {
 	p.emit(t, 0)
 	offset := p.w.BitIndex() * int64(Widthptr)
 	p.end()
-	if ptrdata := typeptrdata(t); offset < ptrdata || offset > t.Width {
-		Fatalf("dgcprog: %v: offset=%d but ptrdata=%d size=%d", t, offset, ptrdata, t.Width)
+	if ptrdata := typeptrdata(t); offset < ptrdata || offset > t.Width() {
+		Fatalf("dgcprog: %v: offset=%d but ptrdata=%d size=%d", t, offset, ptrdata, t.Width())
 	}
 	return sym, offset
 }
@@ -1607,7 +1607,7 @@ func (p *GCProg) emit(t *Type, offset int64) {
 	if !haspointers(t) {
 		return
 	}
-	if t.Width == int64(Widthptr) {
+	if t.Width() == int64(Widthptr) {
 		p.w.Ptr(offset / int64(Widthptr))
 		return
 	}
@@ -1640,16 +1640,16 @@ func (p *GCProg) emit(t *Type, offset int64) {
 			elem = elem.Elem()
 		}
 
-		if !p.w.ShouldRepeat(elem.Width/int64(Widthptr), count) {
+		if !p.w.ShouldRepeat(elem.Width()/int64(Widthptr), count) {
 			// Cheaper to just emit the bits.
 			for i := int64(0); i < count; i++ {
-				p.emit(elem, offset+i*elem.Width)
+				p.emit(elem, offset+i*elem.Width())
 			}
 			return
 		}
 		p.emit(elem, offset)
-		p.w.ZeroUntil((offset + elem.Width) / int64(Widthptr))
-		p.w.Repeat(elem.Width/int64(Widthptr), count-1)
+		p.w.ZeroUntil((offset + elem.Width()) / int64(Widthptr))
+		p.w.Repeat(elem.Width()/int64(Widthptr), count-1)
 
 	case TSTRUCT:
 		for _, t1 := range t.Fields().Slice() {

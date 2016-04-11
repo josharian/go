@@ -33,10 +33,10 @@ func defframe(ptxt *obj.Prog) {
 		if n.Class != gc.PAUTO {
 			gc.Fatalf("needzero class %d", n.Class)
 		}
-		if n.Type.Width%int64(gc.Widthptr) != 0 || n.Xoffset%int64(gc.Widthptr) != 0 || n.Type.Width == 0 {
-			gc.Fatalf("var %v has size %d offset %d", gc.Nconv(n, gc.FmtLong), int(n.Type.Width), int(n.Xoffset))
+		if n.Type.Width()%int64(gc.Widthptr) != 0 || n.Xoffset%int64(gc.Widthptr) != 0 || n.Type.Width() == 0 {
+			gc.Fatalf("var %v has size %d offset %d", gc.Nconv(n, gc.FmtLong), int(n.Type.Width()), int(n.Xoffset))
 		}
-		if lo != hi && n.Xoffset+n.Type.Width >= lo-int64(2*gc.Widthptr) {
+		if lo != hi && n.Xoffset+n.Type.Width() >= lo-int64(2*gc.Widthptr) {
 			// merge with range we already have
 			lo = gc.Rnd(n.Xoffset, int64(gc.Widthptr))
 
@@ -47,7 +47,7 @@ func defframe(ptxt *obj.Prog) {
 		p = zerorange(p, int64(frame), lo, hi, &r0)
 
 		// set new range
-		hi = n.Xoffset + n.Type.Width
+		hi = n.Xoffset + n.Type.Width()
 
 		lo = n.Xoffset
 	}
@@ -121,7 +121,7 @@ func cgen_hmul(nl *gc.Node, nr *gc.Node, res *gc.Node) {
 	}
 
 	t := nl.Type
-	w := t.Width * 8
+	w := t.Width() * 8
 	var n1 gc.Node
 	gc.Regalloc(&n1, t, res)
 	gc.Cgen(nl, &n1)
@@ -171,11 +171,11 @@ func cgen_hmul(nl *gc.Node, nr *gc.Node, res *gc.Node) {
  *	res = nl >> nr
  */
 func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) {
-	if nl.Type.Width > 4 {
+	if nl.Type.Width() > 4 {
 		gc.Fatalf("cgen_shift %v", nl.Type)
 	}
 
-	w := int(nl.Type.Width * 8)
+	w := int(nl.Type.Width() * 8)
 
 	if op == gc.OLROT {
 		v := nr.Int64()
@@ -208,7 +208,7 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 		sc := uint64(nr.Int64())
 		if sc == 0 {
 		} else // nothing to do
-		if sc >= uint64(nl.Type.Width*8) {
+		if sc >= uint64(nl.Type.Width()*8) {
 			if op == gc.ORSH && nl.Type.IsSigned() {
 				gshift(arm.AMOVW, &n1, arm.SHIFT_AR, int32(w), &n1)
 			} else {
@@ -237,7 +237,7 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 	var n1 gc.Node
 	var n2 gc.Node
 	var n3 gc.Node
-	if tr.Width > 4 {
+	if tr.Width() > 4 {
 		var nt gc.Node
 		gc.Tempname(&nt, nr.Type)
 		if nl.Ullman >= nr.Ullman {
@@ -331,7 +331,7 @@ func clearfat(nl *gc.Node) {
 		gc.Dump("\nclearfat", nl)
 	}
 
-	w := uint32(nl.Type.Width)
+	w := uint32(nl.Type.Width())
 
 	// Avoid taking the address for simple enough types.
 	if gc.Componentgen(nil, nl) {

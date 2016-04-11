@@ -1158,7 +1158,7 @@ func frame(context int) {
 func printframenode(n *Node) {
 	w := int64(-1)
 	if n.Type != nil {
-		w = n.Type.Width
+		w = n.Type.Width()
 	}
 	switch n.Op {
 	case ONAME:
@@ -1752,13 +1752,13 @@ func genwrapper(rcvr *Type, method *Field, newnam *Sym, iface int) {
 
 	t := Nod(OTFUNC, nil, nil)
 	l := []*Node{this}
-	if iface != 0 && rcvr.Width < Types[Tptr].Width {
+	if iface != 0 && rcvr.Width() < Types[Tptr].Width() {
 		// Building method for interface table and receiver
 		// is smaller than the single pointer-sized word
 		// that the interface call will pass in.
 		// Add a dummy padding argument after the
 		// receiver to make up the difference.
-		tpad := typArray(Types[TUINT8], Types[Tptr].Width-rcvr.Width)
+		tpad := typArray(Types[TUINT8], Types[Tptr].Width()-rcvr.Width())
 		pad := Nod(ODCLFIELD, newname(Lookup(".pad")), typenod(tpad))
 		l = append(l, pad)
 	}

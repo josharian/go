@@ -35,11 +35,11 @@ func defframe(ptxt *obj.Prog) {
 		if n.Class != gc.PAUTO {
 			gc.Fatalf("needzero class %d", n.Class)
 		}
-		if n.Type.Width%int64(gc.Widthptr) != 0 || n.Xoffset%int64(gc.Widthptr) != 0 || n.Type.Width == 0 {
-			gc.Fatalf("var %v has size %d offset %d", gc.Nconv(n, gc.FmtLong), int(n.Type.Width), int(n.Xoffset))
+		if n.Type.Width()%int64(gc.Widthptr) != 0 || n.Xoffset%int64(gc.Widthptr) != 0 || n.Type.Width() == 0 {
+			gc.Fatalf("var %v has size %d offset %d", gc.Nconv(n, gc.FmtLong), int(n.Type.Width()), int(n.Xoffset))
 		}
 
-		if lo != hi && n.Xoffset+n.Type.Width >= lo-int64(2*gc.Widthreg) {
+		if lo != hi && n.Xoffset+n.Type.Width() >= lo-int64(2*gc.Widthreg) {
 			// merge with range we already have
 			lo = n.Xoffset
 
@@ -50,7 +50,7 @@ func defframe(ptxt *obj.Prog) {
 		p = zerorange(p, int64(frame), lo, hi)
 
 		// set new range
-		hi = n.Xoffset + n.Type.Width
+		hi = n.Xoffset + n.Type.Width()
 
 		lo = n.Xoffset
 	}
@@ -137,7 +137,7 @@ func dodiv(op gc.Op, nl *gc.Node, nr *gc.Node, res *gc.Node) {
 
 	t0 := t
 
-	if t.Width < 8 {
+	if t.Width() < 8 {
 		if t.IsSigned() {
 			t = gc.Types[gc.TINT64]
 		} else {
@@ -204,7 +204,7 @@ func cgen_hmul(nl *gc.Node, nr *gc.Node, res *gc.Node) {
 	}
 
 	t := nl.Type
-	w := t.Width * 8
+	w := t.Width() * 8
 	var n1 gc.Node
 	gc.Cgenr(nl, &n1, res)
 	var n2 gc.Node
@@ -265,10 +265,10 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 		gc.Regalloc(&n1, nl.Type, res)
 		gc.Cgen(nl, &n1)
 		sc := uint64(nr.Int64())
-		if sc >= uint64(nl.Type.Width*8) {
+		if sc >= uint64(nl.Type.Width()*8) {
 			// large shift gets 2 shifts by width-1
 			var n3 gc.Node
-			gc.Nodconst(&n3, gc.Types[gc.TUINT32], nl.Type.Width*8-1)
+			gc.Nodconst(&n3, gc.Types[gc.TUINT32], nl.Type.Width()*8-1)
 
 			gins(a, &n3, &n1)
 			gins(a, &n3, &n1)
@@ -327,11 +327,11 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 	if !bounded {
 		var rtmp gc.Node
 		gc.Nodreg(&rtmp, tcount, mips.REGTMP)
-		gc.Nodconst(&n3, tcount, nl.Type.Width*8)
+		gc.Nodconst(&n3, tcount, nl.Type.Width()*8)
 		gins3(mips.ASGTU, &n3, &n1, &rtmp)
 		p1 := ginsbranch(mips.ABNE, nil, &rtmp, nil, 0)
 		if op == gc.ORSH && nl.Type.IsSigned() {
-			gc.Nodconst(&n3, gc.Types[gc.TUINT32], nl.Type.Width*8-1)
+			gc.Nodconst(&n3, gc.Types[gc.TUINT32], nl.Type.Width()*8-1)
 			gins(a, &n3, &n2)
 		} else {
 			gc.Nodconst(&n3, nl.Type, 0)
@@ -352,10 +352,10 @@ func cgen_shift(op gc.Op, bounded bool, nl *gc.Node, nr *gc.Node, res *gc.Node) 
 func clearfat(nl *gc.Node) {
 	/* clear a fat object */
 	if gc.Debug['g'] != 0 {
-		fmt.Printf("clearfat %v (%v, size: %d)\n", nl, nl.Type, nl.Type.Width)
+		fmt.Printf("clearfat %v (%v, size: %d)\n", nl, nl.Type, nl.Type.Width())
 	}
 
-	w := uint64(nl.Type.Width)
+	w := uint64(nl.Type.Width())
 
 	// Avoid taking the address for simple enough types.
 	if gc.Componentgen(nil, nl) {
