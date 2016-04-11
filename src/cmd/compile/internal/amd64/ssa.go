@@ -113,7 +113,7 @@ func storeByType(t ssa.Type) obj.As {
 			return x86.AMOVQ
 		}
 	}
-	panic("bad store type")
+	panic(fmt.Errorf("bad store type %v", t))
 }
 
 // moveByType returns the reg->reg move instruction of the given type.
@@ -644,11 +644,28 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		p.To.Reg = r
 		p.To.Index = i
 		gc.AddAux2(&p.To, v, sc.Off())
-	case ssa.OpAMD64MOVLQSX, ssa.OpAMD64MOVWQSX, ssa.OpAMD64MOVBQSX, ssa.OpAMD64MOVLQZX, ssa.OpAMD64MOVWQZX, ssa.OpAMD64MOVBQZX,
+	case ssa.OpAMD64MOVBLSX, ssa.OpAMD64MOVBQSX, ssa.OpAMD64MOVWLSX, ssa.OpAMD64MOVWQSX, ssa.OpAMD64MOVLQSX,
+		ssa.OpAMD64MOVBLZX, ssa.OpAMD64MOVBQZX, ssa.OpAMD64MOVWLZX, ssa.OpAMD64MOVWQZX, ssa.OpAMD64MOVLQZX,
 		ssa.OpAMD64CVTSL2SS, ssa.OpAMD64CVTSL2SD, ssa.OpAMD64CVTSQ2SS, ssa.OpAMD64CVTSQ2SD,
 		ssa.OpAMD64CVTTSS2SL, ssa.OpAMD64CVTTSD2SL, ssa.OpAMD64CVTTSS2SQ, ssa.OpAMD64CVTTSD2SQ,
 		ssa.OpAMD64CVTSS2SD, ssa.OpAMD64CVTSD2SS:
-		opregreg(v.Op.Asm(), gc.SSARegNum(v), gc.SSARegNum(v.Args[0]))
+		// When loading small function arguments that are immediately extended,
+		// the register allocator can generate value sequences like:
+		//
+		// v11 = Arg <uint8> {y} : y[uint8]
+		// v71 = LoadReg <uint8> v11 : AX
+		// v12 = MOVBLZX <int32> v71 : AX
+		//
+		// This generates redundant moves like:
+		//
+		// MOVBLZX    y+8(FP), AX
+		// MOVBLZX    AL, AX
+		//
+		// It's much easier to omit the second instruction here than to
+		// avoid generating it in the first place.
+		if v.Args[0].Op != ssa.OpLoadReg || gc.SSARegNum(v) != gc.SSARegNum(v.Args[0]) || v.Op.Asm() != loadByType(v.Args[0].Type) {
+			opregreg(v.Op.Asm(), gc.SSARegNum(v), gc.SSARegNum(v.Args[0]))
+		}
 	case ssa.OpAMD64DUFFZERO:
 		p := gc.Prog(obj.ADUFFZERO)
 		p.To.Type = obj.TYPE_ADDR

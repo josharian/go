@@ -378,8 +378,12 @@ func init() {
 		{name: "SETGF", argLength: 1, reg: flagsgp, asm: "SETHI"},  // extract floating > condition from arg0
 		{name: "SETGEF", argLength: 1, reg: flagsgp, asm: "SETCC"}, // extract floating >= condition from arg0
 
+		{name: "MOVBLSX", argLength: 1, reg: gp11nf, asm: "MOVBLSX"}, // sign extend arg0 from int8 to int32
+		{name: "MOVBLZX", argLength: 1, reg: gp11nf, asm: "MOVBLZX"}, // zero extend arg0 from int8 to int32
 		{name: "MOVBQSX", argLength: 1, reg: gp11nf, asm: "MOVBQSX"}, // sign extend arg0 from int8 to int64
 		{name: "MOVBQZX", argLength: 1, reg: gp11nf, asm: "MOVBQZX"}, // zero extend arg0 from int8 to int64
+		{name: "MOVWLSX", argLength: 1, reg: gp11nf, asm: "MOVWLSX"}, // sign extend arg0 from int16 to int32
+		{name: "MOVWLZX", argLength: 1, reg: gp11nf, asm: "MOVWLZX"}, // zero extend arg0 from int16 to int32
 		{name: "MOVWQSX", argLength: 1, reg: gp11nf, asm: "MOVWQSX"}, // sign extend arg0 from int16 to int64
 		{name: "MOVWQZX", argLength: 1, reg: gp11nf, asm: "MOVWQZX"}, // zero extend arg0 from int16 to int64
 		{name: "MOVLQSX", argLength: 1, reg: gp11nf, asm: "MOVLQSX"}, // sign extend arg0 from int32 to int64

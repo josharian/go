@@ -17039,10 +17039,10 @@ func rewriteValueAMD64_OpSignExt16to32(v *Value, config *Config) bool {
 	_ = b
 	// match: (SignExt16to32 x)
 	// cond:
-	// result: (MOVWQSX x)
+	// result: (MOVWLSX x)
 	for {
 		x := v.Args[0]
-		v.reset(OpAMD64MOVWQSX)
+		v.reset(OpAMD64MOVWLSX)
 		v.AddArg(x)
 		return true
 	}
@@ -17081,10 +17081,10 @@ func rewriteValueAMD64_OpSignExt8to16(v *Value, config *Config) bool {
 	_ = b
 	// match: (SignExt8to16 x)
 	// cond:
-	// result: (MOVBQSX x)
+	// result: (MOVBLSX x)
 	for {
 		x := v.Args[0]
-		v.reset(OpAMD64MOVBQSX)
+		v.reset(OpAMD64MOVBLSX)
 		v.AddArg(x)
 		return true
 	}
@@ -17095,10 +17095,10 @@ func rewriteValueAMD64_OpSignExt8to32(v *Value, config *Config) bool {
 	_ = b
 	// match: (SignExt8to32 x)
 	// cond:
-	// result: (MOVBQSX x)
+	// result: (MOVBLSX x)
 	for {
 		x := v.Args[0]
-		v.reset(OpAMD64MOVBQSX)
+		v.reset(OpAMD64MOVBLSX)
 		v.AddArg(x)
 		return true
 	}
@@ -18167,10 +18167,10 @@ func rewriteValueAMD64_OpZeroExt16to32(v *Value, config *Config) bool {
 	_ = b
 	// match: (ZeroExt16to32 x)
 	// cond:
-	// result: (MOVWQZX x)
+	// result: (MOVWLZX x)
 	for {
 		x := v.Args[0]
-		v.reset(OpAMD64MOVWQZX)
+		v.reset(OpAMD64MOVWLZX)
 		v.AddArg(x)
 		return true
 	}
@@ -18209,10 +18209,10 @@ func rewriteValueAMD64_OpZeroExt8to16(v *Value, config *Config) bool {
 	_ = b
 	// match: (ZeroExt8to16 x)
 	// cond:
-	// result: (MOVBQZX x)
+	// result: (MOVBLZX x)
 	for {
 		x := v.Args[0]
-		v.reset(OpAMD64MOVBQZX)
+		v.reset(OpAMD64MOVBLZX)
 		v.AddArg(x)
 		return true
 	}
@@ -18223,10 +18223,10 @@ func rewriteValueAMD64_OpZeroExt8to32(v *Value, config *Config) bool {
 	_ = b
 	// match: (ZeroExt8to32 x)
 	// cond:
-	// result: (MOVBQZX x)
+	// result: (MOVBLZX x)
 	for {
 		x := v.Args[0]
-		v.reset(OpAMD64MOVBQZX)
+		v.reset(OpAMD64MOVBLZX)
 		v.AddArg(x)
 		return true
 	}

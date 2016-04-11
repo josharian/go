@@ -4194,7 +4194,11 @@ func SSARegNum(v *ssa.Value) int16 {
 // AutoVar returns a *Node and int64 representing the auto variable and offset within it
 // where v should be spilled.
 func AutoVar(v *ssa.Value) (*Node, int64) {
-	loc := v.Block.Func.RegAlloc[v.ID].(ssa.LocalSlot)
+	slot := v.Block.Func.RegAlloc[v.ID]
+	if slot == nil {
+		v.Fatalf("missing slot for %v", v.LongString())
+	}
+	loc := slot.(ssa.LocalSlot)
 	if v.Type.Size() > loc.Type.Size() {
 		v.Fatalf("spill/restore type %s doesn't fit in slot type %s", v.Type, loc.Type)
 	}
