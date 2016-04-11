@@ -644,7 +644,11 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		p.To.Reg = r
 		p.To.Index = i
 		gc.AddAux2(&p.To, v, sc.Off())
-	case ssa.OpAMD64MOVLQSX, ssa.OpAMD64MOVWQSX, ssa.OpAMD64MOVBQSX, ssa.OpAMD64MOVLQZX, ssa.OpAMD64MOVWQZX, ssa.OpAMD64MOVBQZX,
+	case ssa.OpAMD64MOVZXArg:
+		fmt.Println("OPT")
+		// opregreg(v.Op.Asm(), gc.SSARegNum(v), gc.SSARegNum(v.Args[0]))
+	case ssa.OpAMD64MOVLQSX, ssa.OpAMD64MOVWQSX, ssa.OpAMD64MOVBLSX, ssa.OpAMD64MOVBQSX,
+		ssa.OpAMD64MOVLQZX, ssa.OpAMD64MOVWQZX, ssa.OpAMD64MOVBLZX, ssa.OpAMD64MOVBQZX,
 		ssa.OpAMD64CVTSL2SS, ssa.OpAMD64CVTSL2SD, ssa.OpAMD64CVTSQ2SS, ssa.OpAMD64CVTSQ2SD,
 		ssa.OpAMD64CVTTSS2SL, ssa.OpAMD64CVTTSD2SL, ssa.OpAMD64CVTTSS2SQ, ssa.OpAMD64CVTTSD2SQ,
 		ssa.OpAMD64CVTSS2SD, ssa.OpAMD64CVTSD2SS:

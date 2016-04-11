@@ -3,7 +3,10 @@
 
 package ssa
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 var _ = math.MinInt8 // in case not otherwise used
 func rewriteValueAMD64(v *Value, config *Config) bool {
@@ -18208,11 +18211,23 @@ func rewriteValueAMD64_OpZeroExt8to16(v *Value, config *Config) bool {
 	b := v.Block
 	_ = b
 	// match: (ZeroExt8to16 x)
-	// cond:
-	// result: (MOVBQZX x)
+	// cond: x.Op == OpArg
+	// result: (MOVZXArg x)
 	for {
 		x := v.Args[0]
-		v.reset(OpAMD64MOVBQZX)
+		if !(x.Op == OpArg) {
+			break
+		}
+		v.reset(OpAMD64MOVZXArg)
+		v.AddArg(x)
+		return true
+	}
+	// match: (ZeroExt8to16 x)
+	// cond:
+	// result: (MOVBLZX x)
+	for {
+		x := v.Args[0]
+		v.reset(OpAMD64MOVBLZX)
 		v.AddArg(x)
 		return true
 	}
@@ -18222,11 +18237,23 @@ func rewriteValueAMD64_OpZeroExt8to32(v *Value, config *Config) bool {
 	b := v.Block
 	_ = b
 	// match: (ZeroExt8to32 x)
-	// cond:
-	// result: (MOVBQZX x)
+	// cond: x.Op == OpArg
+	// result: (MOVZXArg x)
 	for {
 		x := v.Args[0]
-		v.reset(OpAMD64MOVBQZX)
+		if !(x.Op == OpArg) {
+			break
+		}
+		v.reset(OpAMD64MOVZXArg)
+		v.AddArg(x)
+		return true
+	}
+	// match: (ZeroExt8to32 x)
+	// cond:
+	// result: (MOVBLZX x)
+	for {
+		x := v.Args[0]
+		v.reset(OpAMD64MOVBLZX)
 		v.AddArg(x)
 		return true
 	}
@@ -18235,6 +18262,19 @@ func rewriteValueAMD64_OpZeroExt8to32(v *Value, config *Config) bool {
 func rewriteValueAMD64_OpZeroExt8to64(v *Value, config *Config) bool {
 	b := v.Block
 	_ = b
+	// match: (ZeroExt8to64 x)
+	// cond: x.Op == OpArg
+	// result: (MOVZXArg x)
+	for {
+		x := v.Args[0]
+		if !(x.Op == OpArg) {
+			break
+		}
+		fmt.Println("TRIGGER", v.Block.Func.Name, v.LongString(), v.Args[0].LongString())
+		v.reset(OpAMD64MOVZXArg)
+		v.AddArg(x)
+		return true
+	}
 	// match: (ZeroExt8to64 x)
 	// cond:
 	// result: (MOVBQZX x)

@@ -274,12 +274,15 @@ const (
 	OpAMD64SETNAN
 	OpAMD64SETGF
 	OpAMD64SETGEF
+	OpAMD64MOVBLSX
+	OpAMD64MOVBLZX
 	OpAMD64MOVBQSX
 	OpAMD64MOVBQZX
 	OpAMD64MOVWQSX
 	OpAMD64MOVWQZX
 	OpAMD64MOVLQSX
 	OpAMD64MOVLQZX
+	OpAMD64MOVZXArg
 	OpAMD64MOVBconst
 	OpAMD64MOVWconst
 	OpAMD64MOVLconst
@@ -3352,6 +3355,32 @@ var opcodeTable = [...]opInfo{
 		},
 	},
 	{
+		name:   "MOVBLSX",
+		argLen: 1,
+		asm:    x86.AMOVBLSX,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{0, 65535}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+			outputs: []regMask{
+				65519, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
+		name:   "MOVBLZX",
+		argLen: 1,
+		asm:    x86.AMOVBLZX,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{0, 65535}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+			outputs: []regMask{
+				65519, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
 		name:   "MOVBQSX",
 		argLen: 1,
 		asm:    x86.AMOVBQSX,
@@ -3420,6 +3449,19 @@ var opcodeTable = [...]opInfo{
 		name:   "MOVLQZX",
 		argLen: 1,
 		asm:    x86.AMOVLQZX,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{0, 65535}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+			outputs: []regMask{
+				65519, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
+		name:    "MOVZXArg",
+		auxType: auxSymOff,
+		argLen:  1,
 		reg: regInfo{
 			inputs: []inputInfo{
 				{0, 65535}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15

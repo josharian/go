@@ -119,7 +119,6 @@
 
 (Sqrt x) -> (SQRTSD x)
 
-// Note: we always extend to 64 bits even though some ops don't need that many result bits.
 (SignExt8to16 x) -> (MOVBQSX x)
 (SignExt8to32 x) -> (MOVBQSX x)
 (SignExt8to64 x) -> (MOVBQSX x)
@@ -127,11 +126,17 @@
 (SignExt16to64 x) -> (MOVWQSX x)
 (SignExt32to64 x) -> (MOVLQSX x)
 
-(ZeroExt8to16 x) -> (MOVBQZX x)
-(ZeroExt8to32 x) -> (MOVBQZX x)
+(ZeroExt8to16 x) && x.Op == OpArg -> (MOVZXArg x)
+(ZeroExt8to16 x) -> (MOVBLZX x)
+(ZeroExt8to32 x) && x.Op == OpArg -> (MOVZXArg x)
+(ZeroExt8to32 x) -> (MOVBLZX x)
+(ZeroExt8to64 x) && x.Op == OpArg && x.Uses == 1 -> (MOVZXArg x)
 (ZeroExt8to64 x) -> (MOVBQZX x)
+//(ZeroExt16to32 x) && x.Op == OpArg -> (MOVZXArg x)
 (ZeroExt16to32 x) -> (MOVWQZX x)
+//(ZeroExt16to64 x) && x.Op == OpArg -> (MOVZXArg x)
 (ZeroExt16to64 x) -> (MOVWQZX x)
+//(ZeroExt32to64 x) && x.Op == OpArg -> (MOVZXArg x)
 (ZeroExt32to64 x) -> (MOVLQZX x)
 
 (Cvt32to32F x) -> (CVTSL2SS x)
