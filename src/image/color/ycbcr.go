@@ -44,26 +44,35 @@ func YCbCrToRGB(y, cb, cr uint8) (uint8, uint8, uint8) {
 	//	B = Y' + 1.77200*(Cb-128)
 	// http://www.w3.org/Graphics/JPEG/jfif3.pdf says Y but means Y'.
 
-	yy1 := int32(y) * 0x10100 // Convert 0x12 to 0x121200.
+	yy1 := int32(y) * 0x010100 // Convert 0x12 to 0x121200.
 	cb1 := int32(cb) - 128
 	cr1 := int32(cr) - 128
-	r := (yy1 + 91881*cr1) >> 16
-	g := (yy1 - 22554*cb1 - 46802*cr1) >> 16
-	b := (yy1 + 116130*cb1) >> 16
-	if r < 0 {
+	r := yy1 + 91881*cr1
+	g := yy1 - 22554*cb1 - 46802*cr1
+	b := yy1 + 116130*cb1
+	if r >= 0 {
+		r >>= 16
+		if r > 0xff {
+			r = 0xff
+		}
+	} else {
 		r = 0
-	} else if r > 0xff {
-		r = 0xff
 	}
-	if g < 0 {
+	if g >= 0 {
+		g >>= 16
+		if g > 0xff {
+			g = 0xff
+		}
+	} else {
 		g = 0
-	} else if g > 0xff {
-		g = 0xff
 	}
-	if b < 0 {
+	if b >= 0 {
+		b >>= 16
+		if b > 0xff {
+			b = 0xff
+		}
+	} else {
 		b = 0
-	} else if b > 0xff {
-		b = 0xff
 	}
 	return uint8(r), uint8(g), uint8(b)
 }
