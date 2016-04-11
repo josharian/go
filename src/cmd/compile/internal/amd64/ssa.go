@@ -82,9 +82,9 @@ func loadByType(t ssa.Type) obj.As {
 	// Avoid partial register write
 	if !t.IsFloat() && t.Size() <= 2 {
 		if t.Size() == 1 {
-			return x86.AMOVBLZX
+			return x86.AMOVBQZX
 		} else {
-			return x86.AMOVWLZX
+			return x86.AMOVWQZX
 		}
 	}
 	// Otherwise, there's no difference between load and store opcodes.
@@ -644,7 +644,25 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		p.To.Reg = r
 		p.To.Index = i
 		gc.AddAux2(&p.To, v, sc.Off())
-	case ssa.OpAMD64MOVLQSX, ssa.OpAMD64MOVWQSX, ssa.OpAMD64MOVBQSX, ssa.OpAMD64MOVLQZX, ssa.OpAMD64MOVWQZX, ssa.OpAMD64MOVBQZX,
+	case ssa.OpAMD64MOVBQZX, ssa.OpAMD64MOVWQZX:
+		// When loading small function arguments,
+		// the register allocator generates value sequences like:
+		//
+		// v11 = Arg <uint8> {y} : y[uint8]
+		// v71 = LoadReg <uint8> v11 : AX
+		// v12 = MOVBQZX <int32> v71 : AX
+		//
+		// This generates redundant moves like:
+		//
+		// MOVBLZX	y+8(FP), AX
+		// MOVBQZX	AL, AX
+		//
+		// It's much easier to omit the second instruction here than to
+		// have the register allocator avoid generating it.
+		if v.Args[0].Op != ssa.OpLoadReg || gc.SSARegNum(v) != gc.SSARegNum(v.Args[0]) || v.Op.Asm() != loadByType(v.Args[0].Type) {
+			opregreg(v.Op.Asm(), gc.SSARegNum(v), gc.SSARegNum(v.Args[0]))
+		}
+	case ssa.OpAMD64MOVLQSX, ssa.OpAMD64MOVWQSX, ssa.OpAMD64MOVBQSX, ssa.OpAMD64MOVLQZX,
 		ssa.OpAMD64CVTSL2SS, ssa.OpAMD64CVTSL2SD, ssa.OpAMD64CVTSQ2SS, ssa.OpAMD64CVTSQ2SD,
 		ssa.OpAMD64CVTTSS2SL, ssa.OpAMD64CVTTSD2SL, ssa.OpAMD64CVTTSS2SQ, ssa.OpAMD64CVTTSD2SQ,
 		ssa.OpAMD64CVTSS2SD, ssa.OpAMD64CVTSD2SS:
