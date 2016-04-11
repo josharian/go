@@ -857,6 +857,13 @@ func (t *Type) ArgWidth() int64 {
 // Callers must be sure that dowidth(t) has already been called.
 // Deprecated: Callers should migrate to Size and remove their calls to dowidth.
 func (t *Type) Width() int64 {
+	w, ok, needsdowidth := t.fixedWidth()
+	if needsdowidth {
+		return t.width
+	}
+	if ok {
+		return w
+	}
 	return t.width
 }
 
@@ -868,13 +875,69 @@ func (t *Type) Align() uint8 {
 }
 
 func (t *Type) Size() int64 {
-	dowidth(t)
+	w, ok, needsdowidth := t.fixedWidth()
+	if needsdowidth {
+		dowidth(t)
+	}
+	if ok {
+		return w
+	}
 	return t.width
 }
 
 func (t *Type) Alignment() int64 {
 	dowidth(t)
 	return int64(t.align)
+}
+
+func (t *Type) fixedWidth() (w int64, ok bool, needsdowidth bool) {
+	switch t.Etype {
+	case TINT8, TUINT8, TBOOL:
+		return 1, true, false
+	case TINT16, TUINT16:
+		return 2, true, false
+	case TINT32, TUINT32, TFLOAT32:
+		return 4, true, false
+	case TINT64, TUINT64, TFLOAT64, TCOMPLEX64:
+		return 8, true, false
+	case TCOMPLEX128:
+		return 16, true, false
+	case TPTR32:
+		return 4, true, true
+	case TPTR64:
+		return 8, true, true
+	case TUNSAFEPTR:
+		return int64(Widthptr), true, false
+	case TUINT, TUINTPTR, TINT:
+		return int64(Widthint), true, false
+	case TINTER: // implemented as 2 pointers
+		return 2 * int64(Widthptr), true, true
+	case TCHAN: // implemented as pointer
+		return int64(Widthptr), true, false
+	case TMAP: // implemented as pointer
+		return int64(Widthptr), true, true
+	case TFORW: // should have been filled in
+		if !t.Broke {
+			Yyerror("invalid recursive type %v", t)
+		}
+		return BADWIDTH, false, true
+	case TANY: // dummy type; should be replaced before use.
+		if Debug['A'] == 0 {
+			Fatalf("fixedWidth any")
+		}
+		return BADWIDTH, false, true
+	case TSTRING:
+		if sizeof_String == 0 {
+			Fatalf("early fixedWidth string")
+		}
+		return int64(sizeof_String), true, false
+	case TFUNC:
+		return int64(Widthptr), true, true // width of func type is pointer
+		t1 := typFuncArgs(t)
+		checkwidth(t1)
+		w = int64(Widthptr)
+	}
+	return BADWIDTH, false, true
 }
 
 func (t *Type) SimpleString() string {
