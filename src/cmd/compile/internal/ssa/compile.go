@@ -261,6 +261,7 @@ var passes = [...]pass{
 	{name: "flagalloc", fn: flagalloc, required: true}, // allocate flags register
 	{name: "regalloc", fn: regalloc, required: true},   // allocate int & float registers + stack slots
 	{name: "trim", fn: trim},                           // remove empty blocks
+	{name: "regopt", fn: regopt},                       // do post-regalloc rewrites
 }
 
 // Double-check phase ordering constraints.
@@ -315,6 +316,8 @@ var passOrder = [...]constraint{
 	{"flagalloc", "regalloc"},
 	// trim needs regalloc to be done first.
 	{"regalloc", "trim"},
+	// regopt needs regalloc to be done first.
+	{"regalloc", "regopt"},
 }
 
 func init() {

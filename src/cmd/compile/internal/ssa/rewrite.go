@@ -367,3 +367,11 @@ found:
 	}
 	return nil // too far away
 }
+
+func sameReg(v, w *Value) bool {
+	r := v.Block.Func.RegAlloc
+	if r == nil {
+		v.Fatalf("sameReg before regalloc")
+	}
+	return r[v.ID] == r[w.ID]
+}

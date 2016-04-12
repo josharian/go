@@ -10,6 +10,12 @@ func lower(f *Func) {
 	applyRewrite(f, f.Config.lowerBlock, f.Config.lowerValue)
 }
 
+func regopt(f *Func) {
+	if f.Config.regBlock != nil && f.Config.regValue != nil {
+		applyRewrite(f, f.Config.regBlock, f.Config.regValue)
+	}
+}
+
 // checkLower checks for unlowered opcodes and fails if we find one.
 func checkLower(f *Func) {
 	// Needs to be a separate phase because it must run after both

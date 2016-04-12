@@ -18,6 +18,8 @@ type Config struct {
 	PtrSize      int64                      // 4 or 8
 	lowerBlock   func(*Block) bool          // lowering function
 	lowerValue   func(*Value, *Config) bool // lowering function
+	regBlock     func(*Block) bool          // post-regalloc rewrite function
+	regValue     func(*Value, *Config) bool // post-regalloc rewrite function
 	registers    []Register                 // machine registers
 	fe           Frontend                   // callbacks into compiler frontend
 	HTML         *HTMLWriter                // html writer, for debugging
@@ -125,6 +127,8 @@ func NewConfig(arch string, fe Frontend, ctxt *obj.Link, optimize bool) *Config 
 		c.PtrSize = 8
 		c.lowerBlock = rewriteBlockAMD64
 		c.lowerValue = rewriteValueAMD64
+		c.regBlock = rewriteBlockAMD64reg
+		c.regValue = rewriteValueAMD64reg
 		c.registers = registersAMD64[:]
 	case "386":
 		c.IntSize = 4

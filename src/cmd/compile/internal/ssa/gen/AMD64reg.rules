@@ -1,0 +1,8 @@
+// Copyright 2016 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// This file contains AMD64-specific rewrites to be applied
+// after the register allocator has run.
+
+(MOVBQZX y:(LoadReg <t>)) && is8BitInt(t) && sameReg(v, y) -> y
