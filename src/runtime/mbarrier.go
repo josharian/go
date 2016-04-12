@@ -14,6 +14,7 @@
 package runtime
 
 import (
+	"runtime/internal/atomic"
 	"runtime/internal/sys"
 	"unsafe"
 )
@@ -123,10 +124,19 @@ func writebarrierptr_nostore1(dst *uintptr, src uintptr) {
 	releasem(mp)
 }
 
+var wb, wbe, wbz uint64
+
 // NOTE: Really dst *unsafe.Pointer, src unsafe.Pointer,
 // but if we do that, Go inserts a write barrier on *dst = src.
 //go:nosplit
 func writebarrierptr(dst *uintptr, src uintptr) {
+	if src == 0 {
+		atomic.Xadd64(&wbz, +1)
+	} else if *dst == src {
+		atomic.Xadd64(&wbe, +1)
+	}
+	atomic.Xadd64(&wb, +1)
+
 	*dst = src
 	if writeBarrier.cgo {
 		cgoCheckWriteBarrier(dst, src)
