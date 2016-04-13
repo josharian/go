@@ -699,8 +699,7 @@ func (s *state) stmt(n *Node) {
 				// If the slice can be SSA'd, it'll be on the stack,
 				// so there will be no write barriers,
 				// so there's no need to attempt to prevent them.
-				const doInPlaceAppend = false // issue 15246
-				if doInPlaceAppend && samesafeexpr(n.Left, rhs.List.First()) && !s.canSSA(n.Left) {
+				if samesafeexpr(n.Left, rhs.List.First()) && !s.canSSA(n.Left) {
 					s.append(rhs, true)
 					return
 				}
@@ -2149,6 +2148,9 @@ func (s *state) append(n *Node, inplace bool) *ssa.Value {
 	if inplace {
 		addr = s.addr(sn, false)
 		slice = s.newValue2(ssa.OpLoad, n.Type, addr, s.mem())
+		if sn.Op == ONAME {
+			s.vars[&memVar] = s.newValue1A(ssa.OpVarDef, ssa.TypeMem, sn, s.mem())
+		}
 	} else {
 		slice = s.expr(sn)
 	}
