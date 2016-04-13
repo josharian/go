@@ -317,15 +317,7 @@ func (s *exprSwitch) walkCases(cc []*caseClause) *Node {
 	half := len(cc) / 2
 	a := Nod(OIF, nil, nil)
 	mid := cc[half-1].node.Left
-	le := Nod(OLE, s.exprname, mid)
-	if Isconst(mid, CTSTR) {
-		// Search by length and then by value; see exprcmp.
-		lenlt := Nod(OLT, Nod(OLEN, s.exprname, nil), Nod(OLEN, mid, nil))
-		leneq := Nod(OEQ, Nod(OLEN, s.exprname, nil), Nod(OLEN, mid, nil))
-		a.Left = Nod(OOROR, lenlt, Nod(OANDAND, leneq, le))
-	} else {
-		a.Left = le
-	}
+	a.Left = caseLessEq(s.exprname, mid)
 	a.Left = typecheck(a.Left, Erv)
 	a.Nbody.Set1(s.walkCases(cc[:half]))
 	a.Rlist.Set1(s.walkCases(cc[half:]))
@@ -457,10 +449,9 @@ func caseClauses(sw *Node, kind int) []*caseClause {
 			}
 		} else {
 			// expression switch
-			switch consttype(n.Left) {
-			case CTFLT, CTINT, CTRUNE, CTSTR:
+			if caseIsConst(n.Left) {
 				c.typ = caseKindExprConst
-			default:
+			} else {
 				c.typ = caseKindExprVar
 			}
 		}
@@ -793,35 +784,12 @@ func exprcmp(c1, c2 *caseClause) int {
 		}
 	}
 
-	// sort by constant value to enable binary search
-	switch ct {
-	case CTFLT:
-		return n1.Val().U.(*Mpflt).Cmp(n2.Val().U.(*Mpflt))
-	case CTINT, CTRUNE:
-		return n1.Val().U.(*Mpint).Cmp(n2.Val().U.(*Mpint))
-	case CTSTR:
-		// Sort strings by length and then by value.
-		// It is much cheaper to compare lengths than values,
-		// and all we need here is consistency.
-		// We respect this sorting in exprSwitch.walkCases.
-		a := n1.Val().U.(string)
-		b := n2.Val().U.(string)
-		if len(a) < len(b) {
-			return -1
-		}
-		if len(a) > len(b) {
-			return +1
-		}
-		if a == b {
-			return 0
-		}
-		if a < b {
-			return -1
-		}
-		return +1
+	if !caseIsConst(n1) {
+		return 0
 	}
 
-	return 0
+	// sort by constant value to enable binary search
+	return caseConstCompare(n1, n2)
 }
 
 type caseClauseByType []*caseClause
@@ -844,4 +812,65 @@ func (x caseClauseByType) Less(i, j int) bool {
 
 	// sort by ordinal
 	return c1.ordinal < c2.ordinal
+}
+
+// caseIsConst reports whether n can be treated as a constant case in an expression switch.
+// This includes regular Go constants, but it could also include expressions
+// whose value is fixed at compile time, such as [3]array{1, 2, 3}.
+func caseIsConst(n *Node) bool {
+	switch consttype(n) {
+	case CTFLT, CTINT, CTRUNE, CTSTR:
+		return true
+	}
+	return false
+}
+
+// caseLessEq generates a Node representing "expr <= mid" for a binary search over constant cases.
+// mid is guaranteed to be a constant case, as defined by caseIsConst.
+// caseConstCompare and caseLessEq must agree on the sort order.
+func caseLessEq(expr, mid *Node) *Node {
+	le := Nod(OLE, expr, mid)
+	if Isconst(mid, CTSTR) {
+		// Search by length and then by value; see caseConstCompare.
+		lenlt := Nod(OLT, Nod(OLEN, expr, nil), Nod(OLEN, mid, nil))
+		leneq := Nod(OEQ, Nod(OLEN, expr, nil), Nod(OLEN, mid, nil))
+		le = Nod(OOROR, lenlt, Nod(OANDAND, leneq, le))
+	}
+	return le
+}
+
+// caseConstCompare provides a sort indicator (+1, 0, -1) for expressions n1 and n2.
+// n1 and n2 will be constants, as defined by caseIsConst.
+// This sort indicator will be used to sort the cases for binary searching.
+// caseConstCompare and caseLessEq must agree on the sort order.
+func caseConstCompare(n1, n2 *Node) int {
+	ct := n1.Val().Ctype()
+	switch ct {
+	case CTFLT:
+		return n1.Val().U.(*Mpflt).Cmp(n2.Val().U.(*Mpflt))
+	case CTINT, CTRUNE:
+		return n1.Val().U.(*Mpint).Cmp(n2.Val().U.(*Mpint))
+	case CTSTR:
+		// Sort strings by length and then by value.
+		// It is much cheaper to compare lengths than values,
+		// and all we need here is consistency.
+		// We respect this sorting in caseLessEq.
+		a := n1.Val().U.(string)
+		b := n2.Val().U.(string)
+		if len(a) < len(b) {
+			return -1
+		}
+		if len(a) > len(b) {
+			return +1
+		}
+		if a == b {
+			return 0
+		}
+		if a < b {
+			return -1
+		}
+		return +1
+	}
+	Fatalf("caseConstCompare non-const nodes %v / %v", n1, n2)
+	return 0
 }
