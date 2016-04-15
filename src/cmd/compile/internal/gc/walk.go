@@ -3073,9 +3073,7 @@ func walkcompare(n *Node, init *Nodes) *Node {
 	// Handle != similarly.
 	// This avoids the allocation that would be required
 	// to convert r to l for comparison.
-	var l *Node
-
-	var r *Node
+	var l, r *Node
 	if n.Left.Type.IsInterface() && !n.Right.Type.IsInterface() {
 		l = n.Left
 		r = n.Right
@@ -3119,19 +3117,20 @@ func walkcompare(n *Node, init *Nodes) *Node {
 
 	// Must be comparison of array or struct.
 	// Otherwise back end handles it.
+	// While we're here, decide whether to
+	// inline or call an eq alg.
 	t := n.Left.Type
-
+	var inline bool
 	switch t.Etype {
 	default:
 		return n
-
 	case TARRAY:
 		if t.IsSlice() {
 			return n
 		}
-
+		inline = t.NumElem() <= 1 || (t.NumElem() <= 4 && issimple[t.Elem().Etype])
 	case TSTRUCT:
-		break
+		inline = t.NumFields() <= 4
 	}
 
 	cmpl := n.Left
@@ -3147,103 +3146,68 @@ func walkcompare(n *Node, init *Nodes) *Node {
 		Fatalf("arguments of comparison must be lvalues - %v %v", cmpl, cmpr)
 	}
 
-	l = temp(Ptrto(t))
-	a := Nod(OAS, l, Nod(OADDR, cmpl, nil))
-	a.Right.Etype = 1 // addr does not escape
-	a = typecheck(a, Etop)
-	init.Append(a)
+	// Chose not to inline. Call equality function directly.
+	if !inline {
+		// eq algs take pointers
+		pl := temp(Ptrto(t))
+		al := Nod(OAS, pl, Nod(OADDR, cmpl, nil))
+		al.Right.Etype = 1 // addr does not escape
+		al = typecheck(al, Etop)
+		init.Append(al)
 
-	r = temp(Ptrto(t))
-	a = Nod(OAS, r, Nod(OADDR, cmpr, nil))
-	a.Right.Etype = 1 // addr does not escape
-	a = typecheck(a, Etop)
-	init.Append(a)
+		pr := temp(Ptrto(t))
+		ar := Nod(OAS, pr, Nod(OADDR, cmpr, nil))
+		ar.Right.Etype = 1 // addr does not escape
+		ar = typecheck(ar, Etop)
+		init.Append(ar)
 
-	var andor Op = OANDAND
+		var needsize int
+		call := Nod(OCALL, eqfor(t, &needsize), nil)
+		call.List.Append(pl)
+		call.List.Append(pr)
+		if needsize != 0 {
+			call.List.Append(Nodintconst(t.Width))
+		}
+		res := call
+		if n.Op != OEQ {
+			res = Nod(ONOT, res, nil)
+		}
+		n = finishcompare(n, res, init)
+		return n
+	}
+
+	// inline: build boolean expression comparing element by element
+	andor := OANDAND
 	if n.Op == ONE {
 		andor = OOROR
 	}
-
 	var expr *Node
-	if t.Etype == TARRAY && t.NumElem() <= 4 && issimple[t.Elem().Etype] {
-		// Four or fewer elements of a basic type.
-		// Unroll comparisons.
-		var li *Node
-		var ri *Node
-		for i := 0; int64(i) < t.NumElem(); i++ {
-			li = Nod(OINDEX, l, Nodintconst(int64(i)))
-			ri = Nod(OINDEX, r, Nodintconst(int64(i)))
-			a = Nod(n.Op, li, ri)
-			if expr == nil {
-				expr = a
-			} else {
-				expr = Nod(andor, expr, a)
-			}
-		}
-
+	compare := func(el, er *Node) {
+		a := Nod(n.Op, el, er)
 		if expr == nil {
-			expr = Nodbool(n.Op == OEQ)
-		}
-		n = finishcompare(n, expr, init)
-		return n
-	}
-
-	if t.Etype == TARRAY {
-		// Zero- or single-element array, of any type.
-		switch t.NumElem() {
-		case 0:
-			n = finishcompare(n, Nodbool(n.Op == OEQ), init)
-			return n
-		case 1:
-			l0 := Nod(OINDEX, l, Nodintconst(0))
-			r0 := Nod(OINDEX, r, Nodintconst(0))
-			a := Nod(n.Op, l0, r0)
-			n = finishcompare(n, a, init)
-			return n
+			expr = a
+		} else {
+			expr = Nod(andor, expr, a)
 		}
 	}
-
-	if t.IsStruct() && t.NumFields() <= 4 {
-		// Struct of four or fewer fields.
-		// Inline comparisons.
-		var li *Node
-		var ri *Node
+	if t.IsStruct() {
 		for _, t1 := range t.Fields().Slice() {
-			if isblanksym(t1.Sym) {
+			sym := t1.Sym
+			if isblanksym(sym) {
 				continue
 			}
-			li = NodSym(OXDOT, l, t1.Sym)
-			ri = NodSym(OXDOT, r, t1.Sym)
-			a = Nod(n.Op, li, ri)
-			if expr == nil {
-				expr = a
-			} else {
-				expr = Nod(andor, expr, a)
-			}
+			compare(NodSym(OXDOT, cmpl, sym), NodSym(OXDOT, cmpr, sym))
 		}
-
-		if expr == nil {
-			expr = Nodbool(n.Op == OEQ)
+	} else {
+		for i := 0; int64(i) < t.NumElem(); i++ {
+			idx := Nodintconst(int64(i))
+			compare(Nod(OINDEX, cmpl, idx), Nod(OINDEX, cmpr, idx))
 		}
-		n = finishcompare(n, expr, init)
-		return n
 	}
-
-	// Chose not to inline. Call equality function directly.
-	var needsize int
-	call := Nod(OCALL, eqfor(t, &needsize), nil)
-
-	call.List.Append(l)
-	call.List.Append(r)
-	if needsize != 0 {
-		call.List.Append(Nodintconst(t.Width))
+	if expr == nil {
+		expr = Nodbool(n.Op == OEQ)
 	}
-	r = call
-	if n.Op != OEQ {
-		r = Nod(ONOT, r, nil)
-	}
-
-	n = finishcompare(n, r, init)
+	n = finishcompare(n, expr, init)
 	return n
 }
 
