@@ -334,10 +334,10 @@ const (
 	OCLOSURE         // func Type { Body } (func literal)
 	OCMPIFACE        // Left Etype Right (interface comparison, x == y or x != y)
 	OCMPSTR          // Left Etype Right (string comparison, x == y, x < y, etc)
-	OCOMPLIT         // Right{List} (composite literal, not yet lowered to specific form)
-	OMAPLIT          // Type{List} (composite literal, Type is map)
-	OSTRUCTLIT       // Type{List} (composite literal, Type is struct)
-	OARRAYLIT        // Type{List} (composite literal, Type is array or slice)
+	OCOMPLIT         // Right{List/RList} (composite literal, keys in List, values in RList)
+	OMAPLIT          // Type{List/RList} (composite literal, Type is map)
+	OSTRUCTLIT       // Type{List/RList} (composite literal, Type is struct)
+	OARRAYLIT        // Type{List/RList} (composite literal, Type is array or slice)
 	OPTRLIT          // &Left (left is composite literal)
 	OCONV            // Type(Left) (type conversion)
 	OCONVIFACE       // Type(Left) (type conversion, to interface)
@@ -484,6 +484,11 @@ func (n Nodes) Slice() []*Node {
 		return nil
 	}
 	return *n.slice
+}
+
+// IsEmpty reports whether Nodes contains any nodes.
+func (n Nodes) IsEmpty() bool {
+	return n.Len() == 0
 }
 
 // Len returns the number of entries in Nodes.

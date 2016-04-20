@@ -1140,7 +1140,7 @@ func (p *exporter) exprList(list Nodes) {
 	p.op(OEND)
 }
 
-func (p *exporter) elemList(list Nodes) {
+func (p *exporter) elemList(list Nodes, iskey bool) {
 	if p.trace {
 		p.tracef("[ ")
 	}
@@ -1158,8 +1158,11 @@ func (p *exporter) elemList(list Nodes) {
 		if p.trace {
 			p.tracef("\n")
 		}
-		p.fieldSym(n.Left.Sym, false)
-		p.expr(n.Right)
+		if iskey {
+			p.fieldSym(n.Sym, false)
+		} else {
+			p.expr(n)
+		}
 	}
 }
 
@@ -1260,12 +1263,14 @@ func (p *exporter) expr(n *Node) {
 	case OSTRUCTLIT:
 		p.op(OSTRUCTLIT)
 		p.typ(n.Type)
-		p.elemList(n.List) // special handling of field names
+		p.elemList(n.List, true) // special handling of field names
+		p.elemList(n.Rlist, false)
 
 	case OARRAYLIT, OMAPLIT:
 		p.op(OCOMPLIT)
 		p.typ(n.Type)
 		p.exprList(n.List)
+		p.exprList(n.Rlist)
 
 	case OKEY:
 		p.op(OKEY)

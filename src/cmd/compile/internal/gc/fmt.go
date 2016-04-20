@@ -1211,10 +1211,10 @@ func exprfmt(n *Node, prec int) string {
 
 		if fmtmode == FExp && ptrlit {
 			// typecheck has overwritten OIND by OTYPE with pointer type.
-			return fmt.Sprintf("(&%v{ %v })", n.Right.Type.Elem(), hconv(n.List, FmtComma))
+			return fmt.Sprintf("(&%v%v)", n.Right.Type.Elem(), n.keyValListString())
 		}
 
-		return fmt.Sprintf("(%v{ %v })", n.Right, hconv(n.List, FmtComma))
+		return fmt.Sprintf("(%v%v)", n.Right, n.keyValListString())
 
 	case OPTRLIT:
 		if fmtmode == FExp && n.Left.Implicit {
@@ -1222,59 +1222,17 @@ func exprfmt(n *Node, prec int) string {
 		}
 		return fmt.Sprintf("&%v", n.Left)
 
-	case OSTRUCTLIT:
-		if fmtmode == FExp { // requires special handling of field names
-			var f string
-			if n.Implicit {
-				f += "{"
-			} else {
-				f += fmt.Sprintf("(%v{", n.Type)
-			}
-			for i1, n1 := range n.List.Slice() {
-				f += fmt.Sprintf(" %v:%v", sconv(n1.Left.Sym, FmtShort|FmtByte), n1.Right)
-
-				if i1+1 < n.List.Len() {
-					f += ","
-				} else {
-					f += " "
-				}
-			}
-
-			if !n.Implicit {
-				f += "})"
-				return f
-			}
-			f += "}"
-			return f
-		}
-		fallthrough
-
-	case OARRAYLIT, OMAPLIT:
+	case OARRAYLIT, OMAPLIT, OSTRUCTLIT:
 		if fmtmode == FErr {
 			return fmt.Sprintf("%v literal", n.Type)
 		}
 		if fmtmode == FExp && n.Implicit {
-			return fmt.Sprintf("{ %v }", hconv(n.List, FmtComma))
+			return n.keyValListString()
 		}
-		return fmt.Sprintf("(%v{ %v })", n.Type, hconv(n.List, FmtComma))
+		return fmt.Sprintf("(%v%v)", n.Type, n.keyValListString())
 
 	case OKEY:
-		if n.Left != nil && n.Right != nil {
-			if fmtmode == FExp && n.Left.Type == structkey {
-				// requires special handling of field names
-				return fmt.Sprintf("%v:%v", sconv(n.Left.Sym, FmtShort|FmtByte), n.Right)
-			} else {
-				return fmt.Sprintf("%v:%v", n.Left, n.Right)
-			}
-		}
-
-		if n.Left == nil && n.Right != nil {
-			return fmt.Sprintf(":%v", n.Right)
-		}
-		if n.Left != nil && n.Right == nil {
-			return fmt.Sprintf("%v:", n.Left)
-		}
-		return ":"
+		Fatalf("OKEY is gone gone gone")
 
 	case OCALLPART:
 		var f string
@@ -1808,6 +1766,32 @@ func hconv(l Nodes, flag FmtFlag) string {
 	flag = sf
 	fmtbody = sb
 	fmtmode = sm
+	return buf.String()
+}
+
+// keyValListString formats n's keys and vals in the form { key:val, key:val }.
+func (n *Node) keyValListString() string {
+	var buf bytes.Buffer
+	buf.WriteString("{ ")
+	for i, val := range n.Rlist.Slice() {
+		if i != 0 {
+			buf.WriteString(", ")
+		}
+		key := n.List.Index(i)
+		if key != nil {
+			if key.Type == structkey && fmtmode == FExp {
+				// requires special handling of field names
+				buf.WriteString(sconv(key.Sym, FmtShort|FmtByte))
+			} else {
+				buf.WriteString(key.String())
+			}
+		}
+		buf.WriteString(":")
+		if val != nil {
+			buf.WriteString(val.String())
+		}
+	}
+	buf.WriteString(" }")
 	return buf.String()
 }
 

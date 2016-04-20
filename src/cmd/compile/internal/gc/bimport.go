@@ -841,6 +841,7 @@ func (p *importer) node() *Node {
 	case OSTRUCTLIT:
 		n := Nod(OCOMPLIT, nil, typenod(p.typ()))
 		n.List.Set(p.elemList()) // special handling of field names
+		n.Rlist.Set(p.elemList())
 		return n
 
 	// case OARRAYLIT, OMAPLIT:
@@ -849,6 +850,7 @@ func (p *importer) node() *Node {
 	case OCOMPLIT:
 		n := Nod(OCOMPLIT, nil, typenod(p.typ()))
 		n.List.Set(p.exprList())
+		n.Rlist.Set(p.exprList())
 		return n
 
 	case OKEY:
