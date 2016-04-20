@@ -467,7 +467,7 @@ func walkclosure(func_ *Node, init *Nodes) *Node {
 	clos := Nod(OCOMPLIT, nil, Nod(OIND, typ, nil))
 	clos.Esc = func_.Esc
 	clos.Right.Implicit = true
-	clos.List.Set(append([]*Node{Nod(OCFUNC, func_.Func.Closure.Func.Nname, nil)}, func_.Func.Enter.Slice()...))
+	clos.Rlist.Set(append([]*Node{Nod(OCFUNC, func_.Func.Closure.Func.Nname, nil)}, func_.Func.Enter.Slice()...))
 
 	// Force type conversion from *struct to the func type.
 	clos = Nod(OCONVNOP, clos, nil)
@@ -669,8 +669,8 @@ func walkpartialcall(n *Node, init *Nodes) *Node {
 	clos := Nod(OCOMPLIT, nil, Nod(OIND, typ, nil))
 	clos.Esc = n.Esc
 	clos.Right.Implicit = true
-	clos.List.Set1(Nod(OCFUNC, n.Func.Nname, nil))
-	clos.List.Append(n.Left)
+	clos.Rlist.Set1(Nod(OCFUNC, n.Func.Nname, nil))
+	clos.Rlist.Append(n.Left)
 
 	// Force type conversion from *struct to the func type.
 	clos = Nod(OCONVNOP, clos, nil)

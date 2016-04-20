@@ -1757,7 +1757,7 @@ OpSwitch:
 				n.SetVal(n.Left.Val())
 			}
 
-			// do not use stringtoarraylit.
+		// do not use stringtoarraylit.
 		// generated code and compiler memory footprint is better without it.
 		case OSTRARRAYBYTE:
 			break
@@ -2566,15 +2566,6 @@ func lookdot(n *Node, t *Type, dostrcmp int) *Field {
 	return nil
 }
 
-func nokeys(l Nodes) bool {
-	for _, n := range l.Slice() {
-		if n.Op == OKEY {
-			return false
-		}
-	}
-	return true
-}
-
 func hasddd(t *Type) bool {
 	for _, tl := range t.Fields().Slice() {
 		if tl.Isddd {
@@ -2885,26 +2876,39 @@ func pushtype(n *Node, t *Type) {
 // TODO(mdempsky): Find a nicer solution.
 var structkey = typ(Txxx)
 
+// typecheckcomplit type checks a composite literal.
+// It accepts an OCOMPLIT and replaces it with an OARRAYLIT, OMAPLIT, OSTRUCTLIT, or OPTRLIT.
 // The result of typecheckcomplit MUST be assigned back to n, e.g.
 // 	n.Left = typecheckcomplit(n.Left)
 func typecheckcomplit(n *Node) *Node {
+	if n.Op != OCOMPLIT {
+		Fatalf("typecheckcomplit op %v", opnames[n.Op])
+	}
+	if !n.List.IsEmpty() && n.List.Len() != n.Rlist.Len() {
+		Fatalf("typecheckcomplit %v mismatched key/val len: keys=%v vals=%v", linestr(n.Lineno), n.List, n.Rlist)
+	}
+
+	// TODO: REMOVE THIS GUNK
+	if n.List.IsEmpty() {
+		n.List.Set(make([]*Node, n.Rlist.Len()))
+	}
+
 	lno := lineno
 	defer func() {
 		lineno = lno
 	}()
 
 	if n.Right == nil {
-		if n.List.Len() != 0 {
-			setlineno(n.List.First())
+		if n.Rlist.Len() != 0 {
+			setlineno(n.Rlist.First())
 		}
 		Yyerror("missing type in composite literal")
 		n.Type = nil
 		return n
 	}
 
-	// Save original node (including n->right)
+	// Save original node (including n.Right)
 	norig := Nod(n.Op, nil, nil)
-
 	*norig = *n
 
 	setlineno(n.Right)
@@ -2937,7 +2941,6 @@ func typecheckcomplit(n *Node) *Node {
 		t = t.Elem()
 	}
 
-	var r *Node
 	switch t.Etype {
 	default:
 		Yyerror("invalid type for composite literal: %v", t)
@@ -2946,52 +2949,62 @@ func typecheckcomplit(n *Node) *Node {
 	case TARRAY:
 		// Only allocate hash if there are some key/value pairs.
 		var hash map[int64]*Node
-		for _, n1 := range n.List.Slice() {
-			if n1.Op == OKEY {
-				hash = make(map[int64]*Node)
+		// TODO instead:
+		// haskeys := !n.List.IsEmpty()
+		haskeys := false
+		for _, key := range n.List.Slice() {
+			if key != nil {
+				haskeys = true
 				break
 			}
 		}
+		if haskeys {
+			hash = make(map[int64]*Node)
+		}
 		length := int64(0)
-		i := 0
-		for i2, n2 := range n.List.Slice() {
-			l := n2
-			setlineno(l)
-			if l.Op != OKEY {
-				l = Nod(OKEY, Nodintconst(int64(i)), l)
-				l.Left.Type = Types[TINT]
-				l.Left.Typecheck = 1
-				n.List.SetIndex(i2, l)
+		idx := 0
+		for i, val := range n.Rlist.Slice() {
+			setlineno(val)
+			key := n.List.Index(i)
+			// TODO: reinstate the if haskeys check and the idx != i check,
+			// remove the n.List.IsEmpty check
+			// if haskeys {
+			if key == nil /*&& idx != i*/ {
+				// There was a previous key whose value didn't match its index,
+				// and we're counting up from there.
+				key = Nodintconst(int64(idx))
+				key.Type = Types[TINT]
+				key.Typecheck = 1
 			}
-
-			l.Left = typecheck(l.Left, Erv)
-			evconst(l.Left)
-			i = nonnegconst(l.Left)
-			if i < 0 && l.Left.Diag == 0 {
+			key = typecheck(key, Erv)
+			evconst(key)
+			n.List.SetIndex(i, key)
+			idx = nonnegconst(key)
+			// }
+			if idx < 0 && key.Diag == 0 {
 				Yyerror("index must be non-negative integer constant")
-				l.Left.Diag = 1
-				i = -(1 << 30) // stay negative for a while
+				key.Diag = 1
+				idx = -(1 << 30) // stay negative for a while
 			}
-
-			if i >= 0 && hash != nil {
-				indexdup(l.Left, hash)
+			if idx >= 0 && hash != nil {
+				indexdup(key, hash)
 			}
-			i++
-			if int64(i) > length {
-				length = int64(i)
+			idx++
+			if int64(idx) > length {
+				length = int64(idx)
 				if t.IsArray() && length > t.NumElem() {
-					setlineno(l)
+					setlineno(val)
 					Yyerror("array index %d out of bounds [0:%d]", length-1, t.NumElem())
 					// suppress any further errors out of bounds errors for the same type by pretending it is a slice
 					t.SetNumElem(sliceBound)
 				}
 			}
 
-			r = l.Right
-			pushtype(r, t.Elem())
-			r = typecheck(r, Erv)
-			r = defaultlit(r, t.Elem())
-			l.Right = assignconv(r, t.Elem(), "array or slice literal")
+			pushtype(val, t.Elem())
+			val = typecheck(val, Erv)
+			val = defaultlit(val, t.Elem())
+			val = assignconv(val, t.Elem(), "array or slice literal")
+			n.Rlist.SetIndex(i, val)
 		}
 
 		if t.isDDDArray() {
@@ -3004,30 +3017,27 @@ func typecheckcomplit(n *Node) *Node {
 
 	case TMAP:
 		hash := make(map[uint32][]*Node)
-		var l *Node
-		for i3, n3 := range n.List.Slice() {
-			l = n3
-			setlineno(l)
-			if l.Op != OKEY {
-				n.List.SetIndex(i3, typecheck(n.List.Index(i3), Erv))
+		for i, val := range n.Rlist.Slice() {
+			key := n.List.Index(i)
+			setlineno(val)
+			if key == nil {
+				n.Rlist.SetIndex(i, typecheck(val, Erv))
 				Yyerror("missing key in map literal")
 				continue
 			}
-
-			r = l.Left
-			pushtype(r, t.Key())
-			r = typecheck(r, Erv)
-			r = defaultlit(r, t.Key())
-			l.Left = assignconv(r, t.Key(), "map key")
-			if l.Left.Op != OCONV {
-				keydup(l.Left, hash)
+			pushtype(key, t.Key())
+			key = typecheck(key, Erv)
+			key = defaultlit(key, t.Key())
+			key = assignconv(key, t.Key(), "map key")
+			n.List.SetIndex(i, key)
+			if key.Op != OCONV {
+				keydup(key, hash)
 			}
-
-			r = l.Right
-			pushtype(r, t.Val())
-			r = typecheck(r, Erv)
-			r = defaultlit(r, t.Val())
-			l.Right = assignconv(r, t.Val(), "map value")
+			pushtype(val, t.Val())
+			val = typecheck(val, Erv)
+			val = defaultlit(val, t.Val())
+			val = assignconv(val, t.Val(), "map value")
+			n.Rlist.SetIndex(i, val)
 		}
 
 		n.Op = OMAPLIT
@@ -3035,18 +3045,25 @@ func typecheckcomplit(n *Node) *Node {
 	case TSTRUCT:
 		// Need valid field offsets for Xoffset below.
 		dowidth(t)
-
 		bad := 0
-		if n.List.Len() != 0 && nokeys(n.List) {
-			// simple list of variables
+		// TODO instead:
+		// haskeys := !n.List.IsEmpty()
+		haskeys := false
+		for _, key := range n.List.Slice() {
+			if key != nil {
+				haskeys = true
+				break
+			}
+		}
+		if !haskeys && !n.Rlist.IsEmpty() {
+			// simple list of variables, no keys
+			// TODO(josharian): avoid generating these keys?
+			// I think their main purpose is to hold Xoffset, which we could look up directly later.
 			f, it := IterFields(t)
-
-			var s *Sym
-			ls := n.List.Slice()
-			for i1, n1 := range ls {
-				setlineno(n1)
-				ls[i1] = typecheck(ls[i1], Erv)
-				n1 = ls[i1]
+			for i, val := range n.Rlist.Slice() {
+				setlineno(val)
+				val = typecheck(val, Erv)
+				n.Rlist.SetIndex(i, val)
 				if f == nil {
 					if bad == 0 {
 						Yyerror("too many values in struct initializer")
@@ -3054,21 +3071,20 @@ func typecheckcomplit(n *Node) *Node {
 					bad++
 					continue
 				}
-
-				s = f.Sym
+				s := f.Sym
 				if s != nil && !exportname(s.Name) && s.Pkg != localpkg {
 					Yyerror("implicit assignment of unexported field '%s' in %v literal", s.Name, t)
 				}
 				// No pushtype allowed here. Must name fields for that.
-				n1 = assignconv(n1, f.Type, "field value")
-				n1 = Nod(OKEY, newname(f.Sym), n1)
-				n1.Left.Type = structkey
-				n1.Left.Xoffset = f.Offset
-				n1.Left.Typecheck = 1
-				ls[i1] = n1
+				val = assignconv(val, f.Type, "field value")
+				n.Rlist.SetIndex(i, val)
+				key := newname(f.Sym)
+				key.Type = structkey
+				key.Xoffset = f.Offset
+				key.Typecheck = 1
+				n.List.SetIndex(i, key)
 				f = it.Next()
 			}
-
 			if f != nil {
 				Yyerror("too few values in struct initializer")
 			}
@@ -3076,27 +3092,28 @@ func typecheckcomplit(n *Node) *Node {
 			hash := make(map[string]bool)
 
 			// keyed list
-			ls := n.List.Slice()
-			for i, l := range ls {
-				setlineno(l)
-				if l.Op != OKEY {
+			for i, val := range n.Rlist.Slice() {
+				setlineno(val)
+				key := n.List.Index(i)
+				if key == nil {
 					if bad == 0 {
 						Yyerror("mixture of field:value and value initializers")
 					}
 					bad++
-					ls[i] = typecheck(ls[i], Erv)
+					key = typecheck(key, Erv)
+					n.List.SetIndex(i, key)
 					continue
 				}
 
-				s := l.Left.Sym
-
+				s := key.Sym
 				// An OXDOT uses the Sym field to hold
 				// the field to the right of the dot,
 				// so s will be non-nil, but an OXDOT
 				// is never a valid struct literal key.
-				if s == nil || l.Left.Op == OXDOT {
-					Yyerror("invalid field name %v in struct initializer", l.Left)
-					l.Right = typecheck(l.Right, Erv)
+				if s == nil || key.Op == OXDOT {
+					Yyerror("invalid field name %v in struct initializer", key)
+					val = typecheck(val, Erv)
+					n.Rlist.SetIndex(i, val)
 					continue
 				}
 
@@ -3104,8 +3121,7 @@ func typecheckcomplit(n *Node) *Node {
 				// package, because of import dot. Redirect to correct sym
 				// before we do the lookup.
 				if s.Pkg != localpkg && exportname(s.Name) {
-					s1 := Lookup(s.Name)
-					if s1.Origpkg == s.Pkg {
+					if s1 := Lookup(s.Name); s1.Origpkg == s.Pkg {
 						s = s1
 					}
 				}
@@ -3116,18 +3132,18 @@ func typecheckcomplit(n *Node) *Node {
 					continue
 				}
 
-				l.Left = newname(s)
-				l.Left.Type = structkey
-				l.Left.Xoffset = f.Offset
-				l.Left.Typecheck = 1
+				key = newname(s)
+				key.Type = structkey
+				key.Xoffset = f.Offset
+				key.Typecheck = 1
+				n.List.SetIndex(i, key)
 				s = f.Sym
 				fielddup(newname(s), hash)
-				r = l.Right
 
 				// No pushtype allowed here. Tried and rejected.
-				r = typecheck(r, Erv)
-
-				l.Right = assignconv(r, f.Type, "field value")
+				val = typecheck(val, Erv)
+				val = assignconv(val, f.Type, "field value")
+				n.Rlist.SetIndex(i, val)
 			}
 		}
 
@@ -3453,28 +3469,20 @@ func typecheckfunc(n *Node) {
 // The result of stringtoarraylit MUST be assigned back to n, e.g.
 // 	n.Left = stringtoarraylit(n.Left)
 func stringtoarraylit(n *Node) *Node {
-	if n.Left.Op != OLITERAL || n.Left.Val().Ctype() != CTSTR {
+	if n.Left.Op != OLITERAL || n.Left.Val().Ctype() != CTSTR || n.Type.Elem().Etype == TUINT8 {
 		Fatalf("stringtoarraylit %v", n)
 	}
 
 	s := n.Left.Val().U.(string)
-	var l []*Node
-	if n.Type.Elem().Etype == TUINT8 {
-		// []byte
-		for i := 0; i < len(s); i++ {
-			l = append(l, Nod(OKEY, Nodintconst(int64(i)), Nodintconst(int64(s[0]))))
-		}
-	} else {
-		// []rune
-		i := 0
-		for _, r := range s {
-			l = append(l, Nod(OKEY, Nodintconst(int64(i)), Nodintconst(int64(r))))
-			i++
-		}
+	var vals []*Node
+	// []rune
+	for _, r := range s {
+		// typechecking will fill in keys as needed
+		vals = append(vals, Nodintconst(int64(r)))
 	}
 
 	nn := Nod(OCOMPLIT, nil, typenod(n.Type))
-	nn.List.Set(l)
+	nn.Rlist.Set(vals)
 	nn = typecheck(nn, Erv)
 	return nn
 }

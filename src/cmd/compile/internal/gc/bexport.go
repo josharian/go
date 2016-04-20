@@ -1136,6 +1136,7 @@ func (p *exporter) expr(n *Node) {
 			p.typ(n.Type)
 		}
 		p.elemList(n.List) // special handling of field names
+		p.elemList(n.Rlist)
 
 	case OARRAYLIT, OMAPLIT:
 		p.op(op)
@@ -1143,6 +1144,7 @@ func (p *exporter) expr(n *Node) {
 			p.typ(n.Type)
 		}
 		p.exprList(n.List)
+		p.exprList(n.Rlist)
 
 	case OKEY:
 		p.op(OKEY)

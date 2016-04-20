@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-const trace = false // if set, parse tracing can be enabled with -x
+const trace = true // if set, parse tracing can be enabled with -x
 
 // parse_import parses the export data of a package that is imported.
 func parse_import(bin *bufio.Reader, indent []byte) {
@@ -1472,7 +1472,7 @@ loop:
 }
 
 // KeyedElement = [ Key ":" ] Element .
-func (p *parser) keyval() *Node {
+func (p *parser) keyval() (*Node, *Node) {
 	if trace && Debug['x'] != 0 {
 		defer p.trace("keyval")()
 	}
@@ -1486,11 +1486,11 @@ func (p *parser) keyval() *Node {
 
 	if p.got(':') {
 		// key ':' value
-		return Nod(OKEY, x, wrapname(p.bare_complitexpr()))
+		return x, wrapname(p.bare_complitexpr())
 	}
 
 	// value
-	return wrapname(x)
+	return nil, wrapname(x)
 }
 
 func wrapname(x *Node) *Node {
@@ -1530,9 +1530,23 @@ func (p *parser) complitexpr() *Node {
 	p.want('{')
 	p.xnest++
 
-	var l []*Node
+	var l, r []*Node
 	for p.tok != EOF && p.tok != '}' {
-		l = append(l, p.keyval())
+		key, val := p.keyval()
+		/*
+			// TODO:
+			// In the case of an array or struct literal with no keys, l would be filled with nils,
+			// in which case we want to avoid allocating the slice at all.
+			// Defer the allocation until we see a non-nil key, and then catch up.
+			if l != nil {
+				l = append(l, key)
+			} else if key != nil {
+				l = make([]*Node, len(r)+1)
+				l[len(r)] = key
+			}
+		*/
+		l = append(l, key)
+		r = append(r, val)
 		if !p.ocomma('}') {
 			break
 		}
@@ -1542,6 +1556,7 @@ func (p *parser) complitexpr() *Node {
 	p.want('}')
 
 	n.List.Set(l)
+	n.Rlist.Set(r)
 	return n
 }
 

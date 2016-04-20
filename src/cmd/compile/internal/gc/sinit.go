@@ -553,8 +553,7 @@ func getdyn(n *Node, top int) initGenType {
 	}
 
 	var mode initGenType
-	for _, n1 := range n.List.Slice() {
-		value := n1.Right
+	for _, value := range n.Rlist.Slice() {
 		mode |= getdyn(value, 0)
 		if mode == initDynamic|initConst {
 			break
@@ -576,16 +575,13 @@ func isStaticCompositeLiteral(n *Node) bool {
 	default:
 		return false
 	}
-	for _, r := range n.List.Slice() {
-		if r.Op != OKEY {
-			Fatalf("isStaticCompositeLiteral: rhs not OKEY: %v", r)
-		}
-		index := r.Left
-		if n.Op == OARRAYLIT && index.Op != OLITERAL {
+	for i, val := range n.Rlist.Slice() {
+		// TODO: Handle implicit keys
+		key := n.List.Index(i)
+		if n.Op == OARRAYLIT && key != nil && key.Op != OLITERAL {
 			return false
 		}
-		value := r.Right
-		if !isStaticCompositeLiteral(value) {
+		if !isStaticCompositeLiteral(val) {
 			return false
 		}
 	}
@@ -593,12 +589,9 @@ func isStaticCompositeLiteral(n *Node) bool {
 }
 
 func structlit(ctxt int, pass int, n *Node, var_ *Node, init *Nodes) {
-	for _, r := range n.List.Slice() {
-		if r.Op != OKEY {
-			Fatalf("structlit: rhs not OKEY: %v", r)
-		}
-		index := r.Left
-		value := r.Right
+	for i, value := range n.Rlist.Slice() {
+		// TODO: Handle implicit keys
+		index := n.List.Index(i)
 
 		switch value.Op {
 		case OARRAYLIT:
@@ -655,12 +648,8 @@ func structlit(ctxt int, pass int, n *Node, var_ *Node, init *Nodes) {
 }
 
 func arraylit(ctxt int, pass int, n *Node, var_ *Node, init *Nodes) {
-	for _, r := range n.List.Slice() {
-		if r.Op != OKEY {
-			Fatalf("arraylit: rhs not OKEY: %v", r)
-		}
-		index := r.Left
-		value := r.Right
+	for i, value := range n.Rlist.Slice() {
+		index := n.List.Index(i)
 
 		switch value.Op {
 		case OARRAYLIT:
@@ -821,12 +810,8 @@ func slicelit(ctxt int, n *Node, var_ *Node, init *Nodes) {
 	a = walkstmt(a)
 	init.Append(a)
 	// put dynamics into slice (6)
-	for _, r := range n.List.Slice() {
-		if r.Op != OKEY {
-			Fatalf("slicelit: rhs not OKEY: %v", r)
-		}
-		index := r.Left
-		value := r.Right
+	for i, value := range n.Rlist.Slice() {
+		index := n.List.Index(i)
 		a := Nod(OINDEX, var_, index)
 		a.Bounded = true
 
@@ -872,13 +857,8 @@ func maplit(ctxt int, n *Node, var_ *Node, init *Nodes) {
 
 	// count the initializers
 	b := 0
-	for _, r := range n.List.Slice() {
-		if r.Op != OKEY {
-			Fatalf("maplit: rhs not OKEY: %v", r)
-		}
-		index := r.Left
-		value := r.Right
-
+	for i, value := range n.Rlist.Slice() {
+		index := n.List.Index(i)
 		if isliteral(index) && isliteral(value) {
 			b++
 		}
@@ -913,13 +893,8 @@ func maplit(ctxt int, n *Node, var_ *Node, init *Nodes) {
 		vstat := staticname(tarr, ctxt)
 
 		b := int64(0)
-		for _, r := range n.List.Slice() {
-			if r.Op != OKEY {
-				Fatalf("maplit: rhs not OKEY: %v", r)
-			}
-			index := r.Left
-			value := r.Right
-
+		for i, value := range n.Rlist.Slice() {
+			index := n.List.Index(i)
 			if isliteral(index) && isliteral(value) {
 				// build vstat[b].a = key;
 				setlineno(index)
@@ -979,14 +954,10 @@ func maplit(ctxt int, n *Node, var_ *Node, init *Nodes) {
 	}
 
 	// put in dynamic entries one-at-a-time
+	// TODO: clean up confusing key/index/val/value naming
 	var key, val *Node
-	for _, r := range n.List.Slice() {
-		if r.Op != OKEY {
-			Fatalf("maplit: rhs not OKEY: %v", r)
-		}
-		index := r.Left
-		value := r.Right
-
+	for i, value := range n.Rlist.Slice() {
+		index := n.List.Index(i)
 		if isliteral(index) && isliteral(value) {
 			continue
 		}
@@ -998,13 +969,13 @@ func maplit(ctxt int, n *Node, var_ *Node, init *Nodes) {
 			val = temp(var_.Type.Val())
 		}
 
-		setlineno(r.Left)
-		a = Nod(OAS, key, r.Left)
+		setlineno(index)
+		a = Nod(OAS, key, index)
 		a = typecheck(a, Etop)
 		a = walkstmt(a)
 		init.Append(a)
-		setlineno(r.Right)
-		a = Nod(OAS, val, r.Right)
+		setlineno(value)
+		a = Nod(OAS, val, value)
 		a = typecheck(a, Etop)
 		a = walkstmt(a)
 		init.Append(a)
@@ -1259,27 +1230,26 @@ func initplan(n *Node) {
 		Fatalf("initplan")
 
 	case OARRAYLIT:
-		for _, a := range n.List.Slice() {
-			if a.Op != OKEY || !Smallintconst(a.Left) {
+		for i, val := range n.Rlist.Slice() {
+			key := n.List.Index(i)
+			if !Smallintconst(key) {
 				Fatalf("initplan arraylit")
 			}
-			addvalue(p, n.Type.Elem().Width*a.Left.Int64(), a.Right)
+			addvalue(p, n.Type.Elem().Width*key.Int64(), val)
 		}
 
 	case OSTRUCTLIT:
-		for _, a := range n.List.Slice() {
-			if a.Op != OKEY || a.Left.Type != structkey {
+		for i, val := range n.Rlist.Slice() {
+			key := n.List.Index(i)
+			if key.Type != structkey {
 				Fatalf("initplan structlit")
 			}
-			addvalue(p, a.Left.Xoffset, a.Right)
+			addvalue(p, key.Xoffset, val)
 		}
 
 	case OMAPLIT:
-		for _, a := range n.List.Slice() {
-			if a.Op != OKEY {
-				Fatalf("initplan maplit")
-			}
-			addvalue(p, -1, a.Right)
+		for _, val := range n.Rlist.Slice() {
+			addvalue(p, -1, val)
 		}
 	}
 }
@@ -1339,10 +1309,9 @@ func iszero(n *Node) bool {
 		}
 		fallthrough
 
-		// fall through
 	case OSTRUCTLIT:
-		for _, n1 := range n.List.Slice() {
-			if !iszero(n1.Right) {
+		for _, value := range n.Rlist.Slice() {
+			if !iszero(value) {
 				return false
 			}
 		}

@@ -870,14 +870,14 @@ func esc(e *EscState, n *Node, up *Node) {
 			why = "slice literal element"
 		}
 		// Link values to array/slice
-		for _, n5 := range n.List.Slice() {
-			escassign(e, n, n5.Right, e.stepAssign(nil, n, n5.Right, why))
+		for _, val := range n.Rlist.Slice() {
+			escassign(e, n, val, e.stepAssign(nil, n, val, why))
 		}
 
 		// Link values to struct.
 	case OSTRUCTLIT:
-		for _, n6 := range n.List.Slice() {
-			escassignNilWhy(e, n, n6.Right, "struct literal element")
+		for _, val := range n.Rlist.Slice() {
+			escassignNilWhy(e, n, val, "struct literal element")
 		}
 
 	case OPTRLIT:
@@ -895,9 +895,10 @@ func esc(e *EscState, n *Node, up *Node) {
 	case OMAPLIT:
 		e.track(n)
 		// Keys and values make it to memory, lose track.
-		for _, n7 := range n.List.Slice() {
-			escassignSinkNilWhy(e, n, n7.Left, "map literal key")
-			escassignSinkNilWhy(e, n, n7.Right, "map literal value")
+		for i, val := range n.Rlist.Slice() {
+			key := n.List.Index(i)
+			escassignSinkNilWhy(e, n, key, "map literal key")
+			escassignSinkNilWhy(e, n, val, "map literal value")
 		}
 
 		// Link addresses of captured variables to closure.
@@ -1874,8 +1875,8 @@ func escwalkBody(e *EscState, level Level, dst *Node, src *Node, step *EscStep, 
 		if src.Type.IsArray() {
 			break
 		}
-		for _, n1 := range src.List.Slice() {
-			escwalk(e, level.dec(), dst, n1.Right, e.stepWalk(dst, n1.Right, "slice-literal-element", step))
+		for _, val := range src.Rlist.Slice() {
+			escwalk(e, level.dec(), dst, val, e.stepWalk(dst, val, "slice-literal-element", step))
 		}
 
 		fallthrough

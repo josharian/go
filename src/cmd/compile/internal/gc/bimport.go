@@ -771,6 +771,7 @@ func (p *importer) node() *Node {
 			n.Right = typenod(p.typ())
 		}
 		n.List.Set(p.elemList())
+		n.Rlist.Set(p.elemList())
 		return n
 
 	case OARRAYLIT, OMAPLIT:
@@ -779,6 +780,7 @@ func (p *importer) node() *Node {
 			n.Right = typenod(p.typ())
 		}
 		n.List.Set(p.exprList())
+		n.Rlist.Set(p.exprList())
 		return n
 
 	case OKEY:

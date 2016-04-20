@@ -1750,7 +1750,7 @@ func mkdotargslice(lr0, nn []*Node, l *Field, fp int, init *Nodes, ddd *Node) []
 		if ddd != nil && prealloc[ddd] != nil {
 			prealloc[n] = prealloc[ddd] // temporary to use
 		}
-		n.List.Set(lr0)
+		n.Rlist.Set(lr0)
 		n.Esc = esc
 		n = typecheck(n, Erv)
 		if n.Type == nil {
@@ -2746,7 +2746,7 @@ func addstr(n *Node, init *Nodes) *Node {
 		if prealloc[n] != nil {
 			prealloc[slice] = prealloc[n]
 		}
-		slice.List.Set(args[1:]) // skip buf arg
+		slice.Rlist.Set(args[1:]) // skip buf arg
 		args = []*Node{buf}
 		args = append(args, slice)
 		slice.Esc = EscNone

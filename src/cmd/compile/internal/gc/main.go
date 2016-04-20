@@ -195,6 +195,9 @@ func Main() {
 	obj.Flagcount("w", "debug type checking", &Debug['w'])
 	flag.BoolVar(&use_writebarrier, "wb", true, "enable write barrier")
 	obj.Flagcount("x", "debug lexer", &Debug['x'])
+	if os.Getenv("TRACE") != "" {
+		Debug['x'] = 1
+	}
 	var flag_shared bool
 	var flag_dynlink bool
 	if supportsDynlink(Thearch.LinkArch.Arch) {
