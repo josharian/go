@@ -3816,6 +3816,9 @@ func markbreaklist(l Nodes, implicit *Node) {
 	s := l.Slice()
 	for i := 0; i < len(s); i++ {
 		n := s[i]
+		if n == nil {
+			continue
+		}
 		if n.Op == OLABEL && i+1 < len(s) && n.Name.Defn == s[i+1] {
 			switch n.Name.Defn.Op {
 			case OFOR, OSWITCH, OTYPESW, OSELECT, ORANGE:

@@ -405,7 +405,7 @@ func inlnode(n *Node) *Node {
 	default:
 		s := n.List.Slice()
 		for i1, n1 := range s {
-			if n1.Op == OINLCALL {
+			if n1 != nil && n1.Op == OINLCALL {
 				s[i1] = inlconv2expr(s[i1])
 			}
 		}
