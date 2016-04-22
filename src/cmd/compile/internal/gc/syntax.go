@@ -446,6 +446,23 @@ func (n Nodes) Addr(i int) **Node {
 	return &(*n.slice)[i]
 }
 
+// Grow ensures that Nodes has at least length n.
+func (n *Nodes) Grow(newlen int) {
+	if n.slice == nil {
+		s := make([]*Node, newlen)
+		n.slice = &s
+		return
+	}
+	for newlen > len(*n.slice) {
+		*n.slice = append(*n.slice, nil)
+		high := newlen
+		if c := cap(*n.slice); c < high {
+			high = c
+		}
+		*n.slice = (*n.slice)[:high]
+	}
+}
+
 // Append appends entries to Nodes.
 // If a slice is passed in, this will take ownership of it.
 func (n *Nodes) Append(a ...*Node) {
