@@ -1259,7 +1259,7 @@ func (p *exporter) expr(n *Node) {
 		p.op(ODCLCONST)
 
 	default:
-		Fatalf("exporter: CANNOT EXPORT: %s\nPlease notify gri@\n", opnames[n.Op])
+		Fatalf("exporter: CANNOT EXPORT: %s\nPlease notify gri@\n", n.Op)
 	}
 }
 
@@ -1389,7 +1389,7 @@ func (p *exporter) stmt(n *Node) {
 		p.expr(n.Left)
 
 	default:
-		Fatalf("exporter: CANNOT EXPORT: %s\nPlease notify gri@\n", opnames[n.Op])
+		Fatalf("exporter: CANNOT EXPORT: %s\nPlease notify gri@\n", n.Op)
 	}
 }
 
@@ -1477,7 +1477,7 @@ func (p *exporter) bool(b bool) bool {
 func (p *exporter) op(op Op) {
 	if p.trace {
 		p.tracef("[")
-		defer p.tracef("= %s] ", opnames[op])
+		defer p.tracef("= %s] ", op)
 	}
 
 	p.int(int(op))
