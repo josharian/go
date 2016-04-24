@@ -260,17 +260,11 @@ func ishairy(n *Node, budget *int32, reason *string) bool {
 		return true
 	}
 
-	(*budget)--
-	// TODO(mdempsky/josharian): Hacks to appease toolstash; remove.
-	// See issue 17566 and CL 31674 for discussion.
-	switch n.Op {
-	case OSTRUCTKEY:
-		(*budget)--
-	case OSLICE, OSLICEARR, OSLICESTR:
-		(*budget)--
-	case OSLICE3, OSLICE3ARR:
-		*budget -= 2
+	opCost := int32(1)
+	if int(n.Op) < len(opCostAdj) {
+		opCost += opCostAdj[n.Op]
 	}
+	*budget -= opCost
 
 	if *budget < 0 {
 		*reason = "function too complex"
@@ -280,6 +274,72 @@ func ishairy(n *Node, budget *int32, reason *string) bool {
 	return ishairy(n.Left, budget, reason) || ishairy(n.Right, budget, reason) ||
 		ishairylist(n.List, budget, reason) || ishairylist(n.Rlist, budget, reason) ||
 		ishairylist(n.Ninit, budget, reason) || ishairylist(n.Nbody, budget, reason)
+}
+
+// Nodes have a default cost of 1.
+// This is a cost adjustment table.
+var opCostAdj = [...]int32{
+	// Ops that don't involve doing any actual work and
+	// that don't contribute to generated code are free.
+	OXXX:       -1,
+	OPACK:      -1,
+	OKEY:       -1,
+	OPAREN:     -1,
+	OCONVNOP:   -1,
+	OTYPE:      -1,
+	OEMPTY:     -1,
+	OFALL:      -1,
+	OLABEL:     -1,
+	OMAPLIT:    -1,
+	OSTRUCTLIT: -1,
+	OARRAYLIT:  -1,
+	OPTRLIT:    -1,
+	ODCLFUNC:   -1,
+	ODCLFIELD:  -1,
+	ODCLCONST:  -1,
+	ODOT:       -1,
+	OREAL:      -1,
+	OIMAG:      -1,
+	OCOMPLEX:   -1,
+	OBLOCK:     -1,
+	OEFACE:     -1,
+	OITAB:      -1,
+	OSPTR:      -1,
+
+	// Moderately large/complicated ops, ops involving runtime calls.
+	OAS2FUNC:   3,
+	ODOTTYPE:   3,
+	ODOTTYPE2:  3,
+	OCONVIFACE: 3,
+	OCMPIFACE:  3,
+	ONEW:       3,
+	OAS2RECV:   3,
+	OAS2MAPR:   3,
+	OCLOSE:     3,
+	OCMPSTR:    3,
+	ODELETE:    3,
+	OINDEXMAP:  3,
+	OMAKESLICE: 3,
+	OSEND:      3,
+	ORECV:      3,
+
+	// Ops that require lots of generated code to implement.
+	OSLICE:     5,
+	OSLICEARR:  5,
+	OSLICESTR:  5,
+	OSLICE3:    5,
+	OSLICE3ARR: 5,
+
+	OAPPEND: 7,
+
+	// Ops involving runtime calls and allocations/copies.
+	OMAKECHAN:     9,
+	OMAKEMAP:      9,
+	OARRAYBYTESTR: 9,
+	OARRAYRUNESTR: 9,
+	OSTRARRAYBYTE: 9,
+	OSTRARRAYRUNE: 9,
+	OCOPY:         9,
 }
 
 // Inlcopy and inlcopylist recursively copy the body of a function.
