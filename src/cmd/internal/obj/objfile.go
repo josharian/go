@@ -114,6 +114,7 @@ import (
 	"log"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // The Go and C compilers, and the assembler, call writeobj to write
@@ -308,6 +309,13 @@ func (w *objWriter) writeRefs(s *LSym) {
 	}
 }
 
+func (w *objWriter) writeInstructionSizes(s *LSym) {
+	if !strings.HasPrefix(s.Name, `"".`) {
+		return
+	}
+	fmt.Printf("inlcost size %d %v\n", s.Size, s.Name)
+}
+
 func (w *objWriter) writeSymDebug(s *LSym) {
 	ctxt := w.ctxt
 	fmt.Fprintf(ctxt.Bso, "%s ", s.Name)
@@ -382,6 +390,9 @@ func (w *objWriter) writeSym(s *LSym) {
 	ctxt := w.ctxt
 	if ctxt.Debugasm != 0 {
 		w.writeSymDebug(s)
+	}
+	if ctxt.Debuginlcost {
+		w.writeInstructionSizes(s)
 	}
 
 	w.wr.WriteByte(symPrefix)

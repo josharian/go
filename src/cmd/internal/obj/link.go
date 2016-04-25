@@ -617,6 +617,7 @@ type Link struct {
 	Debugvlog     int32
 	Debugdivmod   int32
 	Debugpcln     int32
+	Debuginlcost  bool
 	Flag_shared   bool
 	Flag_dynlink  bool
 	Flag_optimize bool

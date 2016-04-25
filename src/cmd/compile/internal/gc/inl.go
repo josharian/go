@@ -128,7 +128,10 @@ func caninl(fn *Node) {
 		return
 	}
 
-	const maxBudget = 80
+	 maxBudget := int32(80)
+	if Debug_inlcost != 0 {
+		maxBudget = 10000
+	}
 	budget := int32(maxBudget) // allowed hairyness
 	if ishairylist(fn.Nbody, &budget) || budget < 0 {
 		return
@@ -153,6 +156,9 @@ func caninl(fn *Node) {
 		fmt.Printf("%v: can inline %v as: %v { %v }\n", fn.Line(), Nconv(n, FmtSharp), Tconv(fn.Type, FmtSharp), hconv(n.Func.Inl, FmtSharp))
 	} else if Debug['m'] != 0 {
 		fmt.Printf("%v: can inline %v\n", fn.Line(), n)
+	}
+	if Debug_inlcost!=0 {
+		fmt.Printf("inlcost cost %d \"\".%v\n", n.Func.InlCost, n)
 	}
 
 	Curfn = savefn

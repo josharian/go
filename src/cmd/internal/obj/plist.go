@@ -32,7 +32,7 @@ func Linknewplist(ctxt *Link) *Plist {
 }
 
 func Flushplist(ctxt *Link) {
-	flushplist(ctxt, ctxt.Debugasm == 0)
+	flushplist(ctxt, ctxt.Debugasm == 0 && !ctxt.Debuginlcost)
 }
 func FlushplistNoFree(ctxt *Link) {
 	flushplist(ctxt, false)
