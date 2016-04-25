@@ -37,6 +37,7 @@ var (
 	Debug_panic   int
 	Debug_slice   int
 	Debug_wb      int
+	Debug_inlcost int
 )
 
 // Debug arguments.
@@ -57,6 +58,7 @@ var debugtab = []struct {
 	{"typeassert", &Debug_typeassert}, // print information about type assertion inlining
 	{"wb", &Debug_wb},                 // print information about write barriers
 	{"export", &Debug_export},         // print export data
+	{"inlcost", &Debug_inlcost}, // print raw data used to calculate approximate inlining costs
 }
 
 func usage() {
@@ -281,6 +283,8 @@ func Main() {
 			log.Fatalf("unknown debug key -d %s\n", name)
 		}
 	}
+
+	Ctxt.Debuginlcost = Debug_inlcost != 0
 
 	// enable inlining.  for now:
 	//	default: inlining on.  (debug['l'] == 1)

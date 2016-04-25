@@ -130,7 +130,7 @@ func caninl(fn *Node) {
 
 	const maxBudget = 80
 	budget := int32(maxBudget) // allowed hairyness
-	if ishairylist(fn.Nbody, &budget) || budget < 0 {
+	if ishairylist(fn.Nbody, &budget) || budget < 0 || Debug_inlcost != 0 {
 		return
 	}
 
@@ -162,7 +162,10 @@ func caninl(fn *Node) {
 func ishairylist(ll Nodes, budget *int32) bool {
 	for _, n := range ll.Slice() {
 		if ishairy(n, budget) {
-			return true
+			// Don't short-circuit if calculating inl costs.
+			if Debug_inlcost == 0 {
+				return true
+			}
 		}
 	}
 	return false
@@ -171,6 +174,10 @@ func ishairylist(ll Nodes, budget *int32) bool {
 func ishairy(n *Node, budget *int32) bool {
 	if n == nil {
 		return false
+	}
+
+	if Debug_inlcost != 0 {
+		fmt.Printf("inlcost node %s %s\n", opnames[n.Op], n.Line())
 	}
 
 	switch n.Op {
@@ -229,6 +236,17 @@ func ishairy(n *Node, budget *int32) bool {
 
 	(*budget)--
 
+	if Debug_inlcost != 0 {
+		// Same as the return calculation below, but without short-circuiting.
+		x0 := *budget < 0
+		x1 := ishairy(n.Left, budget)
+		x2 := ishairy(n.Right, budget)
+		x3 := ishairylist(n.List, budget)
+		x4 := ishairylist(n.Rlist, budget)
+		x5 := ishairylist(n.Ninit, budget)
+		x6 := ishairylist(n.Nbody, budget)
+		return x0 || x1 || x2 || x3 || x4 || x5 || x6
+	}
 	return *budget < 0 || ishairy(n.Left, budget) || ishairy(n.Right, budget) || ishairylist(n.List, budget) || ishairylist(n.Rlist, budget) || ishairylist(n.Ninit, budget) || ishairylist(n.Nbody, budget)
 }
 

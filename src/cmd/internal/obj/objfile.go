@@ -308,6 +308,30 @@ func (w *objWriter) writeRefs(s *LSym) {
 	}
 }
 
+func (w *objWriter) writeInstructionSizes(s *LSym) {
+	ctxt := w.ctxt
+	for p := s.Text; p != nil; p = p.Link {
+		// Unfortunately, it's hard to get the size of the machine code
+		// for a Prog in a generic way.
+		var size int
+		if ctxt.Arch.InFamily(sys.I386, sys.AMD64) {
+			// x86/386 store it directly.
+			size = int(p.Isize)
+		} else {
+			// If we're not the last instruction, we can calculate it.
+			next := p.Link
+			if next != nil {
+				size = int(next.Pc - p.Pc)
+			} else {
+				// Assume it the last instruction is a real instruction,
+				// not a pseudo-op, and use the default/min instruction size.
+				size = ctxt.Arch.MinLC
+			}
+		}
+		fmt.Fprintf(ctxt.Bso, "inlcost size %d %v\n", size, p.Line())
+	}
+}
+
 func (w *objWriter) writeSymDebug(s *LSym) {
 	ctxt := w.ctxt
 	fmt.Fprintf(ctxt.Bso, "%s ", s.Name)
@@ -382,6 +406,9 @@ func (w *objWriter) writeSym(s *LSym) {
 	ctxt := w.ctxt
 	if ctxt.Debugasm != 0 {
 		w.writeSymDebug(s)
+	}
+	if ctxt.Debuginlcost {
+		w.writeInstructionSizes(s)
 	}
 
 	w.wr.WriteByte(symPrefix)
