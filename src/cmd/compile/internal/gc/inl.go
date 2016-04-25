@@ -224,6 +224,9 @@ func ishairy(n *Node, budget *int32) bool {
 		OBREAK,
 		ORETJMP:
 		return true
+
+	case OKEY:
+		(*budget)++
 	}
 
 	(*budget)--
