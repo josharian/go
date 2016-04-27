@@ -83,15 +83,17 @@ func main() {
 		ops = append(ops, op)
 	}
 	sort.Strings(ops)
+
+	// header line
 	for _, op := range ops {
 		fmt.Print(op, " ")
 	}
 	fmt.Println("size")
 
+	// data
 	for _, v := range m {
 		// Some lines have code but no recorded ops.
-		// See the instrumentation and early exits in inl.go.
-		// Not worth the complexity to fix; we have enough data without it.
+		// Lots of reasons for this, and it's not important.
 		if len(v.ops) == 0 {
 			continue
 		}

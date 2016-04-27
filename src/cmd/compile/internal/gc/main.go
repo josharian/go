@@ -58,7 +58,7 @@ var debugtab = []struct {
 	{"typeassert", &Debug_typeassert}, // print information about type assertion inlining
 	{"wb", &Debug_wb},                 // print information about write barriers
 	{"export", &Debug_export},         // print export data
-	{"inlcost", &Debug_inlcost}, // print raw data used to calculate approximate inlining costs
+	{"inlcost", &Debug_inlcost},       // print raw data used to calculate approximate inlining costs
 }
 
 func usage() {
