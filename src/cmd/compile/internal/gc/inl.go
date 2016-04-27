@@ -128,7 +128,7 @@ func caninl(fn *Node) {
 		return
 	}
 
-	const maxBudget = 80
+	maxBudget := inlcost[OCALLFUNC]
 	budget := int32(maxBudget) // allowed hairyness
 	if ishairylist(fn.Nbody, &budget) || budget < 0 || Debug_inlcost != 0 {
 		return
@@ -234,7 +234,7 @@ func ishairy(n *Node, budget *int32) bool {
 		return true
 	}
 
-	(*budget)--
+	*budget -= inlcost[n.Op]
 
 	if Debug_inlcost != 0 {
 		// Same as the return calculation below, but without short-circuiting.
