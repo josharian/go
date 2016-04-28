@@ -128,7 +128,7 @@ func caninl(fn *Node) {
 		return
 	}
 
-	const maxBudget = 350
+	const maxBudget = 650
 	budget := int32(maxBudget) // allowed hairyness
 	if ishairylist(fn.Nbody, &budget) || budget < 0 || Debug_inlcost != 0 {
 		return
