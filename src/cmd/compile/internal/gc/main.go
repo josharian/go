@@ -38,6 +38,7 @@ var (
 	Debug_slice   int
 	Debug_wb      int
 	Debug_inlcost int
+	Debug_inlsize int
 )
 
 // Debug arguments.
@@ -59,6 +60,7 @@ var debugtab = []struct {
 	{"wb", &Debug_wb},                 // print information about write barriers
 	{"export", &Debug_export},         // print export data
 	{"inlcost", &Debug_inlcost}, // print raw data used to calculate approximate inlining costs
+	{"inlsize", &Debug_inlsize}, // print raw data used to calculate approximate inlining costs
 }
 
 func usage() {
@@ -284,7 +286,7 @@ func Main() {
 		}
 	}
 
-	Ctxt.Debuginlcost = Debug_inlcost != 0
+	Ctxt.Debuginlcost = Debug_inlsize != 0
 
 	// enable inlining.  for now:
 	//	default: inlining on.  (debug['l'] == 1)

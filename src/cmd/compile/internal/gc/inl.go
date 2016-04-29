@@ -133,7 +133,8 @@ func caninl(fn *Node) {
 		maxBudget = 10000
 	}
 	budget := int32(maxBudget) // allowed hairyness
-	if ishairylist(fn.Nbody, &budget) || budget < 0 {
+var othercosts int32
+	if ishairylist(fn.Nbody, &budget, &othercosts) || budget < 0 {
 		return
 	}
 
@@ -158,23 +159,23 @@ func caninl(fn *Node) {
 		fmt.Printf("%v: can inline %v\n", fn.Line(), n)
 	}
 	if Debug_inlcost!=0 {
-		fmt.Printf("inlcost cost %d \"\".%v\n", n.Func.InlCost, n)
+		fmt.Printf("inlcost cost %d \"\".%v\n", n.Func.InlCost-othercosts, n)
 	}
 
 	Curfn = savefn
 }
 
 // Look for anything we want to punt on.
-func ishairylist(ll Nodes, budget *int32) bool {
+func ishairylist(ll Nodes, budget, othercosts *int32) bool {
 	for _, n := range ll.Slice() {
-		if ishairy(n, budget) {
+		if ishairy(n, budget, othercosts) {
 			return true
 		}
 	}
 	return false
 }
 
-func ishairy(n *Node, budget *int32) bool {
+func ishairy(n *Node, budget, othercosts *int32) bool {
 	if n == nil {
 		return false
 	}
@@ -184,11 +185,13 @@ func ishairy(n *Node, budget *int32) bool {
 	case OCALLFUNC:
 		if fn := n.Left.Func; fn != nil && fn.Inl.Len() != 0 {
 			*budget -= fn.InlCost
+			*othercosts+=fn.InlCost
 			break
 		}
 		if n.Left.Op == ONAME && n.Left.Left != nil && n.Left.Left.Op == OTYPE && n.Left.Right != nil && n.Left.Right.Op == ONAME { // methods called as functions
 			if d := n.Left.Sym.Def; d != nil && d.Func.Inl.Len() != 0 {
 				*budget -= d.Func.InlCost
+			*othercosts+=d.Func.InlCost
 				break
 			}
 		}
@@ -207,6 +210,7 @@ func ishairy(n *Node, budget *int32) bool {
 		}
 		if inlfn := t.Nname().Func; inlfn.Inl.Len() != 0 {
 			*budget -= inlfn.InlCost
+			*othercosts+=inlfn.InlCost
 			break
 		}
 		if Debug['l'] < 4 {
@@ -235,7 +239,7 @@ func ishairy(n *Node, budget *int32) bool {
 
 	(*budget)--
 
-	return *budget < 0 || ishairy(n.Left, budget) || ishairy(n.Right, budget) || ishairylist(n.List, budget) || ishairylist(n.Rlist, budget) || ishairylist(n.Ninit, budget) || ishairylist(n.Nbody, budget)
+	return *budget < 0 || ishairy(n.Left, budget, othercosts) || ishairy(n.Right, budget, othercosts) || ishairylist(n.List, budget, othercosts) || ishairylist(n.Rlist, budget, othercosts) || ishairylist(n.Ninit, budget, othercosts) || ishairylist(n.Nbody, budget, othercosts)
 }
 
 // Inlcopy and inlcopylist recursively copy the body of a function.
