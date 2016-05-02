@@ -1129,6 +1129,10 @@ func scanobject(b uintptr, gcw *gcWork) {
 	// or synchronization, but the same logic applies.
 	arena_start := mheap_.arena_start
 	arena_used := mheap_.arena_used
+	if arena_used < arena_start {
+		throw("negative arena size")
+	}
+	arena_size := arena_used - arena_start
 
 	// Find bits of the beginning of the object.
 	// b must point to the beginning of a heap object, so
@@ -1164,7 +1168,8 @@ func scanobject(b uintptr, gcw *gcWork) {
 
 		// At this point we have extracted the next potential pointer.
 		// Check if it points into heap and not back at the current object.
-		if obj != 0 && arena_start <= obj && obj < arena_used && obj-b >= n {
+		// obj-arena_start < arena_size is equivalent to arena_start <= obj && obj < arena_used
+		if obj != 0 && obj-arena_start < arena_size && obj-b >= n {
 			// Mark the object.
 			if obj, hbits, span, objIndex := heapBitsForObject(obj, b, i); obj != 0 {
 				greyobject(obj, b, i, hbits, span, gcw, objIndex)
