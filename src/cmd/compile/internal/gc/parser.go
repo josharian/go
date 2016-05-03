@@ -2541,7 +2541,7 @@ func (p *parser) stmt() *Node {
 
 	case LGO:
 		p.next()
-		return Nod(OPROC, p.pseudocall(), nil)
+		return Nod(OGO, p.pseudocall(), nil)
 
 	case LDEFER:
 		p.next()

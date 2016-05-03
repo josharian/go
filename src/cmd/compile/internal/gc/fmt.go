@@ -856,7 +856,7 @@ func stmtfmt(n *Node) string {
 	case ORETJMP:
 		f += fmt.Sprintf("retjmp %v", n.Sym)
 
-	case OPROC:
+	case OGO:
 		f += fmt.Sprintf("go %v", n.Left)
 
 	case ODEFER:
@@ -1063,7 +1063,7 @@ var opprec = []int{
 	OGOTO:       -1,
 	OIF:         -1,
 	OLABEL:      -1,
-	OPROC:       -1,
+	OGO:         -1,
 	ORANGE:      -1,
 	ORETURN:     -1,
 	OSELECT:     -1,

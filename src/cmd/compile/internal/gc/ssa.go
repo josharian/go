@@ -567,7 +567,7 @@ func (s *state) stmt(n *Node) {
 		}
 	case ODEFER:
 		s.call(n.Left, callDefer)
-	case OPROC:
+	case OGO:
 		s.call(n.Left, callGo)
 
 	case OAS2DOTTYPE:

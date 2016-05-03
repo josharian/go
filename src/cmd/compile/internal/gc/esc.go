@@ -783,7 +783,7 @@ func esc(e *EscState, n *Node, up *Node) {
 			escassignSinkNilWhy(e, n, n4, "defer func arg")
 		}
 
-	case OPROC:
+	case OGO:
 		// go f(x) - f and x escape
 		escassignSinkNilWhy(e, n, n.Left.Left, "go func")
 
@@ -1567,7 +1567,7 @@ func esccall(e *EscState, n *Node, up *Node) {
 		}
 
 		if haspointers(t.Type) {
-			if escassignfromtag(e, t.Note, nE.Escretval, src) == EscNone && up.Op != ODEFER && up.Op != OPROC {
+			if escassignfromtag(e, t.Note, nE.Escretval, src) == EscNone && up.Op != ODEFER && up.Op != OGO {
 				a := src
 				for a.Op == OCONVNOP {
 					a = a.Left

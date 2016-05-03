@@ -219,7 +219,7 @@ func ishairy(n *Node, budget *int32) bool {
 		OFOR,
 		OSELECT,
 		OTYPESW,
-		OPROC,
+		OGO,
 		ODEFER,
 		ODCLTYPE, // can't print yet
 		OBREAK,
@@ -340,7 +340,7 @@ func inlnode(n *Node) *Node {
 
 	switch n.Op {
 	// inhibit inlining of their argument
-	case ODEFER, OPROC:
+	case ODEFER, OGO:
 		switch n.Left.Op {
 		case OCALLFUNC, OCALLMETH:
 			// TODO(marvin): Fix Node.EType type union.
@@ -447,7 +447,7 @@ func inlnode(n *Node) *Node {
 	switch n.Op {
 	case OCALLFUNC, OCALLMETH:
 		// TODO(marvin): Fix Node.EType type union.
-		if n.Etype == EType(OPROC) || n.Etype == EType(ODEFER) {
+		if n.Etype == EType(OGO) || n.Etype == EType(ODEFER) {
 			return n
 		}
 	}

@@ -1986,7 +1986,7 @@ OpSwitch:
 		}
 		break OpSwitch
 
-	case OPROC:
+	case OGO:
 		ok |= Etop
 		n.Left = typecheck(n.Left, Etop|Erv)
 		checkdefergo(n)
@@ -2183,7 +2183,7 @@ func checksliceconst(lo *Node, hi *Node) bool {
 
 func checkdefergo(n *Node) {
 	what := "defer"
-	if n.Op == OPROC {
+	if n.Op == OGO {
 		what = "go"
 	}
 

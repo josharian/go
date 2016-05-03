@@ -268,7 +268,7 @@ func walkstmt(n *Node) *Node {
 		walkstmtlist(n.Nbody.Slice())
 		walkstmtlist(n.Rlist.Slice())
 
-	case OPROC:
+	case OGO:
 		switch n.Left.Op {
 		case OPRINT, OPRINTN:
 			n.Left = walkprintfunc(n.Left, &n.Ninit)

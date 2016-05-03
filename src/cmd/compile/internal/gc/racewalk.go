@@ -180,7 +180,7 @@ func instrumentnode(np **Node, init *Nodes, wr int, skip int) {
 		instrumentnode(&n.Left, init, 0, 0)
 		goto ret
 
-	case OPROC:
+	case OGO:
 		instrumentnode(&n.Left, init, 0, 0)
 		goto ret
 

@@ -849,7 +849,7 @@ func gen(n *Node) {
 	case OCALLFUNC:
 		cgen_call(n, 0)
 
-	case OPROC:
+	case OGO:
 		cgen_proc(n, 1)
 
 	case ODEFER:
