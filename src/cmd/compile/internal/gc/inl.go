@@ -93,6 +93,13 @@ func caninl(fn *Node) {
 	}
 
 	var reason string // reason, if any, that the function was not inlined
+	if compiling_runtime && fn.Func.Pragma&MustInline != 0 {
+		defer func() {
+			if reason != "" {
+				yyerrorl(fn.Lineno, "%v marked go:mustinline but was not inlined: %s", fn.Func.Nname, reason)
+			}
+		}()
+	}
 	if Debug['m'] > 1 {
 		defer func() {
 			if reason != "" {
