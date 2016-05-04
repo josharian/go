@@ -68,6 +68,7 @@ const (
 	Norace                   // func must not have race detector annotations
 	Nosplit                  // func should not execute on separate stack
 	Noinline                 // func should not be inlined
+	MustInline               // func must be inlined
 	Systemstack              // func must run on system stack
 	Nowritebarrier           // emit compiler error instead of write barrier
 	Nowritebarrierrec        // error on write barrier in this or recursive callees
@@ -900,6 +901,11 @@ func (l *lexer) getlinepragma() rune {
 			l.pragma |= Nosplit
 		case "go:noinline":
 			l.pragma |= Noinline
+		case "go:mustinline":
+			if !compiling_runtime {
+				Yyerror("go:mustinline used outside runtime")
+			}
+			l.pragma |= MustInline
 		case "go:systemstack":
 			if !compiling_runtime {
 				Yyerror("//go:systemstack only allowed in runtime")
