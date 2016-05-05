@@ -4,9 +4,7 @@
 
 package gc
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // function literals aka closures
 func closurehdr(ntype *Node) {
@@ -694,3 +692,9 @@ func walkpartialcall(n *Node, init *Nodes) *Node {
 
 	return walkexpr(clos, init)
 }
+
+type nodesByFuncDepth []*Node
+
+func (x nodesByFuncDepth) Len() int           { return len(x) }
+func (x nodesByFuncDepth) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
+func (x nodesByFuncDepth) Less(i, j int) bool { return x[i].Func.Depth > x[j].Func.Depth }

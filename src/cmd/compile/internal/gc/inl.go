@@ -27,9 +27,7 @@
 
 package gc
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // Get the function's package. For ordinary functions it's on the ->sym, but for imported methods
 // the ->sym can be re-used in the local package, so peel it off the receiver's type.
@@ -176,9 +174,14 @@ func ishairy(n *Node, budget *int32) bool {
 	switch n.Op {
 	// Call is okay if inlinable and we have the budget for the body.
 	case OCALLFUNC:
-		if fn := n.Left.Func; fn != nil && fn.Inl.Len() != 0 {
-			*budget -= fn.InlCost
-			break
+		if fn := n.Left.Func; fn != nil {
+			if fn.Closure != nil {
+				fn = fn.Closure.Func.Nname.Func
+			}
+			if fn.Inl.Len() != 0 {
+				*budget -= fn.InlCost
+				break
+			}
 		}
 		if n.Left.Op == ONAME && n.Left.Left != nil && n.Left.Left.Op == OTYPE && n.Left.Right != nil && n.Left.Right.Op == ONAME { // methods called as functions
 			if d := n.Left.Sym.Def; d != nil && d.Func.Inl.Len() != 0 {
@@ -213,8 +216,15 @@ func ishairy(n *Node, budget *int32) bool {
 			return true
 		}
 
-	case OCLOSURE,
-		OCALLPART,
+	case OCLOSURE:
+		const canHandleClosures = false
+		if canHandleClosures {
+			break
+		}
+		*reason = "unhandled op " + n.Op.String()
+		return true
+
+	case OCALLPART,
 		ORANGE,
 		OFOR,
 		OSELECT,

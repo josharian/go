@@ -18,6 +18,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -426,11 +427,21 @@ func Main() {
 	if Debug['l'] != 0 {
 		// Find functions that can be inlined and clone them before walk expands them.
 		visitBottomUp(xtop, func(list []*Node, recursive bool) {
-			for _, n := range list {
-				if n.Op == ODCLFUNC {
-					caninl(n)
-					inlcalls(n)
+			if recursive {
+				for _, n := range list {
+					if Debug['m'] > 1 {
+						fmt.Printf("%v: cannot inline %v: recursive\n", n.Line(), n.Func.Nname)
+					}
 				}
+				return
+			}
+			if len(list) > 1 {
+				// Sort by closure depth, so that we can inline from deepest to shallowest.
+				sort.Sort(nodesByFuncDepth(list))
+			}
+			for _, n := range list {
+				caninl(n)
+				inlcalls(n)
 			}
 		})
 	}
