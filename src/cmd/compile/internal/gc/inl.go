@@ -372,8 +372,7 @@ func inlnode(n *Node) *Node {
 	case ODEFER, OPROC:
 		switch n.Left.Op {
 		case OCALLFUNC, OCALLMETH:
-			// TODO(marvin): Fix Node.EType type union.
-			n.Left.Etype = EType(n.Op)
+			n.Left.setNoInl(true)
 		}
 		fallthrough
 
@@ -475,8 +474,7 @@ func inlnode(n *Node) *Node {
 	// switch at the top of this function.
 	switch n.Op {
 	case OCALLFUNC, OCALLMETH:
-		// TODO(marvin): Fix Node.EType type union.
-		if n.Etype == EType(OPROC) || n.Etype == EType(ODEFER) {
+		if n.noInl() {
 			return n
 		}
 	}

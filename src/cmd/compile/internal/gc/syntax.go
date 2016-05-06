@@ -79,6 +79,7 @@ const (
 	hasBreak = 1 << iota
 	notLiveAtEnd
 	isClosureVar
+	noinl // used internally by inliner to indicate that a function call should not be inlined; set for OCALLFUNC and OCALLMETH only
 )
 
 func (n *Node) HasBreak() bool {
@@ -109,6 +110,16 @@ func (n *Node) setIsClosureVar(b bool) {
 		n.flags |= isClosureVar
 	} else {
 		n.flags &^= isClosureVar
+	}
+}
+func (n *Node) noInl() bool {
+	return n.flags&noinl != 0
+}
+func (n *Node) setNoInl(b bool) {
+	if b {
+		n.flags |= noinl
+	} else {
+		n.flags &^= noinl
 	}
 }
 
