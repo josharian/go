@@ -198,9 +198,14 @@ func ishairy(n *Node, budget *int32, reason *string) bool {
 	switch n.Op {
 	// Call is okay if inlinable and we have the budget for the body.
 	case OCALLFUNC:
-		if fn := n.Left.Func; fn != nil && fn.Inl.Len() != 0 {
-			*budget -= fn.InlCost
-			break
+		if fn := n.Left.Func; fn != nil {
+			if fn.Closure != nil {
+				fn = fn.Closure.Func.Nname.Func
+			}
+			if fn.Inl.Len() != 0 {
+				*budget -= fn.InlCost
+				break
+			}
 		}
 
 		if n.isMethodCalledAsFunction() {
@@ -239,8 +244,15 @@ func ishairy(n *Node, budget *int32, reason *string) bool {
 			return true
 		}
 
-	case OCLOSURE,
-		OCALLPART,
+	case OCLOSURE:
+		const canHandleClosures = false
+		if canHandleClosures {
+			break
+		}
+		*reason = "unhandled op " + n.Op.String()
+		return true
+
+	case OCALLPART,
 		ORANGE,
 		OFOR,
 		OSELECT,
