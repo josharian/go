@@ -6,7 +6,10 @@
 
 package ssa
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type stackAllocState struct {
 	f *Func
@@ -73,7 +76,15 @@ type stackValState struct {
 // stackalloc allocates storage in the stack frame for
 // all Values that did not get a register.
 // Returns a map from block ID to the stack values live at the end of that block.
-func stackalloc(f *Func, spillLive [][]ID) [][]ID {
+func stackalloc(f *Func, spillLive []spillList) [][]ID {
+	if os.Getenv("JJ") != "" {
+		for id, x := range spillLive {
+			if len(x) == 0 {
+				continue
+			}
+			fmt.Println(id, ":", x)
+		}
+	}
 	if f.pass.debug > stackDebug {
 		fmt.Println("before stackalloc")
 		fmt.Println(f.String())
@@ -93,7 +104,7 @@ func stackalloc(f *Func, spillLive [][]ID) [][]ID {
 	return s.live
 }
 
-func (s *stackAllocState) init(f *Func, spillLive [][]ID) {
+func (s *stackAllocState) init(f *Func, spillLive []spillList) {
 	s.f = f
 
 	// Initialize value information.
@@ -262,7 +273,7 @@ func (s *stackAllocState) stackalloc() {
 // TODO: this could be quadratic if lots of variables are live across lots of
 // basic blocks. Figure out a way to make this function (or, more precisely, the user
 // of this function) require only linear size & time.
-func (s *stackAllocState) computeLive(spillLive [][]ID) {
+func (s *stackAllocState) computeLive(spillLive []spillList) {
 	s.live = make([][]ID, s.f.NumBlocks())
 	var phis []*Value
 	live := s.f.newSparseSet(s.f.NumValues())
@@ -309,7 +320,7 @@ func (s *stackAllocState) computeLive(spillLive [][]ID) {
 				t.clear()
 				t.addAll(s.live[p.ID])
 				t.addAll(live.contents())
-				t.addAll(spillLive[p.ID])
+				t.addAll([]ID(spillLive[p.ID]))
 				for _, v := range phis {
 					a := v.Args[i]
 					if s.values[a.ID].needSlot {

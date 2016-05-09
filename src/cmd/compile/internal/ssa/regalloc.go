@@ -108,6 +108,8 @@ package ssa
 import (
 	"cmd/internal/obj"
 	"fmt"
+	"os"
+	"sort"
 	"unsafe"
 )
 
@@ -256,7 +258,7 @@ type regAllocState struct {
 	startRegs [][]startReg
 
 	// spillLive[blockid] is the set of live spills at the end of each block
-	spillLive [][]ID
+	spillLive []spillList
 
 	loopnest *loopnest
 }
@@ -502,7 +504,7 @@ func (s *regAllocState) init(f *Func) {
 
 	s.endRegs = make([][]endReg, f.NumBlocks())
 	s.startRegs = make([][]startReg, f.NumBlocks())
-	s.spillLive = make([][]ID, f.NumBlocks())
+	s.spillLive = make([]spillList, f.NumBlocks())
 }
 
 // Adds a use record for id at distance dist from the start of the block.
@@ -588,6 +590,34 @@ func (s *regAllocState) loopForBlock(b *Block) *loop {
 	return loop
 }
 
+type idSliceSig struct {
+	n    int
+	low  ID
+	med  ID
+	high ID
+	// sum? xor? hash?
+}
+
+type spillList []ID
+
+func (x spillList) Len() int           { return len(x) }
+func (x spillList) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
+func (x spillList) Less(i, j int) bool { return x[i] < x[j] }
+func (x spillList) Equal(y spillList) bool {
+	if len(x) != len(y) {
+		return false
+	}
+	for i, id := range x {
+		if id != y[i] {
+			return false
+		}
+	}
+	return true
+}
+func (x spillList) sig() idSliceSig {
+	return idSliceSig{n: len(x), low: x[0], med: x[len(x)/2], high: x[len(x)-1]}
+}
+
 func (s *regAllocState) regalloc(f *Func) {
 	liveSet := f.newSparseSet(f.NumValues())
 	defer f.retSparseSet(liveSet)
@@ -595,6 +625,9 @@ func (s *regAllocState) regalloc(f *Func) {
 	var phis []*Value
 	var phiRegs []register
 	var args []*Value
+	var spillLiveTemp spillList
+	spillLiveSlices := make(map[idSliceSig]spillList) // todo: make()
+	_ = spillLiveSlices
 
 	// statistics
 	var nSpills int               // # of spills remaining
@@ -1267,6 +1300,7 @@ func (s *regAllocState) regalloc(f *Func) {
 		// isn't in a register, remember that its spill location
 		// is live. We need to remember this information so that
 		// the liveness analysis in stackalloc is correct.
+		spillLiveTemp = spillLiveTemp[:0]
 		for _, e := range s.live[b.ID] {
 			if s.values[e.ID].regs != 0 {
 				// in a register, we'll use that source for the merge.
@@ -1277,8 +1311,28 @@ func (s *regAllocState) regalloc(f *Func) {
 				// rematerializeable values will have spill==nil.
 				continue
 			}
-			s.spillLive[b.ID] = append(s.spillLive[b.ID], spill.ID)
+			spillLiveTemp = append(spillLiveTemp, spill.ID)
 			s.values[e.ID].spillUsed = true
+		}
+		if len(spillLiveTemp) > 0 {
+			sort.Sort(spillLiveTemp)
+			match, ok := spillLiveSlices[spillLiveTemp.sig()]
+			alias := false
+			if ok {
+				alias = match.Equal(spillLiveTemp)
+			}
+			if alias {
+				if os.Getenv("J") != "" {
+					fmt.Println("OPT", len(match))
+				}
+				s.spillLive[b.ID] = match
+			} else {
+				s.spillLive[b.ID] = make(spillList, len(spillLiveTemp))
+				copy(s.spillLive[b.ID], spillLiveTemp)
+				spillLiveSlices[spillLiveTemp.sig()] = s.spillLive[b.ID]
+			}
+		} else {
+			s.spillLive[b.ID] = nil
 		}
 
 		// Keep track of values that are spilled in the loop, but whose spill
