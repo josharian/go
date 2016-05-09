@@ -245,11 +245,10 @@ func ishairy(n *Node, budget *int32, reason *string) bool {
 		}
 
 	case OCLOSURE:
-		const canHandleClosures = false
-		if canHandleClosures {
+		if n.Func.Closure.Func.Nname.Func.Inl.Len() != 0 {
 			break
 		}
-		*reason = "unhandled op " + n.Op.String()
+		*reason = "non-inlined closure"
 		return true
 
 	case OCALLPART,
@@ -496,9 +495,15 @@ func inlnode(n *Node) *Node {
 		if Debug['m'] > 3 {
 			fmt.Printf("%v:call to func %v\n", n.Line(), Nconv(n.Left, FmtSign))
 		}
-		if n.Left.Func != nil && n.Left.Func.Inl.Len() != 0 && !isIntrinsicCall1(n) { // normal case
+		fn := n.Left.Func
+		if fn != nil && fn.Inl.Len() != 0 && !isIntrinsicCall1(n) { // normal case
+			if fn.Closure != nil {
+				fn = fn.Closure.Func.Nname.Func
+			}
 			n = mkinlcall(n, n.Left, n.Isddd)
-		} else if n.isMethodCalledAsFunction() && n.Left.Sym.Def != nil {
+			break
+		}
+		if n.isMethodCalledAsFunction() && n.Left.Sym.Def != nil {
 			n = mkinlcall(n, n.Left.Sym.Def, n.Isddd)
 		}
 
