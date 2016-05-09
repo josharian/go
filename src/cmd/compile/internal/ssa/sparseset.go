@@ -62,6 +62,12 @@ func (s *sparseSet) remove(x ID) {
 	}
 }
 
+func (s *sparseSet) removeAll(a []ID) {
+	for _, x := range a {
+		s.remove(x)
+	}
+}
+
 // pop removes an arbitrary element from the set.
 // The set must be nonempty.
 func (s *sparseSet) pop() ID {
@@ -76,6 +82,16 @@ func (s *sparseSet) clear() {
 
 func (s *sparseSet) contents() []ID {
 	return s.dense
+}
+
+func (s *sparseSet) prefixLen(x []ID) (n int) {
+	for _, id := range x {
+		if !s.contains(id) {
+			return
+		}
+		n++
+	}
+	return
 }
 
 func (s *sparseSet) equalSlice(x []ID) bool {

@@ -302,7 +302,7 @@ func (s *stackAllocState) computeLive(spillLive [][]ID) {
 				}
 			}
 
-			passthrough := live.equalSlice(s.live[b.ID])
+			prefix := live.prefixLen(s.live[b.ID])
 
 			// for each predecessor of b, expand its list of live-at-end values
 			// invariant: s contains the values live at the start of b (excluding phi inputs)
@@ -325,13 +325,16 @@ func (s *stackAllocState) computeLive(spillLive [][]ID) {
 				if t.size() == len(s.live[p.ID]) {
 					continue
 				}
-				if s.live[p.ID] == nil && t.size() == live.size() && passthrough {
+				if prefix == live.size() && t.size() == live.size() {
 					blive := s.live[b.ID]
-					// fmt.Println("OPT", len(blive))
-					s.live[p.ID] = blive[:len(blive):len(blive)]
+					// if os.Getenv("J") != "" {
+					// 	fmt.Println("OPT", prefix, len(blive))
+					// }
+					s.live[p.ID] = blive[:prefix:prefix]
 				} else {
 					// grow p's live set
-					s.live[p.ID] = append(s.live[p.ID][:0], t.contents()...)
+					t.removeAll(s.live[p.ID])
+					s.live[p.ID] = append(s.live[p.ID], t.contents()...)
 				}
 				changed = true
 			}
@@ -341,7 +344,7 @@ func (s *stackAllocState) computeLive(spillLive [][]ID) {
 			break
 		}
 	}
-	if s.f.pass.debug > stackDebug {
+	if s.f.pass.debug > stackDebug /*|| os.Getenv("JJ") != "" */ {
 		for _, b := range s.f.Blocks {
 			fmt.Printf("stacklive %s %v\n", b, s.live[b.ID])
 		}
