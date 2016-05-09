@@ -6,7 +6,10 @@
 
 package ssa
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type stackAllocState struct {
 	f *Func
@@ -94,6 +97,12 @@ func stackalloc(f *Func, spillLive [][]ID) [][]ID {
 }
 
 func (s *stackAllocState) init(f *Func, spillLive [][]ID) {
+	if os.Getenv("JJJ") != "" {
+		fmt.Println("SPILLLIVE")
+		for i, b := range spillLive {
+			fmt.Println(i, ":", b)
+		}
+	}
 	s.f = f
 
 	// Initialize value information.
