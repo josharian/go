@@ -14,7 +14,7 @@ import (
 	"bytes"
 	"encoding"
 	"encoding/base64"
-	"fmt"
+	"errors"
 	"math"
 	"reflect"
 	"runtime"
@@ -544,7 +544,7 @@ func stringEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 			numStr = "0" // Number's zero-val
 		}
 		if !isValidNumber(numStr) {
-			e.error(fmt.Errorf("json: invalid number literal %q", numStr))
+			e.error(errors.New("json: invalid number literal " + strconv.Quote(numStr)))
 		}
 		e.WriteString(numStr)
 		return
