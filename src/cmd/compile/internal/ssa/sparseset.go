@@ -77,3 +77,15 @@ func (s *sparseSet) clear() {
 func (s *sparseSet) contents() []ID {
 	return s.dense
 }
+
+func (s *sparseSet) equalSlice(x []ID) bool {
+	if s.size() != len(x) {
+		return false
+	}
+	for _, id := range x {
+		if !s.contains(id) {
+			return false
+		}
+	}
+	return true
+}
