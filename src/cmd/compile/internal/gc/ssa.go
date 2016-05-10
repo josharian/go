@@ -274,10 +274,11 @@ type state struct {
 	// symbols for PEXTERN, PAUTO and PPARAMOUT variables so they can be reused.
 	varsyms map[*Node]interface{}
 
-	// starting values. Memory, stack pointer, and globals pointer
+	// starting values. Memory, stack pointer, globals pointer, reusable dead value
 	startmem *ssa.Value
 	sp       *ssa.Value
 	sb       *ssa.Value
+	dead     *ssa.Value
 
 	// line number stack. The current line number is top of stack
 	line []int32
@@ -286,8 +287,8 @@ type state struct {
 	// Used to deduplicate panic calls.
 	panics map[funcLine]*ssa.Block
 
-	// list of FwdRef values.
-	fwdRefs []*ssa.Value
+	fwdRefs   []*ssa.Value // list of FwdRef values
+	reachable []bool       // reachable[b.ID] is whether b.ID is reachable; used during fwdRef resolution
 
 	// list of PPARAMOUT (return) variables.
 	returns []*Node
@@ -4035,8 +4036,14 @@ func (s *state) mem() *ssa.Value {
 	return s.variable(&memVar, ssa.TypeMem)
 }
 
-func (s *state) linkForwardReferences(dm *sparseDefState) {
+func (s *state) deadval() *ssa.Value {
+	if s.dead == nil {
+		s.dead = s.entryNewValue0(ssa.OpUnknown, nil) // type doesn't matter
+	}
+	return s.dead
+}
 
+func (s *state) linkForwardReferences(dm *sparseDefState) {
 	// Build SSA graph. Each variable on its first use in a basic block
 	// leaves a FwdRef in that block representing the incoming value
 	// of that variable. This function links that ref up with possible definitions,
@@ -4048,11 +4055,19 @@ func (s *state) linkForwardReferences(dm *sparseDefState) {
 	//     completely built. That way we can avoid the notion of "sealed"
 	//     blocks.
 	//   - Phi optimization is a separate pass (in ../ssa/phielim.go).
+	s.reachable = ssa.ReachableBlocks(s.f)
 	for len(s.fwdRefs) > 0 {
 		v := s.fwdRefs[len(s.fwdRefs)-1]
 		s.fwdRefs = s.fwdRefs[:len(s.fwdRefs)-1]
-		s.resolveFwdRef(v, dm)
+		if s.reachable[v.Block.ID] {
+			s.resolveFwdRef(v, dm)
+		} else {
+			v.Op = ssa.OpUnknown
+			v.Aux = nil
+			v.AuxInt = 0
+		}
 	}
+	s.reachable = nil
 }
 
 // resolveFwdRef modifies v to be the variable's value at the start of its block.
@@ -4110,6 +4125,9 @@ func (s *state) resolveFwdRef(v *ssa.Value, dm *sparseDefState) {
 		if a == w {
 			continue // already have this witness
 		}
+		if a.Op == ssa.OpUnknown {
+			continue // dead value, ignore
+		}
 		if w != nil {
 			// two witnesses, need a phi value
 			v.Op = ssa.OpPhi
@@ -4133,6 +4151,10 @@ func (s *state) lookupVarOutgoing(b *ssa.Block, t ssa.Type, name *Node, line int
 			return v
 		}
 		// The variable is not defined by b and we haven't looked it up yet.
+		// If b is dead, don't bother, just return a (re-usable) placeholder.
+		if !s.reachable[b.ID] {
+			return s.deadval()
+		}
 		// If b has exactly one predecessor, loop to look it up there.
 		// Otherwise, give up and insert a new FwdRef and resolve it later.
 		if len(b.Preds) != 1 {
