@@ -352,7 +352,9 @@ func (v *Value) LongHTML() string {
 	// maybe we could replace some of that with formatting.
 	s := fmt.Sprintf("<span class=\"%s ssa-long-value\">", v.String())
 	s += fmt.Sprintf("%s = %s", v.HTML(), v.Op.String())
-	s += " &lt;" + html.EscapeString(v.Type.String()) + "&gt;"
+	if v.Type != nil {
+		s += " &lt;" + html.EscapeString(v.Type.String()) + "&gt;"
+	}
 	s += html.EscapeString(v.auxString())
 	for _, a := range v.Args {
 		s += fmt.Sprintf(" %s", a.HTML())
