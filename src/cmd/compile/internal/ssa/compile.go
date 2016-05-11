@@ -41,7 +41,7 @@ func Compile(f *Func) {
 	// Run all the passes
 	printFunc(f)
 	f.Config.HTML.WriteFunc("start", f)
-	if checkEnabled {
+	if checkEnabled || true {
 		checkFunc(f)
 	}
 	const logMemStats = false

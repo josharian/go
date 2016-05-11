@@ -4055,6 +4055,17 @@ func (s *state) linkForwardReferences(dm *sparseDefState) {
 	//     completely built. That way we can avoid the notion of "sealed"
 	//     blocks.
 	//   - Phi optimization is a separate pass (in ../ssa/phielim.go).
+	fwdRefBlocks := make([]bool, s.f.NumBlocks())
+	for _, v := range s.fwdRefs {
+		fwdRefBlocks[v.Block.ID] = true
+	}
+	for _, b := range s.f.Blocks {
+		if len(s.defvars[b.ID]) > 0 {
+			fwdRefBlocks[b.ID] = true
+		}
+	}
+	ssa.RemoveTrivialBlocks(s.f, fwdRefBlocks)
+
 	s.reachable = ssa.ReachableBlocks(s.f)
 	for len(s.fwdRefs) > 0 {
 		v := s.fwdRefs[len(s.fwdRefs)-1]

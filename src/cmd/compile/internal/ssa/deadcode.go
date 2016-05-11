@@ -4,6 +4,8 @@
 
 package ssa
 
+import "fmt"
+
 // findlive returns the reachable blocks and live values in f.
 func findlive(f *Func) (reachable []bool, live []bool) {
 	reachable = ReachableBlocks(f)
@@ -207,6 +209,79 @@ func deadcode(f *Func) {
 		}
 	}
 	// zero remainder to help GC
+	tail := f.Blocks[i:]
+	for j := range tail {
+		tail[j] = nil
+	}
+	f.Blocks = f.Blocks[:i]
+}
+
+func printBlock(b *Block) string {
+	s := "[ "
+	for _, e := range b.Preds {
+		s += e.String() + " "
+	}
+	s += "-> " + b.String() + " ->"
+	for _, e := range b.Succs {
+		s += " " + e.String()
+	}
+	s += " ]"
+	return s
+}
+
+func printall(b *Block) {
+	fmt.Println("Preds:")
+	for _, c := range b.Preds {
+		fmt.Println("  ", printBlock(c.b))
+	}
+	fmt.Println("b:")
+	fmt.Println("  ", printBlock(b))
+	fmt.Println("Succs:")
+	for _, c := range b.Succs {
+		fmt.Println("  ", printBlock(c.b))
+	}
+	fmt.Println()
+}
+
+func RemoveTrivialBlocks(f *Func, saveblocks []bool) {
+	elim := make([]bool, f.NumBlocks())
+	for _, b := range f.Blocks {
+		if b == f.Entry || len(b.Values) > 0 || len(b.Preds) == 0 || len(b.Succs) != 1 || b.Control != nil {
+			continue
+		}
+		if saveblocks[b.ID] {
+			continue
+		}
+		// b is a trivial block; bypass it.
+		s := b.Succs[0]
+		// First, splice b's Preds into b's Succ's Preds.
+		// Point all outgoing edges from its preds to its lone succ.
+		// Update the successor's inbound edges. No need to preserve order.
+		for i, e := range b.Preds {
+			p := e.b
+			if i == 0 {
+				p.Succs[e.i] = s
+				s.b.Preds[s.i] = Edge{b.Preds[0].b, e.i}
+			} else {
+				p.Succs[e.i] = Edge{s.b, len(s.b.Preds)}
+				s.b.Preds = append(s.b.Preds, Edge{b.Preds[i].b, e.i})
+			}
+		}
+
+		elim[b.ID] = true
+	}
+
+	i := 0
+
+	for _, b := range f.Blocks {
+		if elim[b.ID] {
+			f.freeBlock(b)
+		} else {
+			f.Blocks[i] = b
+			i++
+		}
+	}
+
 	tail := f.Blocks[i:]
 	for j := range tail {
 		tail[j] = nil

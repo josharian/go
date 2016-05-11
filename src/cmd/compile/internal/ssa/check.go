@@ -24,6 +24,9 @@ func checkFunc(f *Func) {
 			}
 		}
 		for i, e := range b.Succs {
+			if e.i >= len(e.b.Preds) || e.i < 0 {
+				f.Fatalf("block succ/pred out of range %d not in [0,%d)", e.i, len(e.b.Preds))
+			}
 			if pe := e.b.Preds[e.i]; pe.b != b || pe.i != i {
 				f.Fatalf("block succ/pred not crosslinked correctly %d:%s %d:%s", i, b, pe.i, pe.b)
 			}

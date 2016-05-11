@@ -90,6 +90,10 @@ func (e Edge) Block() *Block {
 	return e.b
 }
 
+func (e Edge) String() string {
+	return fmt.Sprintf("{%s, %d}", e.b, e.i)
+}
+
 //     kind           control    successors
 //   ------------------------------------------
 //     Exit        return mem                []
