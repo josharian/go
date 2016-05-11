@@ -364,7 +364,12 @@ func (s *state) startBlock(b *ssa.Block) {
 		s.Fatalf("starting block %v when block %v has not ended", b, s.curBlock)
 	}
 	s.curBlock = b
-	s.vars = map[*Node]*ssa.Value{}
+	if len(s.vars) > 0 {
+		s.Fatalf("vars set while not in a block: %v", s.vars)
+	}
+	if s.vars == nil {
+		s.vars = map[*Node]*ssa.Value{}
+	}
 }
 
 // endBlock marks the end of generating code for the current block.
@@ -378,9 +383,11 @@ func (s *state) endBlock() *ssa.Block {
 	for len(s.defvars) <= int(b.ID) {
 		s.defvars = append(s.defvars, nil)
 	}
-	s.defvars[b.ID] = s.vars
+	if len(s.vars) > 0 {
+		s.defvars[b.ID] = s.vars
+		s.vars = nil
+	}
 	s.curBlock = nil
-	s.vars = nil
 	b.Line = s.peekLine()
 	return b
 }
@@ -4129,8 +4136,10 @@ func (s *state) resolveFwdRef(v *ssa.Value, dm *sparseDefState) {
 // lookupVarOutgoing finds the variable's value at the end of block b.
 func (s *state) lookupVarOutgoing(b *ssa.Block, t ssa.Type, name *Node, line int32) *ssa.Value {
 	for {
-		if v, ok := s.defvars[b.ID][name]; ok {
-			return v
+		if s.defvars[b.ID] != nil {
+			if v, ok := s.defvars[b.ID][name]; ok {
+				return v
+			}
 		}
 		// The variable is not defined by b and we haven't looked it up yet.
 		// If b has exactly one predecessor, loop to look it up there.
@@ -4143,6 +4152,9 @@ func (s *state) lookupVarOutgoing(b *ssa.Block, t ssa.Type, name *Node, line int
 	// Generate a FwdRef for the variable and return that.
 	v := b.NewValue0A(line, ssa.OpFwdRef, t, name)
 	s.fwdRefs = append(s.fwdRefs, v)
+	if s.defvars[b.ID] == nil {
+		s.defvars[b.ID] = make(map[*Node]*ssa.Value)
+	}
 	s.defvars[b.ID][name] = v
 	s.addNamedValue(name, v)
 	return v
