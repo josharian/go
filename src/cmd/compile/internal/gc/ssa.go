@@ -4061,6 +4061,41 @@ func (s *state) linkForwardReferences(dm *sparseDefState) {
 	//   - Phi optimization is a separate pass (in ../ssa/phielim.go).
 
 	// TODO: optimize defmem
+	var worklist []*ssa.Block
+	for _, b := range s.f.Blocks {
+		if s.defmem[b.ID] == nil && len(b.Preds) > 0 {
+			worklist = append(worklist, b)
+		}
+	}
+	for len(worklist) > 0 {
+		b := worklist[len(worklist)-1]
+		worklist = worklist[:len(worklist)-1]
+		if s.defmem[b.ID] != nil {
+			continue
+		}
+		var w *ssa.Value
+		stopped := false
+		for _, e := range b.Preds {
+			p := e.Block()
+			v := s.defmem[p.ID]
+			if v == nil {
+				stopped = true
+				break
+			}
+			if w == nil {
+				w = v
+			} else if w != v {
+				stopped = true
+				break
+			}
+		}
+		if !stopped {
+			s.defmem[b.ID] = w
+			for _, e := range b.Succs {
+				worklist = append(worklist, e.Block())
+			}
+		}
+	}
 
 	for len(s.fwdRefs) > 0 {
 		v := s.fwdRefs[len(s.fwdRefs)-1]
