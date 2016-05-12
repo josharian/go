@@ -67,11 +67,17 @@ func tighten(f *Func) {
 					// make two memory values live across a block boundary.
 					continue
 				}
-				if uses[v.ID] == 1 && !phi[v.ID] && home[v.ID] != b && len(v.Args) < 2 {
+				// We don't want to move values with more than one spillable arg,
+				// so as not to increase the number of live values.
+				nargs := 0
+				for _, v := range v.Args {
+					if v.Op == OpArg || v.rematerializeable() {
+						continue
+					}
+					nargs++
+				}
+				if uses[v.ID] == 1 && !phi[v.ID] && home[v.ID] != b && nargs < 2 {
 					// v is used in exactly one block, and it is not b.
-					// Furthermore, it takes at most one input,
-					// so moving it will not increase the
-					// number of live values anywhere.
 					// Move v to that block.
 					c := home[v.ID]
 					c.Values = append(c.Values, v)
