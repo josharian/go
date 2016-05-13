@@ -1592,7 +1592,7 @@ func (b *builder) build(a *action) (err error) {
 func (b *builder) getPkgConfigFlags(p *Package) (cflags, ldflags []string, err error) {
 	if pkgs := p.CgoPkgConfig; len(pkgs) > 0 {
 		var out []byte
-		out, err = b.runOut(p.Dir, p.ImportPath, nil, "pkg-config", "--cflags", pkgs)
+		out, err = b.runOut(p.Dir, p.ImportPath, b.toolexecEnv(p), "pkg-config", "--cflags", pkgs)
 		if err != nil {
 			b.showOutput(p.Dir, "pkg-config --cflags "+strings.Join(pkgs, " "), string(out))
 			b.print(err.Error() + "\n")
@@ -1602,7 +1602,7 @@ func (b *builder) getPkgConfigFlags(p *Package) (cflags, ldflags []string, err e
 		if len(out) > 0 {
 			cflags = strings.Fields(string(out))
 		}
-		out, err = b.runOut(p.Dir, p.ImportPath, nil, "pkg-config", "--libs", pkgs)
+		out, err = b.runOut(p.Dir, p.ImportPath, b.toolexecEnv(p), "pkg-config", "--libs", pkgs)
 		if err != nil {
 			b.showOutput(p.Dir, "pkg-config --libs "+strings.Join(pkgs, " "), string(out))
 			b.print(err.Error() + "\n")
@@ -2034,6 +2034,13 @@ func (b *builder) processOutput(out []byte) string {
 	return messages
 }
 
+func (b *builder) toolexecEnv(p *Package) []string {
+	if len(buildToolExec) == 0 {
+		return nil
+	}
+	return []string{"TOOLEXEC_PKG_PATH=" + p.ImportPath, "TOOLEXEC_WORK=" + b.work}
+}
+
 // runOut runs the command given by cmdline in the directory dir.
 // It returns the command output and any errors that occurred.
 func (b *builder) runOut(dir string, desc string, env []string, cmdargs ...interface{}) ([]byte, error) {
@@ -2320,7 +2327,7 @@ func (gcToolchain) gc(b *builder, p *Package, archive, obj string, asmhdr bool, 
 		args = append(args, mkAbs(p.Dir, f))
 	}
 
-	output, err = b.runOut(p.Dir, p.ImportPath, nil, args...)
+	output, err = b.runOut(p.Dir, p.ImportPath, b.toolexecEnv(p), args...)
 	return ofile, output, err
 }
 
@@ -2329,7 +2336,7 @@ func (gcToolchain) asm(b *builder, p *Package, obj, ofile, sfile string) error {
 	inc := filepath.Join(goroot, "pkg", "include")
 	sfile = mkAbs(p.Dir, sfile)
 	args := []interface{}{buildToolExec, tool("asm"), "-o", ofile, "-trimpath", b.work, "-I", obj, "-I", inc, "-D", "GOOS_" + goos, "-D", "GOARCH_" + goarch, buildAsmflags, sfile}
-	if err := b.run(p.Dir, p.ImportPath, nil, args...); err != nil {
+	if err := b.run(p.Dir, p.ImportPath, b.toolexecEnv(p), args...); err != nil {
 		return err
 	}
 	return nil
@@ -2520,7 +2527,7 @@ func (gcToolchain) ld(b *builder, root *action, out string, allactions []*action
 		dir, out = filepath.Split(out)
 	}
 
-	return b.run(dir, root.p.ImportPath, nil, buildToolExec, tool("link"), "-o", out, importArgs, ldflags, mainpkg)
+	return b.run(dir, root.p.ImportPath, b.toolexecEnv(root.p), buildToolExec, tool("link"), "-o", out, importArgs, ldflags, mainpkg)
 }
 
 func (gcToolchain) ldShared(b *builder, toplevelactions []*action, out string, allactions []*action) error {
@@ -2595,7 +2602,7 @@ func (tools gccgoToolchain) gc(b *builder, p *Package, archive, obj string, asmh
 		args = append(args, mkAbs(p.Dir, f))
 	}
 
-	output, err = b.runOut(p.Dir, p.ImportPath, nil, args)
+	output, err = b.runOut(p.Dir, p.ImportPath, b.toolexecEnv(p), args)
 	return ofile, output, err
 }
 
@@ -2607,7 +2614,7 @@ func (tools gccgoToolchain) asm(b *builder, p *Package, obj, ofile, sfile string
 	}
 	defs = tools.maybePIC(defs)
 	defs = append(defs, b.gccArchArgs()...)
-	return b.run(p.Dir, p.ImportPath, nil, tools.compiler(), "-xassembler-with-cpp", "-I", obj, "-c", "-o", ofile, defs, sfile)
+	return b.run(p.Dir, p.ImportPath, b.toolexecEnv(p), tools.compiler(), "-xassembler-with-cpp", "-I", obj, "-c", "-o", ofile, defs, sfile)
 }
 
 func (gccgoToolchain) pkgpath(basedir string, p *Package) string {
@@ -2622,7 +2629,7 @@ func (gccgoToolchain) pack(b *builder, p *Package, objDir, afile string, ofiles 
 	for _, f := range ofiles {
 		absOfiles = append(absOfiles, mkAbs(objDir, f))
 	}
-	return b.run(p.Dir, p.ImportPath, nil, "ar", "rc", mkAbs(objDir, afile), absOfiles)
+	return b.run(p.Dir, p.ImportPath, b.toolexecEnv(p), "ar", "rc", mkAbs(objDir, afile), absOfiles)
 }
 
 func (tools gccgoToolchain) ld(b *builder, root *action, out string, allactions []*action, mainpkg string, ofiles []string) error {
@@ -3220,6 +3227,7 @@ func (b *builder) cgo(p *Package, cgoExe, obj string, pcCFLAGS, pcLDFLAGS, cgofi
 		cgoflags = append(cgoflags, "-exportheader="+obj+"_cgo_install.h")
 	}
 
+	cgoenv = mergeEnvLists(cgoenv, b.toolexecEnv(p))
 	if err := b.run(p.Dir, p.ImportPath, cgoenv, buildToolExec, cgoExe, "-objdir", obj, "-importpath", p.ImportPath, cgoflags, "--", cgoCPPFLAGS, cgoexeCFLAGS, cgofiles); err != nil {
 		return nil, nil, err
 	}
@@ -3364,7 +3372,7 @@ func (b *builder) cgo(p *Package, cgoExe, obj string, pcCFLAGS, pcLDFLAGS, cgofi
 	if p.Standard && p.ImportPath == "runtime/cgo" {
 		cgoflags = append(cgoflags, "-dynlinker") // record path to dynamic linker
 	}
-	if err := b.run(p.Dir, p.ImportPath, nil, buildToolExec, cgoExe, "-objdir", obj, "-dynpackage", p.Name, "-dynimport", dynobj, "-dynout", importGo, cgoflags); err != nil {
+	if err := b.run(p.Dir, p.ImportPath, b.toolexecEnv(p), buildToolExec, cgoExe, "-objdir", obj, "-dynpackage", p.Name, "-dynimport", dynobj, "-dynout", importGo, cgoflags); err != nil {
 		return nil, nil, err
 	}
 	outGo = append(outGo, importGo)
@@ -3597,7 +3605,7 @@ func (b *builder) swigOne(p *Package, file, obj string, pcCFLAGS []string, cxx b
 		args = append(args, "-c++")
 	}
 
-	out, err := b.runOut(p.Dir, p.ImportPath, nil, "swig", args, file)
+	out, err := b.runOut(p.Dir, p.ImportPath, b.toolexecEnv(p), "swig", args, file)
 	if err != nil {
 		if len(out) > 0 {
 			if bytes.Contains(out, []byte("-intgosize")) || bytes.Contains(out, []byte("-cgo")) {
