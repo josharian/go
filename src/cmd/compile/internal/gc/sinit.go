@@ -4,9 +4,7 @@
 
 package gc
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // static initialization
 const (
@@ -489,6 +487,68 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		} else {
 			closuredebugruntimecheck(r)
 		}
+
+	case OCONVIFACE:
+		// This logic is mirrored in isStaticCompositeLiteral.
+		// If you change something here, change it there, and vice versa.
+
+		// Determine the underlying concrete type and value we are converting from.
+		val := r
+		for val.Op == OCONVIFACE {
+			val = val.Left
+		}
+		if Isconst(val, CTNIL) && r.Left.Type.IsInterface() {
+			// The whole thing is nil, so both words
+			// are zero, so there's nothing to do.
+			return true
+		}
+
+		var itab *Node
+		if l.Type.IsEmptyInterface() {
+			itab = typename(val.Type)
+		} else {
+			if val.Type.IsInterface() {
+				// No concrete type, and we won't be able to staticly initialize its value. Bail.
+				return false
+			}
+			itab = itabname(val.Type, l.Type)
+		}
+
+		// Create a copy of l to modify while we emit data.
+		n := *l
+
+		// Emit itab, advance offset.
+		gdata(&n, itab, Widthptr)
+		n.Xoffset += int64(Widthptr)
+
+		// Emit data.
+		if isdirectiface(val.Type) {
+			if Isconst(val, CTNIL) {
+				// Nil is zero, nothing to do.
+				return true
+			}
+			// Copy val directly into n.
+			n.Type = val.Type
+			setlineno(val)
+			a := Nod(OXXX, nil, nil)
+			*a = n
+			a.Orig = a
+			if !staticassign(a, val, out) {
+				*out = append(*out, Nod(OAS, a, val))
+			}
+		} else {
+			// Construct temp to hold val, write pointer to temp into n.
+			a := staticname(val.Type, 1)
+			inittemps[val] = a
+			if !staticassign(a, val, out) {
+				*out = append(*out, Nod(OAS, a, val))
+			}
+			ptr := Nod(OADDR, a, nil)
+			n.Type = Ptrto(val.Type)
+			gdata(&n, ptr, Widthptr)
+		}
+
+		return true
 	}
 
 	//dump("not static", r);
@@ -568,26 +628,42 @@ func isStaticCompositeLiteral(n *Node) bool {
 		if n.Type.IsSlice() {
 			return false
 		}
+		fallthrough
 	case OSTRUCTLIT:
+		for _, r := range n.List.Slice() {
+			if r.Op != OKEY {
+				Fatalf("isStaticCompositeLiteral: rhs not OKEY: %v", r)
+			}
+			index := r.Left
+			if n.Op == OARRAYLIT && index.Op != OLITERAL {
+				return false
+			}
+			value := r.Right
+			if !isStaticCompositeLiteral(value) {
+				return false
+			}
+		}
+		return true
 	case OLITERAL:
 		return true
-	default:
-		return false
-	}
-	for _, r := range n.List.Slice() {
-		if r.Op != OKEY {
-			Fatalf("isStaticCompositeLiteral: rhs not OKEY: %v", r)
+	case OCONVIFACE:
+		// See staticassign's OCONVIFACE case for comments.
+		val := n
+		for val.Op == OCONVIFACE {
+			val = val.Left
 		}
-		index := r.Left
-		if n.Op == OARRAYLIT && index.Op != OLITERAL {
+		if Isconst(val, CTNIL) && n.Left.Type.IsInterface() {
+			return true
+		}
+		if !n.Type.IsEmptyInterface() && val.Type.IsInterface() {
 			return false
 		}
-		value := r.Right
-		if !isStaticCompositeLiteral(value) {
-			return false
+		if Isconst(val, CTNIL) {
+			return true
 		}
+		return isStaticCompositeLiteral(val)
 	}
-	return true
+	return false
 }
 
 func structlit(ctxt int, pass int, n *Node, var_ *Node, init *Nodes) {
