@@ -624,7 +624,7 @@ func getdyn(n *Node, top bool) initGenType {
 func isStaticCompositeLiteral(n *Node) bool {
 	switch n.Op {
 	case OARRAYLIT:
-		if n.Type.IsSlice() {
+		if n.Type.IsSlice() && getdyn(n, true)&initDynamic != 0 {
 			return false
 		}
 	case OSTRUCTLIT:
@@ -979,6 +979,7 @@ func maplit(ctxt int, n *Node, m *Node, init *Nodes) {
 			value := r.Right
 
 			if isliteral(index) && isliteral(value) {
+				// if isStaticCompositeLiteral(index) && isStaticCompositeLiteral(value) {
 				// build vstatk[b] = index
 				setlineno(index)
 				lhs := Nod(OINDEX, vstatk, Nodintconst(b))
