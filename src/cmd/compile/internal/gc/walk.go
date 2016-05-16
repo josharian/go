@@ -2068,16 +2068,7 @@ func isstack(n *Node) bool {
 
 func isglobal(n *Node) bool {
 	n = outervalue(n)
-
-	switch n.Op {
-	case ONAME:
-		switch n.Class {
-		case PEXTERN:
-			return true
-		}
-	}
-
-	return false
+	return n.Op == ONAME && n.Class == PEXTERN
 }
 
 // Do we need a write barrier for the assignment l = r?
