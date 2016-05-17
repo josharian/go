@@ -7,6 +7,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"cmd/internal/traceviewer"
 	"container/heap"
 	"debug/elf"
 	"errors"
@@ -75,6 +76,8 @@ and test commands:
 		enable interoperation with memory sanitizer.
 		Supported only on linux/amd64,
 		and only with Clang/LLVM as the host C compiler.
+	-trace
+		write an html executation trace to this file.
 	-v
 		print the names of packages as they are compiled.
 	-work
@@ -167,6 +170,7 @@ var buildToolExec []string   // -toolexec flag
 var buildBuildmode string    // -buildmode flag
 var buildLinkshared bool     // -linkshared flag
 var buildPkgdir string       // -pkgdir flag
+var buildTrace string        // -trace flag
 
 var buildContext = build.Default
 var buildToolchain toolchain = noToolchain{}
@@ -225,6 +229,7 @@ func addBuildFlags(cmd *Command) {
 	cmd.Flag.BoolVar(&buildMSan, "msan", false, "")
 	cmd.Flag.Var((*stringsFlag)(&buildContext.BuildTags), "tags", "")
 	cmd.Flag.Var((*stringsFlag)(&buildToolExec), "toolexec", "")
+	cmd.Flag.StringVar(&buildTrace, "trace", "", "")
 	cmd.Flag.BoolVar(&buildWork, "work", false, "")
 }
 
@@ -443,6 +448,7 @@ func runBuild(cmd *Command, args []string) {
 	buildModeInit()
 	var b builder
 	b.init()
+	defer b.close()
 
 	pkgs := packagesForBuild(args)
 
@@ -696,6 +702,12 @@ type builder struct {
 	flagCache   map[string]bool      // a cache of supported compiler flags
 	print       func(args ...interface{}) (int, error)
 
+	// tracing support
+	start     time.Time        // build start time
+	tracemu   sync.Mutex       // guards following trace-related fields
+	tracedata traceviewer.Data // trace data
+	tid       []uint64         // stack of fake thread ids
+
 	output    sync.Mutex
 	scriptDir string // current directory in printed script
 
@@ -775,6 +787,73 @@ func (b *builder) init() {
 			workdir := b.work
 			atexit(func() { os.RemoveAll(workdir) })
 		}
+	}
+
+	if buildTrace != "" {
+		b.start = time.Now()
+		b.tid = make([]uint64, buildP)
+		for i := range b.tid {
+			b.tid[i] = uint64(len(b.tid) - 1 - i) // put 0 at the top of the stack
+		}
+	}
+}
+
+// A trace is a single traced activity undertaken by the builder.
+type trace struct {
+	b     *builder
+	event traceviewer.Event
+	start time.Time
+}
+
+// trace starts tracing an activity of type task and target target.
+// The trace must be marked as done when it is completed.
+// It is a no-op if tracing is not enabled.
+func (b *builder) trace(task, target string) *trace {
+	if buildTrace == "" {
+		return nil
+	}
+	now := time.Now()
+	b.tracemu.Lock()
+	event := traceviewer.Event{
+		Phase:    "X",
+		Time:     traceviewer.Elapsed(b.start, now),
+		Category: task,
+		Name:     task + " " + target,
+		Tid:      b.tid[len(b.tid)-1],
+	}
+	b.tid = b.tid[:len(b.tid)-1]
+	b.tracemu.Unlock()
+	return &trace{b: b, event: event, start: now}
+}
+
+// done marks a traced activity as done and records it.
+// It is a no-op if tracing is not enabled.
+func (t *trace) done() {
+	if buildTrace == "" {
+		return
+	}
+	t.event.Dur = traceviewer.Elapsed(t.start, time.Now())
+	t.b.tracemu.Lock()
+	t.b.tracedata.Events = append(t.b.tracedata.Events, &t.event)
+	t.b.tid = append(t.b.tid, t.event.Tid)
+	t.b.tracemu.Unlock()
+}
+
+func (b *builder) close() {
+	if buildTrace == "" {
+		return
+	}
+	// Open output file.
+	out, err := os.OpenFile(buildTrace, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		errorf("%v", err)
+		return
+	}
+	defer out.Close()
+	err = writeTraceHTML(out, b.tracedata)
+	if err != nil {
+		errorf("%v", err)
+		return
 	}
 }
 
@@ -1405,7 +1484,10 @@ func (b *builder) build(a *action) (err error) {
 	cxxfiles = append(cxxfiles, a.p.CXXFiles...)
 
 	if a.p.usesCgo() || a.p.usesSwig() {
-		if pcCFLAGS, pcLDFLAGS, err = b.getPkgConfigFlags(a.p); err != nil {
+		t := b.trace("pkg-config", a.p.ImportPath)
+		pcCFLAGS, pcLDFLAGS, err = b.getPkgConfigFlags(a.p)
+		t.done()
+		if err != nil {
 			return
 		}
 	}
@@ -1453,7 +1535,9 @@ func (b *builder) build(a *action) (err error) {
 		if a.cgo != nil && a.cgo.target != "" {
 			cgoExe = a.cgo.target
 		}
+		t := b.trace("cgo", a.p.ImportPath)
 		outGo, outObj, err := b.cgo(a.p, cgoExe, obj, pcCFLAGS, pcLDFLAGS, cgofiles, gccfiles, cxxfiles, a.p.MFiles, a.p.FFiles)
+		t.done()
 		if err != nil {
 			return err
 		}
@@ -1490,7 +1574,10 @@ func (b *builder) build(a *action) (err error) {
 				// Not covering this file.
 				continue
 			}
-			if err := b.cover(a, coverFile, sourceFile, 0666, cover.Var); err != nil {
+			t := b.trace("cover", a.p.ImportPath)
+			err := b.cover(a, coverFile, sourceFile, 0666, cover.Var)
+			t.done()
+			if err != nil {
 				return err
 			}
 			gofiles[i] = coverFile
@@ -1501,7 +1588,9 @@ func (b *builder) build(a *action) (err error) {
 	inc := b.includeArgs("-I", allArchiveActions(a))
 
 	// Compile Go.
+	t := b.trace("compile", a.p.ImportPath)
 	ofile, out, err := buildToolchain.gc(b, a.p, a.objpkg, obj, len(sfiles) > 0, inc, gofiles)
+	t.done()
 	if len(out) > 0 {
 		b.showOutput(a.p.Dir, a.p.ImportPath, b.processOutput(out))
 		if err != nil {
@@ -1544,7 +1633,10 @@ func (b *builder) build(a *action) (err error) {
 
 	for _, file := range cfiles {
 		out := file[:len(file)-len(".c")] + ".o"
-		if err := buildToolchain.cc(b, a.p, obj, obj+out, file); err != nil {
+		t := b.trace("cc", a.p.ImportPath)
+		err := buildToolchain.cc(b, a.p, obj, obj+out, file)
+		t.done()
+		if err != nil {
 			return err
 		}
 		objects = append(objects, out)
@@ -1553,7 +1645,10 @@ func (b *builder) build(a *action) (err error) {
 	// Assemble .s files.
 	for _, file := range sfiles {
 		out := file[:len(file)-len(".s")] + ".o"
-		if err := buildToolchain.asm(b, a.p, obj, obj+out, file); err != nil {
+		t := b.trace("asm", a.p.ImportPath)
+		err := buildToolchain.asm(b, a.p, obj, obj+out, file)
+		t.done()
+		if err != nil {
 			return err
 		}
 		objects = append(objects, out)
@@ -1576,7 +1671,10 @@ func (b *builder) build(a *action) (err error) {
 	// If the Go compiler wrote an archive and the package is entirely
 	// Go sources, there is no pack to execute at all.
 	if len(objects) > 0 {
-		if err := buildToolchain.pack(b, a.p, obj, a.objpkg, objects); err != nil {
+		t := b.trace("pack", a.p.ImportPath)
+		err := buildToolchain.pack(b, a.p, obj, a.objpkg, objects)
+		t.done()
+		if err != nil {
 			return err
 		}
 	}
@@ -1587,7 +1685,10 @@ func (b *builder) build(a *action) (err error) {
 		// linker needs the whole dependency tree.
 		all := actionList(a)
 		all = all[:len(all)-1] // drop a
-		if err := buildToolchain.ld(b, a, a.target, all, a.objpkg, objects); err != nil {
+		t := b.trace("link", a.p.ImportPath)
+		err := buildToolchain.ld(b, a, a.target, all, a.objpkg, objects)
+		t.done()
+		if err != nil {
 			return err
 		}
 	}

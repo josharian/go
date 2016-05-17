@@ -51,6 +51,7 @@ var bootstrapDirs = []string{
 	"internal/obj/s390x",
 	"internal/obj/x86",
 	"internal/sys",
+	"internal/traceviewer",
 	"link",
 	"link/internal/amd64",
 	"link/internal/arm",
