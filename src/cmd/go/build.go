@@ -1416,8 +1416,7 @@ func (b *builder) do(root *action) {
 	wg.Wait()
 }
 
-// build is the action for building a single package or command.
-func (b *builder) build(a *action) (err error) {
+func (b *builder) prepareBuild(a *action) (err error) {
 	// Return an error for binary-only package.
 	// We only reach this if isStale believes the binary form is
 	// either not present or not usable.
@@ -1448,6 +1447,30 @@ func (b *builder) build(a *action) (err error) {
 			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
 		}
 	}()
+
+	// Make build directory.
+	obj := a.objdir
+	if err = b.mkdir(obj); err != nil {
+		return err
+	}
+
+	// make target directory
+	dir, _ := filepath.Split(a.target)
+	if dir != "" {
+		if err = b.mkdir(dir); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// build is the action for building a single package or command.
+func (b *builder) build(a *action) (err error) {
+	if err = b.prepareBuild(a); err != nil {
+		return err
+	}
+
 	if buildN {
 		// In -n mode, print a banner between packages.
 		// The banner is five lines so that when changes to
@@ -1461,19 +1484,13 @@ func (b *builder) build(a *action) (err error) {
 		b.print(a.p.ImportPath + "\n")
 	}
 
-	// Make build directory.
-	obj := a.objdir
-	if err := b.mkdir(obj); err != nil {
-		return err
-	}
-
-	// make target directory
-	dir, _ := filepath.Split(a.target)
-	if dir != "" {
-		if err := b.mkdir(dir); err != nil {
-			return err
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
 		}
-	}
+	}()
+
+	obj := a.objdir
 
 	var gofiles, cgofiles, cfiles, sfiles, cxxfiles, objects, cgoObjects, pcCFLAGS, pcLDFLAGS []string
 
