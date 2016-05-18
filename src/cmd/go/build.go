@@ -1495,6 +1495,12 @@ func (b *builder) announceBuild(a *action) (err error) {
 }
 
 func (b *builder) cgoBuild(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
 	if a.p.usesCgo() || a.p.usesSwig() {
 		t := b.trace("pkg-config", a.p.ImportPath)
 		a.pcCFLAGS, a.pcLDFLAGS, err = b.getPkgConfigFlags(a.p)
@@ -1573,6 +1579,12 @@ func (b *builder) checkForGoFiles(a *action) (err error) {
 }
 
 func (b *builder) coverFiles(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
 	// If we're doing coverage, preprocess the .go files and put them in the work directory
 	if a.p.coverMode != "" {
 		for i, file := range a.gofiles {
@@ -1608,6 +1620,12 @@ func (b *builder) coverFiles(a *action) (err error) {
 }
 
 func (b *builder) compileGoFiles(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
 	// Prepare Go import path list.
 	inc := b.includeArgs("-I", allArchiveActions(a))
 
@@ -1631,6 +1649,12 @@ func (b *builder) compileGoFiles(a *action) (err error) {
 }
 
 func (b *builder) compileCFiles(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
 	// Copy .h files named for goos or goarch or goos_goarch
 	// to names using GOOS and GOARCH.
 	// For example, defs_linux_amd64.h becomes defs_GOOS_GOARCH.h.
@@ -1672,6 +1696,12 @@ func (b *builder) compileCFiles(a *action) (err error) {
 }
 
 func (b *builder) assembleSFiles(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
 	// Assemble .s files.
 	for _, file := range a.sfiles {
 		out := file[:len(file)-len(".s")] + ".o"
@@ -1687,6 +1717,12 @@ func (b *builder) assembleSFiles(a *action) (err error) {
 }
 
 func (b *builder) prepareObjFiles(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
 	// NOTE(rsc): On Windows, it is critically important that the
 	// gcc-compiled objects (cgoObjects) be listed after the ordinary
 	// objects in the archive. I do not know why this is.
@@ -1701,6 +1737,12 @@ func (b *builder) prepareObjFiles(a *action) (err error) {
 }
 
 func (b *builder) pack(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
 	// Pack into archive in obj directory.
 	// If the Go compiler wrote an archive, we only need to add the
 	// object files for non-Go sources to the archive.
@@ -1718,6 +1760,12 @@ func (b *builder) pack(a *action) (err error) {
 }
 
 func (b *builder) link(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
 	// Link if needed.
 	if a.link {
 		// The compiler only cares about direct imports, but the
@@ -1736,12 +1784,6 @@ func (b *builder) link(a *action) (err error) {
 
 // build is the action for building a single package or command.
 func (b *builder) build(a *action) (err error) {
-	defer func() {
-		if err != nil && err != errPrintedOutput {
-			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
-		}
-	}()
-
 	// prepareBuild depends on nothing
 	if err = b.prepareBuild(a); err != nil {
 		return err
