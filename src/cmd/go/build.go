@@ -743,10 +743,11 @@ type action struct {
 	cfiles     []string
 	sfiles     []string
 	cxxfiles   []string
-	objects    []string
 	cgoObjects []string
 	pcCFLAGS   []string
 	pcLDFLAGS  []string
+	objectsmu  sync.Mutex // protects objects
+	objects    []string
 
 	// Execution state.
 	pending  int  // number of deps yet to complete
@@ -1643,7 +1644,9 @@ func (b *builder) compileGoFiles(a *action) (err error) {
 		return err
 	}
 	if ofile != a.objpkg {
+		a.objectsmu.Lock()
 		a.objects = append(a.objects, ofile)
+		a.objectsmu.Unlock()
 	}
 	return nil
 }
@@ -1690,7 +1693,9 @@ func (b *builder) compileCFiles(a *action) (err error) {
 		if err != nil {
 			return err
 		}
+		a.objectsmu.Lock()
 		a.objects = append(a.objects, out)
+		a.objectsmu.Unlock()
 	}
 	return nil
 }
@@ -1711,7 +1716,9 @@ func (b *builder) assembleSFiles(a *action) (err error) {
 		if err != nil {
 			return err
 		}
+		a.objectsmu.Lock()
 		a.objects = append(a.objects, out)
+		a.objectsmu.Unlock()
 	}
 	return nil
 }
