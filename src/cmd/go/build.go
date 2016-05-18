@@ -1563,28 +1563,14 @@ func (b *builder) cgoBuild(a *action) (err error) {
 	return nil
 }
 
-// build is the action for building a single package or command.
-func (b *builder) build(a *action) (err error) {
-	defer func() {
-		if err != nil && err != errPrintedOutput {
-			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
-		}
-	}()
-
-	if err = b.prepareBuild(a); err != nil {
-		return err
-	}
-	if err = b.announceBuild(a); err != nil {
-		return err
-	}
-	if err = b.cgoBuild(a); err != nil {
-		return err
-	}
-
+func (b *builder) checkForGoFiles(a *action) (err error) {
 	if len(a.gofiles) == 0 {
 		return &build.NoGoError{Dir: a.p.Dir}
 	}
+	return nil
+}
 
+func (b *builder) coverFiles(a *action) (err error) {
 	// If we're doing coverage, preprocess the .go files and put them in the work directory
 	if a.p.coverMode != "" {
 		for i, file := range a.gofiles {
@@ -1616,7 +1602,10 @@ func (b *builder) build(a *action) (err error) {
 			a.gofiles[i] = coverFile
 		}
 	}
+	return nil
+}
 
+func (b *builder) compileGoFiles(a *action) (err error) {
 	// Prepare Go import path list.
 	inc := b.includeArgs("-I", allArchiveActions(a))
 
@@ -1636,7 +1625,10 @@ func (b *builder) build(a *action) (err error) {
 	if ofile != a.objpkg {
 		a.objects = append(a.objects, ofile)
 	}
+	return nil
+}
 
+func (b *builder) compileCFiles(a *action) (err error) {
 	// Copy .h files named for goos or goarch or goos_goarch
 	// to names using GOOS and GOARCH.
 	// For example, defs_linux_amd64.h becomes defs_GOOS_GOARCH.h.
@@ -1674,7 +1666,10 @@ func (b *builder) build(a *action) (err error) {
 		}
 		a.objects = append(a.objects, out)
 	}
+	return nil
+}
 
+func (b *builder) assembleSFiles(a *action) (err error) {
 	// Assemble .s files.
 	for _, file := range a.sfiles {
 		out := file[:len(file)-len(".s")] + ".o"
@@ -1686,7 +1681,10 @@ func (b *builder) build(a *action) (err error) {
 		}
 		a.objects = append(a.objects, out)
 	}
+	return nil
+}
 
+func (b *builder) prepareObjFiles(a *action) (err error) {
 	// NOTE(rsc): On Windows, it is critically important that the
 	// gcc-compiled objects (cgoObjects) be listed after the ordinary
 	// objects in the archive. I do not know why this is.
@@ -1697,7 +1695,10 @@ func (b *builder) build(a *action) (err error) {
 	for _, syso := range a.p.SysoFiles {
 		a.objects = append(a.objects, filepath.Join(a.p.Dir, syso))
 	}
+	return nil
+}
 
+func (b *builder) pack(a *action) (err error) {
 	// Pack into archive in obj directory.
 	// If the Go compiler wrote an archive, we only need to add the
 	// object files for non-Go sources to the archive.
@@ -1711,7 +1712,10 @@ func (b *builder) build(a *action) (err error) {
 			return err
 		}
 	}
+	return nil
+}
 
+func (b *builder) link(a *action) (err error) {
 	// Link if needed.
 	if a.link {
 		// The compiler only cares about direct imports, but the
@@ -1725,7 +1729,61 @@ func (b *builder) build(a *action) (err error) {
 			return err
 		}
 	}
+	return nil
+}
 
+// build is the action for building a single package or command.
+func (b *builder) build(a *action) (err error) {
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
+	// prepareBuild depends on nothing
+	if err = b.prepareBuild(a); err != nil {
+		return err
+	}
+	// announceBuild depends on nothing, but shouldn't happen until we're about to actually do some work
+	if err = b.announceBuild(a); err != nil {
+		return err
+	}
+	// cgoBuild depends on prepareBuild and announceBuild
+	if err = b.cgoBuild(a); err != nil {
+		return err
+	}
+	// checkForGoFiles depends on cgoBuild
+	if err = b.checkForGoFiles(a); err != nil {
+		return err
+	}
+	// coverFiles depends on cgoBuild
+	if err = b.coverFiles(a); err != nil {
+		return err
+	}
+	// compileGoFiles depends on checkForGoFiles and package dependencies
+	if err = b.compileGoFiles(a); err != nil {
+		return err
+	}
+	// compileCFiles depends on cgoBuild
+	if err = b.compileCFiles(a); err != nil {
+		return err
+	}
+	// assembleSFiles depends on cgoBuild
+	if err = b.assembleSFiles(a); err != nil {
+		return err
+	}
+	// prepareObjFiles depends on compileGoFiles, compileCFiles, and assembleSFiles
+	if err = b.prepareObjFiles(a); err != nil {
+		return err
+	}
+	// pack depends on prepareObjFiles
+	if err = b.pack(a); err != nil {
+		return err
+	}
+	// link depends on prepareObjFiles
+	if err = b.link(a); err != nil {
+		return err
+	}
 	return nil
 }
 
