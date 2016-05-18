@@ -862,10 +862,11 @@ func checkptxt(fn *Node, firstp *obj.Prog) {
 	}
 }
 
-// NOTE: The bitmap for a specific type t should be cached in t after the first run
+// NOTE: The bitmap for a specific type t should perhaps be cached in t after the first run
 // and then simply copied into bv at the correct offset on future calls with
-// the same type t. On https://rsc.googlecode.com/hg/testdata/slow.go, onebitwalktype1
-// accounts for 40% of the 6g execution time.
+// the same type t. On https://raw.githubusercontent.com/rsc/rsc/master/testdata/slow.go,
+// onebitwalktype1 used to account for 40% of the 6g execution time.
+// Stackalloc and regalloc are now much more expensive, but perhaps that will change.
 func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 	if t.Align > 0 && *xoffset&int64(t.Align-1) != 0 {
 		Fatalf("onebitwalktype1: invalid initial alignment, %v", t)
