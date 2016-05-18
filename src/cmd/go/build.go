@@ -1455,12 +1455,6 @@ func (b *builder) prepareBuild(a *action) (err error) {
 			a.p.ImportPath, strings.Join(a.p.FFiles, ","))
 	}
 
-	defer func() {
-		if err != nil && err != errPrintedOutput {
-			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
-		}
-	}()
-
 	// Make build directory.
 	obj := a.objdir
 	if err = b.mkdir(obj); err != nil {
@@ -1482,6 +1476,21 @@ func (b *builder) prepareBuild(a *action) (err error) {
 	a.sfiles = append(a.sfiles, a.p.SFiles...)
 	a.cxxfiles = append(a.cxxfiles, a.p.CXXFiles...)
 
+	return nil
+}
+
+func (b *builder) announceBuild(a *action) (err error) {
+	if buildN {
+		// In -n mode, print a banner between packages.
+		// The banner is five lines so that when changes to
+		// different sections of the bootstrap script have to
+		// be merged, the banners give patch something
+		// to use to find its context.
+		b.print("\n#\n# " + a.p.ImportPath + "\n#\n\n")
+	}
+	if buildV {
+		b.print(a.p.ImportPath + "\n")
+	}
 	return nil
 }
 
@@ -1556,31 +1565,19 @@ func (b *builder) cgoBuild(a *action) (err error) {
 
 // build is the action for building a single package or command.
 func (b *builder) build(a *action) (err error) {
-	if err = b.prepareBuild(a); err != nil {
-		return err
-	}
-
-	if buildN {
-		// In -n mode, print a banner between packages.
-		// The banner is five lines so that when changes to
-		// different sections of the bootstrap script have to
-		// be merged, the banners give patch something
-		// to use to find its context.
-		b.print("\n#\n# " + a.p.ImportPath + "\n#\n\n")
-	}
-
-	if buildV {
-		b.print(a.p.ImportPath + "\n")
-	}
-
 	defer func() {
 		if err != nil && err != errPrintedOutput {
 			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
 		}
 	}()
 
-	err = b.cgoBuild(a)
-	if err != nil {
+	if err = b.prepareBuild(a); err != nil {
+		return err
+	}
+	if err = b.announceBuild(a); err != nil {
+		return err
+	}
+	if err = b.cgoBuild(a); err != nil {
 		return err
 	}
 
