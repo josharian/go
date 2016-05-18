@@ -1491,39 +1491,7 @@ func (b *builder) prepareBuild(a *action) (err error) {
 	return nil
 }
 
-// build is the action for building a single package or command.
-func (b *builder) build(a *action) (err error) {
-	if err = b.prepareBuild(a); err != nil {
-		return err
-	}
-
-	if buildN {
-		// In -n mode, print a banner between packages.
-		// The banner is five lines so that when changes to
-		// different sections of the bootstrap script have to
-		// be merged, the banners give patch something
-		// to use to find its context.
-		b.print("\n#\n# " + a.p.ImportPath + "\n#\n\n")
-	}
-
-	if buildV {
-		b.print(a.p.ImportPath + "\n")
-	}
-
-	defer func() {
-		if err != nil && err != errPrintedOutput {
-			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
-		}
-	}()
-
-	obj := a.objdir
-
-	a.gofiles = append(a.gofiles, a.p.GoFiles...)
-	a.cgofiles = append(a.cgofiles, a.p.CgoFiles...)
-	a.cfiles = append(a.cfiles, a.p.CFiles...)
-	a.sfiles = append(a.sfiles, a.p.SFiles...)
-	a.cxxfiles = append(a.cxxfiles, a.p.CXXFiles...)
-
+func (b *builder) cgoBuild(a *action) (err error) {
 	if a.p.usesCgo() || a.p.usesSwig() {
 		t := b.trace("pkg-config", a.p.ImportPath)
 		a.pcCFLAGS, a.pcLDFLAGS, err = b.getPkgConfigFlags(a.p)
@@ -1537,7 +1505,7 @@ func (b *builder) build(a *action) (err error) {
 	// Each run will generate two files, a .go file and a .c or .cxx file.
 	// The .go file will use import "C" and is to be processed by cgo.
 	if a.p.usesSwig() {
-		outGo, outC, outCXX, err := b.swig(a.p, obj, a.pcCFLAGS)
+		outGo, outC, outCXX, err := b.swig(a.p, a.objdir, a.pcCFLAGS)
 		if err != nil {
 			return err
 		}
@@ -1577,7 +1545,7 @@ func (b *builder) build(a *action) (err error) {
 			cgoExe = a.cgo.target
 		}
 		t := b.trace("cgo", a.p.ImportPath)
-		outGo, outObj, err := b.cgo(a.p, cgoExe, obj, a.pcCFLAGS, a.pcLDFLAGS, a.cgofiles, gccfiles, a.cxxfiles, a.p.MFiles, a.p.FFiles)
+		outGo, outObj, err := b.cgo(a.p, cgoExe, a.objdir, a.pcCFLAGS, a.pcLDFLAGS, a.cgofiles, gccfiles, a.cxxfiles, a.p.MFiles, a.p.FFiles)
 		t.done()
 		if err != nil {
 			return err
@@ -1587,6 +1555,47 @@ func (b *builder) build(a *action) (err error) {
 		}
 		a.cgoObjects = append(a.cgoObjects, outObj...)
 		a.gofiles = append(a.gofiles, outGo...)
+	}
+
+	return nil
+}
+
+// build is the action for building a single package or command.
+func (b *builder) build(a *action) (err error) {
+	if err = b.prepareBuild(a); err != nil {
+		return err
+	}
+
+	if buildN {
+		// In -n mode, print a banner between packages.
+		// The banner is five lines so that when changes to
+		// different sections of the bootstrap script have to
+		// be merged, the banners give patch something
+		// to use to find its context.
+		b.print("\n#\n# " + a.p.ImportPath + "\n#\n\n")
+	}
+
+	if buildV {
+		b.print(a.p.ImportPath + "\n")
+	}
+
+	defer func() {
+		if err != nil && err != errPrintedOutput {
+			err = fmt.Errorf("go build %s: %v", a.p.ImportPath, err)
+		}
+	}()
+
+	obj := a.objdir
+
+	a.gofiles = append(a.gofiles, a.p.GoFiles...)
+	a.cgofiles = append(a.cgofiles, a.p.CgoFiles...)
+	a.cfiles = append(a.cfiles, a.p.CFiles...)
+	a.sfiles = append(a.sfiles, a.p.SFiles...)
+	a.cxxfiles = append(a.cxxfiles, a.p.CXXFiles...)
+
+	err = b.cgoBuild(a)
+	if err != nil {
+		return err
 	}
 
 	if len(a.gofiles) == 0 {
