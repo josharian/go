@@ -1512,7 +1512,9 @@ func (b *builder) cgoBuild(a *action) (err error) {
 	// Each run will generate two files, a .go file and a .c or .cxx file.
 	// The .go file will use import "C" and is to be processed by cgo.
 	if a.p.usesSwig() {
+		t := b.trace("swig", a.p.ImportPath)
 		outGo, outC, outCXX, err := b.swig(a.p, a.objdir, a.pcCFLAGS)
+		t.done()
 		if err != nil {
 			return err
 		}
