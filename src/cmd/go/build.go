@@ -735,6 +735,19 @@ type action struct {
 	objpkg string // the intermediate package .a file created during the action
 	target string // goal of the action: the created package or executable
 
+	// Intermediate build state.
+	// These are kept distinct from the Package's gofiles, etc.,
+	// because they may be modified during processing.
+	gofiles    []string
+	cgofiles   []string
+	cfiles     []string
+	sfiles     []string
+	cxxfiles   []string
+	objects    []string
+	cgoObjects []string
+	pcCFLAGS   []string
+	pcLDFLAGS  []string
+
 	// Execution state.
 	pending  int  // number of deps yet to complete
 	priority int  // relative execution priority
@@ -1492,17 +1505,15 @@ func (b *builder) build(a *action) (err error) {
 
 	obj := a.objdir
 
-	var gofiles, cgofiles, cfiles, sfiles, cxxfiles, objects, cgoObjects, pcCFLAGS, pcLDFLAGS []string
-
-	gofiles = append(gofiles, a.p.GoFiles...)
-	cgofiles = append(cgofiles, a.p.CgoFiles...)
-	cfiles = append(cfiles, a.p.CFiles...)
-	sfiles = append(sfiles, a.p.SFiles...)
-	cxxfiles = append(cxxfiles, a.p.CXXFiles...)
+	a.gofiles = append(a.gofiles, a.p.GoFiles...)
+	a.cgofiles = append(a.cgofiles, a.p.CgoFiles...)
+	a.cfiles = append(a.cfiles, a.p.CFiles...)
+	a.sfiles = append(a.sfiles, a.p.SFiles...)
+	a.cxxfiles = append(a.cxxfiles, a.p.CXXFiles...)
 
 	if a.p.usesCgo() || a.p.usesSwig() {
 		t := b.trace("pkg-config", a.p.ImportPath)
-		pcCFLAGS, pcLDFLAGS, err = b.getPkgConfigFlags(a.p)
+		a.pcCFLAGS, a.pcLDFLAGS, err = b.getPkgConfigFlags(a.p)
 		t.done()
 		if err != nil {
 			return
@@ -1513,13 +1524,13 @@ func (b *builder) build(a *action) (err error) {
 	// Each run will generate two files, a .go file and a .c or .cxx file.
 	// The .go file will use import "C" and is to be processed by cgo.
 	if a.p.usesSwig() {
-		outGo, outC, outCXX, err := b.swig(a.p, obj, pcCFLAGS)
+		outGo, outC, outCXX, err := b.swig(a.p, obj, a.pcCFLAGS)
 		if err != nil {
 			return err
 		}
-		cgofiles = append(cgofiles, outGo...)
-		cfiles = append(cfiles, outC...)
-		cxxfiles = append(cxxfiles, outCXX...)
+		a.cgofiles = append(a.cgofiles, outGo...)
+		a.cfiles = append(a.cfiles, outC...)
+		a.cxxfiles = append(a.cxxfiles, outCXX...)
 	}
 
 	// Run cgo.
@@ -1529,8 +1540,8 @@ func (b *builder) build(a *action) (err error) {
 		// cgo and non-cgo worlds, so it necessarily has files in both.
 		// In that case gcc only gets the gcc_* files.
 		var gccfiles []string
-		gccfiles = append(gccfiles, cfiles...)
-		cfiles = nil
+		gccfiles = append(gccfiles, a.cfiles...)
+		a.cfiles = nil
 		if a.p.Standard && a.p.ImportPath == "runtime/cgo" {
 			filter := func(files, nongcc, gcc []string) ([]string, []string) {
 				for _, f := range files {
@@ -1542,10 +1553,10 @@ func (b *builder) build(a *action) (err error) {
 				}
 				return nongcc, gcc
 			}
-			sfiles, gccfiles = filter(sfiles, sfiles[:0], gccfiles)
+			a.sfiles, gccfiles = filter(a.sfiles, a.sfiles[:0], gccfiles)
 		} else {
-			gccfiles = append(gccfiles, sfiles...)
-			sfiles = nil
+			gccfiles = append(gccfiles, a.sfiles...)
+			a.sfiles = nil
 		}
 
 		cgoExe := tool("cgo")
@@ -1553,25 +1564,25 @@ func (b *builder) build(a *action) (err error) {
 			cgoExe = a.cgo.target
 		}
 		t := b.trace("cgo", a.p.ImportPath)
-		outGo, outObj, err := b.cgo(a.p, cgoExe, obj, pcCFLAGS, pcLDFLAGS, cgofiles, gccfiles, cxxfiles, a.p.MFiles, a.p.FFiles)
+		outGo, outObj, err := b.cgo(a.p, cgoExe, obj, a.pcCFLAGS, a.pcLDFLAGS, a.cgofiles, gccfiles, a.cxxfiles, a.p.MFiles, a.p.FFiles)
 		t.done()
 		if err != nil {
 			return err
 		}
 		if _, ok := buildToolchain.(gccgoToolchain); ok {
-			cgoObjects = append(cgoObjects, filepath.Join(a.objdir, "_cgo_flags"))
+			a.cgoObjects = append(a.cgoObjects, filepath.Join(a.objdir, "_cgo_flags"))
 		}
-		cgoObjects = append(cgoObjects, outObj...)
-		gofiles = append(gofiles, outGo...)
+		a.cgoObjects = append(a.cgoObjects, outObj...)
+		a.gofiles = append(a.gofiles, outGo...)
 	}
 
-	if len(gofiles) == 0 {
+	if len(a.gofiles) == 0 {
 		return &build.NoGoError{Dir: a.p.Dir}
 	}
 
 	// If we're doing coverage, preprocess the .go files and put them in the work directory
 	if a.p.coverMode != "" {
-		for i, file := range gofiles {
+		for i, file := range a.gofiles {
 			var sourceFile string
 			var coverFile string
 			var key string
@@ -1597,7 +1608,7 @@ func (b *builder) build(a *action) (err error) {
 			if err != nil {
 				return err
 			}
-			gofiles[i] = coverFile
+			a.gofiles[i] = coverFile
 		}
 	}
 
@@ -1606,7 +1617,7 @@ func (b *builder) build(a *action) (err error) {
 
 	// Compile Go.
 	t := b.trace("compile", a.p.ImportPath)
-	ofile, out, err := buildToolchain.gc(b, a.p, a.objpkg, obj, len(sfiles) > 0, inc, gofiles)
+	ofile, out, err := buildToolchain.gc(b, a.p, a.objpkg, obj, len(a.sfiles) > 0, inc, a.gofiles)
 	t.done()
 	if len(out) > 0 {
 		b.showOutput(a.p.Dir, a.p.ImportPath, b.processOutput(out))
@@ -1618,7 +1629,7 @@ func (b *builder) build(a *action) (err error) {
 		return err
 	}
 	if ofile != a.objpkg {
-		objects = append(objects, ofile)
+		a.objects = append(a.objects, ofile)
 	}
 
 	// Copy .h files named for goos or goarch or goos_goarch
@@ -1648,7 +1659,7 @@ func (b *builder) build(a *action) (err error) {
 		}
 	}
 
-	for _, file := range cfiles {
+	for _, file := range a.cfiles {
 		out := file[:len(file)-len(".c")] + ".o"
 		t := b.trace("cc", a.p.ImportPath)
 		err := buildToolchain.cc(b, a.p, obj, obj+out, file)
@@ -1656,11 +1667,11 @@ func (b *builder) build(a *action) (err error) {
 		if err != nil {
 			return err
 		}
-		objects = append(objects, out)
+		a.objects = append(a.objects, out)
 	}
 
 	// Assemble .s files.
-	for _, file := range sfiles {
+	for _, file := range a.sfiles {
 		out := file[:len(file)-len(".s")] + ".o"
 		t := b.trace("asm", a.p.ImportPath)
 		err := buildToolchain.asm(b, a.p, obj, obj+out, file)
@@ -1668,18 +1679,18 @@ func (b *builder) build(a *action) (err error) {
 		if err != nil {
 			return err
 		}
-		objects = append(objects, out)
+		a.objects = append(a.objects, out)
 	}
 
 	// NOTE(rsc): On Windows, it is critically important that the
 	// gcc-compiled objects (cgoObjects) be listed after the ordinary
 	// objects in the archive. I do not know why this is.
 	// https://golang.org/issue/2601
-	objects = append(objects, cgoObjects...)
+	a.objects = append(a.objects, a.cgoObjects...)
 
 	// Add system object files.
 	for _, syso := range a.p.SysoFiles {
-		objects = append(objects, filepath.Join(a.p.Dir, syso))
+		a.objects = append(a.objects, filepath.Join(a.p.Dir, syso))
 	}
 
 	// Pack into archive in obj directory.
@@ -1687,9 +1698,9 @@ func (b *builder) build(a *action) (err error) {
 	// object files for non-Go sources to the archive.
 	// If the Go compiler wrote an archive and the package is entirely
 	// Go sources, there is no pack to execute at all.
-	if len(objects) > 0 {
+	if len(a.objects) > 0 {
 		t := b.trace("pack", a.p.ImportPath)
-		err := buildToolchain.pack(b, a.p, obj, a.objpkg, objects)
+		err := buildToolchain.pack(b, a.p, obj, a.objpkg, a.objects)
 		t.done()
 		if err != nil {
 			return err
@@ -1703,7 +1714,7 @@ func (b *builder) build(a *action) (err error) {
 		all := actionList(a)
 		all = all[:len(all)-1] // drop a
 		t := b.trace("link", a.p.ImportPath)
-		err := buildToolchain.ld(b, a, a.target, all, a.objpkg, objects)
+		err := buildToolchain.ld(b, a, a.target, all, a.objpkg, a.objects)
 		t.done()
 		if err != nil {
 			return err
