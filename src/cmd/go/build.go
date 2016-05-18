@@ -1488,6 +1488,13 @@ func (b *builder) prepareBuild(a *action) (err error) {
 		}
 	}
 
+	// copy file lists to allow modification
+	a.gofiles = append(a.gofiles, a.p.GoFiles...)
+	a.cgofiles = append(a.cgofiles, a.p.CgoFiles...)
+	a.cfiles = append(a.cfiles, a.p.CFiles...)
+	a.sfiles = append(a.sfiles, a.p.SFiles...)
+	a.cxxfiles = append(a.cxxfiles, a.p.CXXFiles...)
+
 	return nil
 }
 
@@ -1585,14 +1592,6 @@ func (b *builder) build(a *action) (err error) {
 		}
 	}()
 
-	obj := a.objdir
-
-	a.gofiles = append(a.gofiles, a.p.GoFiles...)
-	a.cgofiles = append(a.cgofiles, a.p.CgoFiles...)
-	a.cfiles = append(a.cfiles, a.p.CFiles...)
-	a.sfiles = append(a.sfiles, a.p.SFiles...)
-	a.cxxfiles = append(a.cxxfiles, a.p.CXXFiles...)
-
 	err = b.cgoBuild(a)
 	if err != nil {
 		return err
@@ -1612,11 +1611,11 @@ func (b *builder) build(a *action) (err error) {
 				// cgo files have absolute paths
 				base := filepath.Base(file)
 				sourceFile = file
-				coverFile = filepath.Join(obj, base)
+				coverFile = filepath.Join(a.objdir, base)
 				key = strings.TrimSuffix(base, ".cgo1.go") + ".go"
 			} else {
 				sourceFile = filepath.Join(a.p.Dir, file)
-				coverFile = filepath.Join(obj, file)
+				coverFile = filepath.Join(a.objdir, file)
 				key = file
 			}
 			cover := a.p.coverVars[key]
@@ -1639,7 +1638,7 @@ func (b *builder) build(a *action) (err error) {
 
 	// Compile Go.
 	t := b.trace("compile", a.p.ImportPath)
-	ofile, out, err := buildToolchain.gc(b, a.p, a.objpkg, obj, len(a.sfiles) > 0, inc, a.gofiles)
+	ofile, out, err := buildToolchain.gc(b, a.p, a.objpkg, a.objdir, len(a.sfiles) > 0, inc, a.gofiles)
 	t.done()
 	if len(out) > 0 {
 		b.showOutput(a.p.Dir, a.p.ImportPath, b.processOutput(out))
@@ -1665,17 +1664,17 @@ func (b *builder) build(a *action) (err error) {
 		switch {
 		case strings.HasSuffix(name, _goos_goarch):
 			targ := file[:len(name)-len(_goos_goarch)] + "_GOOS_GOARCH." + ext
-			if err := b.copyFile(a, obj+targ, filepath.Join(a.p.Dir, file), 0666, true); err != nil {
+			if err := b.copyFile(a, a.objdir+targ, filepath.Join(a.p.Dir, file), 0666, true); err != nil {
 				return err
 			}
 		case strings.HasSuffix(name, _goarch):
 			targ := file[:len(name)-len(_goarch)] + "_GOARCH." + ext
-			if err := b.copyFile(a, obj+targ, filepath.Join(a.p.Dir, file), 0666, true); err != nil {
+			if err := b.copyFile(a, a.objdir+targ, filepath.Join(a.p.Dir, file), 0666, true); err != nil {
 				return err
 			}
 		case strings.HasSuffix(name, _goos):
 			targ := file[:len(name)-len(_goos)] + "_GOOS." + ext
-			if err := b.copyFile(a, obj+targ, filepath.Join(a.p.Dir, file), 0666, true); err != nil {
+			if err := b.copyFile(a, a.objdir+targ, filepath.Join(a.p.Dir, file), 0666, true); err != nil {
 				return err
 			}
 		}
@@ -1684,7 +1683,7 @@ func (b *builder) build(a *action) (err error) {
 	for _, file := range a.cfiles {
 		out := file[:len(file)-len(".c")] + ".o"
 		t := b.trace("cc", a.p.ImportPath)
-		err := buildToolchain.cc(b, a.p, obj, obj+out, file)
+		err := buildToolchain.cc(b, a.p, a.objdir, a.objdir+out, file)
 		t.done()
 		if err != nil {
 			return err
@@ -1695,7 +1694,7 @@ func (b *builder) build(a *action) (err error) {
 	// Assemble .s files.
 	if len(a.sfiles) > 0 {
 		t := b.trace("asm", a.p.ImportPath)
-		ofiles, err := buildToolchain.asm(b, a.p, obj, sfiles)
+		ofiles, err := buildToolchain.asm(b, a.p, a.objdir, sfiles)
 		t.done()
 		if err != nil {
 			return err
@@ -1721,7 +1720,7 @@ func (b *builder) build(a *action) (err error) {
 	// Go sources, there is no pack to execute at all.
 	if len(a.objects) > 0 {
 		t := b.trace("pack", a.p.ImportPath)
-		err := buildToolchain.pack(b, a.p, obj, a.objpkg, a.objects)
+		err := buildToolchain.pack(b, a.p, a.objdir, a.objpkg, a.objects)
 		t.done()
 		if err != nil {
 			return err
