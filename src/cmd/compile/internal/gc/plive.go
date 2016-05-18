@@ -951,6 +951,53 @@ func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 	}
 }
 
+func onebitwalktype(t *Type, xoffset int) (int, bvec) {
+	w := t.Size()
+	bv := bvalloc(w / Widthptr)
+
+	switch t.Etype {
+	case TINT8, TUINT8, TINT16, TUINT16, TINT32, TUINT32, TINT64, TUINT64, TINT, TUINT, TUINTPTR,
+		TBOOL, TFLOAT32, TFLOAT64, TCOMPLEX64, TCOMPLEX128:
+		// no pointers
+		xoffset += w
+
+	case TPTR32, TPTR64, TUNSAFEPTR, TFUNC, TCHAN, TMAP, TSTRING, TSLICE, TINTER:
+		// simple, fixed structures with pointers
+		if xoffset&(Widthptr-1) != 0 {
+			Fatalf("onebitwalktype: invalid alignment, %v", t)
+		}
+		// all have pointers in first word
+		bvset(bv, int32(xoffset/Widthptr))
+		// TINTER also has pointer in second word
+		if t.Etype == TINTER {
+			bvset(bv, int32(xoffset/Widthptr+1))
+		}
+		xoffset += w
+
+	case TARRAY:
+		elem := t.Elem()
+		elemsize := elem.Size()
+		for i := int64(0); i < t.NumElem(); i++ {
+			onebitwalktype1(t.Elem(), xoffset, bv)
+			xoffset += elemsize
+		}
+
+	case TSTRUCT:
+		var o int64
+		for _, t1 := range t.Fields().Slice() {
+			fieldoffset := t1.Offset
+			*xoffset += fieldoffset - o
+			onebitwalktype1(t1.Type, xoffset, bv)
+			o = fieldoffset + t1.Type.Width
+		}
+
+		*xoffset += t.Width - o
+
+	default:
+		Fatalf("onebitwalktype1: unexpected type, %v", t)
+	}
+}
+
 // Returns the number of words of local variables.
 func localswords() int32 {
 	return int32(stkptrsize / int64(Widthptr))
