@@ -114,6 +114,7 @@ import (
 	"log"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // The Go and C compilers, and the assembler, call writeobj to write
@@ -310,6 +311,11 @@ func (w *objWriter) writeRefs(s *LSym) {
 
 func (w *objWriter) writeSymDebug(s *LSym) {
 	ctxt := w.ctxt
+	if s.Type != STEXT {
+		return
+	}
+	fmt.Fprintf(ctxt.Bso, "STACK %s.%s %d\n", ctxt.Pathname, strings.TrimPrefix(s.Name, `"".`), s.Locals)
+	return
 	fmt.Fprintf(ctxt.Bso, "%s ", s.Name)
 	if s.Version != 0 {
 		fmt.Fprintf(ctxt.Bso, "v=%d ", s.Version)
