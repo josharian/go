@@ -159,7 +159,7 @@ func (s *stackAllocState) stackalloc() {
 	// TODO: share slots among equivalent types. We would need to
 	// only share among types with the same GC signature. See the
 	// type.Equal calls below for where this matters.
-	locations := map[Type][]LocalSlot{}
+	locations := map[string][]LocalSlot{}
 
 	// Each time we assign a stack slot to a value v, we remember
 	// the slot we used via an index into locations[v.Type].
@@ -201,7 +201,7 @@ func (s *stackAllocState) stackalloc() {
 			} else {
 				name = names[v.ID]
 			}
-			if name.N != nil && v.Type.Compare(name.Type) == CMPeq {
+			if name.N != nil && v.Type.GCSignature() == name.Type.GCSignature() {
 				for _, id := range s.interfere[v.ID] {
 					h := f.getHome(id)
 					if h != nil && h.(LocalSlot).N == name.N && h.(LocalSlot).Off == name.Off {
@@ -221,7 +221,7 @@ func (s *stackAllocState) stackalloc() {
 
 		noname:
 			// Set of stack slots we could reuse.
-			locs := locations[v.Type]
+			locs := locations[v.Type.GCSignature()]
 			// Mark all positions in locs used by interfering values.
 			for i := 0; i < len(locs); i++ {
 				used[i] = false
@@ -244,7 +244,7 @@ func (s *stackAllocState) stackalloc() {
 			if i == len(locs) {
 				s.nAuto++
 				locs = append(locs, LocalSlot{N: f.Config.fe.Auto(v.Type), Type: v.Type, Off: 0})
-				locations[v.Type] = locs
+				locations[v.Type.GCSignature()] = locs
 			}
 			// Use the stack variable at that index for v.
 			loc := locs[i]
@@ -373,7 +373,7 @@ func (s *stackAllocState) buildInterferenceGraph() {
 			if s.values[v.ID].needSlot {
 				live.remove(v.ID)
 				for _, id := range live.contents() {
-					if s.values[v.ID].typ.Compare(s.values[id].typ) == CMPeq {
+					if s.values[v.ID].typ.GCSignature() == s.values[id].typ.GCSignature() {
 						s.interfere[v.ID] = append(s.interfere[v.ID], id)
 						s.interfere[id] = append(s.interfere[id], v.ID)
 					}

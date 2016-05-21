@@ -11,6 +11,7 @@ package ssa
 type Type interface {
 	Size() int64 // return the size in bytes
 	Alignment() int64
+	GCSignature() string
 
 	IsBoolean() bool // is a named or unnamed boolean type
 	IsInteger() bool //  ... ditto for the others
@@ -56,6 +57,7 @@ type CompilerType struct {
 
 func (t *CompilerType) Size() int64            { return t.size } // Size in bytes
 func (t *CompilerType) Alignment() int64       { return 0 }
+func (t *CompilerType) GCSignature() string    { panic("unused") }
 func (t *CompilerType) IsBoolean() bool        { return false }
 func (t *CompilerType) IsInteger() bool        { return false }
 func (t *CompilerType) IsSigned() bool         { return false }
@@ -88,6 +90,7 @@ type TupleType struct {
 
 func (t *TupleType) Size() int64            { panic("not implemented") }
 func (t *TupleType) Alignment() int64       { panic("not implemented") }
+func (t *TupleType) GCSignature() string    { panic("unused") }
 func (t *TupleType) IsBoolean() bool        { return false }
 func (t *TupleType) IsInteger() bool        { return false }
 func (t *TupleType) IsSigned() bool         { return false }

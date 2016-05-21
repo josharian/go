@@ -855,6 +855,13 @@ func (t *Type) Size() int64 {
 	return t.Width
 }
 
+func (t *Type) GCSignature() string {
+	var xoffset int64
+	bv := bvalloc(int32((t.Size() + int64(Widthptr)/int64(Widthptr))))
+	onebitwalktype1(t, &xoffset, bv)
+	return bv.String()
+}
+
 func (t *Type) Alignment() int64 {
 	dowidth(t)
 	return int64(t.Align)

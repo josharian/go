@@ -138,11 +138,20 @@ func bvand(dst bvec, src1 bvec, src2 bvec) {
 	}
 }
 
-func bvprint(bv bvec) {
-	fmt.Printf("#*")
+func (bv bvec) String() string {
+	buf := make([]byte, bv.n)
 	for i := int32(0); i < bv.n; i++ {
-		fmt.Printf("%d", bvget(bv, i))
+		if bvget(bv, i) == 0 {
+			buf[i] = '0'
+		} else {
+			buf[i] = '1'
+		}
 	}
+	return string(buf)
+}
+
+func bvprint(bv bvec) {
+	fmt.Printf("#*%s", bv)
 }
 
 func bvresetall(bv bvec) {
