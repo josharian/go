@@ -49,7 +49,10 @@ type typeSwitch struct {
 
 // A caseClause is a single case clause in a switch statement.
 type caseClause struct {
-	node    *Node  // points at case statement
+	val *Node // case expression -- TODO: rename to expr
+	jmp *Node // jump target for case body
+	line int32 // line number
+	setline bool // should we set this line number
 	ordinal int    // position in switch
 	hash    uint32 // hash of a type switch
 	typ     uint8  // type of case
@@ -249,7 +252,7 @@ func (s *exprSwitch) walk(sw *Node) {
 	sw.List.Set(nil)
 	var def *Node
 	if len(cc) > 0 && cc[0].typ == caseKindDefault {
-		def = cc[0].node.Right
+		def = cc[0].jmp
 		cc = cc[1:]
 	} else {
 		def = Nod(OBREAK, nil, nil)
@@ -291,21 +294,23 @@ func (s *exprSwitch) walkCases(cc []*caseClause) *Node {
 		// linear search
 		var cas []*Node
 		for _, c := range cc {
-			n := c.node
-			lno := setlineno(n)
+			lno := lineno
+			if c.setline {
+				lineno = c.line
+			}
 
 			a := Nod(OIF, nil, nil)
-			if (s.kind != switchKindTrue && s.kind != switchKindFalse) || assignop(n.Left.Type, s.exprname.Type, nil) == OCONVIFACE || assignop(s.exprname.Type, n.Left.Type, nil) == OCONVIFACE {
-				a.Left = Nod(OEQ, s.exprname, n.Left) // if name == val
+			if (s.kind != switchKindTrue && s.kind != switchKindFalse) || assignop(c.val.Type, s.exprname.Type, nil) == OCONVIFACE || assignop(s.exprname.Type, c.val.Type, nil) == OCONVIFACE {
+				a.Left = Nod(OEQ, s.exprname, c.val) // if name == val
 				a.Left = typecheck(a.Left, Erv)
 			} else if s.kind == switchKindTrue {
-				a.Left = n.Left // if val
+				a.Left = c.val // if val
 			} else {
 				// s.kind == switchKindFalse
-				a.Left = Nod(ONOT, n.Left, nil) // if !val
+				a.Left = Nod(ONOT, c.val, nil) // if !val
 				a.Left = typecheck(a.Left, Erv)
 			}
-			a.Nbody.Set1(n.Right) // goto l
+			a.Nbody.Set1(c.jmp) // goto l
 
 			cas = append(cas, a)
 			lineno = lno
@@ -316,7 +321,7 @@ func (s *exprSwitch) walkCases(cc []*caseClause) *Node {
 	// find the middle and recur
 	half := len(cc) / 2
 	a := Nod(OIF, nil, nil)
-	mid := cc[half-1].node.Left
+	mid := cc[half-1].val
 	le := Nod(OLE, s.exprname, mid)
 	if Isconst(mid, CTSTR) {
 		// Search by length and then by value; see exprcmp.
@@ -334,7 +339,10 @@ func (s *exprSwitch) walkCases(cc []*caseClause) *Node {
 
 // A swtcase is a single case statement in a switch statement.
 type swtcase struct {
-	n *Node
+	val *Node
+	jmp *Node
+	line int32
+	setline bool
 }
 
 // casebody builds separate lists of statements and cases.
@@ -350,7 +358,7 @@ func casebody(sw *Node, typeswvar *Node) []swtcase {
 
 	var cas []swtcase  // cases
 	var stat []*Node // statements
-	var def *Node    // defaults
+	var def swtcase    // default
 	br := Nod(OBREAK, nil, nil)
 
 	for i, n := range sw.List.Slice() {
@@ -362,25 +370,16 @@ func casebody(sw *Node, typeswvar *Node) []swtcase {
 		needvar := n.List.Len() != 1 || n.List.First().Op == OLITERAL
 
 		jmp := Nod(OGOTO, newCaseLabel(), nil)
-		switch n.List.Len() {
-		case 0:
+		if n.List.Len() == 0 {
 			// default
-			if def != nil {
+			if def.jmp != nil {
 				Yyerror("more than one default case")
 			}
-			// reuse original default case
-			n.Right = jmp
-			def = n
-		case 1:
-			// one case -- reuse OCASE node
-			n.Left = n.List.First()
-			n.Right = jmp
-			n.List.Set(nil)
-			cas = append(cas, swtcase{n})
-		default:
+			def = swtcase{val: n.Left, jmp: jmp, line: n.Lineno}
+		} else {
 			// expand multi-valued cases
 			for _, n1 := range n.List.Slice() {
-				cas = append(cas, swtcase{Nod(OCASE, n1, jmp)})
+				cas = append(cas, swtcase{val: n1, jmp: jmp, line: n1.Lineno})
 			}
 		}
 
@@ -415,10 +414,11 @@ func casebody(sw *Node, typeswvar *Node) []swtcase {
 	}
 
 	stat = append(stat, br)
-	if def != nil {
-		cas = append(cas, swtcase{def})
+	if def.jmp != nil {
+		cas = append(cas, def)
 	}
 
+	sw.List.Set(nil)
 	sw.Nbody.Set(stat)
 	lineno = lno
 	return cas
@@ -440,13 +440,15 @@ func newCaseLabel() *Node {
 func caseClauses(sw *Node, cases []swtcase, kind int) []*caseClause {
 	var cc []*caseClause
 	for _, cas := range cases {
-		n := cas.n
 		c := new(caseClause)
 		cc = append(cc, c)
 		c.ordinal = len(cc)
-		c.node = n
+		c.val = cas.val
+		c.jmp = cas.jmp
+		c.line = cas.line
+		c.setline = cas.setline
 
-		if n.Left == nil {
+		if c.val == nil {
 			c.typ = caseKindDefault
 			continue
 		}
@@ -454,17 +456,17 @@ func caseClauses(sw *Node, cases []swtcase, kind int) []*caseClause {
 		if kind == switchKindType {
 			// type switch
 			switch {
-			case n.Left.Op == OLITERAL:
+			case c.val.Op == OLITERAL:
 				c.typ = caseKindTypeNil
-			case n.Left.Type.IsInterface():
+			case c.val.Type.IsInterface():
 				c.typ = caseKindTypeVar
 			default:
 				c.typ = caseKindTypeConst
-				c.hash = typehash(n.Left.Type)
+				c.hash = typehash(c.val.Type)
 			}
 		} else {
 			// expression switch
-			switch consttype(n.Left) {
+			switch consttype(c.val) {
 			case CTFLT, CTINT, CTRUNE, CTSTR:
 				c.typ = caseKindExprConst
 			default:
@@ -489,8 +491,8 @@ func caseClauses(sw *Node, cases []swtcase, kind int) []*caseClause {
 				if c2.typ == caseKindTypeNil || c2.typ == caseKindDefault || c1.hash != c2.hash {
 					break
 				}
-				if Eqtype(c1.node.Left.Type, c2.node.Left.Type) {
-					yyerrorl(c2.node.Lineno, "duplicate case %v in type switch\n\tprevious case at %v", c2.node.Left.Type, c1.node.Line())
+				if Eqtype(c1.val.Type, c2.val.Type) {
+					yyerrorl(c2.line, "duplicate case %v in type switch\n\tprevious case at %v", c2.val.Type, Ctxt.LineHist.LineString(int(c1.line)))
 				}
 			}
 		}
@@ -505,8 +507,7 @@ func caseClauses(sw *Node, cases []swtcase, kind int) []*caseClause {
 			if exprcmp(c1, c2) != 0 {
 				continue
 			}
-			setlineno(c2.node)
-			Yyerror("duplicate case %v in switch\n\tprevious case at %v", c1.node.Left, c1.node.Line())
+			yyerrorl(c2.line, "duplicate case %v in switch\n\tprevious case at %v", c1.val, Ctxt.LineHist.LineString(int(c1.line)))
 		}
 	}
 
@@ -562,14 +563,14 @@ func (s *typeSwitch) walk(sw *Node) {
 	sw.List.Set(nil)
 	var def *Node
 	if len(cc) > 0 && cc[0].typ == caseKindDefault {
-		def = cc[0].node.Right
+		def = cc[0].jmp
 		cc = cc[1:]
 	} else {
 		def = Nod(OBREAK, nil, nil)
 	}
 	var typenil *Node
 	if len(cc) > 0 && cc[0].typ == caseKindTypeNil {
-		typenil = cc[0].node.Right
+		typenil = cc[0].jmp
 		cc = cc[1:]
 	}
 
@@ -621,10 +622,9 @@ func (s *typeSwitch) walk(sw *Node) {
 
 	// insert type equality check into each case block
 	for _, c := range cc {
-		n := c.node
 		switch c.typ {
 		case caseKindTypeVar, caseKindTypeConst:
-			n.Right = s.typeone(n)
+			c.jmp = s.typeone(n)
 		default:
 			Fatalf("typeSwitch with bad kind: %d", c.typ)
 		}
