@@ -212,7 +212,7 @@ func walkswitch(sw *Node) {
 // search using if..goto, although binary search
 // is used with long runs of constants.
 func (s *exprSwitch) walk(sw *Node) {
-	casebody(sw, nil)
+	cases := casebody(sw, nil)
 
 	cond := sw.Left
 	sw.Left = nil
@@ -245,7 +245,7 @@ func (s *exprSwitch) walk(sw *Node) {
 	}
 
 	// enumerate the cases, and lop off the default case
-	cc := caseClauses(sw, s.kind)
+	cc := caseClauses(sw, cases, s.kind)
 	sw.List.Set(nil)
 	var def *Node
 	if len(cc) > 0 && cc[0].typ == caseKindDefault {
@@ -332,17 +332,23 @@ func (s *exprSwitch) walkCases(cc []*caseClause) *Node {
 	return a
 }
 
+// A swtcase is a single case statement in a switch statement.
+type swtcase struct {
+	n *Node
+}
+
 // casebody builds separate lists of statements and cases.
 // It makes labels between cases and statements
 // and deals with fallthrough, break, and unreachable statements.
-func casebody(sw *Node, typeswvar *Node) {
+// It returns the cases in sw.
+func casebody(sw *Node, typeswvar *Node) []swtcase {
 	if sw.List.Len() == 0 {
-		return
+		return nil
 	}
 
 	lno := setlineno(sw)
 
-	var cas []*Node  // cases
+	var cas []swtcase  // cases
 	var stat []*Node // statements
 	var def *Node    // defaults
 	br := Nod(OBREAK, nil, nil)
@@ -370,11 +376,11 @@ func casebody(sw *Node, typeswvar *Node) {
 			n.Left = n.List.First()
 			n.Right = jmp
 			n.List.Set(nil)
-			cas = append(cas, n)
+			cas = append(cas, swtcase{n})
 		default:
 			// expand multi-valued cases
 			for _, n1 := range n.List.Slice() {
-				cas = append(cas, Nod(OCASE, n1, jmp))
+				cas = append(cas, swtcase{Nod(OCASE, n1, jmp)})
 			}
 		}
 
@@ -410,12 +416,12 @@ func casebody(sw *Node, typeswvar *Node) {
 
 	stat = append(stat, br)
 	if def != nil {
-		cas = append(cas, def)
+		cas = append(cas, swtcase{def})
 	}
 
-	sw.List.Set(cas)
 	sw.Nbody.Set(stat)
 	lineno = lno
+	return cas
 }
 
 // nSwitchLabel is the number of switch labels generated.
@@ -431,9 +437,10 @@ func newCaseLabel() *Node {
 // caseClauses generates a slice of caseClauses
 // corresponding to the clauses in the switch statement sw.
 // Kind is the kind of switch statement.
-func caseClauses(sw *Node, kind int) []*caseClause {
+func caseClauses(sw *Node, cases []swtcase, kind int) []*caseClause {
 	var cc []*caseClause
-	for _, n := range sw.List.Slice() {
+	for _, cas := range cases {
+		n := cas.n
 		c := new(caseClause)
 		cc = append(cc, c)
 		c.ordinal = len(cc)
@@ -549,9 +556,9 @@ func (s *typeSwitch) walk(sw *Node) {
 	s.hashname = typecheck(s.hashname, Erv)
 
 	// set up labels and jumps
-	casebody(sw, s.facename)
+	cases := casebody(sw, s.facename)
 
-	cc := caseClauses(sw, switchKindType)
+	cc := caseClauses(sw, cases, switchKindType)
 	sw.List.Set(nil)
 	var def *Node
 	if len(cc) > 0 && cc[0].typ == caseKindDefault {
