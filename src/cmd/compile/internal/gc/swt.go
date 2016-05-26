@@ -5,6 +5,8 @@
 package gc
 
 import (
+	"fmt"
+	"os"
 	"sort"
 	"strconv"
 )
@@ -270,6 +272,13 @@ func (s *exprSwitch) walk(sw *Node) {
 		for run = 1; run < len(cc) && cc[run].typ == caseKindExprConst; run++ {
 		}
 
+		if os.Getenv("J") != "" {
+			// fmt.Println("RUN")
+			// for _, c := range cc[:run] {
+			// 	fmt.Printf("\tn.left=%v ord=%d\n", c.node.Left, c.ordinal)
+			// }
+		}
+
 		// sort and compile constants
 		sort.Sort(caseClauseByExpr(cc[:run]))
 		a := s.walkCases(cc[:run])
@@ -379,8 +388,31 @@ func casebody(sw *Node, typeswvar *Node) []swtcase {
 			cas = append(cas, swtcase{n})
 		default:
 			// expand multi-valued cases
+			// expand multi-valued cases
+			var tog []int64
 			for _, n1 := range n.List.Slice() {
+				if Isconst(n1, CTINT) {
+					tog = append(tog, n1.Int64())
+				}
 				cas = append(cas, swtcase{Nod(OCASE, n1, jmp)})
+			}
+			sort.Sort(int64s(tog))
+			if os.Getenv("J")!="" && len(tog)>0 {
+				base := tog[0]
+				for i := range tog {
+					tog[i] = tog[i]-base
+				}
+				var ranges [][2]int64 // [0] is low, [1] is high
+				ranges = append(ranges, [2]int64{tog[0], tog[0]})
+				for _, x := range tog[1:] {
+					last := ranges[len(ranges)-1]
+					if x == last[1]+1 {
+						ranges[len(ranges)-1] = [2]int64{last[0], x}
+					} else {
+						ranges = append(ranges, [2]int64{x, x})						
+					}
+				}
+				fmt.Println("TOGETHER base=", base, "normed=", tog, "ranges=", ranges)
 			}
 		}
 
@@ -852,3 +884,11 @@ func (x caseClauseByType) Less(i, j int) bool {
 	// sort by ordinal
 	return c1.ordinal < c2.ordinal
 }
+
+type int64s []int64
+
+func (x int64s) Len() int      { return len(x) }
+func (x int64s) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
+func (x int64s) Less(i, j int) bool { return x[i]<x[j]}
+
+
