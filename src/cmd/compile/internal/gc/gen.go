@@ -209,6 +209,9 @@ func newlab(n *Node) *Label {
 		lab = new(Label)
 		lab.Sym = s
 		s.Label = lab
+		if n.Used {
+			lab.Used = true
+		}
 		labellist = append(labellist, lab)
 	}
 
