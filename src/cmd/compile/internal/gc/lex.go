@@ -195,6 +195,8 @@ var lexn = map[rune]string{
 	// LIGNORE is never escaping lexer.next
 }
 
+var globalineno int32 = 5
+
 func lexname(lex rune) string {
 	if s, ok := lexn[lex]; ok {
 		return s
@@ -217,7 +219,8 @@ l0:
 			}
 			// Insert implicit semicolon on previous line,
 			// before the newline character.
-			lineno = lexlineno - 1
+			lineno = globalineno
+			globalineno++
 			l.tok = ';'
 			return
 		}
@@ -225,7 +228,8 @@ l0:
 	}
 
 	// start of token
-	lineno = lexlineno
+	lineno = globalineno
+	globalineno++
 
 	// identifiers and keywords
 	// (for better error messages consume all chars >= utf8.RuneSelf for identifiers)
