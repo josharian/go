@@ -23,6 +23,7 @@ type Type interface {
 	IsArray() bool
 	IsStruct() bool
 	IsInterface() bool
+	IsBytePtr() bool
 
 	IsMemory() bool // special ssa-package-only types
 	IsFlags() bool
@@ -62,6 +63,7 @@ func (t *CompilerType) IsFloat() bool          { return false }
 func (t *CompilerType) IsComplex() bool        { return false }
 func (t *CompilerType) IsPtrShaped() bool      { return false }
 func (t *CompilerType) IsString() bool         { return false }
+func (t *CompilerType) IsBytePtr() bool        { return false }
 func (t *CompilerType) IsSlice() bool          { return false }
 func (t *CompilerType) IsArray() bool          { return false }
 func (t *CompilerType) IsStruct() bool         { return false }

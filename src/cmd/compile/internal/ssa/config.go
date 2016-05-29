@@ -46,6 +46,8 @@ type Config struct {
 	scrSparse     []*sparseSet // scratch sparse sets to be re-used.
 }
 
+// A TypeSource creates Types.
+// The Type* methods must return identical Types on every call.
 type TypeSource interface {
 	TypeBool() Type
 	TypeInt8() Type

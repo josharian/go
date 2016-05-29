@@ -1125,6 +1125,10 @@ func (t *Type) IsString() bool {
 	return t.Etype == TSTRING
 }
 
+func (t *Type) IsBytePtr() bool {
+	return t.IsPtr() && t.Elem() != nil && t.Elem().Etype == TUINT8
+}
+
 func (t *Type) IsMap() bool {
 	return t.Etype == TMAP
 }

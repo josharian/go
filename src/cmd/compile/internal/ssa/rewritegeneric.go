@@ -3659,7 +3659,7 @@ func rewriteValuegeneric_OpLoad(v *Value, config *Config) bool {
 	b := v.Block
 	_ = b
 	// match: (Load <t1> p1 (Store [w] p2 x _))
-	// cond: isSamePtr(p1,p2) && t1.Compare(x.Type)==CMPeq && w == t1.Size()
+	// cond: isSamePtr(p1,p2) && t1 == x.Type && w == t1.Size()
 	// result: x
 	for {
 		t1 := v.Type
@@ -3671,7 +3671,7 @@ func rewriteValuegeneric_OpLoad(v *Value, config *Config) bool {
 		w := v_1.AuxInt
 		p2 := v_1.Args[0]
 		x := v_1.Args[1]
-		if !(isSamePtr(p1, p2) && t1.Compare(x.Type) == CMPeq && w == t1.Size()) {
+		if !(isSamePtr(p1, p2) && t1 == x.Type && w == t1.Size()) {
 			break
 		}
 		v.reset(OpCopy)
@@ -5848,14 +5848,14 @@ func rewriteValuegeneric_OpOffPtr(v *Value, config *Config) bool {
 		return true
 	}
 	// match: (OffPtr p [0])
-	// cond: v.Type.Compare(p.Type) == CMPeq
+	// cond: v.Type == p.Type
 	// result: p
 	for {
 		p := v.Args[0]
 		if v.AuxInt != 0 {
 			break
 		}
-		if !(v.Type.Compare(p.Type) == CMPeq) {
+		if !(v.Type == p.Type) {
 			break
 		}
 		v.reset(OpCopy)

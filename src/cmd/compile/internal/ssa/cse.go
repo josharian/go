@@ -108,7 +108,7 @@ func cse(f *Func) {
 						break
 					}
 				}
-				if !equivalent || v.Type.Compare(w.Type) != CMPeq {
+				if !equivalent || v.Type != w.Type {
 					// w is not equivalent to v.
 					// move it to the end and shrink e.
 					e[j], e[len(e)-1] = e[len(e)-1], e[j]
@@ -260,8 +260,8 @@ func cmpVal(v, w *Value, auxIDs auxmap, depth int) Cmp {
 		return lt2Cmp(v.ID < w.ID)
 	}
 
-	if tc := v.Type.Compare(w.Type); tc != CMPeq {
-		return tc
+	if v.Type != w.Type {
+		return lt2Cmp(v.ID < w.ID)
 	}
 
 	if v.Aux != w.Aux {

@@ -33,6 +33,7 @@ func (t *TypeImpl) IsFloat() bool          { return t.Float }
 func (t *TypeImpl) IsComplex() bool        { return t.Complex }
 func (t *TypeImpl) IsPtrShaped() bool      { return t.Ptr }
 func (t *TypeImpl) IsString() bool         { return t.string }
+func (t *TypeImpl) IsBytePtr() bool        { return t.Name == "*byte" }
 func (t *TypeImpl) IsSlice() bool          { return t.slice }
 func (t *TypeImpl) IsArray() bool          { return t.array }
 func (t *TypeImpl) IsStruct() bool         { return t.struct_ }

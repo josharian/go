@@ -4275,8 +4275,18 @@ func (s *ssaExport) TypeUInt32() ssa.Type  { return Types[TUINT32] }
 func (s *ssaExport) TypeUInt64() ssa.Type  { return Types[TUINT64] }
 func (s *ssaExport) TypeFloat32() ssa.Type { return Types[TFLOAT32] }
 func (s *ssaExport) TypeFloat64() ssa.Type { return Types[TFLOAT64] }
-func (s *ssaExport) TypeInt() ssa.Type     { return Types[TINT] }
-func (s *ssaExport) TypeUintptr() ssa.Type { return Types[TUINTPTR] }
+func (s *ssaExport) TypeInt() ssa.Type {
+	if Widthint == 4 {
+		return Types[TINT32]
+	}
+	return Types[TINT64]
+}
+func (s *ssaExport) TypeUintptr() ssa.Type {
+	if Widthptr == 4 {
+		return Types[TUINT32]
+	}
+	return Types[TUINT64]
+}
 func (s *ssaExport) TypeString() ssa.Type  { return Types[TSTRING] }
 func (s *ssaExport) TypeBytePtr() ssa.Type { return Ptrto(Types[TUINT8]) }
 

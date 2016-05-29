@@ -247,6 +247,7 @@ var passes = [...]pass{
 	{name: "early deadcode", fn: deadcode}, // remove generated dead code to avoid doing pointless work during opt
 	{name: "short circuit", fn: shortcircuit},
 	{name: "decompose user", fn: decomposeUser, required: true},
+	{name: "canontype", fn: canontype, required: false},  // canonicalize types
 	{name: "opt", fn: opt, required: true},               // TODO: split required rules and optimizing rules
 	{name: "zero arg cse", fn: zcse, required: true},     // required to merge OpSB values
 	{name: "opt deadcode", fn: deadcode, required: true}, // remove any blocks orphaned during opt
@@ -303,6 +304,8 @@ var passOrder = [...]constraint{
 	// nilcheckelim generates sequences of plain basic blocks
 	{"nilcheckelim", "fuse"},
 	// nilcheckelim relies on opt to rewrite user nil checks
+	// canontype must run before opt, so that opt can use == on Types
+	{"canontype", "opt"},
 	{"opt", "nilcheckelim"},
 	// tighten should happen before lowering to avoid splitting naturally paired instructions such as CMP/SET
 	{"tighten", "lower"},
@@ -325,6 +328,8 @@ var passOrder = [...]constraint{
 	{"critical", "regalloc"},
 	// regalloc requires all the values in a block to be scheduled
 	{"schedule", "regalloc"},
+	// canontype must run before stackalloc, so that stackalloc can use Types as map keys
+	{"canontype", "regalloc"},
 	// checkLower must run after lowering & subsequent dead code elim
 	{"lower", "checkLower"},
 	{"lowered deadcode", "checkLower"},
