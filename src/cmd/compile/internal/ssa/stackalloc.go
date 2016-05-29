@@ -18,7 +18,7 @@ type stackAllocState struct {
 	// The following slices are reused across multiple users
 	// of stackAllocState.
 	values    []stackValState
-	interfere [][]ID // interfere[v.id] = values that interfere with v.
+	interfere [][]*[]ID // interfere[v.id] = slice of slices of ids of values that interfere with v
 	names     []LocalSlot
 	slots     []int
 	used      []bool
@@ -201,14 +201,19 @@ func (s *stackAllocState) stackalloc() {
 			} else {
 				name = names[v.ID]
 			}
-			if name.N != nil && v.Type.Compare(name.Type) == CMPeq {
-				for _, id := range s.interfere[v.ID] {
-					h := f.getHome(id)
-					if h != nil && h.(LocalSlot).N == name.N && h.(LocalSlot).Off == name.Off {
-						// A variable can interfere with itself.
-						// It is rare, but but it can happen.
-						s.nSelfInterfere++
-						goto noname
+			if name.N != nil && v.Type == name.Type {
+				for _, ids := range s.interfere[v.ID] {
+					for _, id := range *ids {
+						if id == v.ID {
+							continue
+						}
+						h := f.getHome(id)
+						if h != nil && h.(LocalSlot).N == name.N && h.(LocalSlot).Off == name.Off {
+							// A variable can interfere with itself.
+							// It is rare, but but it can happen.
+							s.nSelfInterfere++
+							goto noname
+						}
 					}
 				}
 				if f.pass.debug > stackDebug {
@@ -226,10 +231,15 @@ func (s *stackAllocState) stackalloc() {
 			for i := 0; i < len(locs); i++ {
 				used[i] = false
 			}
-			for _, xid := range s.interfere[v.ID] {
-				slot := slots[xid]
-				if slot >= 0 {
-					used[slot] = true
+			for _, xids := range s.interfere[v.ID] {
+				for _, xid := range *xids {
+					if xid == v.ID {
+						continue
+					}
+					slot := slots[xid]
+					if slot >= 0 {
+						used[slot] = true
+					}
 				}
 			}
 			// Find an unused stack slot.
@@ -359,10 +369,11 @@ func (s *stackAllocState) buildInterferenceGraph() {
 	if n := f.NumValues(); cap(s.interfere) >= n {
 		s.interfere = s.interfere[:n]
 	} else {
-		s.interfere = make([][]ID, n)
+		s.interfere = make([][]*[]ID, n)
 	}
 	live := f.newSparseSet(f.NumValues())
 	defer f.retSparseSet(live)
+	interfereSets := make(map[Type][]ID)
 	for _, b := range f.Blocks {
 		// Propagate liveness backwards to the start of the block.
 		// Two values interfere if one is defined while the other is live.
@@ -373,9 +384,10 @@ func (s *stackAllocState) buildInterferenceGraph() {
 			if s.values[v.ID].needSlot {
 				live.remove(v.ID)
 				for _, id := range live.contents() {
-					if s.values[v.ID].typ.Compare(s.values[id].typ) == CMPeq {
-						s.interfere[v.ID] = append(s.interfere[v.ID], id)
-						s.interfere[id] = append(s.interfere[id], v.ID)
+					if t := s.values[v.ID].typ; t == s.values[id].typ {
+						interfereSets[t] = append(interfereSets[t], id, v.ID)
+						// s.interfere[v.ID] = append(s.interfere[v.ID], id)
+						// s.interfere[id] = append(s.interfere[id], v.ID)
 					}
 				}
 			}
@@ -394,15 +406,25 @@ func (s *stackAllocState) buildInterferenceGraph() {
 				live.add(v.ID)
 			}
 		}
+		for typ, ids := range interfereSets {
+			for _, id := range ids {
+				s.interfere[id] = append(s.interfere[id], &ids)
+			}
+			delete(interfereSets, typ)
+		}
 	}
 	if f.pass.debug > stackDebug {
-		for vid, i := range s.interfere {
-			if len(i) > 0 {
-				fmt.Printf("v%d interferes with", vid)
-				for _, x := range i {
-					fmt.Printf(" v%d", x)
+		for vid, ids := range s.interfere {
+			for _, i := range ids {
+				if len(*i) > 0 {
+					fmt.Printf("v%d interferes with", vid)
+					for _, x := range *i {
+						if ID(vid) != x {
+							fmt.Printf(" v%d", x)
+						}
+					}
+					fmt.Println()
 				}
-				fmt.Println()
 			}
 		}
 	}
