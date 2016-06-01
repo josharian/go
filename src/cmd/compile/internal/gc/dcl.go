@@ -7,6 +7,7 @@ package gc
 import (
 	"cmd/internal/obj"
 	"fmt"
+	"os"
 	"sort"
 	"strings"
 )
@@ -806,6 +807,17 @@ func checkdupfields(what string, ts ...*Type) {
 	lineno = lno
 }
 
+// dedupmethfields removes exact duplicate methods from t.
+func dedupmethfields(t *Type) {
+	if os.Getenv("J") == "" {
+		return
+	}
+	fmt.Println("dedupmethfields", t)
+	for i, f := range t.Fields().Slice() {
+		fmt.Printf("idx=%d sym=%v nname=%v ntype=%v\n", i, f.Sym, f.Nname, f.Type.Nname().Type)
+	}
+}
+
 // convert a parsed id/type list into
 // a type for struct/interface/arglist
 func tostruct(l []*Node) *Type {
@@ -878,6 +890,9 @@ func interfacefield(n *Node) *Field {
 			// queue resolution of method type for later.
 			// right now all we need is the name list.
 			// avoids cycles for recursive interface types.
+			// this means we can't de-dup methods yet,
+			// because we need to confirm that they have the same
+			// signature as well as the same name.
 			n.Type = typ(TINTERMETH)
 			n.Type.SetNname(n.Right)
 			n.Left.Type = n.Type
@@ -961,6 +976,7 @@ func tointerface0(t *Type, l []*Node) *Type {
 	sort.Sort(methcmp(fields))
 	t.SetFields(fields)
 
+	dedupmethfields(t)
 	checkdupfields("method", t)
 	checkwidth(t)
 

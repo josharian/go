@@ -744,6 +744,12 @@ func typefmt(t *Type, flag FmtFlag) string {
 		}
 		return fmt.Sprintf("%v <%v> %v", t.Etype, t.Sym, t.DDDField())
 
+	case TINTERMETH:
+		if fmtmode == FExp {
+			Fatalf("cannot use TINTERMETH with old exporter")
+		}
+		return fmt.Sprintf("(%v(%v))", t.Etype, t.Nname())
+
 	case Txxx:
 		return "Txxx"
 	}
