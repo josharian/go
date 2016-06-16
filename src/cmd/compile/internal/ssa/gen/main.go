@@ -75,6 +75,8 @@ func (a arch) regMaskComment(r regMask) string {
 
 var archs []arch
 
+var opidx = map[string]int{}
+
 func main() {
 	flag.Parse()
 	genOp()
@@ -123,10 +125,14 @@ func genOp() {
 	// generate Op* declarations
 	fmt.Fprintln(w, "const (")
 	fmt.Fprintln(w, "OpInvalid Op = iota")
+	idx := 1
 	for _, a := range archs {
 		fmt.Fprintln(w)
 		for _, v := range a.ops {
-			fmt.Fprintf(w, "Op%s%s\n", a.Name(), v.name)
+			opname := fmt.Sprintf("Op%s%s", a.Name(), v.name)
+			fmt.Fprintln(w, opname)
+			opidx[opname] = idx
+			idx++
 		}
 	}
 	fmt.Fprintln(w, ")")
