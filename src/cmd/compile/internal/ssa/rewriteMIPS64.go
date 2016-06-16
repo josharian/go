@@ -6,570 +6,301 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
+const rewriteTableMIPS64Min = OpMIPS64ADDV
+const rewriteTableMIPS64Max = OpSelect1
+
+var rewriteTableMIPS64 = [...]func(*Value, *Config) bool{
+	OpAdd16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpAdd16,
+	OpAdd32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpAdd32,
+	OpAdd32F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpAdd32F,
+	OpAdd64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpAdd64,
+	OpAdd64F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpAdd64F,
+	OpAdd8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpAdd8,
+	OpAddPtr - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpAddPtr,
+	OpAddr - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpAddr,
+	OpAnd16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpAnd16,
+	OpAnd32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpAnd32,
+	OpAnd64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpAnd64,
+	OpAnd8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpAnd8,
+	OpAndB - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpAndB,
+	OpAvg64u - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpAvg64u,
+	OpClosureCall - rewriteTableMIPS64Min:         rewriteValueMIPS64_OpClosureCall,
+	OpCom16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpCom16,
+	OpCom32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpCom32,
+	OpCom64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpCom64,
+	OpCom8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpCom8,
+	OpConst16 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpConst16,
+	OpConst32 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpConst32,
+	OpConst32F - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpConst32F,
+	OpConst64 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpConst64,
+	OpConst64F - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpConst64F,
+	OpConst8 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpConst8,
+	OpConstBool - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpConstBool,
+	OpConstNil - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpConstNil,
+	OpConvert - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpConvert,
+	OpCvt32Fto32 - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpCvt32Fto32,
+	OpCvt32Fto64 - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpCvt32Fto64,
+	OpCvt32Fto64F - rewriteTableMIPS64Min:         rewriteValueMIPS64_OpCvt32Fto64F,
+	OpCvt32to32F - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpCvt32to32F,
+	OpCvt32to64F - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpCvt32to64F,
+	OpCvt64Fto32 - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpCvt64Fto32,
+	OpCvt64Fto32F - rewriteTableMIPS64Min:         rewriteValueMIPS64_OpCvt64Fto32F,
+	OpCvt64Fto64 - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpCvt64Fto64,
+	OpCvt64to32F - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpCvt64to32F,
+	OpCvt64to64F - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpCvt64to64F,
+	OpDeferCall - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpDeferCall,
+	OpDiv16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpDiv16,
+	OpDiv16u - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpDiv16u,
+	OpDiv32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpDiv32,
+	OpDiv32F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpDiv32F,
+	OpDiv32u - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpDiv32u,
+	OpDiv64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpDiv64,
+	OpDiv64F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpDiv64F,
+	OpDiv64u - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpDiv64u,
+	OpDiv8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpDiv8,
+	OpDiv8u - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpDiv8u,
+	OpEq16 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpEq16,
+	OpEq32 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpEq32,
+	OpEq32F - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpEq32F,
+	OpEq64 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpEq64,
+	OpEq64F - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpEq64F,
+	OpEq8 - rewriteTableMIPS64Min:                 rewriteValueMIPS64_OpEq8,
+	OpEqB - rewriteTableMIPS64Min:                 rewriteValueMIPS64_OpEqB,
+	OpEqPtr - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpEqPtr,
+	OpGeq16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpGeq16,
+	OpGeq16U - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpGeq16U,
+	OpGeq32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpGeq32,
+	OpGeq32F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpGeq32F,
+	OpGeq32U - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpGeq32U,
+	OpGeq64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpGeq64,
+	OpGeq64F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpGeq64F,
+	OpGeq64U - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpGeq64U,
+	OpGeq8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpGeq8,
+	OpGeq8U - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpGeq8U,
+	OpGetClosurePtr - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpGetClosurePtr,
+	OpGoCall - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpGoCall,
+	OpGreater16 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpGreater16,
+	OpGreater16U - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpGreater16U,
+	OpGreater32 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpGreater32,
+	OpGreater32F - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpGreater32F,
+	OpGreater32U - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpGreater32U,
+	OpGreater64 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpGreater64,
+	OpGreater64F - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpGreater64F,
+	OpGreater64U - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpGreater64U,
+	OpGreater8 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpGreater8,
+	OpGreater8U - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpGreater8U,
+	OpHmul16 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpHmul16,
+	OpHmul16u - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpHmul16u,
+	OpHmul32 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpHmul32,
+	OpHmul32u - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpHmul32u,
+	OpHmul64 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpHmul64,
+	OpHmul64u - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpHmul64u,
+	OpHmul8 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpHmul8,
+	OpHmul8u - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpHmul8u,
+	OpInterCall - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpInterCall,
+	OpIsInBounds - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpIsInBounds,
+	OpIsNonNil - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpIsNonNil,
+	OpIsSliceInBounds - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpIsSliceInBounds,
+	OpLeq16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpLeq16,
+	OpLeq16U - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLeq16U,
+	OpLeq32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpLeq32,
+	OpLeq32F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLeq32F,
+	OpLeq32U - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLeq32U,
+	OpLeq64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpLeq64,
+	OpLeq64F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLeq64F,
+	OpLeq64U - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLeq64U,
+	OpLeq8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpLeq8,
+	OpLeq8U - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpLeq8U,
+	OpLess16 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLess16,
+	OpLess16U - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLess16U,
+	OpLess32 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLess32,
+	OpLess32F - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLess32F,
+	OpLess32U - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLess32U,
+	OpLess64 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLess64,
+	OpLess64F - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLess64F,
+	OpLess64U - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLess64U,
+	OpLess8 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpLess8,
+	OpLess8U - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLess8U,
+	OpLoad - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpLoad,
+	OpLsh16x16 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh16x16,
+	OpLsh16x32 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh16x32,
+	OpLsh16x64 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh16x64,
+	OpLsh16x8 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLsh16x8,
+	OpLsh32x16 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh32x16,
+	OpLsh32x32 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh32x32,
+	OpLsh32x64 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh32x64,
+	OpLsh32x8 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLsh32x8,
+	OpLsh64x16 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh64x16,
+	OpLsh64x32 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh64x32,
+	OpLsh64x64 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpLsh64x64,
+	OpLsh64x8 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLsh64x8,
+	OpLsh8x16 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLsh8x16,
+	OpLsh8x32 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLsh8x32,
+	OpLsh8x64 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpLsh8x64,
+	OpLsh8x8 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpLsh8x8,
+	OpMIPS64ADDV - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpMIPS64ADDV,
+	OpMIPS64ADDVconst - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64ADDVconst,
+	OpMIPS64AND - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpMIPS64AND,
+	OpMIPS64ANDconst - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64ANDconst,
+	OpMIPS64MOVBUload - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVBUload,
+	OpMIPS64MOVBUreg - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVBUreg,
+	OpMIPS64MOVBload - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVBload,
+	OpMIPS64MOVBreg - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpMIPS64MOVBreg,
+	OpMIPS64MOVBstore - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVBstore,
+	OpMIPS64MOVBstorezero - rewriteTableMIPS64Min: rewriteValueMIPS64_OpMIPS64MOVBstorezero,
+	OpMIPS64MOVDload - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVDload,
+	OpMIPS64MOVDstore - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVDstore,
+	OpMIPS64MOVFload - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVFload,
+	OpMIPS64MOVFstore - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVFstore,
+	OpMIPS64MOVHUload - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVHUload,
+	OpMIPS64MOVHUreg - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVHUreg,
+	OpMIPS64MOVHload - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVHload,
+	OpMIPS64MOVHreg - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpMIPS64MOVHreg,
+	OpMIPS64MOVHstore - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVHstore,
+	OpMIPS64MOVHstorezero - rewriteTableMIPS64Min: rewriteValueMIPS64_OpMIPS64MOVHstorezero,
+	OpMIPS64MOVVload - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVVload,
+	OpMIPS64MOVVreg - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpMIPS64MOVVreg,
+	OpMIPS64MOVVstore - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVVstore,
+	OpMIPS64MOVVstorezero - rewriteTableMIPS64Min: rewriteValueMIPS64_OpMIPS64MOVVstorezero,
+	OpMIPS64MOVWUload - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVWUload,
+	OpMIPS64MOVWUreg - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVWUreg,
+	OpMIPS64MOVWload - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64MOVWload,
+	OpMIPS64MOVWreg - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpMIPS64MOVWreg,
+	OpMIPS64MOVWstore - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64MOVWstore,
+	OpMIPS64MOVWstorezero - rewriteTableMIPS64Min: rewriteValueMIPS64_OpMIPS64MOVWstorezero,
+	OpMIPS64NEGV - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpMIPS64NEGV,
+	OpMIPS64NOR - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpMIPS64NOR,
+	OpMIPS64NORconst - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64NORconst,
+	OpMIPS64OR - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpMIPS64OR,
+	OpMIPS64ORconst - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpMIPS64ORconst,
+	OpMIPS64SGT - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpMIPS64SGT,
+	OpMIPS64SGTU - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpMIPS64SGTU,
+	OpMIPS64SGTUconst - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64SGTUconst,
+	OpMIPS64SGTconst - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64SGTconst,
+	OpMIPS64SLLV - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpMIPS64SLLV,
+	OpMIPS64SLLVconst - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64SLLVconst,
+	OpMIPS64SRAV - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpMIPS64SRAV,
+	OpMIPS64SRAVconst - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64SRAVconst,
+	OpMIPS64SRLV - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpMIPS64SRLV,
+	OpMIPS64SRLVconst - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64SRLVconst,
+	OpMIPS64SUBV - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpMIPS64SUBV,
+	OpMIPS64SUBVconst - rewriteTableMIPS64Min:     rewriteValueMIPS64_OpMIPS64SUBVconst,
+	OpMIPS64XOR - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpMIPS64XOR,
+	OpMIPS64XORconst - rewriteTableMIPS64Min:      rewriteValueMIPS64_OpMIPS64XORconst,
+	OpMod16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpMod16,
+	OpMod16u - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpMod16u,
+	OpMod32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpMod32,
+	OpMod32u - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpMod32u,
+	OpMod64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpMod64,
+	OpMod64u - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpMod64u,
+	OpMod8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpMod8,
+	OpMod8u - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpMod8u,
+	OpMove - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpMove,
+	OpMul16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpMul16,
+	OpMul32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpMul32,
+	OpMul32F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpMul32F,
+	OpMul64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpMul64,
+	OpMul64F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpMul64F,
+	OpMul8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpMul8,
+	OpNeg16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpNeg16,
+	OpNeg32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpNeg32,
+	OpNeg32F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpNeg32F,
+	OpNeg64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpNeg64,
+	OpNeg64F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpNeg64F,
+	OpNeg8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpNeg8,
+	OpNeq16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpNeq16,
+	OpNeq32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpNeq32,
+	OpNeq32F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpNeq32F,
+	OpNeq64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpNeq64,
+	OpNeq64F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpNeq64F,
+	OpNeq8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpNeq8,
+	OpNeqB - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpNeqB,
+	OpNeqPtr - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpNeqPtr,
+	OpNilCheck - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpNilCheck,
+	OpNot - rewriteTableMIPS64Min:                 rewriteValueMIPS64_OpNot,
+	OpOffPtr - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpOffPtr,
+	OpOr16 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpOr16,
+	OpOr32 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpOr32,
+	OpOr64 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpOr64,
+	OpOr8 - rewriteTableMIPS64Min:                 rewriteValueMIPS64_OpOr8,
+	OpOrB - rewriteTableMIPS64Min:                 rewriteValueMIPS64_OpOrB,
+	OpRsh16Ux16 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh16Ux16,
+	OpRsh16Ux32 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh16Ux32,
+	OpRsh16Ux64 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh16Ux64,
+	OpRsh16Ux8 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh16Ux8,
+	OpRsh16x16 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh16x16,
+	OpRsh16x32 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh16x32,
+	OpRsh16x64 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh16x64,
+	OpRsh16x8 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpRsh16x8,
+	OpRsh32Ux16 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh32Ux16,
+	OpRsh32Ux32 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh32Ux32,
+	OpRsh32Ux64 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh32Ux64,
+	OpRsh32Ux8 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh32Ux8,
+	OpRsh32x16 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh32x16,
+	OpRsh32x32 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh32x32,
+	OpRsh32x64 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh32x64,
+	OpRsh32x8 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpRsh32x8,
+	OpRsh64Ux16 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh64Ux16,
+	OpRsh64Ux32 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh64Ux32,
+	OpRsh64Ux64 - rewriteTableMIPS64Min:           rewriteValueMIPS64_OpRsh64Ux64,
+	OpRsh64Ux8 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh64Ux8,
+	OpRsh64x16 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh64x16,
+	OpRsh64x32 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh64x32,
+	OpRsh64x64 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh64x64,
+	OpRsh64x8 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpRsh64x8,
+	OpRsh8Ux16 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh8Ux16,
+	OpRsh8Ux32 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh8Ux32,
+	OpRsh8Ux64 - rewriteTableMIPS64Min:            rewriteValueMIPS64_OpRsh8Ux64,
+	OpRsh8Ux8 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpRsh8Ux8,
+	OpRsh8x16 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpRsh8x16,
+	OpRsh8x32 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpRsh8x32,
+	OpRsh8x64 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpRsh8x64,
+	OpRsh8x8 - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpRsh8x8,
+	OpSelect0 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpSelect0,
+	OpSelect1 - rewriteTableMIPS64Min:             rewriteValueMIPS64_OpSelect1,
+	OpSignExt16to32 - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpSignExt16to32,
+	OpSignExt16to64 - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpSignExt16to64,
+	OpSignExt32to64 - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpSignExt32to64,
+	OpSignExt8to16 - rewriteTableMIPS64Min:        rewriteValueMIPS64_OpSignExt8to16,
+	OpSignExt8to32 - rewriteTableMIPS64Min:        rewriteValueMIPS64_OpSignExt8to32,
+	OpSignExt8to64 - rewriteTableMIPS64Min:        rewriteValueMIPS64_OpSignExt8to64,
+	OpStaticCall - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpStaticCall,
+	OpStore - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpStore,
+	OpSub16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpSub16,
+	OpSub32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpSub32,
+	OpSub32F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpSub32F,
+	OpSub64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpSub64,
+	OpSub64F - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpSub64F,
+	OpSub8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpSub8,
+	OpSubPtr - rewriteTableMIPS64Min:              rewriteValueMIPS64_OpSubPtr,
+	OpTrunc16to8 - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpTrunc16to8,
+	OpTrunc32to16 - rewriteTableMIPS64Min:         rewriteValueMIPS64_OpTrunc32to16,
+	OpTrunc32to8 - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpTrunc32to8,
+	OpTrunc64to16 - rewriteTableMIPS64Min:         rewriteValueMIPS64_OpTrunc64to16,
+	OpTrunc64to32 - rewriteTableMIPS64Min:         rewriteValueMIPS64_OpTrunc64to32,
+	OpTrunc64to8 - rewriteTableMIPS64Min:          rewriteValueMIPS64_OpTrunc64to8,
+	OpXor16 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpXor16,
+	OpXor32 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpXor32,
+	OpXor64 - rewriteTableMIPS64Min:               rewriteValueMIPS64_OpXor64,
+	OpXor8 - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpXor8,
+	OpZero - rewriteTableMIPS64Min:                rewriteValueMIPS64_OpZero,
+	OpZeroExt16to32 - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpZeroExt16to32,
+	OpZeroExt16to64 - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpZeroExt16to64,
+	OpZeroExt32to64 - rewriteTableMIPS64Min:       rewriteValueMIPS64_OpZeroExt32to64,
+	OpZeroExt8to16 - rewriteTableMIPS64Min:        rewriteValueMIPS64_OpZeroExt8to16,
+	OpZeroExt8to32 - rewriteTableMIPS64Min:        rewriteValueMIPS64_OpZeroExt8to32,
+	OpZeroExt8to64 - rewriteTableMIPS64Min:        rewriteValueMIPS64_OpZeroExt8to64,
+}
+
 func rewriteValueMIPS64(v *Value, config *Config) bool {
-	switch v.Op {
-	case OpAdd16:
-		return rewriteValueMIPS64_OpAdd16(v, config)
-	case OpAdd32:
-		return rewriteValueMIPS64_OpAdd32(v, config)
-	case OpAdd32F:
-		return rewriteValueMIPS64_OpAdd32F(v, config)
-	case OpAdd64:
-		return rewriteValueMIPS64_OpAdd64(v, config)
-	case OpAdd64F:
-		return rewriteValueMIPS64_OpAdd64F(v, config)
-	case OpAdd8:
-		return rewriteValueMIPS64_OpAdd8(v, config)
-	case OpAddPtr:
-		return rewriteValueMIPS64_OpAddPtr(v, config)
-	case OpAddr:
-		return rewriteValueMIPS64_OpAddr(v, config)
-	case OpAnd16:
-		return rewriteValueMIPS64_OpAnd16(v, config)
-	case OpAnd32:
-		return rewriteValueMIPS64_OpAnd32(v, config)
-	case OpAnd64:
-		return rewriteValueMIPS64_OpAnd64(v, config)
-	case OpAnd8:
-		return rewriteValueMIPS64_OpAnd8(v, config)
-	case OpAndB:
-		return rewriteValueMIPS64_OpAndB(v, config)
-	case OpAvg64u:
-		return rewriteValueMIPS64_OpAvg64u(v, config)
-	case OpClosureCall:
-		return rewriteValueMIPS64_OpClosureCall(v, config)
-	case OpCom16:
-		return rewriteValueMIPS64_OpCom16(v, config)
-	case OpCom32:
-		return rewriteValueMIPS64_OpCom32(v, config)
-	case OpCom64:
-		return rewriteValueMIPS64_OpCom64(v, config)
-	case OpCom8:
-		return rewriteValueMIPS64_OpCom8(v, config)
-	case OpConst16:
-		return rewriteValueMIPS64_OpConst16(v, config)
-	case OpConst32:
-		return rewriteValueMIPS64_OpConst32(v, config)
-	case OpConst32F:
-		return rewriteValueMIPS64_OpConst32F(v, config)
-	case OpConst64:
-		return rewriteValueMIPS64_OpConst64(v, config)
-	case OpConst64F:
-		return rewriteValueMIPS64_OpConst64F(v, config)
-	case OpConst8:
-		return rewriteValueMIPS64_OpConst8(v, config)
-	case OpConstBool:
-		return rewriteValueMIPS64_OpConstBool(v, config)
-	case OpConstNil:
-		return rewriteValueMIPS64_OpConstNil(v, config)
-	case OpConvert:
-		return rewriteValueMIPS64_OpConvert(v, config)
-	case OpCvt32Fto32:
-		return rewriteValueMIPS64_OpCvt32Fto32(v, config)
-	case OpCvt32Fto64:
-		return rewriteValueMIPS64_OpCvt32Fto64(v, config)
-	case OpCvt32Fto64F:
-		return rewriteValueMIPS64_OpCvt32Fto64F(v, config)
-	case OpCvt32to32F:
-		return rewriteValueMIPS64_OpCvt32to32F(v, config)
-	case OpCvt32to64F:
-		return rewriteValueMIPS64_OpCvt32to64F(v, config)
-	case OpCvt64Fto32:
-		return rewriteValueMIPS64_OpCvt64Fto32(v, config)
-	case OpCvt64Fto32F:
-		return rewriteValueMIPS64_OpCvt64Fto32F(v, config)
-	case OpCvt64Fto64:
-		return rewriteValueMIPS64_OpCvt64Fto64(v, config)
-	case OpCvt64to32F:
-		return rewriteValueMIPS64_OpCvt64to32F(v, config)
-	case OpCvt64to64F:
-		return rewriteValueMIPS64_OpCvt64to64F(v, config)
-	case OpDeferCall:
-		return rewriteValueMIPS64_OpDeferCall(v, config)
-	case OpDiv16:
-		return rewriteValueMIPS64_OpDiv16(v, config)
-	case OpDiv16u:
-		return rewriteValueMIPS64_OpDiv16u(v, config)
-	case OpDiv32:
-		return rewriteValueMIPS64_OpDiv32(v, config)
-	case OpDiv32F:
-		return rewriteValueMIPS64_OpDiv32F(v, config)
-	case OpDiv32u:
-		return rewriteValueMIPS64_OpDiv32u(v, config)
-	case OpDiv64:
-		return rewriteValueMIPS64_OpDiv64(v, config)
-	case OpDiv64F:
-		return rewriteValueMIPS64_OpDiv64F(v, config)
-	case OpDiv64u:
-		return rewriteValueMIPS64_OpDiv64u(v, config)
-	case OpDiv8:
-		return rewriteValueMIPS64_OpDiv8(v, config)
-	case OpDiv8u:
-		return rewriteValueMIPS64_OpDiv8u(v, config)
-	case OpEq16:
-		return rewriteValueMIPS64_OpEq16(v, config)
-	case OpEq32:
-		return rewriteValueMIPS64_OpEq32(v, config)
-	case OpEq32F:
-		return rewriteValueMIPS64_OpEq32F(v, config)
-	case OpEq64:
-		return rewriteValueMIPS64_OpEq64(v, config)
-	case OpEq64F:
-		return rewriteValueMIPS64_OpEq64F(v, config)
-	case OpEq8:
-		return rewriteValueMIPS64_OpEq8(v, config)
-	case OpEqB:
-		return rewriteValueMIPS64_OpEqB(v, config)
-	case OpEqPtr:
-		return rewriteValueMIPS64_OpEqPtr(v, config)
-	case OpGeq16:
-		return rewriteValueMIPS64_OpGeq16(v, config)
-	case OpGeq16U:
-		return rewriteValueMIPS64_OpGeq16U(v, config)
-	case OpGeq32:
-		return rewriteValueMIPS64_OpGeq32(v, config)
-	case OpGeq32F:
-		return rewriteValueMIPS64_OpGeq32F(v, config)
-	case OpGeq32U:
-		return rewriteValueMIPS64_OpGeq32U(v, config)
-	case OpGeq64:
-		return rewriteValueMIPS64_OpGeq64(v, config)
-	case OpGeq64F:
-		return rewriteValueMIPS64_OpGeq64F(v, config)
-	case OpGeq64U:
-		return rewriteValueMIPS64_OpGeq64U(v, config)
-	case OpGeq8:
-		return rewriteValueMIPS64_OpGeq8(v, config)
-	case OpGeq8U:
-		return rewriteValueMIPS64_OpGeq8U(v, config)
-	case OpGetClosurePtr:
-		return rewriteValueMIPS64_OpGetClosurePtr(v, config)
-	case OpGoCall:
-		return rewriteValueMIPS64_OpGoCall(v, config)
-	case OpGreater16:
-		return rewriteValueMIPS64_OpGreater16(v, config)
-	case OpGreater16U:
-		return rewriteValueMIPS64_OpGreater16U(v, config)
-	case OpGreater32:
-		return rewriteValueMIPS64_OpGreater32(v, config)
-	case OpGreater32F:
-		return rewriteValueMIPS64_OpGreater32F(v, config)
-	case OpGreater32U:
-		return rewriteValueMIPS64_OpGreater32U(v, config)
-	case OpGreater64:
-		return rewriteValueMIPS64_OpGreater64(v, config)
-	case OpGreater64F:
-		return rewriteValueMIPS64_OpGreater64F(v, config)
-	case OpGreater64U:
-		return rewriteValueMIPS64_OpGreater64U(v, config)
-	case OpGreater8:
-		return rewriteValueMIPS64_OpGreater8(v, config)
-	case OpGreater8U:
-		return rewriteValueMIPS64_OpGreater8U(v, config)
-	case OpHmul16:
-		return rewriteValueMIPS64_OpHmul16(v, config)
-	case OpHmul16u:
-		return rewriteValueMIPS64_OpHmul16u(v, config)
-	case OpHmul32:
-		return rewriteValueMIPS64_OpHmul32(v, config)
-	case OpHmul32u:
-		return rewriteValueMIPS64_OpHmul32u(v, config)
-	case OpHmul64:
-		return rewriteValueMIPS64_OpHmul64(v, config)
-	case OpHmul64u:
-		return rewriteValueMIPS64_OpHmul64u(v, config)
-	case OpHmul8:
-		return rewriteValueMIPS64_OpHmul8(v, config)
-	case OpHmul8u:
-		return rewriteValueMIPS64_OpHmul8u(v, config)
-	case OpInterCall:
-		return rewriteValueMIPS64_OpInterCall(v, config)
-	case OpIsInBounds:
-		return rewriteValueMIPS64_OpIsInBounds(v, config)
-	case OpIsNonNil:
-		return rewriteValueMIPS64_OpIsNonNil(v, config)
-	case OpIsSliceInBounds:
-		return rewriteValueMIPS64_OpIsSliceInBounds(v, config)
-	case OpLeq16:
-		return rewriteValueMIPS64_OpLeq16(v, config)
-	case OpLeq16U:
-		return rewriteValueMIPS64_OpLeq16U(v, config)
-	case OpLeq32:
-		return rewriteValueMIPS64_OpLeq32(v, config)
-	case OpLeq32F:
-		return rewriteValueMIPS64_OpLeq32F(v, config)
-	case OpLeq32U:
-		return rewriteValueMIPS64_OpLeq32U(v, config)
-	case OpLeq64:
-		return rewriteValueMIPS64_OpLeq64(v, config)
-	case OpLeq64F:
-		return rewriteValueMIPS64_OpLeq64F(v, config)
-	case OpLeq64U:
-		return rewriteValueMIPS64_OpLeq64U(v, config)
-	case OpLeq8:
-		return rewriteValueMIPS64_OpLeq8(v, config)
-	case OpLeq8U:
-		return rewriteValueMIPS64_OpLeq8U(v, config)
-	case OpLess16:
-		return rewriteValueMIPS64_OpLess16(v, config)
-	case OpLess16U:
-		return rewriteValueMIPS64_OpLess16U(v, config)
-	case OpLess32:
-		return rewriteValueMIPS64_OpLess32(v, config)
-	case OpLess32F:
-		return rewriteValueMIPS64_OpLess32F(v, config)
-	case OpLess32U:
-		return rewriteValueMIPS64_OpLess32U(v, config)
-	case OpLess64:
-		return rewriteValueMIPS64_OpLess64(v, config)
-	case OpLess64F:
-		return rewriteValueMIPS64_OpLess64F(v, config)
-	case OpLess64U:
-		return rewriteValueMIPS64_OpLess64U(v, config)
-	case OpLess8:
-		return rewriteValueMIPS64_OpLess8(v, config)
-	case OpLess8U:
-		return rewriteValueMIPS64_OpLess8U(v, config)
-	case OpLoad:
-		return rewriteValueMIPS64_OpLoad(v, config)
-	case OpLsh16x16:
-		return rewriteValueMIPS64_OpLsh16x16(v, config)
-	case OpLsh16x32:
-		return rewriteValueMIPS64_OpLsh16x32(v, config)
-	case OpLsh16x64:
-		return rewriteValueMIPS64_OpLsh16x64(v, config)
-	case OpLsh16x8:
-		return rewriteValueMIPS64_OpLsh16x8(v, config)
-	case OpLsh32x16:
-		return rewriteValueMIPS64_OpLsh32x16(v, config)
-	case OpLsh32x32:
-		return rewriteValueMIPS64_OpLsh32x32(v, config)
-	case OpLsh32x64:
-		return rewriteValueMIPS64_OpLsh32x64(v, config)
-	case OpLsh32x8:
-		return rewriteValueMIPS64_OpLsh32x8(v, config)
-	case OpLsh64x16:
-		return rewriteValueMIPS64_OpLsh64x16(v, config)
-	case OpLsh64x32:
-		return rewriteValueMIPS64_OpLsh64x32(v, config)
-	case OpLsh64x64:
-		return rewriteValueMIPS64_OpLsh64x64(v, config)
-	case OpLsh64x8:
-		return rewriteValueMIPS64_OpLsh64x8(v, config)
-	case OpLsh8x16:
-		return rewriteValueMIPS64_OpLsh8x16(v, config)
-	case OpLsh8x32:
-		return rewriteValueMIPS64_OpLsh8x32(v, config)
-	case OpLsh8x64:
-		return rewriteValueMIPS64_OpLsh8x64(v, config)
-	case OpLsh8x8:
-		return rewriteValueMIPS64_OpLsh8x8(v, config)
-	case OpMIPS64ADDV:
-		return rewriteValueMIPS64_OpMIPS64ADDV(v, config)
-	case OpMIPS64ADDVconst:
-		return rewriteValueMIPS64_OpMIPS64ADDVconst(v, config)
-	case OpMIPS64AND:
-		return rewriteValueMIPS64_OpMIPS64AND(v, config)
-	case OpMIPS64ANDconst:
-		return rewriteValueMIPS64_OpMIPS64ANDconst(v, config)
-	case OpMIPS64MOVBUload:
-		return rewriteValueMIPS64_OpMIPS64MOVBUload(v, config)
-	case OpMIPS64MOVBUreg:
-		return rewriteValueMIPS64_OpMIPS64MOVBUreg(v, config)
-	case OpMIPS64MOVBload:
-		return rewriteValueMIPS64_OpMIPS64MOVBload(v, config)
-	case OpMIPS64MOVBreg:
-		return rewriteValueMIPS64_OpMIPS64MOVBreg(v, config)
-	case OpMIPS64MOVBstore:
-		return rewriteValueMIPS64_OpMIPS64MOVBstore(v, config)
-	case OpMIPS64MOVBstorezero:
-		return rewriteValueMIPS64_OpMIPS64MOVBstorezero(v, config)
-	case OpMIPS64MOVDload:
-		return rewriteValueMIPS64_OpMIPS64MOVDload(v, config)
-	case OpMIPS64MOVDstore:
-		return rewriteValueMIPS64_OpMIPS64MOVDstore(v, config)
-	case OpMIPS64MOVFload:
-		return rewriteValueMIPS64_OpMIPS64MOVFload(v, config)
-	case OpMIPS64MOVFstore:
-		return rewriteValueMIPS64_OpMIPS64MOVFstore(v, config)
-	case OpMIPS64MOVHUload:
-		return rewriteValueMIPS64_OpMIPS64MOVHUload(v, config)
-	case OpMIPS64MOVHUreg:
-		return rewriteValueMIPS64_OpMIPS64MOVHUreg(v, config)
-	case OpMIPS64MOVHload:
-		return rewriteValueMIPS64_OpMIPS64MOVHload(v, config)
-	case OpMIPS64MOVHreg:
-		return rewriteValueMIPS64_OpMIPS64MOVHreg(v, config)
-	case OpMIPS64MOVHstore:
-		return rewriteValueMIPS64_OpMIPS64MOVHstore(v, config)
-	case OpMIPS64MOVHstorezero:
-		return rewriteValueMIPS64_OpMIPS64MOVHstorezero(v, config)
-	case OpMIPS64MOVVload:
-		return rewriteValueMIPS64_OpMIPS64MOVVload(v, config)
-	case OpMIPS64MOVVreg:
-		return rewriteValueMIPS64_OpMIPS64MOVVreg(v, config)
-	case OpMIPS64MOVVstore:
-		return rewriteValueMIPS64_OpMIPS64MOVVstore(v, config)
-	case OpMIPS64MOVVstorezero:
-		return rewriteValueMIPS64_OpMIPS64MOVVstorezero(v, config)
-	case OpMIPS64MOVWUload:
-		return rewriteValueMIPS64_OpMIPS64MOVWUload(v, config)
-	case OpMIPS64MOVWUreg:
-		return rewriteValueMIPS64_OpMIPS64MOVWUreg(v, config)
-	case OpMIPS64MOVWload:
-		return rewriteValueMIPS64_OpMIPS64MOVWload(v, config)
-	case OpMIPS64MOVWreg:
-		return rewriteValueMIPS64_OpMIPS64MOVWreg(v, config)
-	case OpMIPS64MOVWstore:
-		return rewriteValueMIPS64_OpMIPS64MOVWstore(v, config)
-	case OpMIPS64MOVWstorezero:
-		return rewriteValueMIPS64_OpMIPS64MOVWstorezero(v, config)
-	case OpMIPS64NEGV:
-		return rewriteValueMIPS64_OpMIPS64NEGV(v, config)
-	case OpMIPS64NOR:
-		return rewriteValueMIPS64_OpMIPS64NOR(v, config)
-	case OpMIPS64NORconst:
-		return rewriteValueMIPS64_OpMIPS64NORconst(v, config)
-	case OpMIPS64OR:
-		return rewriteValueMIPS64_OpMIPS64OR(v, config)
-	case OpMIPS64ORconst:
-		return rewriteValueMIPS64_OpMIPS64ORconst(v, config)
-	case OpMIPS64SGT:
-		return rewriteValueMIPS64_OpMIPS64SGT(v, config)
-	case OpMIPS64SGTU:
-		return rewriteValueMIPS64_OpMIPS64SGTU(v, config)
-	case OpMIPS64SGTUconst:
-		return rewriteValueMIPS64_OpMIPS64SGTUconst(v, config)
-	case OpMIPS64SGTconst:
-		return rewriteValueMIPS64_OpMIPS64SGTconst(v, config)
-	case OpMIPS64SLLV:
-		return rewriteValueMIPS64_OpMIPS64SLLV(v, config)
-	case OpMIPS64SLLVconst:
-		return rewriteValueMIPS64_OpMIPS64SLLVconst(v, config)
-	case OpMIPS64SRAV:
-		return rewriteValueMIPS64_OpMIPS64SRAV(v, config)
-	case OpMIPS64SRAVconst:
-		return rewriteValueMIPS64_OpMIPS64SRAVconst(v, config)
-	case OpMIPS64SRLV:
-		return rewriteValueMIPS64_OpMIPS64SRLV(v, config)
-	case OpMIPS64SRLVconst:
-		return rewriteValueMIPS64_OpMIPS64SRLVconst(v, config)
-	case OpMIPS64SUBV:
-		return rewriteValueMIPS64_OpMIPS64SUBV(v, config)
-	case OpMIPS64SUBVconst:
-		return rewriteValueMIPS64_OpMIPS64SUBVconst(v, config)
-	case OpMIPS64XOR:
-		return rewriteValueMIPS64_OpMIPS64XOR(v, config)
-	case OpMIPS64XORconst:
-		return rewriteValueMIPS64_OpMIPS64XORconst(v, config)
-	case OpMod16:
-		return rewriteValueMIPS64_OpMod16(v, config)
-	case OpMod16u:
-		return rewriteValueMIPS64_OpMod16u(v, config)
-	case OpMod32:
-		return rewriteValueMIPS64_OpMod32(v, config)
-	case OpMod32u:
-		return rewriteValueMIPS64_OpMod32u(v, config)
-	case OpMod64:
-		return rewriteValueMIPS64_OpMod64(v, config)
-	case OpMod64u:
-		return rewriteValueMIPS64_OpMod64u(v, config)
-	case OpMod8:
-		return rewriteValueMIPS64_OpMod8(v, config)
-	case OpMod8u:
-		return rewriteValueMIPS64_OpMod8u(v, config)
-	case OpMove:
-		return rewriteValueMIPS64_OpMove(v, config)
-	case OpMul16:
-		return rewriteValueMIPS64_OpMul16(v, config)
-	case OpMul32:
-		return rewriteValueMIPS64_OpMul32(v, config)
-	case OpMul32F:
-		return rewriteValueMIPS64_OpMul32F(v, config)
-	case OpMul64:
-		return rewriteValueMIPS64_OpMul64(v, config)
-	case OpMul64F:
-		return rewriteValueMIPS64_OpMul64F(v, config)
-	case OpMul8:
-		return rewriteValueMIPS64_OpMul8(v, config)
-	case OpNeg16:
-		return rewriteValueMIPS64_OpNeg16(v, config)
-	case OpNeg32:
-		return rewriteValueMIPS64_OpNeg32(v, config)
-	case OpNeg32F:
-		return rewriteValueMIPS64_OpNeg32F(v, config)
-	case OpNeg64:
-		return rewriteValueMIPS64_OpNeg64(v, config)
-	case OpNeg64F:
-		return rewriteValueMIPS64_OpNeg64F(v, config)
-	case OpNeg8:
-		return rewriteValueMIPS64_OpNeg8(v, config)
-	case OpNeq16:
-		return rewriteValueMIPS64_OpNeq16(v, config)
-	case OpNeq32:
-		return rewriteValueMIPS64_OpNeq32(v, config)
-	case OpNeq32F:
-		return rewriteValueMIPS64_OpNeq32F(v, config)
-	case OpNeq64:
-		return rewriteValueMIPS64_OpNeq64(v, config)
-	case OpNeq64F:
-		return rewriteValueMIPS64_OpNeq64F(v, config)
-	case OpNeq8:
-		return rewriteValueMIPS64_OpNeq8(v, config)
-	case OpNeqB:
-		return rewriteValueMIPS64_OpNeqB(v, config)
-	case OpNeqPtr:
-		return rewriteValueMIPS64_OpNeqPtr(v, config)
-	case OpNilCheck:
-		return rewriteValueMIPS64_OpNilCheck(v, config)
-	case OpNot:
-		return rewriteValueMIPS64_OpNot(v, config)
-	case OpOffPtr:
-		return rewriteValueMIPS64_OpOffPtr(v, config)
-	case OpOr16:
-		return rewriteValueMIPS64_OpOr16(v, config)
-	case OpOr32:
-		return rewriteValueMIPS64_OpOr32(v, config)
-	case OpOr64:
-		return rewriteValueMIPS64_OpOr64(v, config)
-	case OpOr8:
-		return rewriteValueMIPS64_OpOr8(v, config)
-	case OpOrB:
-		return rewriteValueMIPS64_OpOrB(v, config)
-	case OpRsh16Ux16:
-		return rewriteValueMIPS64_OpRsh16Ux16(v, config)
-	case OpRsh16Ux32:
-		return rewriteValueMIPS64_OpRsh16Ux32(v, config)
-	case OpRsh16Ux64:
-		return rewriteValueMIPS64_OpRsh16Ux64(v, config)
-	case OpRsh16Ux8:
-		return rewriteValueMIPS64_OpRsh16Ux8(v, config)
-	case OpRsh16x16:
-		return rewriteValueMIPS64_OpRsh16x16(v, config)
-	case OpRsh16x32:
-		return rewriteValueMIPS64_OpRsh16x32(v, config)
-	case OpRsh16x64:
-		return rewriteValueMIPS64_OpRsh16x64(v, config)
-	case OpRsh16x8:
-		return rewriteValueMIPS64_OpRsh16x8(v, config)
-	case OpRsh32Ux16:
-		return rewriteValueMIPS64_OpRsh32Ux16(v, config)
-	case OpRsh32Ux32:
-		return rewriteValueMIPS64_OpRsh32Ux32(v, config)
-	case OpRsh32Ux64:
-		return rewriteValueMIPS64_OpRsh32Ux64(v, config)
-	case OpRsh32Ux8:
-		return rewriteValueMIPS64_OpRsh32Ux8(v, config)
-	case OpRsh32x16:
-		return rewriteValueMIPS64_OpRsh32x16(v, config)
-	case OpRsh32x32:
-		return rewriteValueMIPS64_OpRsh32x32(v, config)
-	case OpRsh32x64:
-		return rewriteValueMIPS64_OpRsh32x64(v, config)
-	case OpRsh32x8:
-		return rewriteValueMIPS64_OpRsh32x8(v, config)
-	case OpRsh64Ux16:
-		return rewriteValueMIPS64_OpRsh64Ux16(v, config)
-	case OpRsh64Ux32:
-		return rewriteValueMIPS64_OpRsh64Ux32(v, config)
-	case OpRsh64Ux64:
-		return rewriteValueMIPS64_OpRsh64Ux64(v, config)
-	case OpRsh64Ux8:
-		return rewriteValueMIPS64_OpRsh64Ux8(v, config)
-	case OpRsh64x16:
-		return rewriteValueMIPS64_OpRsh64x16(v, config)
-	case OpRsh64x32:
-		return rewriteValueMIPS64_OpRsh64x32(v, config)
-	case OpRsh64x64:
-		return rewriteValueMIPS64_OpRsh64x64(v, config)
-	case OpRsh64x8:
-		return rewriteValueMIPS64_OpRsh64x8(v, config)
-	case OpRsh8Ux16:
-		return rewriteValueMIPS64_OpRsh8Ux16(v, config)
-	case OpRsh8Ux32:
-		return rewriteValueMIPS64_OpRsh8Ux32(v, config)
-	case OpRsh8Ux64:
-		return rewriteValueMIPS64_OpRsh8Ux64(v, config)
-	case OpRsh8Ux8:
-		return rewriteValueMIPS64_OpRsh8Ux8(v, config)
-	case OpRsh8x16:
-		return rewriteValueMIPS64_OpRsh8x16(v, config)
-	case OpRsh8x32:
-		return rewriteValueMIPS64_OpRsh8x32(v, config)
-	case OpRsh8x64:
-		return rewriteValueMIPS64_OpRsh8x64(v, config)
-	case OpRsh8x8:
-		return rewriteValueMIPS64_OpRsh8x8(v, config)
-	case OpSelect0:
-		return rewriteValueMIPS64_OpSelect0(v, config)
-	case OpSelect1:
-		return rewriteValueMIPS64_OpSelect1(v, config)
-	case OpSignExt16to32:
-		return rewriteValueMIPS64_OpSignExt16to32(v, config)
-	case OpSignExt16to64:
-		return rewriteValueMIPS64_OpSignExt16to64(v, config)
-	case OpSignExt32to64:
-		return rewriteValueMIPS64_OpSignExt32to64(v, config)
-	case OpSignExt8to16:
-		return rewriteValueMIPS64_OpSignExt8to16(v, config)
-	case OpSignExt8to32:
-		return rewriteValueMIPS64_OpSignExt8to32(v, config)
-	case OpSignExt8to64:
-		return rewriteValueMIPS64_OpSignExt8to64(v, config)
-	case OpStaticCall:
-		return rewriteValueMIPS64_OpStaticCall(v, config)
-	case OpStore:
-		return rewriteValueMIPS64_OpStore(v, config)
-	case OpSub16:
-		return rewriteValueMIPS64_OpSub16(v, config)
-	case OpSub32:
-		return rewriteValueMIPS64_OpSub32(v, config)
-	case OpSub32F:
-		return rewriteValueMIPS64_OpSub32F(v, config)
-	case OpSub64:
-		return rewriteValueMIPS64_OpSub64(v, config)
-	case OpSub64F:
-		return rewriteValueMIPS64_OpSub64F(v, config)
-	case OpSub8:
-		return rewriteValueMIPS64_OpSub8(v, config)
-	case OpSubPtr:
-		return rewriteValueMIPS64_OpSubPtr(v, config)
-	case OpTrunc16to8:
-		return rewriteValueMIPS64_OpTrunc16to8(v, config)
-	case OpTrunc32to16:
-		return rewriteValueMIPS64_OpTrunc32to16(v, config)
-	case OpTrunc32to8:
-		return rewriteValueMIPS64_OpTrunc32to8(v, config)
-	case OpTrunc64to16:
-		return rewriteValueMIPS64_OpTrunc64to16(v, config)
-	case OpTrunc64to32:
-		return rewriteValueMIPS64_OpTrunc64to32(v, config)
-	case OpTrunc64to8:
-		return rewriteValueMIPS64_OpTrunc64to8(v, config)
-	case OpXor16:
-		return rewriteValueMIPS64_OpXor16(v, config)
-	case OpXor32:
-		return rewriteValueMIPS64_OpXor32(v, config)
-	case OpXor64:
-		return rewriteValueMIPS64_OpXor64(v, config)
-	case OpXor8:
-		return rewriteValueMIPS64_OpXor8(v, config)
-	case OpZero:
-		return rewriteValueMIPS64_OpZero(v, config)
-	case OpZeroExt16to32:
-		return rewriteValueMIPS64_OpZeroExt16to32(v, config)
-	case OpZeroExt16to64:
-		return rewriteValueMIPS64_OpZeroExt16to64(v, config)
-	case OpZeroExt32to64:
-		return rewriteValueMIPS64_OpZeroExt32to64(v, config)
-	case OpZeroExt8to16:
-		return rewriteValueMIPS64_OpZeroExt8to16(v, config)
-	case OpZeroExt8to32:
-		return rewriteValueMIPS64_OpZeroExt8to32(v, config)
-	case OpZeroExt8to64:
-		return rewriteValueMIPS64_OpZeroExt8to64(v, config)
+	if v.Op < rewriteTableMIPS64Min || v.Op > rewriteTableMIPS64Max {
+		return false
 	}
-	return false
+	fn := rewriteTableMIPS64[v.Op-rewriteTableMIPS64Min]
+	if fn == nil {
+		return false
+	}
+	return fn(v, config)
 }
 func rewriteValueMIPS64_OpAdd16(v *Value, config *Config) bool {
 	b := v.Block

@@ -6,530 +6,281 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
+const rewriteTablePPC64Min = OpPPC64ADD
+const rewriteTablePPC64Max = OpOffPtr
+
+var rewriteTablePPC64 = [...]func(*Value, *Config) bool{
+	OpAdd16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpAdd16,
+	OpAdd32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpAdd32,
+	OpAdd32F - rewriteTablePPC64Min:             rewriteValuePPC64_OpAdd32F,
+	OpAdd64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpAdd64,
+	OpAdd64F - rewriteTablePPC64Min:             rewriteValuePPC64_OpAdd64F,
+	OpAdd8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpAdd8,
+	OpAddPtr - rewriteTablePPC64Min:             rewriteValuePPC64_OpAddPtr,
+	OpAddr - rewriteTablePPC64Min:               rewriteValuePPC64_OpAddr,
+	OpAnd16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpAnd16,
+	OpAnd32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpAnd32,
+	OpAnd64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpAnd64,
+	OpAnd8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpAnd8,
+	OpAndB - rewriteTablePPC64Min:               rewriteValuePPC64_OpAndB,
+	OpAvg64u - rewriteTablePPC64Min:             rewriteValuePPC64_OpAvg64u,
+	OpClosureCall - rewriteTablePPC64Min:        rewriteValuePPC64_OpClosureCall,
+	OpCom16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpCom16,
+	OpCom32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpCom32,
+	OpCom64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpCom64,
+	OpCom8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpCom8,
+	OpConst16 - rewriteTablePPC64Min:            rewriteValuePPC64_OpConst16,
+	OpConst32 - rewriteTablePPC64Min:            rewriteValuePPC64_OpConst32,
+	OpConst32F - rewriteTablePPC64Min:           rewriteValuePPC64_OpConst32F,
+	OpConst64 - rewriteTablePPC64Min:            rewriteValuePPC64_OpConst64,
+	OpConst64F - rewriteTablePPC64Min:           rewriteValuePPC64_OpConst64F,
+	OpConst8 - rewriteTablePPC64Min:             rewriteValuePPC64_OpConst8,
+	OpConstBool - rewriteTablePPC64Min:          rewriteValuePPC64_OpConstBool,
+	OpConstNil - rewriteTablePPC64Min:           rewriteValuePPC64_OpConstNil,
+	OpConvert - rewriteTablePPC64Min:            rewriteValuePPC64_OpConvert,
+	OpCvt32Fto32 - rewriteTablePPC64Min:         rewriteValuePPC64_OpCvt32Fto32,
+	OpCvt32Fto64 - rewriteTablePPC64Min:         rewriteValuePPC64_OpCvt32Fto64,
+	OpCvt32Fto64F - rewriteTablePPC64Min:        rewriteValuePPC64_OpCvt32Fto64F,
+	OpCvt32to32F - rewriteTablePPC64Min:         rewriteValuePPC64_OpCvt32to32F,
+	OpCvt32to64F - rewriteTablePPC64Min:         rewriteValuePPC64_OpCvt32to64F,
+	OpCvt64Fto32 - rewriteTablePPC64Min:         rewriteValuePPC64_OpCvt64Fto32,
+	OpCvt64Fto32F - rewriteTablePPC64Min:        rewriteValuePPC64_OpCvt64Fto32F,
+	OpCvt64Fto64 - rewriteTablePPC64Min:         rewriteValuePPC64_OpCvt64Fto64,
+	OpCvt64to32F - rewriteTablePPC64Min:         rewriteValuePPC64_OpCvt64to32F,
+	OpCvt64to64F - rewriteTablePPC64Min:         rewriteValuePPC64_OpCvt64to64F,
+	OpDeferCall - rewriteTablePPC64Min:          rewriteValuePPC64_OpDeferCall,
+	OpDiv16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpDiv16,
+	OpDiv16u - rewriteTablePPC64Min:             rewriteValuePPC64_OpDiv16u,
+	OpDiv32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpDiv32,
+	OpDiv32F - rewriteTablePPC64Min:             rewriteValuePPC64_OpDiv32F,
+	OpDiv32u - rewriteTablePPC64Min:             rewriteValuePPC64_OpDiv32u,
+	OpDiv64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpDiv64,
+	OpDiv64F - rewriteTablePPC64Min:             rewriteValuePPC64_OpDiv64F,
+	OpDiv64u - rewriteTablePPC64Min:             rewriteValuePPC64_OpDiv64u,
+	OpDiv8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpDiv8,
+	OpDiv8u - rewriteTablePPC64Min:              rewriteValuePPC64_OpDiv8u,
+	OpEq16 - rewriteTablePPC64Min:               rewriteValuePPC64_OpEq16,
+	OpEq32 - rewriteTablePPC64Min:               rewriteValuePPC64_OpEq32,
+	OpEq32F - rewriteTablePPC64Min:              rewriteValuePPC64_OpEq32F,
+	OpEq64 - rewriteTablePPC64Min:               rewriteValuePPC64_OpEq64,
+	OpEq64F - rewriteTablePPC64Min:              rewriteValuePPC64_OpEq64F,
+	OpEq8 - rewriteTablePPC64Min:                rewriteValuePPC64_OpEq8,
+	OpEqB - rewriteTablePPC64Min:                rewriteValuePPC64_OpEqB,
+	OpEqPtr - rewriteTablePPC64Min:              rewriteValuePPC64_OpEqPtr,
+	OpGeq16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpGeq16,
+	OpGeq16U - rewriteTablePPC64Min:             rewriteValuePPC64_OpGeq16U,
+	OpGeq32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpGeq32,
+	OpGeq32F - rewriteTablePPC64Min:             rewriteValuePPC64_OpGeq32F,
+	OpGeq32U - rewriteTablePPC64Min:             rewriteValuePPC64_OpGeq32U,
+	OpGeq64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpGeq64,
+	OpGeq64F - rewriteTablePPC64Min:             rewriteValuePPC64_OpGeq64F,
+	OpGeq64U - rewriteTablePPC64Min:             rewriteValuePPC64_OpGeq64U,
+	OpGeq8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpGeq8,
+	OpGeq8U - rewriteTablePPC64Min:              rewriteValuePPC64_OpGeq8U,
+	OpGetClosurePtr - rewriteTablePPC64Min:      rewriteValuePPC64_OpGetClosurePtr,
+	OpGoCall - rewriteTablePPC64Min:             rewriteValuePPC64_OpGoCall,
+	OpGreater16 - rewriteTablePPC64Min:          rewriteValuePPC64_OpGreater16,
+	OpGreater16U - rewriteTablePPC64Min:         rewriteValuePPC64_OpGreater16U,
+	OpGreater32 - rewriteTablePPC64Min:          rewriteValuePPC64_OpGreater32,
+	OpGreater32F - rewriteTablePPC64Min:         rewriteValuePPC64_OpGreater32F,
+	OpGreater32U - rewriteTablePPC64Min:         rewriteValuePPC64_OpGreater32U,
+	OpGreater64 - rewriteTablePPC64Min:          rewriteValuePPC64_OpGreater64,
+	OpGreater64F - rewriteTablePPC64Min:         rewriteValuePPC64_OpGreater64F,
+	OpGreater64U - rewriteTablePPC64Min:         rewriteValuePPC64_OpGreater64U,
+	OpGreater8 - rewriteTablePPC64Min:           rewriteValuePPC64_OpGreater8,
+	OpGreater8U - rewriteTablePPC64Min:          rewriteValuePPC64_OpGreater8U,
+	OpHmul16 - rewriteTablePPC64Min:             rewriteValuePPC64_OpHmul16,
+	OpHmul16u - rewriteTablePPC64Min:            rewriteValuePPC64_OpHmul16u,
+	OpHmul32 - rewriteTablePPC64Min:             rewriteValuePPC64_OpHmul32,
+	OpHmul32u - rewriteTablePPC64Min:            rewriteValuePPC64_OpHmul32u,
+	OpHmul64 - rewriteTablePPC64Min:             rewriteValuePPC64_OpHmul64,
+	OpHmul64u - rewriteTablePPC64Min:            rewriteValuePPC64_OpHmul64u,
+	OpHmul8 - rewriteTablePPC64Min:              rewriteValuePPC64_OpHmul8,
+	OpHmul8u - rewriteTablePPC64Min:             rewriteValuePPC64_OpHmul8u,
+	OpInterCall - rewriteTablePPC64Min:          rewriteValuePPC64_OpInterCall,
+	OpIsInBounds - rewriteTablePPC64Min:         rewriteValuePPC64_OpIsInBounds,
+	OpIsNonNil - rewriteTablePPC64Min:           rewriteValuePPC64_OpIsNonNil,
+	OpIsSliceInBounds - rewriteTablePPC64Min:    rewriteValuePPC64_OpIsSliceInBounds,
+	OpLeq16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpLeq16,
+	OpLeq16U - rewriteTablePPC64Min:             rewriteValuePPC64_OpLeq16U,
+	OpLeq32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpLeq32,
+	OpLeq32F - rewriteTablePPC64Min:             rewriteValuePPC64_OpLeq32F,
+	OpLeq32U - rewriteTablePPC64Min:             rewriteValuePPC64_OpLeq32U,
+	OpLeq64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpLeq64,
+	OpLeq64F - rewriteTablePPC64Min:             rewriteValuePPC64_OpLeq64F,
+	OpLeq64U - rewriteTablePPC64Min:             rewriteValuePPC64_OpLeq64U,
+	OpLeq8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpLeq8,
+	OpLeq8U - rewriteTablePPC64Min:              rewriteValuePPC64_OpLeq8U,
+	OpLess16 - rewriteTablePPC64Min:             rewriteValuePPC64_OpLess16,
+	OpLess16U - rewriteTablePPC64Min:            rewriteValuePPC64_OpLess16U,
+	OpLess32 - rewriteTablePPC64Min:             rewriteValuePPC64_OpLess32,
+	OpLess32F - rewriteTablePPC64Min:            rewriteValuePPC64_OpLess32F,
+	OpLess32U - rewriteTablePPC64Min:            rewriteValuePPC64_OpLess32U,
+	OpLess64 - rewriteTablePPC64Min:             rewriteValuePPC64_OpLess64,
+	OpLess64F - rewriteTablePPC64Min:            rewriteValuePPC64_OpLess64F,
+	OpLess64U - rewriteTablePPC64Min:            rewriteValuePPC64_OpLess64U,
+	OpLess8 - rewriteTablePPC64Min:              rewriteValuePPC64_OpLess8,
+	OpLess8U - rewriteTablePPC64Min:             rewriteValuePPC64_OpLess8U,
+	OpLoad - rewriteTablePPC64Min:               rewriteValuePPC64_OpLoad,
+	OpLsh16x16 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh16x16,
+	OpLsh16x32 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh16x32,
+	OpLsh16x64 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh16x64,
+	OpLsh16x8 - rewriteTablePPC64Min:            rewriteValuePPC64_OpLsh16x8,
+	OpLsh32x16 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh32x16,
+	OpLsh32x32 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh32x32,
+	OpLsh32x64 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh32x64,
+	OpLsh32x8 - rewriteTablePPC64Min:            rewriteValuePPC64_OpLsh32x8,
+	OpLsh64x16 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh64x16,
+	OpLsh64x32 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh64x32,
+	OpLsh64x64 - rewriteTablePPC64Min:           rewriteValuePPC64_OpLsh64x64,
+	OpLsh64x8 - rewriteTablePPC64Min:            rewriteValuePPC64_OpLsh64x8,
+	OpLsh8x16 - rewriteTablePPC64Min:            rewriteValuePPC64_OpLsh8x16,
+	OpLsh8x32 - rewriteTablePPC64Min:            rewriteValuePPC64_OpLsh8x32,
+	OpLsh8x64 - rewriteTablePPC64Min:            rewriteValuePPC64_OpLsh8x64,
+	OpLsh8x8 - rewriteTablePPC64Min:             rewriteValuePPC64_OpLsh8x8,
+	OpMod16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpMod16,
+	OpMod16u - rewriteTablePPC64Min:             rewriteValuePPC64_OpMod16u,
+	OpMod32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpMod32,
+	OpMod32u - rewriteTablePPC64Min:             rewriteValuePPC64_OpMod32u,
+	OpMod64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpMod64,
+	OpMod64u - rewriteTablePPC64Min:             rewriteValuePPC64_OpMod64u,
+	OpMod8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpMod8,
+	OpMod8u - rewriteTablePPC64Min:              rewriteValuePPC64_OpMod8u,
+	OpMove - rewriteTablePPC64Min:               rewriteValuePPC64_OpMove,
+	OpMul16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpMul16,
+	OpMul32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpMul32,
+	OpMul32F - rewriteTablePPC64Min:             rewriteValuePPC64_OpMul32F,
+	OpMul64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpMul64,
+	OpMul64F - rewriteTablePPC64Min:             rewriteValuePPC64_OpMul64F,
+	OpMul8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpMul8,
+	OpNeg16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpNeg16,
+	OpNeg32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpNeg32,
+	OpNeg32F - rewriteTablePPC64Min:             rewriteValuePPC64_OpNeg32F,
+	OpNeg64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpNeg64,
+	OpNeg64F - rewriteTablePPC64Min:             rewriteValuePPC64_OpNeg64F,
+	OpNeg8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpNeg8,
+	OpNeq16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpNeq16,
+	OpNeq32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpNeq32,
+	OpNeq32F - rewriteTablePPC64Min:             rewriteValuePPC64_OpNeq32F,
+	OpNeq64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpNeq64,
+	OpNeq64F - rewriteTablePPC64Min:             rewriteValuePPC64_OpNeq64F,
+	OpNeq8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpNeq8,
+	OpNeqB - rewriteTablePPC64Min:               rewriteValuePPC64_OpNeqB,
+	OpNeqPtr - rewriteTablePPC64Min:             rewriteValuePPC64_OpNeqPtr,
+	OpNilCheck - rewriteTablePPC64Min:           rewriteValuePPC64_OpNilCheck,
+	OpNot - rewriteTablePPC64Min:                rewriteValuePPC64_OpNot,
+	OpOffPtr - rewriteTablePPC64Min:             rewriteValuePPC64_OpOffPtr,
+	OpOr16 - rewriteTablePPC64Min:               rewriteValuePPC64_OpOr16,
+	OpOr32 - rewriteTablePPC64Min:               rewriteValuePPC64_OpOr32,
+	OpOr64 - rewriteTablePPC64Min:               rewriteValuePPC64_OpOr64,
+	OpOr8 - rewriteTablePPC64Min:                rewriteValuePPC64_OpOr8,
+	OpOrB - rewriteTablePPC64Min:                rewriteValuePPC64_OpOrB,
+	OpPPC64ADD - rewriteTablePPC64Min:           rewriteValuePPC64_OpPPC64ADD,
+	OpPPC64CMPUconst - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64CMPUconst,
+	OpPPC64CMPWUconst - rewriteTablePPC64Min:    rewriteValuePPC64_OpPPC64CMPWUconst,
+	OpPPC64CMPWconst - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64CMPWconst,
+	OpPPC64CMPconst - rewriteTablePPC64Min:      rewriteValuePPC64_OpPPC64CMPconst,
+	OpPPC64Equal - rewriteTablePPC64Min:         rewriteValuePPC64_OpPPC64Equal,
+	OpPPC64FMOVDload - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64FMOVDload,
+	OpPPC64FMOVDstore - rewriteTablePPC64Min:    rewriteValuePPC64_OpPPC64FMOVDstore,
+	OpPPC64FMOVSload - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64FMOVSload,
+	OpPPC64FMOVSstore - rewriteTablePPC64Min:    rewriteValuePPC64_OpPPC64FMOVSstore,
+	OpPPC64GreaterEqual - rewriteTablePPC64Min:  rewriteValuePPC64_OpPPC64GreaterEqual,
+	OpPPC64GreaterThan - rewriteTablePPC64Min:   rewriteValuePPC64_OpPPC64GreaterThan,
+	OpPPC64LessEqual - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64LessEqual,
+	OpPPC64LessThan - rewriteTablePPC64Min:      rewriteValuePPC64_OpPPC64LessThan,
+	OpPPC64MOVBZload - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64MOVBZload,
+	OpPPC64MOVBload - rewriteTablePPC64Min:      rewriteValuePPC64_OpPPC64MOVBload,
+	OpPPC64MOVBstore - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64MOVBstore,
+	OpPPC64MOVBstorezero - rewriteTablePPC64Min: rewriteValuePPC64_OpPPC64MOVBstorezero,
+	OpPPC64MOVDload - rewriteTablePPC64Min:      rewriteValuePPC64_OpPPC64MOVDload,
+	OpPPC64MOVDstore - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64MOVDstore,
+	OpPPC64MOVDstorezero - rewriteTablePPC64Min: rewriteValuePPC64_OpPPC64MOVDstorezero,
+	OpPPC64MOVHZload - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64MOVHZload,
+	OpPPC64MOVHload - rewriteTablePPC64Min:      rewriteValuePPC64_OpPPC64MOVHload,
+	OpPPC64MOVHstore - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64MOVHstore,
+	OpPPC64MOVHstorezero - rewriteTablePPC64Min: rewriteValuePPC64_OpPPC64MOVHstorezero,
+	OpPPC64MOVWZload - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64MOVWZload,
+	OpPPC64MOVWload - rewriteTablePPC64Min:      rewriteValuePPC64_OpPPC64MOVWload,
+	OpPPC64MOVWstore - rewriteTablePPC64Min:     rewriteValuePPC64_OpPPC64MOVWstore,
+	OpPPC64MOVWstorezero - rewriteTablePPC64Min: rewriteValuePPC64_OpPPC64MOVWstorezero,
+	OpPPC64NotEqual - rewriteTablePPC64Min:      rewriteValuePPC64_OpPPC64NotEqual,
+	OpRsh16Ux16 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh16Ux16,
+	OpRsh16Ux32 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh16Ux32,
+	OpRsh16Ux64 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh16Ux64,
+	OpRsh16Ux8 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh16Ux8,
+	OpRsh16x16 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh16x16,
+	OpRsh16x32 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh16x32,
+	OpRsh16x64 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh16x64,
+	OpRsh16x8 - rewriteTablePPC64Min:            rewriteValuePPC64_OpRsh16x8,
+	OpRsh32Ux16 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh32Ux16,
+	OpRsh32Ux32 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh32Ux32,
+	OpRsh32Ux64 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh32Ux64,
+	OpRsh32Ux8 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh32Ux8,
+	OpRsh32x16 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh32x16,
+	OpRsh32x32 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh32x32,
+	OpRsh32x64 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh32x64,
+	OpRsh32x8 - rewriteTablePPC64Min:            rewriteValuePPC64_OpRsh32x8,
+	OpRsh64Ux16 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh64Ux16,
+	OpRsh64Ux32 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh64Ux32,
+	OpRsh64Ux64 - rewriteTablePPC64Min:          rewriteValuePPC64_OpRsh64Ux64,
+	OpRsh64Ux8 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh64Ux8,
+	OpRsh64x16 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh64x16,
+	OpRsh64x32 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh64x32,
+	OpRsh64x64 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh64x64,
+	OpRsh64x8 - rewriteTablePPC64Min:            rewriteValuePPC64_OpRsh64x8,
+	OpRsh8Ux16 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh8Ux16,
+	OpRsh8Ux32 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh8Ux32,
+	OpRsh8Ux64 - rewriteTablePPC64Min:           rewriteValuePPC64_OpRsh8Ux64,
+	OpRsh8Ux8 - rewriteTablePPC64Min:            rewriteValuePPC64_OpRsh8Ux8,
+	OpRsh8x16 - rewriteTablePPC64Min:            rewriteValuePPC64_OpRsh8x16,
+	OpRsh8x32 - rewriteTablePPC64Min:            rewriteValuePPC64_OpRsh8x32,
+	OpRsh8x64 - rewriteTablePPC64Min:            rewriteValuePPC64_OpRsh8x64,
+	OpRsh8x8 - rewriteTablePPC64Min:             rewriteValuePPC64_OpRsh8x8,
+	OpSignExt16to32 - rewriteTablePPC64Min:      rewriteValuePPC64_OpSignExt16to32,
+	OpSignExt16to64 - rewriteTablePPC64Min:      rewriteValuePPC64_OpSignExt16to64,
+	OpSignExt32to64 - rewriteTablePPC64Min:      rewriteValuePPC64_OpSignExt32to64,
+	OpSignExt8to16 - rewriteTablePPC64Min:       rewriteValuePPC64_OpSignExt8to16,
+	OpSignExt8to32 - rewriteTablePPC64Min:       rewriteValuePPC64_OpSignExt8to32,
+	OpSignExt8to64 - rewriteTablePPC64Min:       rewriteValuePPC64_OpSignExt8to64,
+	OpSqrt - rewriteTablePPC64Min:               rewriteValuePPC64_OpSqrt,
+	OpStaticCall - rewriteTablePPC64Min:         rewriteValuePPC64_OpStaticCall,
+	OpStore - rewriteTablePPC64Min:              rewriteValuePPC64_OpStore,
+	OpSub16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpSub16,
+	OpSub32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpSub32,
+	OpSub32F - rewriteTablePPC64Min:             rewriteValuePPC64_OpSub32F,
+	OpSub64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpSub64,
+	OpSub64F - rewriteTablePPC64Min:             rewriteValuePPC64_OpSub64F,
+	OpSub8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpSub8,
+	OpSubPtr - rewriteTablePPC64Min:             rewriteValuePPC64_OpSubPtr,
+	OpTrunc16to8 - rewriteTablePPC64Min:         rewriteValuePPC64_OpTrunc16to8,
+	OpTrunc32to16 - rewriteTablePPC64Min:        rewriteValuePPC64_OpTrunc32to16,
+	OpTrunc32to8 - rewriteTablePPC64Min:         rewriteValuePPC64_OpTrunc32to8,
+	OpTrunc64to16 - rewriteTablePPC64Min:        rewriteValuePPC64_OpTrunc64to16,
+	OpTrunc64to32 - rewriteTablePPC64Min:        rewriteValuePPC64_OpTrunc64to32,
+	OpTrunc64to8 - rewriteTablePPC64Min:         rewriteValuePPC64_OpTrunc64to8,
+	OpXor16 - rewriteTablePPC64Min:              rewriteValuePPC64_OpXor16,
+	OpXor32 - rewriteTablePPC64Min:              rewriteValuePPC64_OpXor32,
+	OpXor64 - rewriteTablePPC64Min:              rewriteValuePPC64_OpXor64,
+	OpXor8 - rewriteTablePPC64Min:               rewriteValuePPC64_OpXor8,
+	OpZero - rewriteTablePPC64Min:               rewriteValuePPC64_OpZero,
+	OpZeroExt16to32 - rewriteTablePPC64Min:      rewriteValuePPC64_OpZeroExt16to32,
+	OpZeroExt16to64 - rewriteTablePPC64Min:      rewriteValuePPC64_OpZeroExt16to64,
+	OpZeroExt32to64 - rewriteTablePPC64Min:      rewriteValuePPC64_OpZeroExt32to64,
+	OpZeroExt8to16 - rewriteTablePPC64Min:       rewriteValuePPC64_OpZeroExt8to16,
+	OpZeroExt8to32 - rewriteTablePPC64Min:       rewriteValuePPC64_OpZeroExt8to32,
+	OpZeroExt8to64 - rewriteTablePPC64Min:       rewriteValuePPC64_OpZeroExt8to64,
+}
+
 func rewriteValuePPC64(v *Value, config *Config) bool {
-	switch v.Op {
-	case OpAdd16:
-		return rewriteValuePPC64_OpAdd16(v, config)
-	case OpAdd32:
-		return rewriteValuePPC64_OpAdd32(v, config)
-	case OpAdd32F:
-		return rewriteValuePPC64_OpAdd32F(v, config)
-	case OpAdd64:
-		return rewriteValuePPC64_OpAdd64(v, config)
-	case OpAdd64F:
-		return rewriteValuePPC64_OpAdd64F(v, config)
-	case OpAdd8:
-		return rewriteValuePPC64_OpAdd8(v, config)
-	case OpAddPtr:
-		return rewriteValuePPC64_OpAddPtr(v, config)
-	case OpAddr:
-		return rewriteValuePPC64_OpAddr(v, config)
-	case OpAnd16:
-		return rewriteValuePPC64_OpAnd16(v, config)
-	case OpAnd32:
-		return rewriteValuePPC64_OpAnd32(v, config)
-	case OpAnd64:
-		return rewriteValuePPC64_OpAnd64(v, config)
-	case OpAnd8:
-		return rewriteValuePPC64_OpAnd8(v, config)
-	case OpAndB:
-		return rewriteValuePPC64_OpAndB(v, config)
-	case OpAvg64u:
-		return rewriteValuePPC64_OpAvg64u(v, config)
-	case OpClosureCall:
-		return rewriteValuePPC64_OpClosureCall(v, config)
-	case OpCom16:
-		return rewriteValuePPC64_OpCom16(v, config)
-	case OpCom32:
-		return rewriteValuePPC64_OpCom32(v, config)
-	case OpCom64:
-		return rewriteValuePPC64_OpCom64(v, config)
-	case OpCom8:
-		return rewriteValuePPC64_OpCom8(v, config)
-	case OpConst16:
-		return rewriteValuePPC64_OpConst16(v, config)
-	case OpConst32:
-		return rewriteValuePPC64_OpConst32(v, config)
-	case OpConst32F:
-		return rewriteValuePPC64_OpConst32F(v, config)
-	case OpConst64:
-		return rewriteValuePPC64_OpConst64(v, config)
-	case OpConst64F:
-		return rewriteValuePPC64_OpConst64F(v, config)
-	case OpConst8:
-		return rewriteValuePPC64_OpConst8(v, config)
-	case OpConstBool:
-		return rewriteValuePPC64_OpConstBool(v, config)
-	case OpConstNil:
-		return rewriteValuePPC64_OpConstNil(v, config)
-	case OpConvert:
-		return rewriteValuePPC64_OpConvert(v, config)
-	case OpCvt32Fto32:
-		return rewriteValuePPC64_OpCvt32Fto32(v, config)
-	case OpCvt32Fto64:
-		return rewriteValuePPC64_OpCvt32Fto64(v, config)
-	case OpCvt32Fto64F:
-		return rewriteValuePPC64_OpCvt32Fto64F(v, config)
-	case OpCvt32to32F:
-		return rewriteValuePPC64_OpCvt32to32F(v, config)
-	case OpCvt32to64F:
-		return rewriteValuePPC64_OpCvt32to64F(v, config)
-	case OpCvt64Fto32:
-		return rewriteValuePPC64_OpCvt64Fto32(v, config)
-	case OpCvt64Fto32F:
-		return rewriteValuePPC64_OpCvt64Fto32F(v, config)
-	case OpCvt64Fto64:
-		return rewriteValuePPC64_OpCvt64Fto64(v, config)
-	case OpCvt64to32F:
-		return rewriteValuePPC64_OpCvt64to32F(v, config)
-	case OpCvt64to64F:
-		return rewriteValuePPC64_OpCvt64to64F(v, config)
-	case OpDeferCall:
-		return rewriteValuePPC64_OpDeferCall(v, config)
-	case OpDiv16:
-		return rewriteValuePPC64_OpDiv16(v, config)
-	case OpDiv16u:
-		return rewriteValuePPC64_OpDiv16u(v, config)
-	case OpDiv32:
-		return rewriteValuePPC64_OpDiv32(v, config)
-	case OpDiv32F:
-		return rewriteValuePPC64_OpDiv32F(v, config)
-	case OpDiv32u:
-		return rewriteValuePPC64_OpDiv32u(v, config)
-	case OpDiv64:
-		return rewriteValuePPC64_OpDiv64(v, config)
-	case OpDiv64F:
-		return rewriteValuePPC64_OpDiv64F(v, config)
-	case OpDiv64u:
-		return rewriteValuePPC64_OpDiv64u(v, config)
-	case OpDiv8:
-		return rewriteValuePPC64_OpDiv8(v, config)
-	case OpDiv8u:
-		return rewriteValuePPC64_OpDiv8u(v, config)
-	case OpEq16:
-		return rewriteValuePPC64_OpEq16(v, config)
-	case OpEq32:
-		return rewriteValuePPC64_OpEq32(v, config)
-	case OpEq32F:
-		return rewriteValuePPC64_OpEq32F(v, config)
-	case OpEq64:
-		return rewriteValuePPC64_OpEq64(v, config)
-	case OpEq64F:
-		return rewriteValuePPC64_OpEq64F(v, config)
-	case OpEq8:
-		return rewriteValuePPC64_OpEq8(v, config)
-	case OpEqB:
-		return rewriteValuePPC64_OpEqB(v, config)
-	case OpEqPtr:
-		return rewriteValuePPC64_OpEqPtr(v, config)
-	case OpGeq16:
-		return rewriteValuePPC64_OpGeq16(v, config)
-	case OpGeq16U:
-		return rewriteValuePPC64_OpGeq16U(v, config)
-	case OpGeq32:
-		return rewriteValuePPC64_OpGeq32(v, config)
-	case OpGeq32F:
-		return rewriteValuePPC64_OpGeq32F(v, config)
-	case OpGeq32U:
-		return rewriteValuePPC64_OpGeq32U(v, config)
-	case OpGeq64:
-		return rewriteValuePPC64_OpGeq64(v, config)
-	case OpGeq64F:
-		return rewriteValuePPC64_OpGeq64F(v, config)
-	case OpGeq64U:
-		return rewriteValuePPC64_OpGeq64U(v, config)
-	case OpGeq8:
-		return rewriteValuePPC64_OpGeq8(v, config)
-	case OpGeq8U:
-		return rewriteValuePPC64_OpGeq8U(v, config)
-	case OpGetClosurePtr:
-		return rewriteValuePPC64_OpGetClosurePtr(v, config)
-	case OpGoCall:
-		return rewriteValuePPC64_OpGoCall(v, config)
-	case OpGreater16:
-		return rewriteValuePPC64_OpGreater16(v, config)
-	case OpGreater16U:
-		return rewriteValuePPC64_OpGreater16U(v, config)
-	case OpGreater32:
-		return rewriteValuePPC64_OpGreater32(v, config)
-	case OpGreater32F:
-		return rewriteValuePPC64_OpGreater32F(v, config)
-	case OpGreater32U:
-		return rewriteValuePPC64_OpGreater32U(v, config)
-	case OpGreater64:
-		return rewriteValuePPC64_OpGreater64(v, config)
-	case OpGreater64F:
-		return rewriteValuePPC64_OpGreater64F(v, config)
-	case OpGreater64U:
-		return rewriteValuePPC64_OpGreater64U(v, config)
-	case OpGreater8:
-		return rewriteValuePPC64_OpGreater8(v, config)
-	case OpGreater8U:
-		return rewriteValuePPC64_OpGreater8U(v, config)
-	case OpHmul16:
-		return rewriteValuePPC64_OpHmul16(v, config)
-	case OpHmul16u:
-		return rewriteValuePPC64_OpHmul16u(v, config)
-	case OpHmul32:
-		return rewriteValuePPC64_OpHmul32(v, config)
-	case OpHmul32u:
-		return rewriteValuePPC64_OpHmul32u(v, config)
-	case OpHmul64:
-		return rewriteValuePPC64_OpHmul64(v, config)
-	case OpHmul64u:
-		return rewriteValuePPC64_OpHmul64u(v, config)
-	case OpHmul8:
-		return rewriteValuePPC64_OpHmul8(v, config)
-	case OpHmul8u:
-		return rewriteValuePPC64_OpHmul8u(v, config)
-	case OpInterCall:
-		return rewriteValuePPC64_OpInterCall(v, config)
-	case OpIsInBounds:
-		return rewriteValuePPC64_OpIsInBounds(v, config)
-	case OpIsNonNil:
-		return rewriteValuePPC64_OpIsNonNil(v, config)
-	case OpIsSliceInBounds:
-		return rewriteValuePPC64_OpIsSliceInBounds(v, config)
-	case OpLeq16:
-		return rewriteValuePPC64_OpLeq16(v, config)
-	case OpLeq16U:
-		return rewriteValuePPC64_OpLeq16U(v, config)
-	case OpLeq32:
-		return rewriteValuePPC64_OpLeq32(v, config)
-	case OpLeq32F:
-		return rewriteValuePPC64_OpLeq32F(v, config)
-	case OpLeq32U:
-		return rewriteValuePPC64_OpLeq32U(v, config)
-	case OpLeq64:
-		return rewriteValuePPC64_OpLeq64(v, config)
-	case OpLeq64F:
-		return rewriteValuePPC64_OpLeq64F(v, config)
-	case OpLeq64U:
-		return rewriteValuePPC64_OpLeq64U(v, config)
-	case OpLeq8:
-		return rewriteValuePPC64_OpLeq8(v, config)
-	case OpLeq8U:
-		return rewriteValuePPC64_OpLeq8U(v, config)
-	case OpLess16:
-		return rewriteValuePPC64_OpLess16(v, config)
-	case OpLess16U:
-		return rewriteValuePPC64_OpLess16U(v, config)
-	case OpLess32:
-		return rewriteValuePPC64_OpLess32(v, config)
-	case OpLess32F:
-		return rewriteValuePPC64_OpLess32F(v, config)
-	case OpLess32U:
-		return rewriteValuePPC64_OpLess32U(v, config)
-	case OpLess64:
-		return rewriteValuePPC64_OpLess64(v, config)
-	case OpLess64F:
-		return rewriteValuePPC64_OpLess64F(v, config)
-	case OpLess64U:
-		return rewriteValuePPC64_OpLess64U(v, config)
-	case OpLess8:
-		return rewriteValuePPC64_OpLess8(v, config)
-	case OpLess8U:
-		return rewriteValuePPC64_OpLess8U(v, config)
-	case OpLoad:
-		return rewriteValuePPC64_OpLoad(v, config)
-	case OpLsh16x16:
-		return rewriteValuePPC64_OpLsh16x16(v, config)
-	case OpLsh16x32:
-		return rewriteValuePPC64_OpLsh16x32(v, config)
-	case OpLsh16x64:
-		return rewriteValuePPC64_OpLsh16x64(v, config)
-	case OpLsh16x8:
-		return rewriteValuePPC64_OpLsh16x8(v, config)
-	case OpLsh32x16:
-		return rewriteValuePPC64_OpLsh32x16(v, config)
-	case OpLsh32x32:
-		return rewriteValuePPC64_OpLsh32x32(v, config)
-	case OpLsh32x64:
-		return rewriteValuePPC64_OpLsh32x64(v, config)
-	case OpLsh32x8:
-		return rewriteValuePPC64_OpLsh32x8(v, config)
-	case OpLsh64x16:
-		return rewriteValuePPC64_OpLsh64x16(v, config)
-	case OpLsh64x32:
-		return rewriteValuePPC64_OpLsh64x32(v, config)
-	case OpLsh64x64:
-		return rewriteValuePPC64_OpLsh64x64(v, config)
-	case OpLsh64x8:
-		return rewriteValuePPC64_OpLsh64x8(v, config)
-	case OpLsh8x16:
-		return rewriteValuePPC64_OpLsh8x16(v, config)
-	case OpLsh8x32:
-		return rewriteValuePPC64_OpLsh8x32(v, config)
-	case OpLsh8x64:
-		return rewriteValuePPC64_OpLsh8x64(v, config)
-	case OpLsh8x8:
-		return rewriteValuePPC64_OpLsh8x8(v, config)
-	case OpMod16:
-		return rewriteValuePPC64_OpMod16(v, config)
-	case OpMod16u:
-		return rewriteValuePPC64_OpMod16u(v, config)
-	case OpMod32:
-		return rewriteValuePPC64_OpMod32(v, config)
-	case OpMod32u:
-		return rewriteValuePPC64_OpMod32u(v, config)
-	case OpMod64:
-		return rewriteValuePPC64_OpMod64(v, config)
-	case OpMod64u:
-		return rewriteValuePPC64_OpMod64u(v, config)
-	case OpMod8:
-		return rewriteValuePPC64_OpMod8(v, config)
-	case OpMod8u:
-		return rewriteValuePPC64_OpMod8u(v, config)
-	case OpMove:
-		return rewriteValuePPC64_OpMove(v, config)
-	case OpMul16:
-		return rewriteValuePPC64_OpMul16(v, config)
-	case OpMul32:
-		return rewriteValuePPC64_OpMul32(v, config)
-	case OpMul32F:
-		return rewriteValuePPC64_OpMul32F(v, config)
-	case OpMul64:
-		return rewriteValuePPC64_OpMul64(v, config)
-	case OpMul64F:
-		return rewriteValuePPC64_OpMul64F(v, config)
-	case OpMul8:
-		return rewriteValuePPC64_OpMul8(v, config)
-	case OpNeg16:
-		return rewriteValuePPC64_OpNeg16(v, config)
-	case OpNeg32:
-		return rewriteValuePPC64_OpNeg32(v, config)
-	case OpNeg32F:
-		return rewriteValuePPC64_OpNeg32F(v, config)
-	case OpNeg64:
-		return rewriteValuePPC64_OpNeg64(v, config)
-	case OpNeg64F:
-		return rewriteValuePPC64_OpNeg64F(v, config)
-	case OpNeg8:
-		return rewriteValuePPC64_OpNeg8(v, config)
-	case OpNeq16:
-		return rewriteValuePPC64_OpNeq16(v, config)
-	case OpNeq32:
-		return rewriteValuePPC64_OpNeq32(v, config)
-	case OpNeq32F:
-		return rewriteValuePPC64_OpNeq32F(v, config)
-	case OpNeq64:
-		return rewriteValuePPC64_OpNeq64(v, config)
-	case OpNeq64F:
-		return rewriteValuePPC64_OpNeq64F(v, config)
-	case OpNeq8:
-		return rewriteValuePPC64_OpNeq8(v, config)
-	case OpNeqB:
-		return rewriteValuePPC64_OpNeqB(v, config)
-	case OpNeqPtr:
-		return rewriteValuePPC64_OpNeqPtr(v, config)
-	case OpNilCheck:
-		return rewriteValuePPC64_OpNilCheck(v, config)
-	case OpNot:
-		return rewriteValuePPC64_OpNot(v, config)
-	case OpOffPtr:
-		return rewriteValuePPC64_OpOffPtr(v, config)
-	case OpOr16:
-		return rewriteValuePPC64_OpOr16(v, config)
-	case OpOr32:
-		return rewriteValuePPC64_OpOr32(v, config)
-	case OpOr64:
-		return rewriteValuePPC64_OpOr64(v, config)
-	case OpOr8:
-		return rewriteValuePPC64_OpOr8(v, config)
-	case OpOrB:
-		return rewriteValuePPC64_OpOrB(v, config)
-	case OpPPC64ADD:
-		return rewriteValuePPC64_OpPPC64ADD(v, config)
-	case OpPPC64CMPUconst:
-		return rewriteValuePPC64_OpPPC64CMPUconst(v, config)
-	case OpPPC64CMPWUconst:
-		return rewriteValuePPC64_OpPPC64CMPWUconst(v, config)
-	case OpPPC64CMPWconst:
-		return rewriteValuePPC64_OpPPC64CMPWconst(v, config)
-	case OpPPC64CMPconst:
-		return rewriteValuePPC64_OpPPC64CMPconst(v, config)
-	case OpPPC64Equal:
-		return rewriteValuePPC64_OpPPC64Equal(v, config)
-	case OpPPC64FMOVDload:
-		return rewriteValuePPC64_OpPPC64FMOVDload(v, config)
-	case OpPPC64FMOVDstore:
-		return rewriteValuePPC64_OpPPC64FMOVDstore(v, config)
-	case OpPPC64FMOVSload:
-		return rewriteValuePPC64_OpPPC64FMOVSload(v, config)
-	case OpPPC64FMOVSstore:
-		return rewriteValuePPC64_OpPPC64FMOVSstore(v, config)
-	case OpPPC64GreaterEqual:
-		return rewriteValuePPC64_OpPPC64GreaterEqual(v, config)
-	case OpPPC64GreaterThan:
-		return rewriteValuePPC64_OpPPC64GreaterThan(v, config)
-	case OpPPC64LessEqual:
-		return rewriteValuePPC64_OpPPC64LessEqual(v, config)
-	case OpPPC64LessThan:
-		return rewriteValuePPC64_OpPPC64LessThan(v, config)
-	case OpPPC64MOVBZload:
-		return rewriteValuePPC64_OpPPC64MOVBZload(v, config)
-	case OpPPC64MOVBload:
-		return rewriteValuePPC64_OpPPC64MOVBload(v, config)
-	case OpPPC64MOVBstore:
-		return rewriteValuePPC64_OpPPC64MOVBstore(v, config)
-	case OpPPC64MOVBstorezero:
-		return rewriteValuePPC64_OpPPC64MOVBstorezero(v, config)
-	case OpPPC64MOVDload:
-		return rewriteValuePPC64_OpPPC64MOVDload(v, config)
-	case OpPPC64MOVDstore:
-		return rewriteValuePPC64_OpPPC64MOVDstore(v, config)
-	case OpPPC64MOVDstorezero:
-		return rewriteValuePPC64_OpPPC64MOVDstorezero(v, config)
-	case OpPPC64MOVHZload:
-		return rewriteValuePPC64_OpPPC64MOVHZload(v, config)
-	case OpPPC64MOVHload:
-		return rewriteValuePPC64_OpPPC64MOVHload(v, config)
-	case OpPPC64MOVHstore:
-		return rewriteValuePPC64_OpPPC64MOVHstore(v, config)
-	case OpPPC64MOVHstorezero:
-		return rewriteValuePPC64_OpPPC64MOVHstorezero(v, config)
-	case OpPPC64MOVWZload:
-		return rewriteValuePPC64_OpPPC64MOVWZload(v, config)
-	case OpPPC64MOVWload:
-		return rewriteValuePPC64_OpPPC64MOVWload(v, config)
-	case OpPPC64MOVWstore:
-		return rewriteValuePPC64_OpPPC64MOVWstore(v, config)
-	case OpPPC64MOVWstorezero:
-		return rewriteValuePPC64_OpPPC64MOVWstorezero(v, config)
-	case OpPPC64NotEqual:
-		return rewriteValuePPC64_OpPPC64NotEqual(v, config)
-	case OpRsh16Ux16:
-		return rewriteValuePPC64_OpRsh16Ux16(v, config)
-	case OpRsh16Ux32:
-		return rewriteValuePPC64_OpRsh16Ux32(v, config)
-	case OpRsh16Ux64:
-		return rewriteValuePPC64_OpRsh16Ux64(v, config)
-	case OpRsh16Ux8:
-		return rewriteValuePPC64_OpRsh16Ux8(v, config)
-	case OpRsh16x16:
-		return rewriteValuePPC64_OpRsh16x16(v, config)
-	case OpRsh16x32:
-		return rewriteValuePPC64_OpRsh16x32(v, config)
-	case OpRsh16x64:
-		return rewriteValuePPC64_OpRsh16x64(v, config)
-	case OpRsh16x8:
-		return rewriteValuePPC64_OpRsh16x8(v, config)
-	case OpRsh32Ux16:
-		return rewriteValuePPC64_OpRsh32Ux16(v, config)
-	case OpRsh32Ux32:
-		return rewriteValuePPC64_OpRsh32Ux32(v, config)
-	case OpRsh32Ux64:
-		return rewriteValuePPC64_OpRsh32Ux64(v, config)
-	case OpRsh32Ux8:
-		return rewriteValuePPC64_OpRsh32Ux8(v, config)
-	case OpRsh32x16:
-		return rewriteValuePPC64_OpRsh32x16(v, config)
-	case OpRsh32x32:
-		return rewriteValuePPC64_OpRsh32x32(v, config)
-	case OpRsh32x64:
-		return rewriteValuePPC64_OpRsh32x64(v, config)
-	case OpRsh32x8:
-		return rewriteValuePPC64_OpRsh32x8(v, config)
-	case OpRsh64Ux16:
-		return rewriteValuePPC64_OpRsh64Ux16(v, config)
-	case OpRsh64Ux32:
-		return rewriteValuePPC64_OpRsh64Ux32(v, config)
-	case OpRsh64Ux64:
-		return rewriteValuePPC64_OpRsh64Ux64(v, config)
-	case OpRsh64Ux8:
-		return rewriteValuePPC64_OpRsh64Ux8(v, config)
-	case OpRsh64x16:
-		return rewriteValuePPC64_OpRsh64x16(v, config)
-	case OpRsh64x32:
-		return rewriteValuePPC64_OpRsh64x32(v, config)
-	case OpRsh64x64:
-		return rewriteValuePPC64_OpRsh64x64(v, config)
-	case OpRsh64x8:
-		return rewriteValuePPC64_OpRsh64x8(v, config)
-	case OpRsh8Ux16:
-		return rewriteValuePPC64_OpRsh8Ux16(v, config)
-	case OpRsh8Ux32:
-		return rewriteValuePPC64_OpRsh8Ux32(v, config)
-	case OpRsh8Ux64:
-		return rewriteValuePPC64_OpRsh8Ux64(v, config)
-	case OpRsh8Ux8:
-		return rewriteValuePPC64_OpRsh8Ux8(v, config)
-	case OpRsh8x16:
-		return rewriteValuePPC64_OpRsh8x16(v, config)
-	case OpRsh8x32:
-		return rewriteValuePPC64_OpRsh8x32(v, config)
-	case OpRsh8x64:
-		return rewriteValuePPC64_OpRsh8x64(v, config)
-	case OpRsh8x8:
-		return rewriteValuePPC64_OpRsh8x8(v, config)
-	case OpSignExt16to32:
-		return rewriteValuePPC64_OpSignExt16to32(v, config)
-	case OpSignExt16to64:
-		return rewriteValuePPC64_OpSignExt16to64(v, config)
-	case OpSignExt32to64:
-		return rewriteValuePPC64_OpSignExt32to64(v, config)
-	case OpSignExt8to16:
-		return rewriteValuePPC64_OpSignExt8to16(v, config)
-	case OpSignExt8to32:
-		return rewriteValuePPC64_OpSignExt8to32(v, config)
-	case OpSignExt8to64:
-		return rewriteValuePPC64_OpSignExt8to64(v, config)
-	case OpSqrt:
-		return rewriteValuePPC64_OpSqrt(v, config)
-	case OpStaticCall:
-		return rewriteValuePPC64_OpStaticCall(v, config)
-	case OpStore:
-		return rewriteValuePPC64_OpStore(v, config)
-	case OpSub16:
-		return rewriteValuePPC64_OpSub16(v, config)
-	case OpSub32:
-		return rewriteValuePPC64_OpSub32(v, config)
-	case OpSub32F:
-		return rewriteValuePPC64_OpSub32F(v, config)
-	case OpSub64:
-		return rewriteValuePPC64_OpSub64(v, config)
-	case OpSub64F:
-		return rewriteValuePPC64_OpSub64F(v, config)
-	case OpSub8:
-		return rewriteValuePPC64_OpSub8(v, config)
-	case OpSubPtr:
-		return rewriteValuePPC64_OpSubPtr(v, config)
-	case OpTrunc16to8:
-		return rewriteValuePPC64_OpTrunc16to8(v, config)
-	case OpTrunc32to16:
-		return rewriteValuePPC64_OpTrunc32to16(v, config)
-	case OpTrunc32to8:
-		return rewriteValuePPC64_OpTrunc32to8(v, config)
-	case OpTrunc64to16:
-		return rewriteValuePPC64_OpTrunc64to16(v, config)
-	case OpTrunc64to32:
-		return rewriteValuePPC64_OpTrunc64to32(v, config)
-	case OpTrunc64to8:
-		return rewriteValuePPC64_OpTrunc64to8(v, config)
-	case OpXor16:
-		return rewriteValuePPC64_OpXor16(v, config)
-	case OpXor32:
-		return rewriteValuePPC64_OpXor32(v, config)
-	case OpXor64:
-		return rewriteValuePPC64_OpXor64(v, config)
-	case OpXor8:
-		return rewriteValuePPC64_OpXor8(v, config)
-	case OpZero:
-		return rewriteValuePPC64_OpZero(v, config)
-	case OpZeroExt16to32:
-		return rewriteValuePPC64_OpZeroExt16to32(v, config)
-	case OpZeroExt16to64:
-		return rewriteValuePPC64_OpZeroExt16to64(v, config)
-	case OpZeroExt32to64:
-		return rewriteValuePPC64_OpZeroExt32to64(v, config)
-	case OpZeroExt8to16:
-		return rewriteValuePPC64_OpZeroExt8to16(v, config)
-	case OpZeroExt8to32:
-		return rewriteValuePPC64_OpZeroExt8to32(v, config)
-	case OpZeroExt8to64:
-		return rewriteValuePPC64_OpZeroExt8to64(v, config)
+	if v.Op < rewriteTablePPC64Min || v.Op > rewriteTablePPC64Max {
+		return false
 	}
-	return false
+	fn := rewriteTablePPC64[v.Op-rewriteTablePPC64Min]
+	if fn == nil {
+		return false
+	}
+	return fn(v, config)
 }
 func rewriteValuePPC64_OpAdd16(v *Value, config *Config) bool {
 	b := v.Block

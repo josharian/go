@@ -6,586 +6,309 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
+const rewriteTable386Min = Op386MOVSSload
+const rewriteTable386Max = OpZeromask
+
+var rewriteTable386 = [...]func(*Value, *Config) bool{
+	Op386ADCL - rewriteTable386Min:               rewriteValue386_Op386ADCL,
+	Op386ADDL - rewriteTable386Min:               rewriteValue386_Op386ADDL,
+	Op386ADDLcarry - rewriteTable386Min:          rewriteValue386_Op386ADDLcarry,
+	Op386ADDLconst - rewriteTable386Min:          rewriteValue386_Op386ADDLconst,
+	Op386ANDL - rewriteTable386Min:               rewriteValue386_Op386ANDL,
+	Op386ANDLconst - rewriteTable386Min:          rewriteValue386_Op386ANDLconst,
+	Op386CMPB - rewriteTable386Min:               rewriteValue386_Op386CMPB,
+	Op386CMPBconst - rewriteTable386Min:          rewriteValue386_Op386CMPBconst,
+	Op386CMPL - rewriteTable386Min:               rewriteValue386_Op386CMPL,
+	Op386CMPLconst - rewriteTable386Min:          rewriteValue386_Op386CMPLconst,
+	Op386CMPW - rewriteTable386Min:               rewriteValue386_Op386CMPW,
+	Op386CMPWconst - rewriteTable386Min:          rewriteValue386_Op386CMPWconst,
+	Op386LEAL - rewriteTable386Min:               rewriteValue386_Op386LEAL,
+	Op386LEAL1 - rewriteTable386Min:              rewriteValue386_Op386LEAL1,
+	Op386LEAL2 - rewriteTable386Min:              rewriteValue386_Op386LEAL2,
+	Op386LEAL4 - rewriteTable386Min:              rewriteValue386_Op386LEAL4,
+	Op386LEAL8 - rewriteTable386Min:              rewriteValue386_Op386LEAL8,
+	Op386MOVBLSX - rewriteTable386Min:            rewriteValue386_Op386MOVBLSX,
+	Op386MOVBLSXload - rewriteTable386Min:        rewriteValue386_Op386MOVBLSXload,
+	Op386MOVBLZX - rewriteTable386Min:            rewriteValue386_Op386MOVBLZX,
+	Op386MOVBload - rewriteTable386Min:           rewriteValue386_Op386MOVBload,
+	Op386MOVBloadidx1 - rewriteTable386Min:       rewriteValue386_Op386MOVBloadidx1,
+	Op386MOVBstore - rewriteTable386Min:          rewriteValue386_Op386MOVBstore,
+	Op386MOVBstoreconst - rewriteTable386Min:     rewriteValue386_Op386MOVBstoreconst,
+	Op386MOVBstoreconstidx1 - rewriteTable386Min: rewriteValue386_Op386MOVBstoreconstidx1,
+	Op386MOVBstoreidx1 - rewriteTable386Min:      rewriteValue386_Op386MOVBstoreidx1,
+	Op386MOVLload - rewriteTable386Min:           rewriteValue386_Op386MOVLload,
+	Op386MOVLloadidx1 - rewriteTable386Min:       rewriteValue386_Op386MOVLloadidx1,
+	Op386MOVLloadidx4 - rewriteTable386Min:       rewriteValue386_Op386MOVLloadidx4,
+	Op386MOVLstore - rewriteTable386Min:          rewriteValue386_Op386MOVLstore,
+	Op386MOVLstoreconst - rewriteTable386Min:     rewriteValue386_Op386MOVLstoreconst,
+	Op386MOVLstoreconstidx1 - rewriteTable386Min: rewriteValue386_Op386MOVLstoreconstidx1,
+	Op386MOVLstoreconstidx4 - rewriteTable386Min: rewriteValue386_Op386MOVLstoreconstidx4,
+	Op386MOVLstoreidx1 - rewriteTable386Min:      rewriteValue386_Op386MOVLstoreidx1,
+	Op386MOVLstoreidx4 - rewriteTable386Min:      rewriteValue386_Op386MOVLstoreidx4,
+	Op386MOVSDconst - rewriteTable386Min:         rewriteValue386_Op386MOVSDconst,
+	Op386MOVSDload - rewriteTable386Min:          rewriteValue386_Op386MOVSDload,
+	Op386MOVSDloadidx1 - rewriteTable386Min:      rewriteValue386_Op386MOVSDloadidx1,
+	Op386MOVSDloadidx8 - rewriteTable386Min:      rewriteValue386_Op386MOVSDloadidx8,
+	Op386MOVSDstore - rewriteTable386Min:         rewriteValue386_Op386MOVSDstore,
+	Op386MOVSDstoreidx1 - rewriteTable386Min:     rewriteValue386_Op386MOVSDstoreidx1,
+	Op386MOVSDstoreidx8 - rewriteTable386Min:     rewriteValue386_Op386MOVSDstoreidx8,
+	Op386MOVSSconst - rewriteTable386Min:         rewriteValue386_Op386MOVSSconst,
+	Op386MOVSSload - rewriteTable386Min:          rewriteValue386_Op386MOVSSload,
+	Op386MOVSSloadidx1 - rewriteTable386Min:      rewriteValue386_Op386MOVSSloadidx1,
+	Op386MOVSSloadidx4 - rewriteTable386Min:      rewriteValue386_Op386MOVSSloadidx4,
+	Op386MOVSSstore - rewriteTable386Min:         rewriteValue386_Op386MOVSSstore,
+	Op386MOVSSstoreidx1 - rewriteTable386Min:     rewriteValue386_Op386MOVSSstoreidx1,
+	Op386MOVSSstoreidx4 - rewriteTable386Min:     rewriteValue386_Op386MOVSSstoreidx4,
+	Op386MOVWLSX - rewriteTable386Min:            rewriteValue386_Op386MOVWLSX,
+	Op386MOVWLSXload - rewriteTable386Min:        rewriteValue386_Op386MOVWLSXload,
+	Op386MOVWLZX - rewriteTable386Min:            rewriteValue386_Op386MOVWLZX,
+	Op386MOVWload - rewriteTable386Min:           rewriteValue386_Op386MOVWload,
+	Op386MOVWloadidx1 - rewriteTable386Min:       rewriteValue386_Op386MOVWloadidx1,
+	Op386MOVWloadidx2 - rewriteTable386Min:       rewriteValue386_Op386MOVWloadidx2,
+	Op386MOVWstore - rewriteTable386Min:          rewriteValue386_Op386MOVWstore,
+	Op386MOVWstoreconst - rewriteTable386Min:     rewriteValue386_Op386MOVWstoreconst,
+	Op386MOVWstoreconstidx1 - rewriteTable386Min: rewriteValue386_Op386MOVWstoreconstidx1,
+	Op386MOVWstoreconstidx2 - rewriteTable386Min: rewriteValue386_Op386MOVWstoreconstidx2,
+	Op386MOVWstoreidx1 - rewriteTable386Min:      rewriteValue386_Op386MOVWstoreidx1,
+	Op386MOVWstoreidx2 - rewriteTable386Min:      rewriteValue386_Op386MOVWstoreidx2,
+	Op386MULL - rewriteTable386Min:               rewriteValue386_Op386MULL,
+	Op386MULLconst - rewriteTable386Min:          rewriteValue386_Op386MULLconst,
+	Op386NEGL - rewriteTable386Min:               rewriteValue386_Op386NEGL,
+	Op386NOTL - rewriteTable386Min:               rewriteValue386_Op386NOTL,
+	Op386ORL - rewriteTable386Min:                rewriteValue386_Op386ORL,
+	Op386ORLconst - rewriteTable386Min:           rewriteValue386_Op386ORLconst,
+	Op386ROLBconst - rewriteTable386Min:          rewriteValue386_Op386ROLBconst,
+	Op386ROLLconst - rewriteTable386Min:          rewriteValue386_Op386ROLLconst,
+	Op386ROLWconst - rewriteTable386Min:          rewriteValue386_Op386ROLWconst,
+	Op386SARB - rewriteTable386Min:               rewriteValue386_Op386SARB,
+	Op386SARBconst - rewriteTable386Min:          rewriteValue386_Op386SARBconst,
+	Op386SARL - rewriteTable386Min:               rewriteValue386_Op386SARL,
+	Op386SARLconst - rewriteTable386Min:          rewriteValue386_Op386SARLconst,
+	Op386SARW - rewriteTable386Min:               rewriteValue386_Op386SARW,
+	Op386SARWconst - rewriteTable386Min:          rewriteValue386_Op386SARWconst,
+	Op386SBBL - rewriteTable386Min:               rewriteValue386_Op386SBBL,
+	Op386SBBLcarrymask - rewriteTable386Min:      rewriteValue386_Op386SBBLcarrymask,
+	Op386SETA - rewriteTable386Min:               rewriteValue386_Op386SETA,
+	Op386SETAE - rewriteTable386Min:              rewriteValue386_Op386SETAE,
+	Op386SETB - rewriteTable386Min:               rewriteValue386_Op386SETB,
+	Op386SETBE - rewriteTable386Min:              rewriteValue386_Op386SETBE,
+	Op386SETEQ - rewriteTable386Min:              rewriteValue386_Op386SETEQ,
+	Op386SETG - rewriteTable386Min:               rewriteValue386_Op386SETG,
+	Op386SETGE - rewriteTable386Min:              rewriteValue386_Op386SETGE,
+	Op386SETL - rewriteTable386Min:               rewriteValue386_Op386SETL,
+	Op386SETLE - rewriteTable386Min:              rewriteValue386_Op386SETLE,
+	Op386SETNE - rewriteTable386Min:              rewriteValue386_Op386SETNE,
+	Op386SHLL - rewriteTable386Min:               rewriteValue386_Op386SHLL,
+	Op386SHRB - rewriteTable386Min:               rewriteValue386_Op386SHRB,
+	Op386SHRL - rewriteTable386Min:               rewriteValue386_Op386SHRL,
+	Op386SHRW - rewriteTable386Min:               rewriteValue386_Op386SHRW,
+	Op386SUBL - rewriteTable386Min:               rewriteValue386_Op386SUBL,
+	Op386SUBLcarry - rewriteTable386Min:          rewriteValue386_Op386SUBLcarry,
+	Op386SUBLconst - rewriteTable386Min:          rewriteValue386_Op386SUBLconst,
+	Op386XORL - rewriteTable386Min:               rewriteValue386_Op386XORL,
+	Op386XORLconst - rewriteTable386Min:          rewriteValue386_Op386XORLconst,
+	OpAdd16 - rewriteTable386Min:                 rewriteValue386_OpAdd16,
+	OpAdd32 - rewriteTable386Min:                 rewriteValue386_OpAdd32,
+	OpAdd32F - rewriteTable386Min:                rewriteValue386_OpAdd32F,
+	OpAdd32carry - rewriteTable386Min:            rewriteValue386_OpAdd32carry,
+	OpAdd32withcarry - rewriteTable386Min:        rewriteValue386_OpAdd32withcarry,
+	OpAdd64F - rewriteTable386Min:                rewriteValue386_OpAdd64F,
+	OpAdd8 - rewriteTable386Min:                  rewriteValue386_OpAdd8,
+	OpAddPtr - rewriteTable386Min:                rewriteValue386_OpAddPtr,
+	OpAddr - rewriteTable386Min:                  rewriteValue386_OpAddr,
+	OpAnd16 - rewriteTable386Min:                 rewriteValue386_OpAnd16,
+	OpAnd32 - rewriteTable386Min:                 rewriteValue386_OpAnd32,
+	OpAnd8 - rewriteTable386Min:                  rewriteValue386_OpAnd8,
+	OpAndB - rewriteTable386Min:                  rewriteValue386_OpAndB,
+	OpBswap32 - rewriteTable386Min:               rewriteValue386_OpBswap32,
+	OpClosureCall - rewriteTable386Min:           rewriteValue386_OpClosureCall,
+	OpCom16 - rewriteTable386Min:                 rewriteValue386_OpCom16,
+	OpCom32 - rewriteTable386Min:                 rewriteValue386_OpCom32,
+	OpCom8 - rewriteTable386Min:                  rewriteValue386_OpCom8,
+	OpConst16 - rewriteTable386Min:               rewriteValue386_OpConst16,
+	OpConst32 - rewriteTable386Min:               rewriteValue386_OpConst32,
+	OpConst32F - rewriteTable386Min:              rewriteValue386_OpConst32F,
+	OpConst64F - rewriteTable386Min:              rewriteValue386_OpConst64F,
+	OpConst8 - rewriteTable386Min:                rewriteValue386_OpConst8,
+	OpConstBool - rewriteTable386Min:             rewriteValue386_OpConstBool,
+	OpConstNil - rewriteTable386Min:              rewriteValue386_OpConstNil,
+	OpConvert - rewriteTable386Min:               rewriteValue386_OpConvert,
+	OpCvt32Fto32 - rewriteTable386Min:            rewriteValue386_OpCvt32Fto32,
+	OpCvt32Fto64F - rewriteTable386Min:           rewriteValue386_OpCvt32Fto64F,
+	OpCvt32to32F - rewriteTable386Min:            rewriteValue386_OpCvt32to32F,
+	OpCvt32to64F - rewriteTable386Min:            rewriteValue386_OpCvt32to64F,
+	OpCvt64Fto32 - rewriteTable386Min:            rewriteValue386_OpCvt64Fto32,
+	OpCvt64Fto32F - rewriteTable386Min:           rewriteValue386_OpCvt64Fto32F,
+	OpDeferCall - rewriteTable386Min:             rewriteValue386_OpDeferCall,
+	OpDiv16 - rewriteTable386Min:                 rewriteValue386_OpDiv16,
+	OpDiv16u - rewriteTable386Min:                rewriteValue386_OpDiv16u,
+	OpDiv32 - rewriteTable386Min:                 rewriteValue386_OpDiv32,
+	OpDiv32F - rewriteTable386Min:                rewriteValue386_OpDiv32F,
+	OpDiv32u - rewriteTable386Min:                rewriteValue386_OpDiv32u,
+	OpDiv64F - rewriteTable386Min:                rewriteValue386_OpDiv64F,
+	OpDiv8 - rewriteTable386Min:                  rewriteValue386_OpDiv8,
+	OpDiv8u - rewriteTable386Min:                 rewriteValue386_OpDiv8u,
+	OpEq16 - rewriteTable386Min:                  rewriteValue386_OpEq16,
+	OpEq32 - rewriteTable386Min:                  rewriteValue386_OpEq32,
+	OpEq32F - rewriteTable386Min:                 rewriteValue386_OpEq32F,
+	OpEq64F - rewriteTable386Min:                 rewriteValue386_OpEq64F,
+	OpEq8 - rewriteTable386Min:                   rewriteValue386_OpEq8,
+	OpEqB - rewriteTable386Min:                   rewriteValue386_OpEqB,
+	OpEqPtr - rewriteTable386Min:                 rewriteValue386_OpEqPtr,
+	OpGeq16 - rewriteTable386Min:                 rewriteValue386_OpGeq16,
+	OpGeq16U - rewriteTable386Min:                rewriteValue386_OpGeq16U,
+	OpGeq32 - rewriteTable386Min:                 rewriteValue386_OpGeq32,
+	OpGeq32F - rewriteTable386Min:                rewriteValue386_OpGeq32F,
+	OpGeq32U - rewriteTable386Min:                rewriteValue386_OpGeq32U,
+	OpGeq64F - rewriteTable386Min:                rewriteValue386_OpGeq64F,
+	OpGeq8 - rewriteTable386Min:                  rewriteValue386_OpGeq8,
+	OpGeq8U - rewriteTable386Min:                 rewriteValue386_OpGeq8U,
+	OpGetClosurePtr - rewriteTable386Min:         rewriteValue386_OpGetClosurePtr,
+	OpGetG - rewriteTable386Min:                  rewriteValue386_OpGetG,
+	OpGoCall - rewriteTable386Min:                rewriteValue386_OpGoCall,
+	OpGreater16 - rewriteTable386Min:             rewriteValue386_OpGreater16,
+	OpGreater16U - rewriteTable386Min:            rewriteValue386_OpGreater16U,
+	OpGreater32 - rewriteTable386Min:             rewriteValue386_OpGreater32,
+	OpGreater32F - rewriteTable386Min:            rewriteValue386_OpGreater32F,
+	OpGreater32U - rewriteTable386Min:            rewriteValue386_OpGreater32U,
+	OpGreater64F - rewriteTable386Min:            rewriteValue386_OpGreater64F,
+	OpGreater8 - rewriteTable386Min:              rewriteValue386_OpGreater8,
+	OpGreater8U - rewriteTable386Min:             rewriteValue386_OpGreater8U,
+	OpHmul16 - rewriteTable386Min:                rewriteValue386_OpHmul16,
+	OpHmul16u - rewriteTable386Min:               rewriteValue386_OpHmul16u,
+	OpHmul32 - rewriteTable386Min:                rewriteValue386_OpHmul32,
+	OpHmul32u - rewriteTable386Min:               rewriteValue386_OpHmul32u,
+	OpHmul8 - rewriteTable386Min:                 rewriteValue386_OpHmul8,
+	OpHmul8u - rewriteTable386Min:                rewriteValue386_OpHmul8u,
+	OpInterCall - rewriteTable386Min:             rewriteValue386_OpInterCall,
+	OpIsInBounds - rewriteTable386Min:            rewriteValue386_OpIsInBounds,
+	OpIsNonNil - rewriteTable386Min:              rewriteValue386_OpIsNonNil,
+	OpIsSliceInBounds - rewriteTable386Min:       rewriteValue386_OpIsSliceInBounds,
+	OpLeq16 - rewriteTable386Min:                 rewriteValue386_OpLeq16,
+	OpLeq16U - rewriteTable386Min:                rewriteValue386_OpLeq16U,
+	OpLeq32 - rewriteTable386Min:                 rewriteValue386_OpLeq32,
+	OpLeq32F - rewriteTable386Min:                rewriteValue386_OpLeq32F,
+	OpLeq32U - rewriteTable386Min:                rewriteValue386_OpLeq32U,
+	OpLeq64F - rewriteTable386Min:                rewriteValue386_OpLeq64F,
+	OpLeq8 - rewriteTable386Min:                  rewriteValue386_OpLeq8,
+	OpLeq8U - rewriteTable386Min:                 rewriteValue386_OpLeq8U,
+	OpLess16 - rewriteTable386Min:                rewriteValue386_OpLess16,
+	OpLess16U - rewriteTable386Min:               rewriteValue386_OpLess16U,
+	OpLess32 - rewriteTable386Min:                rewriteValue386_OpLess32,
+	OpLess32F - rewriteTable386Min:               rewriteValue386_OpLess32F,
+	OpLess32U - rewriteTable386Min:               rewriteValue386_OpLess32U,
+	OpLess64F - rewriteTable386Min:               rewriteValue386_OpLess64F,
+	OpLess8 - rewriteTable386Min:                 rewriteValue386_OpLess8,
+	OpLess8U - rewriteTable386Min:                rewriteValue386_OpLess8U,
+	OpLoad - rewriteTable386Min:                  rewriteValue386_OpLoad,
+	OpLrot16 - rewriteTable386Min:                rewriteValue386_OpLrot16,
+	OpLrot32 - rewriteTable386Min:                rewriteValue386_OpLrot32,
+	OpLrot8 - rewriteTable386Min:                 rewriteValue386_OpLrot8,
+	OpLsh16x16 - rewriteTable386Min:              rewriteValue386_OpLsh16x16,
+	OpLsh16x32 - rewriteTable386Min:              rewriteValue386_OpLsh16x32,
+	OpLsh16x64 - rewriteTable386Min:              rewriteValue386_OpLsh16x64,
+	OpLsh16x8 - rewriteTable386Min:               rewriteValue386_OpLsh16x8,
+	OpLsh32x16 - rewriteTable386Min:              rewriteValue386_OpLsh32x16,
+	OpLsh32x32 - rewriteTable386Min:              rewriteValue386_OpLsh32x32,
+	OpLsh32x64 - rewriteTable386Min:              rewriteValue386_OpLsh32x64,
+	OpLsh32x8 - rewriteTable386Min:               rewriteValue386_OpLsh32x8,
+	OpLsh8x16 - rewriteTable386Min:               rewriteValue386_OpLsh8x16,
+	OpLsh8x32 - rewriteTable386Min:               rewriteValue386_OpLsh8x32,
+	OpLsh8x64 - rewriteTable386Min:               rewriteValue386_OpLsh8x64,
+	OpLsh8x8 - rewriteTable386Min:                rewriteValue386_OpLsh8x8,
+	OpMod16 - rewriteTable386Min:                 rewriteValue386_OpMod16,
+	OpMod16u - rewriteTable386Min:                rewriteValue386_OpMod16u,
+	OpMod32 - rewriteTable386Min:                 rewriteValue386_OpMod32,
+	OpMod32u - rewriteTable386Min:                rewriteValue386_OpMod32u,
+	OpMod8 - rewriteTable386Min:                  rewriteValue386_OpMod8,
+	OpMod8u - rewriteTable386Min:                 rewriteValue386_OpMod8u,
+	OpMove - rewriteTable386Min:                  rewriteValue386_OpMove,
+	OpMul16 - rewriteTable386Min:                 rewriteValue386_OpMul16,
+	OpMul32 - rewriteTable386Min:                 rewriteValue386_OpMul32,
+	OpMul32F - rewriteTable386Min:                rewriteValue386_OpMul32F,
+	OpMul32uhilo - rewriteTable386Min:            rewriteValue386_OpMul32uhilo,
+	OpMul64F - rewriteTable386Min:                rewriteValue386_OpMul64F,
+	OpMul8 - rewriteTable386Min:                  rewriteValue386_OpMul8,
+	OpNeg16 - rewriteTable386Min:                 rewriteValue386_OpNeg16,
+	OpNeg32 - rewriteTable386Min:                 rewriteValue386_OpNeg32,
+	OpNeg32F - rewriteTable386Min:                rewriteValue386_OpNeg32F,
+	OpNeg64F - rewriteTable386Min:                rewriteValue386_OpNeg64F,
+	OpNeg8 - rewriteTable386Min:                  rewriteValue386_OpNeg8,
+	OpNeq16 - rewriteTable386Min:                 rewriteValue386_OpNeq16,
+	OpNeq32 - rewriteTable386Min:                 rewriteValue386_OpNeq32,
+	OpNeq32F - rewriteTable386Min:                rewriteValue386_OpNeq32F,
+	OpNeq64F - rewriteTable386Min:                rewriteValue386_OpNeq64F,
+	OpNeq8 - rewriteTable386Min:                  rewriteValue386_OpNeq8,
+	OpNeqB - rewriteTable386Min:                  rewriteValue386_OpNeqB,
+	OpNeqPtr - rewriteTable386Min:                rewriteValue386_OpNeqPtr,
+	OpNilCheck - rewriteTable386Min:              rewriteValue386_OpNilCheck,
+	OpNot - rewriteTable386Min:                   rewriteValue386_OpNot,
+	OpOffPtr - rewriteTable386Min:                rewriteValue386_OpOffPtr,
+	OpOr16 - rewriteTable386Min:                  rewriteValue386_OpOr16,
+	OpOr32 - rewriteTable386Min:                  rewriteValue386_OpOr32,
+	OpOr8 - rewriteTable386Min:                   rewriteValue386_OpOr8,
+	OpOrB - rewriteTable386Min:                   rewriteValue386_OpOrB,
+	OpRsh16Ux16 - rewriteTable386Min:             rewriteValue386_OpRsh16Ux16,
+	OpRsh16Ux32 - rewriteTable386Min:             rewriteValue386_OpRsh16Ux32,
+	OpRsh16Ux64 - rewriteTable386Min:             rewriteValue386_OpRsh16Ux64,
+	OpRsh16Ux8 - rewriteTable386Min:              rewriteValue386_OpRsh16Ux8,
+	OpRsh16x16 - rewriteTable386Min:              rewriteValue386_OpRsh16x16,
+	OpRsh16x32 - rewriteTable386Min:              rewriteValue386_OpRsh16x32,
+	OpRsh16x64 - rewriteTable386Min:              rewriteValue386_OpRsh16x64,
+	OpRsh16x8 - rewriteTable386Min:               rewriteValue386_OpRsh16x8,
+	OpRsh32Ux16 - rewriteTable386Min:             rewriteValue386_OpRsh32Ux16,
+	OpRsh32Ux32 - rewriteTable386Min:             rewriteValue386_OpRsh32Ux32,
+	OpRsh32Ux64 - rewriteTable386Min:             rewriteValue386_OpRsh32Ux64,
+	OpRsh32Ux8 - rewriteTable386Min:              rewriteValue386_OpRsh32Ux8,
+	OpRsh32x16 - rewriteTable386Min:              rewriteValue386_OpRsh32x16,
+	OpRsh32x32 - rewriteTable386Min:              rewriteValue386_OpRsh32x32,
+	OpRsh32x64 - rewriteTable386Min:              rewriteValue386_OpRsh32x64,
+	OpRsh32x8 - rewriteTable386Min:               rewriteValue386_OpRsh32x8,
+	OpRsh8Ux16 - rewriteTable386Min:              rewriteValue386_OpRsh8Ux16,
+	OpRsh8Ux32 - rewriteTable386Min:              rewriteValue386_OpRsh8Ux32,
+	OpRsh8Ux64 - rewriteTable386Min:              rewriteValue386_OpRsh8Ux64,
+	OpRsh8Ux8 - rewriteTable386Min:               rewriteValue386_OpRsh8Ux8,
+	OpRsh8x16 - rewriteTable386Min:               rewriteValue386_OpRsh8x16,
+	OpRsh8x32 - rewriteTable386Min:               rewriteValue386_OpRsh8x32,
+	OpRsh8x64 - rewriteTable386Min:               rewriteValue386_OpRsh8x64,
+	OpRsh8x8 - rewriteTable386Min:                rewriteValue386_OpRsh8x8,
+	OpSignExt16to32 - rewriteTable386Min:         rewriteValue386_OpSignExt16to32,
+	OpSignExt8to16 - rewriteTable386Min:          rewriteValue386_OpSignExt8to16,
+	OpSignExt8to32 - rewriteTable386Min:          rewriteValue386_OpSignExt8to32,
+	OpSignmask - rewriteTable386Min:              rewriteValue386_OpSignmask,
+	OpSqrt - rewriteTable386Min:                  rewriteValue386_OpSqrt,
+	OpStaticCall - rewriteTable386Min:            rewriteValue386_OpStaticCall,
+	OpStore - rewriteTable386Min:                 rewriteValue386_OpStore,
+	OpSub16 - rewriteTable386Min:                 rewriteValue386_OpSub16,
+	OpSub32 - rewriteTable386Min:                 rewriteValue386_OpSub32,
+	OpSub32F - rewriteTable386Min:                rewriteValue386_OpSub32F,
+	OpSub32carry - rewriteTable386Min:            rewriteValue386_OpSub32carry,
+	OpSub32withcarry - rewriteTable386Min:        rewriteValue386_OpSub32withcarry,
+	OpSub64F - rewriteTable386Min:                rewriteValue386_OpSub64F,
+	OpSub8 - rewriteTable386Min:                  rewriteValue386_OpSub8,
+	OpSubPtr - rewriteTable386Min:                rewriteValue386_OpSubPtr,
+	OpTrunc16to8 - rewriteTable386Min:            rewriteValue386_OpTrunc16to8,
+	OpTrunc32to16 - rewriteTable386Min:           rewriteValue386_OpTrunc32to16,
+	OpTrunc32to8 - rewriteTable386Min:            rewriteValue386_OpTrunc32to8,
+	OpXor16 - rewriteTable386Min:                 rewriteValue386_OpXor16,
+	OpXor32 - rewriteTable386Min:                 rewriteValue386_OpXor32,
+	OpXor8 - rewriteTable386Min:                  rewriteValue386_OpXor8,
+	OpZero - rewriteTable386Min:                  rewriteValue386_OpZero,
+	OpZeroExt16to32 - rewriteTable386Min:         rewriteValue386_OpZeroExt16to32,
+	OpZeroExt8to16 - rewriteTable386Min:          rewriteValue386_OpZeroExt8to16,
+	OpZeroExt8to32 - rewriteTable386Min:          rewriteValue386_OpZeroExt8to32,
+	OpZeromask - rewriteTable386Min:              rewriteValue386_OpZeromask,
+}
+
 func rewriteValue386(v *Value, config *Config) bool {
-	switch v.Op {
-	case Op386ADCL:
-		return rewriteValue386_Op386ADCL(v, config)
-	case Op386ADDL:
-		return rewriteValue386_Op386ADDL(v, config)
-	case Op386ADDLcarry:
-		return rewriteValue386_Op386ADDLcarry(v, config)
-	case Op386ADDLconst:
-		return rewriteValue386_Op386ADDLconst(v, config)
-	case Op386ANDL:
-		return rewriteValue386_Op386ANDL(v, config)
-	case Op386ANDLconst:
-		return rewriteValue386_Op386ANDLconst(v, config)
-	case Op386CMPB:
-		return rewriteValue386_Op386CMPB(v, config)
-	case Op386CMPBconst:
-		return rewriteValue386_Op386CMPBconst(v, config)
-	case Op386CMPL:
-		return rewriteValue386_Op386CMPL(v, config)
-	case Op386CMPLconst:
-		return rewriteValue386_Op386CMPLconst(v, config)
-	case Op386CMPW:
-		return rewriteValue386_Op386CMPW(v, config)
-	case Op386CMPWconst:
-		return rewriteValue386_Op386CMPWconst(v, config)
-	case Op386LEAL:
-		return rewriteValue386_Op386LEAL(v, config)
-	case Op386LEAL1:
-		return rewriteValue386_Op386LEAL1(v, config)
-	case Op386LEAL2:
-		return rewriteValue386_Op386LEAL2(v, config)
-	case Op386LEAL4:
-		return rewriteValue386_Op386LEAL4(v, config)
-	case Op386LEAL8:
-		return rewriteValue386_Op386LEAL8(v, config)
-	case Op386MOVBLSX:
-		return rewriteValue386_Op386MOVBLSX(v, config)
-	case Op386MOVBLSXload:
-		return rewriteValue386_Op386MOVBLSXload(v, config)
-	case Op386MOVBLZX:
-		return rewriteValue386_Op386MOVBLZX(v, config)
-	case Op386MOVBload:
-		return rewriteValue386_Op386MOVBload(v, config)
-	case Op386MOVBloadidx1:
-		return rewriteValue386_Op386MOVBloadidx1(v, config)
-	case Op386MOVBstore:
-		return rewriteValue386_Op386MOVBstore(v, config)
-	case Op386MOVBstoreconst:
-		return rewriteValue386_Op386MOVBstoreconst(v, config)
-	case Op386MOVBstoreconstidx1:
-		return rewriteValue386_Op386MOVBstoreconstidx1(v, config)
-	case Op386MOVBstoreidx1:
-		return rewriteValue386_Op386MOVBstoreidx1(v, config)
-	case Op386MOVLload:
-		return rewriteValue386_Op386MOVLload(v, config)
-	case Op386MOVLloadidx1:
-		return rewriteValue386_Op386MOVLloadidx1(v, config)
-	case Op386MOVLloadidx4:
-		return rewriteValue386_Op386MOVLloadidx4(v, config)
-	case Op386MOVLstore:
-		return rewriteValue386_Op386MOVLstore(v, config)
-	case Op386MOVLstoreconst:
-		return rewriteValue386_Op386MOVLstoreconst(v, config)
-	case Op386MOVLstoreconstidx1:
-		return rewriteValue386_Op386MOVLstoreconstidx1(v, config)
-	case Op386MOVLstoreconstidx4:
-		return rewriteValue386_Op386MOVLstoreconstidx4(v, config)
-	case Op386MOVLstoreidx1:
-		return rewriteValue386_Op386MOVLstoreidx1(v, config)
-	case Op386MOVLstoreidx4:
-		return rewriteValue386_Op386MOVLstoreidx4(v, config)
-	case Op386MOVSDconst:
-		return rewriteValue386_Op386MOVSDconst(v, config)
-	case Op386MOVSDload:
-		return rewriteValue386_Op386MOVSDload(v, config)
-	case Op386MOVSDloadidx1:
-		return rewriteValue386_Op386MOVSDloadidx1(v, config)
-	case Op386MOVSDloadidx8:
-		return rewriteValue386_Op386MOVSDloadidx8(v, config)
-	case Op386MOVSDstore:
-		return rewriteValue386_Op386MOVSDstore(v, config)
-	case Op386MOVSDstoreidx1:
-		return rewriteValue386_Op386MOVSDstoreidx1(v, config)
-	case Op386MOVSDstoreidx8:
-		return rewriteValue386_Op386MOVSDstoreidx8(v, config)
-	case Op386MOVSSconst:
-		return rewriteValue386_Op386MOVSSconst(v, config)
-	case Op386MOVSSload:
-		return rewriteValue386_Op386MOVSSload(v, config)
-	case Op386MOVSSloadidx1:
-		return rewriteValue386_Op386MOVSSloadidx1(v, config)
-	case Op386MOVSSloadidx4:
-		return rewriteValue386_Op386MOVSSloadidx4(v, config)
-	case Op386MOVSSstore:
-		return rewriteValue386_Op386MOVSSstore(v, config)
-	case Op386MOVSSstoreidx1:
-		return rewriteValue386_Op386MOVSSstoreidx1(v, config)
-	case Op386MOVSSstoreidx4:
-		return rewriteValue386_Op386MOVSSstoreidx4(v, config)
-	case Op386MOVWLSX:
-		return rewriteValue386_Op386MOVWLSX(v, config)
-	case Op386MOVWLSXload:
-		return rewriteValue386_Op386MOVWLSXload(v, config)
-	case Op386MOVWLZX:
-		return rewriteValue386_Op386MOVWLZX(v, config)
-	case Op386MOVWload:
-		return rewriteValue386_Op386MOVWload(v, config)
-	case Op386MOVWloadidx1:
-		return rewriteValue386_Op386MOVWloadidx1(v, config)
-	case Op386MOVWloadidx2:
-		return rewriteValue386_Op386MOVWloadidx2(v, config)
-	case Op386MOVWstore:
-		return rewriteValue386_Op386MOVWstore(v, config)
-	case Op386MOVWstoreconst:
-		return rewriteValue386_Op386MOVWstoreconst(v, config)
-	case Op386MOVWstoreconstidx1:
-		return rewriteValue386_Op386MOVWstoreconstidx1(v, config)
-	case Op386MOVWstoreconstidx2:
-		return rewriteValue386_Op386MOVWstoreconstidx2(v, config)
-	case Op386MOVWstoreidx1:
-		return rewriteValue386_Op386MOVWstoreidx1(v, config)
-	case Op386MOVWstoreidx2:
-		return rewriteValue386_Op386MOVWstoreidx2(v, config)
-	case Op386MULL:
-		return rewriteValue386_Op386MULL(v, config)
-	case Op386MULLconst:
-		return rewriteValue386_Op386MULLconst(v, config)
-	case Op386NEGL:
-		return rewriteValue386_Op386NEGL(v, config)
-	case Op386NOTL:
-		return rewriteValue386_Op386NOTL(v, config)
-	case Op386ORL:
-		return rewriteValue386_Op386ORL(v, config)
-	case Op386ORLconst:
-		return rewriteValue386_Op386ORLconst(v, config)
-	case Op386ROLBconst:
-		return rewriteValue386_Op386ROLBconst(v, config)
-	case Op386ROLLconst:
-		return rewriteValue386_Op386ROLLconst(v, config)
-	case Op386ROLWconst:
-		return rewriteValue386_Op386ROLWconst(v, config)
-	case Op386SARB:
-		return rewriteValue386_Op386SARB(v, config)
-	case Op386SARBconst:
-		return rewriteValue386_Op386SARBconst(v, config)
-	case Op386SARL:
-		return rewriteValue386_Op386SARL(v, config)
-	case Op386SARLconst:
-		return rewriteValue386_Op386SARLconst(v, config)
-	case Op386SARW:
-		return rewriteValue386_Op386SARW(v, config)
-	case Op386SARWconst:
-		return rewriteValue386_Op386SARWconst(v, config)
-	case Op386SBBL:
-		return rewriteValue386_Op386SBBL(v, config)
-	case Op386SBBLcarrymask:
-		return rewriteValue386_Op386SBBLcarrymask(v, config)
-	case Op386SETA:
-		return rewriteValue386_Op386SETA(v, config)
-	case Op386SETAE:
-		return rewriteValue386_Op386SETAE(v, config)
-	case Op386SETB:
-		return rewriteValue386_Op386SETB(v, config)
-	case Op386SETBE:
-		return rewriteValue386_Op386SETBE(v, config)
-	case Op386SETEQ:
-		return rewriteValue386_Op386SETEQ(v, config)
-	case Op386SETG:
-		return rewriteValue386_Op386SETG(v, config)
-	case Op386SETGE:
-		return rewriteValue386_Op386SETGE(v, config)
-	case Op386SETL:
-		return rewriteValue386_Op386SETL(v, config)
-	case Op386SETLE:
-		return rewriteValue386_Op386SETLE(v, config)
-	case Op386SETNE:
-		return rewriteValue386_Op386SETNE(v, config)
-	case Op386SHLL:
-		return rewriteValue386_Op386SHLL(v, config)
-	case Op386SHRB:
-		return rewriteValue386_Op386SHRB(v, config)
-	case Op386SHRL:
-		return rewriteValue386_Op386SHRL(v, config)
-	case Op386SHRW:
-		return rewriteValue386_Op386SHRW(v, config)
-	case Op386SUBL:
-		return rewriteValue386_Op386SUBL(v, config)
-	case Op386SUBLcarry:
-		return rewriteValue386_Op386SUBLcarry(v, config)
-	case Op386SUBLconst:
-		return rewriteValue386_Op386SUBLconst(v, config)
-	case Op386XORL:
-		return rewriteValue386_Op386XORL(v, config)
-	case Op386XORLconst:
-		return rewriteValue386_Op386XORLconst(v, config)
-	case OpAdd16:
-		return rewriteValue386_OpAdd16(v, config)
-	case OpAdd32:
-		return rewriteValue386_OpAdd32(v, config)
-	case OpAdd32F:
-		return rewriteValue386_OpAdd32F(v, config)
-	case OpAdd32carry:
-		return rewriteValue386_OpAdd32carry(v, config)
-	case OpAdd32withcarry:
-		return rewriteValue386_OpAdd32withcarry(v, config)
-	case OpAdd64F:
-		return rewriteValue386_OpAdd64F(v, config)
-	case OpAdd8:
-		return rewriteValue386_OpAdd8(v, config)
-	case OpAddPtr:
-		return rewriteValue386_OpAddPtr(v, config)
-	case OpAddr:
-		return rewriteValue386_OpAddr(v, config)
-	case OpAnd16:
-		return rewriteValue386_OpAnd16(v, config)
-	case OpAnd32:
-		return rewriteValue386_OpAnd32(v, config)
-	case OpAnd8:
-		return rewriteValue386_OpAnd8(v, config)
-	case OpAndB:
-		return rewriteValue386_OpAndB(v, config)
-	case OpBswap32:
-		return rewriteValue386_OpBswap32(v, config)
-	case OpClosureCall:
-		return rewriteValue386_OpClosureCall(v, config)
-	case OpCom16:
-		return rewriteValue386_OpCom16(v, config)
-	case OpCom32:
-		return rewriteValue386_OpCom32(v, config)
-	case OpCom8:
-		return rewriteValue386_OpCom8(v, config)
-	case OpConst16:
-		return rewriteValue386_OpConst16(v, config)
-	case OpConst32:
-		return rewriteValue386_OpConst32(v, config)
-	case OpConst32F:
-		return rewriteValue386_OpConst32F(v, config)
-	case OpConst64F:
-		return rewriteValue386_OpConst64F(v, config)
-	case OpConst8:
-		return rewriteValue386_OpConst8(v, config)
-	case OpConstBool:
-		return rewriteValue386_OpConstBool(v, config)
-	case OpConstNil:
-		return rewriteValue386_OpConstNil(v, config)
-	case OpConvert:
-		return rewriteValue386_OpConvert(v, config)
-	case OpCvt32Fto32:
-		return rewriteValue386_OpCvt32Fto32(v, config)
-	case OpCvt32Fto64F:
-		return rewriteValue386_OpCvt32Fto64F(v, config)
-	case OpCvt32to32F:
-		return rewriteValue386_OpCvt32to32F(v, config)
-	case OpCvt32to64F:
-		return rewriteValue386_OpCvt32to64F(v, config)
-	case OpCvt64Fto32:
-		return rewriteValue386_OpCvt64Fto32(v, config)
-	case OpCvt64Fto32F:
-		return rewriteValue386_OpCvt64Fto32F(v, config)
-	case OpDeferCall:
-		return rewriteValue386_OpDeferCall(v, config)
-	case OpDiv16:
-		return rewriteValue386_OpDiv16(v, config)
-	case OpDiv16u:
-		return rewriteValue386_OpDiv16u(v, config)
-	case OpDiv32:
-		return rewriteValue386_OpDiv32(v, config)
-	case OpDiv32F:
-		return rewriteValue386_OpDiv32F(v, config)
-	case OpDiv32u:
-		return rewriteValue386_OpDiv32u(v, config)
-	case OpDiv64F:
-		return rewriteValue386_OpDiv64F(v, config)
-	case OpDiv8:
-		return rewriteValue386_OpDiv8(v, config)
-	case OpDiv8u:
-		return rewriteValue386_OpDiv8u(v, config)
-	case OpEq16:
-		return rewriteValue386_OpEq16(v, config)
-	case OpEq32:
-		return rewriteValue386_OpEq32(v, config)
-	case OpEq32F:
-		return rewriteValue386_OpEq32F(v, config)
-	case OpEq64F:
-		return rewriteValue386_OpEq64F(v, config)
-	case OpEq8:
-		return rewriteValue386_OpEq8(v, config)
-	case OpEqB:
-		return rewriteValue386_OpEqB(v, config)
-	case OpEqPtr:
-		return rewriteValue386_OpEqPtr(v, config)
-	case OpGeq16:
-		return rewriteValue386_OpGeq16(v, config)
-	case OpGeq16U:
-		return rewriteValue386_OpGeq16U(v, config)
-	case OpGeq32:
-		return rewriteValue386_OpGeq32(v, config)
-	case OpGeq32F:
-		return rewriteValue386_OpGeq32F(v, config)
-	case OpGeq32U:
-		return rewriteValue386_OpGeq32U(v, config)
-	case OpGeq64F:
-		return rewriteValue386_OpGeq64F(v, config)
-	case OpGeq8:
-		return rewriteValue386_OpGeq8(v, config)
-	case OpGeq8U:
-		return rewriteValue386_OpGeq8U(v, config)
-	case OpGetClosurePtr:
-		return rewriteValue386_OpGetClosurePtr(v, config)
-	case OpGetG:
-		return rewriteValue386_OpGetG(v, config)
-	case OpGoCall:
-		return rewriteValue386_OpGoCall(v, config)
-	case OpGreater16:
-		return rewriteValue386_OpGreater16(v, config)
-	case OpGreater16U:
-		return rewriteValue386_OpGreater16U(v, config)
-	case OpGreater32:
-		return rewriteValue386_OpGreater32(v, config)
-	case OpGreater32F:
-		return rewriteValue386_OpGreater32F(v, config)
-	case OpGreater32U:
-		return rewriteValue386_OpGreater32U(v, config)
-	case OpGreater64F:
-		return rewriteValue386_OpGreater64F(v, config)
-	case OpGreater8:
-		return rewriteValue386_OpGreater8(v, config)
-	case OpGreater8U:
-		return rewriteValue386_OpGreater8U(v, config)
-	case OpHmul16:
-		return rewriteValue386_OpHmul16(v, config)
-	case OpHmul16u:
-		return rewriteValue386_OpHmul16u(v, config)
-	case OpHmul32:
-		return rewriteValue386_OpHmul32(v, config)
-	case OpHmul32u:
-		return rewriteValue386_OpHmul32u(v, config)
-	case OpHmul8:
-		return rewriteValue386_OpHmul8(v, config)
-	case OpHmul8u:
-		return rewriteValue386_OpHmul8u(v, config)
-	case OpInterCall:
-		return rewriteValue386_OpInterCall(v, config)
-	case OpIsInBounds:
-		return rewriteValue386_OpIsInBounds(v, config)
-	case OpIsNonNil:
-		return rewriteValue386_OpIsNonNil(v, config)
-	case OpIsSliceInBounds:
-		return rewriteValue386_OpIsSliceInBounds(v, config)
-	case OpLeq16:
-		return rewriteValue386_OpLeq16(v, config)
-	case OpLeq16U:
-		return rewriteValue386_OpLeq16U(v, config)
-	case OpLeq32:
-		return rewriteValue386_OpLeq32(v, config)
-	case OpLeq32F:
-		return rewriteValue386_OpLeq32F(v, config)
-	case OpLeq32U:
-		return rewriteValue386_OpLeq32U(v, config)
-	case OpLeq64F:
-		return rewriteValue386_OpLeq64F(v, config)
-	case OpLeq8:
-		return rewriteValue386_OpLeq8(v, config)
-	case OpLeq8U:
-		return rewriteValue386_OpLeq8U(v, config)
-	case OpLess16:
-		return rewriteValue386_OpLess16(v, config)
-	case OpLess16U:
-		return rewriteValue386_OpLess16U(v, config)
-	case OpLess32:
-		return rewriteValue386_OpLess32(v, config)
-	case OpLess32F:
-		return rewriteValue386_OpLess32F(v, config)
-	case OpLess32U:
-		return rewriteValue386_OpLess32U(v, config)
-	case OpLess64F:
-		return rewriteValue386_OpLess64F(v, config)
-	case OpLess8:
-		return rewriteValue386_OpLess8(v, config)
-	case OpLess8U:
-		return rewriteValue386_OpLess8U(v, config)
-	case OpLoad:
-		return rewriteValue386_OpLoad(v, config)
-	case OpLrot16:
-		return rewriteValue386_OpLrot16(v, config)
-	case OpLrot32:
-		return rewriteValue386_OpLrot32(v, config)
-	case OpLrot8:
-		return rewriteValue386_OpLrot8(v, config)
-	case OpLsh16x16:
-		return rewriteValue386_OpLsh16x16(v, config)
-	case OpLsh16x32:
-		return rewriteValue386_OpLsh16x32(v, config)
-	case OpLsh16x64:
-		return rewriteValue386_OpLsh16x64(v, config)
-	case OpLsh16x8:
-		return rewriteValue386_OpLsh16x8(v, config)
-	case OpLsh32x16:
-		return rewriteValue386_OpLsh32x16(v, config)
-	case OpLsh32x32:
-		return rewriteValue386_OpLsh32x32(v, config)
-	case OpLsh32x64:
-		return rewriteValue386_OpLsh32x64(v, config)
-	case OpLsh32x8:
-		return rewriteValue386_OpLsh32x8(v, config)
-	case OpLsh8x16:
-		return rewriteValue386_OpLsh8x16(v, config)
-	case OpLsh8x32:
-		return rewriteValue386_OpLsh8x32(v, config)
-	case OpLsh8x64:
-		return rewriteValue386_OpLsh8x64(v, config)
-	case OpLsh8x8:
-		return rewriteValue386_OpLsh8x8(v, config)
-	case OpMod16:
-		return rewriteValue386_OpMod16(v, config)
-	case OpMod16u:
-		return rewriteValue386_OpMod16u(v, config)
-	case OpMod32:
-		return rewriteValue386_OpMod32(v, config)
-	case OpMod32u:
-		return rewriteValue386_OpMod32u(v, config)
-	case OpMod8:
-		return rewriteValue386_OpMod8(v, config)
-	case OpMod8u:
-		return rewriteValue386_OpMod8u(v, config)
-	case OpMove:
-		return rewriteValue386_OpMove(v, config)
-	case OpMul16:
-		return rewriteValue386_OpMul16(v, config)
-	case OpMul32:
-		return rewriteValue386_OpMul32(v, config)
-	case OpMul32F:
-		return rewriteValue386_OpMul32F(v, config)
-	case OpMul32uhilo:
-		return rewriteValue386_OpMul32uhilo(v, config)
-	case OpMul64F:
-		return rewriteValue386_OpMul64F(v, config)
-	case OpMul8:
-		return rewriteValue386_OpMul8(v, config)
-	case OpNeg16:
-		return rewriteValue386_OpNeg16(v, config)
-	case OpNeg32:
-		return rewriteValue386_OpNeg32(v, config)
-	case OpNeg32F:
-		return rewriteValue386_OpNeg32F(v, config)
-	case OpNeg64F:
-		return rewriteValue386_OpNeg64F(v, config)
-	case OpNeg8:
-		return rewriteValue386_OpNeg8(v, config)
-	case OpNeq16:
-		return rewriteValue386_OpNeq16(v, config)
-	case OpNeq32:
-		return rewriteValue386_OpNeq32(v, config)
-	case OpNeq32F:
-		return rewriteValue386_OpNeq32F(v, config)
-	case OpNeq64F:
-		return rewriteValue386_OpNeq64F(v, config)
-	case OpNeq8:
-		return rewriteValue386_OpNeq8(v, config)
-	case OpNeqB:
-		return rewriteValue386_OpNeqB(v, config)
-	case OpNeqPtr:
-		return rewriteValue386_OpNeqPtr(v, config)
-	case OpNilCheck:
-		return rewriteValue386_OpNilCheck(v, config)
-	case OpNot:
-		return rewriteValue386_OpNot(v, config)
-	case OpOffPtr:
-		return rewriteValue386_OpOffPtr(v, config)
-	case OpOr16:
-		return rewriteValue386_OpOr16(v, config)
-	case OpOr32:
-		return rewriteValue386_OpOr32(v, config)
-	case OpOr8:
-		return rewriteValue386_OpOr8(v, config)
-	case OpOrB:
-		return rewriteValue386_OpOrB(v, config)
-	case OpRsh16Ux16:
-		return rewriteValue386_OpRsh16Ux16(v, config)
-	case OpRsh16Ux32:
-		return rewriteValue386_OpRsh16Ux32(v, config)
-	case OpRsh16Ux64:
-		return rewriteValue386_OpRsh16Ux64(v, config)
-	case OpRsh16Ux8:
-		return rewriteValue386_OpRsh16Ux8(v, config)
-	case OpRsh16x16:
-		return rewriteValue386_OpRsh16x16(v, config)
-	case OpRsh16x32:
-		return rewriteValue386_OpRsh16x32(v, config)
-	case OpRsh16x64:
-		return rewriteValue386_OpRsh16x64(v, config)
-	case OpRsh16x8:
-		return rewriteValue386_OpRsh16x8(v, config)
-	case OpRsh32Ux16:
-		return rewriteValue386_OpRsh32Ux16(v, config)
-	case OpRsh32Ux32:
-		return rewriteValue386_OpRsh32Ux32(v, config)
-	case OpRsh32Ux64:
-		return rewriteValue386_OpRsh32Ux64(v, config)
-	case OpRsh32Ux8:
-		return rewriteValue386_OpRsh32Ux8(v, config)
-	case OpRsh32x16:
-		return rewriteValue386_OpRsh32x16(v, config)
-	case OpRsh32x32:
-		return rewriteValue386_OpRsh32x32(v, config)
-	case OpRsh32x64:
-		return rewriteValue386_OpRsh32x64(v, config)
-	case OpRsh32x8:
-		return rewriteValue386_OpRsh32x8(v, config)
-	case OpRsh8Ux16:
-		return rewriteValue386_OpRsh8Ux16(v, config)
-	case OpRsh8Ux32:
-		return rewriteValue386_OpRsh8Ux32(v, config)
-	case OpRsh8Ux64:
-		return rewriteValue386_OpRsh8Ux64(v, config)
-	case OpRsh8Ux8:
-		return rewriteValue386_OpRsh8Ux8(v, config)
-	case OpRsh8x16:
-		return rewriteValue386_OpRsh8x16(v, config)
-	case OpRsh8x32:
-		return rewriteValue386_OpRsh8x32(v, config)
-	case OpRsh8x64:
-		return rewriteValue386_OpRsh8x64(v, config)
-	case OpRsh8x8:
-		return rewriteValue386_OpRsh8x8(v, config)
-	case OpSignExt16to32:
-		return rewriteValue386_OpSignExt16to32(v, config)
-	case OpSignExt8to16:
-		return rewriteValue386_OpSignExt8to16(v, config)
-	case OpSignExt8to32:
-		return rewriteValue386_OpSignExt8to32(v, config)
-	case OpSignmask:
-		return rewriteValue386_OpSignmask(v, config)
-	case OpSqrt:
-		return rewriteValue386_OpSqrt(v, config)
-	case OpStaticCall:
-		return rewriteValue386_OpStaticCall(v, config)
-	case OpStore:
-		return rewriteValue386_OpStore(v, config)
-	case OpSub16:
-		return rewriteValue386_OpSub16(v, config)
-	case OpSub32:
-		return rewriteValue386_OpSub32(v, config)
-	case OpSub32F:
-		return rewriteValue386_OpSub32F(v, config)
-	case OpSub32carry:
-		return rewriteValue386_OpSub32carry(v, config)
-	case OpSub32withcarry:
-		return rewriteValue386_OpSub32withcarry(v, config)
-	case OpSub64F:
-		return rewriteValue386_OpSub64F(v, config)
-	case OpSub8:
-		return rewriteValue386_OpSub8(v, config)
-	case OpSubPtr:
-		return rewriteValue386_OpSubPtr(v, config)
-	case OpTrunc16to8:
-		return rewriteValue386_OpTrunc16to8(v, config)
-	case OpTrunc32to16:
-		return rewriteValue386_OpTrunc32to16(v, config)
-	case OpTrunc32to8:
-		return rewriteValue386_OpTrunc32to8(v, config)
-	case OpXor16:
-		return rewriteValue386_OpXor16(v, config)
-	case OpXor32:
-		return rewriteValue386_OpXor32(v, config)
-	case OpXor8:
-		return rewriteValue386_OpXor8(v, config)
-	case OpZero:
-		return rewriteValue386_OpZero(v, config)
-	case OpZeroExt16to32:
-		return rewriteValue386_OpZeroExt16to32(v, config)
-	case OpZeroExt8to16:
-		return rewriteValue386_OpZeroExt8to16(v, config)
-	case OpZeroExt8to32:
-		return rewriteValue386_OpZeroExt8to32(v, config)
-	case OpZeromask:
-		return rewriteValue386_OpZeromask(v, config)
+	if v.Op < rewriteTable386Min || v.Op > rewriteTable386Max {
+		return false
 	}
-	return false
+	fn := rewriteTable386[v.Op-rewriteTable386Min]
+	if fn == nil {
+		return false
+	}
+	return fn(v, config)
 }
 func rewriteValue386_Op386ADCL(v *Value, config *Config) bool {
 	b := v.Block

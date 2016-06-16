@@ -6,32 +6,32 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
+const rewriteTabledecMin = OpLoad
+const rewriteTabledecMax = OpIData
+
+var rewriteTabledec = [...]func(*Value, *Config) bool{
+	OpComplexImag - rewriteTabledecMin: rewriteValuedec_OpComplexImag,
+	OpComplexReal - rewriteTabledecMin: rewriteValuedec_OpComplexReal,
+	OpIData - rewriteTabledecMin:       rewriteValuedec_OpIData,
+	OpITab - rewriteTabledecMin:        rewriteValuedec_OpITab,
+	OpLoad - rewriteTabledecMin:        rewriteValuedec_OpLoad,
+	OpSliceCap - rewriteTabledecMin:    rewriteValuedec_OpSliceCap,
+	OpSliceLen - rewriteTabledecMin:    rewriteValuedec_OpSliceLen,
+	OpSlicePtr - rewriteTabledecMin:    rewriteValuedec_OpSlicePtr,
+	OpStore - rewriteTabledecMin:       rewriteValuedec_OpStore,
+	OpStringLen - rewriteTabledecMin:   rewriteValuedec_OpStringLen,
+	OpStringPtr - rewriteTabledecMin:   rewriteValuedec_OpStringPtr,
+}
+
 func rewriteValuedec(v *Value, config *Config) bool {
-	switch v.Op {
-	case OpComplexImag:
-		return rewriteValuedec_OpComplexImag(v, config)
-	case OpComplexReal:
-		return rewriteValuedec_OpComplexReal(v, config)
-	case OpIData:
-		return rewriteValuedec_OpIData(v, config)
-	case OpITab:
-		return rewriteValuedec_OpITab(v, config)
-	case OpLoad:
-		return rewriteValuedec_OpLoad(v, config)
-	case OpSliceCap:
-		return rewriteValuedec_OpSliceCap(v, config)
-	case OpSliceLen:
-		return rewriteValuedec_OpSliceLen(v, config)
-	case OpSlicePtr:
-		return rewriteValuedec_OpSlicePtr(v, config)
-	case OpStore:
-		return rewriteValuedec_OpStore(v, config)
-	case OpStringLen:
-		return rewriteValuedec_OpStringLen(v, config)
-	case OpStringPtr:
-		return rewriteValuedec_OpStringPtr(v, config)
+	if v.Op < rewriteTabledecMin || v.Op > rewriteTabledecMax {
+		return false
 	}
-	return false
+	fn := rewriteTabledec[v.Op-rewriteTabledecMin]
+	if fn == nil {
+		return false
+	}
+	return fn(v, config)
 }
 func rewriteValuedec_OpComplexImag(v *Value, config *Config) bool {
 	b := v.Block

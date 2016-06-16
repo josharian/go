@@ -6,362 +6,197 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
+const rewriteTablegenericMin = OpAdd8
+const rewriteTablegenericMax = OpStructSelect
+
+var rewriteTablegeneric = [...]func(*Value, *Config) bool{
+	OpAdd16 - rewriteTablegenericMin:           rewriteValuegeneric_OpAdd16,
+	OpAdd32 - rewriteTablegenericMin:           rewriteValuegeneric_OpAdd32,
+	OpAdd32F - rewriteTablegenericMin:          rewriteValuegeneric_OpAdd32F,
+	OpAdd64 - rewriteTablegenericMin:           rewriteValuegeneric_OpAdd64,
+	OpAdd64F - rewriteTablegenericMin:          rewriteValuegeneric_OpAdd64F,
+	OpAdd8 - rewriteTablegenericMin:            rewriteValuegeneric_OpAdd8,
+	OpAddPtr - rewriteTablegenericMin:          rewriteValuegeneric_OpAddPtr,
+	OpAnd16 - rewriteTablegenericMin:           rewriteValuegeneric_OpAnd16,
+	OpAnd32 - rewriteTablegenericMin:           rewriteValuegeneric_OpAnd32,
+	OpAnd64 - rewriteTablegenericMin:           rewriteValuegeneric_OpAnd64,
+	OpAnd8 - rewriteTablegenericMin:            rewriteValuegeneric_OpAnd8,
+	OpArg - rewriteTablegenericMin:             rewriteValuegeneric_OpArg,
+	OpArrayIndex - rewriteTablegenericMin:      rewriteValuegeneric_OpArrayIndex,
+	OpCom16 - rewriteTablegenericMin:           rewriteValuegeneric_OpCom16,
+	OpCom32 - rewriteTablegenericMin:           rewriteValuegeneric_OpCom32,
+	OpCom64 - rewriteTablegenericMin:           rewriteValuegeneric_OpCom64,
+	OpCom8 - rewriteTablegenericMin:            rewriteValuegeneric_OpCom8,
+	OpConstInterface - rewriteTablegenericMin:  rewriteValuegeneric_OpConstInterface,
+	OpConstSlice - rewriteTablegenericMin:      rewriteValuegeneric_OpConstSlice,
+	OpConstString - rewriteTablegenericMin:     rewriteValuegeneric_OpConstString,
+	OpConvert - rewriteTablegenericMin:         rewriteValuegeneric_OpConvert,
+	OpCvt32Fto64F - rewriteTablegenericMin:     rewriteValuegeneric_OpCvt32Fto64F,
+	OpCvt64Fto32F - rewriteTablegenericMin:     rewriteValuegeneric_OpCvt64Fto32F,
+	OpDiv32F - rewriteTablegenericMin:          rewriteValuegeneric_OpDiv32F,
+	OpDiv64 - rewriteTablegenericMin:           rewriteValuegeneric_OpDiv64,
+	OpDiv64F - rewriteTablegenericMin:          rewriteValuegeneric_OpDiv64F,
+	OpDiv64u - rewriteTablegenericMin:          rewriteValuegeneric_OpDiv64u,
+	OpEq16 - rewriteTablegenericMin:            rewriteValuegeneric_OpEq16,
+	OpEq32 - rewriteTablegenericMin:            rewriteValuegeneric_OpEq32,
+	OpEq64 - rewriteTablegenericMin:            rewriteValuegeneric_OpEq64,
+	OpEq8 - rewriteTablegenericMin:             rewriteValuegeneric_OpEq8,
+	OpEqB - rewriteTablegenericMin:             rewriteValuegeneric_OpEqB,
+	OpEqInter - rewriteTablegenericMin:         rewriteValuegeneric_OpEqInter,
+	OpEqPtr - rewriteTablegenericMin:           rewriteValuegeneric_OpEqPtr,
+	OpEqSlice - rewriteTablegenericMin:         rewriteValuegeneric_OpEqSlice,
+	OpGeq16 - rewriteTablegenericMin:           rewriteValuegeneric_OpGeq16,
+	OpGeq16U - rewriteTablegenericMin:          rewriteValuegeneric_OpGeq16U,
+	OpGeq32 - rewriteTablegenericMin:           rewriteValuegeneric_OpGeq32,
+	OpGeq32U - rewriteTablegenericMin:          rewriteValuegeneric_OpGeq32U,
+	OpGeq64 - rewriteTablegenericMin:           rewriteValuegeneric_OpGeq64,
+	OpGeq64U - rewriteTablegenericMin:          rewriteValuegeneric_OpGeq64U,
+	OpGeq8 - rewriteTablegenericMin:            rewriteValuegeneric_OpGeq8,
+	OpGeq8U - rewriteTablegenericMin:           rewriteValuegeneric_OpGeq8U,
+	OpGreater16 - rewriteTablegenericMin:       rewriteValuegeneric_OpGreater16,
+	OpGreater16U - rewriteTablegenericMin:      rewriteValuegeneric_OpGreater16U,
+	OpGreater32 - rewriteTablegenericMin:       rewriteValuegeneric_OpGreater32,
+	OpGreater32U - rewriteTablegenericMin:      rewriteValuegeneric_OpGreater32U,
+	OpGreater64 - rewriteTablegenericMin:       rewriteValuegeneric_OpGreater64,
+	OpGreater64U - rewriteTablegenericMin:      rewriteValuegeneric_OpGreater64U,
+	OpGreater8 - rewriteTablegenericMin:        rewriteValuegeneric_OpGreater8,
+	OpGreater8U - rewriteTablegenericMin:       rewriteValuegeneric_OpGreater8U,
+	OpIsInBounds - rewriteTablegenericMin:      rewriteValuegeneric_OpIsInBounds,
+	OpIsSliceInBounds - rewriteTablegenericMin: rewriteValuegeneric_OpIsSliceInBounds,
+	OpLeq16 - rewriteTablegenericMin:           rewriteValuegeneric_OpLeq16,
+	OpLeq16U - rewriteTablegenericMin:          rewriteValuegeneric_OpLeq16U,
+	OpLeq32 - rewriteTablegenericMin:           rewriteValuegeneric_OpLeq32,
+	OpLeq32U - rewriteTablegenericMin:          rewriteValuegeneric_OpLeq32U,
+	OpLeq64 - rewriteTablegenericMin:           rewriteValuegeneric_OpLeq64,
+	OpLeq64U - rewriteTablegenericMin:          rewriteValuegeneric_OpLeq64U,
+	OpLeq8 - rewriteTablegenericMin:            rewriteValuegeneric_OpLeq8,
+	OpLeq8U - rewriteTablegenericMin:           rewriteValuegeneric_OpLeq8U,
+	OpLess16 - rewriteTablegenericMin:          rewriteValuegeneric_OpLess16,
+	OpLess16U - rewriteTablegenericMin:         rewriteValuegeneric_OpLess16U,
+	OpLess32 - rewriteTablegenericMin:          rewriteValuegeneric_OpLess32,
+	OpLess32U - rewriteTablegenericMin:         rewriteValuegeneric_OpLess32U,
+	OpLess64 - rewriteTablegenericMin:          rewriteValuegeneric_OpLess64,
+	OpLess64U - rewriteTablegenericMin:         rewriteValuegeneric_OpLess64U,
+	OpLess8 - rewriteTablegenericMin:           rewriteValuegeneric_OpLess8,
+	OpLess8U - rewriteTablegenericMin:          rewriteValuegeneric_OpLess8U,
+	OpLoad - rewriteTablegenericMin:            rewriteValuegeneric_OpLoad,
+	OpLsh16x16 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh16x16,
+	OpLsh16x32 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh16x32,
+	OpLsh16x64 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh16x64,
+	OpLsh16x8 - rewriteTablegenericMin:         rewriteValuegeneric_OpLsh16x8,
+	OpLsh32x16 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh32x16,
+	OpLsh32x32 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh32x32,
+	OpLsh32x64 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh32x64,
+	OpLsh32x8 - rewriteTablegenericMin:         rewriteValuegeneric_OpLsh32x8,
+	OpLsh64x16 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh64x16,
+	OpLsh64x32 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh64x32,
+	OpLsh64x64 - rewriteTablegenericMin:        rewriteValuegeneric_OpLsh64x64,
+	OpLsh64x8 - rewriteTablegenericMin:         rewriteValuegeneric_OpLsh64x8,
+	OpLsh8x16 - rewriteTablegenericMin:         rewriteValuegeneric_OpLsh8x16,
+	OpLsh8x32 - rewriteTablegenericMin:         rewriteValuegeneric_OpLsh8x32,
+	OpLsh8x64 - rewriteTablegenericMin:         rewriteValuegeneric_OpLsh8x64,
+	OpLsh8x8 - rewriteTablegenericMin:          rewriteValuegeneric_OpLsh8x8,
+	OpMod16 - rewriteTablegenericMin:           rewriteValuegeneric_OpMod16,
+	OpMod16u - rewriteTablegenericMin:          rewriteValuegeneric_OpMod16u,
+	OpMod32 - rewriteTablegenericMin:           rewriteValuegeneric_OpMod32,
+	OpMod32u - rewriteTablegenericMin:          rewriteValuegeneric_OpMod32u,
+	OpMod64 - rewriteTablegenericMin:           rewriteValuegeneric_OpMod64,
+	OpMod64u - rewriteTablegenericMin:          rewriteValuegeneric_OpMod64u,
+	OpMod8 - rewriteTablegenericMin:            rewriteValuegeneric_OpMod8,
+	OpMod8u - rewriteTablegenericMin:           rewriteValuegeneric_OpMod8u,
+	OpMul16 - rewriteTablegenericMin:           rewriteValuegeneric_OpMul16,
+	OpMul32 - rewriteTablegenericMin:           rewriteValuegeneric_OpMul32,
+	OpMul32F - rewriteTablegenericMin:          rewriteValuegeneric_OpMul32F,
+	OpMul64 - rewriteTablegenericMin:           rewriteValuegeneric_OpMul64,
+	OpMul64F - rewriteTablegenericMin:          rewriteValuegeneric_OpMul64F,
+	OpMul8 - rewriteTablegenericMin:            rewriteValuegeneric_OpMul8,
+	OpNeg16 - rewriteTablegenericMin:           rewriteValuegeneric_OpNeg16,
+	OpNeg32 - rewriteTablegenericMin:           rewriteValuegeneric_OpNeg32,
+	OpNeg64 - rewriteTablegenericMin:           rewriteValuegeneric_OpNeg64,
+	OpNeg8 - rewriteTablegenericMin:            rewriteValuegeneric_OpNeg8,
+	OpNeq16 - rewriteTablegenericMin:           rewriteValuegeneric_OpNeq16,
+	OpNeq32 - rewriteTablegenericMin:           rewriteValuegeneric_OpNeq32,
+	OpNeq64 - rewriteTablegenericMin:           rewriteValuegeneric_OpNeq64,
+	OpNeq8 - rewriteTablegenericMin:            rewriteValuegeneric_OpNeq8,
+	OpNeqB - rewriteTablegenericMin:            rewriteValuegeneric_OpNeqB,
+	OpNeqInter - rewriteTablegenericMin:        rewriteValuegeneric_OpNeqInter,
+	OpNeqPtr - rewriteTablegenericMin:          rewriteValuegeneric_OpNeqPtr,
+	OpNeqSlice - rewriteTablegenericMin:        rewriteValuegeneric_OpNeqSlice,
+	OpOffPtr - rewriteTablegenericMin:          rewriteValuegeneric_OpOffPtr,
+	OpOr16 - rewriteTablegenericMin:            rewriteValuegeneric_OpOr16,
+	OpOr32 - rewriteTablegenericMin:            rewriteValuegeneric_OpOr32,
+	OpOr64 - rewriteTablegenericMin:            rewriteValuegeneric_OpOr64,
+	OpOr8 - rewriteTablegenericMin:             rewriteValuegeneric_OpOr8,
+	OpPhi - rewriteTablegenericMin:             rewriteValuegeneric_OpPhi,
+	OpPtrIndex - rewriteTablegenericMin:        rewriteValuegeneric_OpPtrIndex,
+	OpRsh16Ux16 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh16Ux16,
+	OpRsh16Ux32 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh16Ux32,
+	OpRsh16Ux64 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh16Ux64,
+	OpRsh16Ux8 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh16Ux8,
+	OpRsh16x16 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh16x16,
+	OpRsh16x32 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh16x32,
+	OpRsh16x64 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh16x64,
+	OpRsh16x8 - rewriteTablegenericMin:         rewriteValuegeneric_OpRsh16x8,
+	OpRsh32Ux16 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh32Ux16,
+	OpRsh32Ux32 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh32Ux32,
+	OpRsh32Ux64 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh32Ux64,
+	OpRsh32Ux8 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh32Ux8,
+	OpRsh32x16 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh32x16,
+	OpRsh32x32 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh32x32,
+	OpRsh32x64 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh32x64,
+	OpRsh32x8 - rewriteTablegenericMin:         rewriteValuegeneric_OpRsh32x8,
+	OpRsh64Ux16 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh64Ux16,
+	OpRsh64Ux32 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh64Ux32,
+	OpRsh64Ux64 - rewriteTablegenericMin:       rewriteValuegeneric_OpRsh64Ux64,
+	OpRsh64Ux8 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh64Ux8,
+	OpRsh64x16 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh64x16,
+	OpRsh64x32 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh64x32,
+	OpRsh64x64 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh64x64,
+	OpRsh64x8 - rewriteTablegenericMin:         rewriteValuegeneric_OpRsh64x8,
+	OpRsh8Ux16 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh8Ux16,
+	OpRsh8Ux32 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh8Ux32,
+	OpRsh8Ux64 - rewriteTablegenericMin:        rewriteValuegeneric_OpRsh8Ux64,
+	OpRsh8Ux8 - rewriteTablegenericMin:         rewriteValuegeneric_OpRsh8Ux8,
+	OpRsh8x16 - rewriteTablegenericMin:         rewriteValuegeneric_OpRsh8x16,
+	OpRsh8x32 - rewriteTablegenericMin:         rewriteValuegeneric_OpRsh8x32,
+	OpRsh8x64 - rewriteTablegenericMin:         rewriteValuegeneric_OpRsh8x64,
+	OpRsh8x8 - rewriteTablegenericMin:          rewriteValuegeneric_OpRsh8x8,
+	OpSliceCap - rewriteTablegenericMin:        rewriteValuegeneric_OpSliceCap,
+	OpSliceLen - rewriteTablegenericMin:        rewriteValuegeneric_OpSliceLen,
+	OpSlicePtr - rewriteTablegenericMin:        rewriteValuegeneric_OpSlicePtr,
+	OpSqrt - rewriteTablegenericMin:            rewriteValuegeneric_OpSqrt,
+	OpStore - rewriteTablegenericMin:           rewriteValuegeneric_OpStore,
+	OpStringLen - rewriteTablegenericMin:       rewriteValuegeneric_OpStringLen,
+	OpStringPtr - rewriteTablegenericMin:       rewriteValuegeneric_OpStringPtr,
+	OpStructSelect - rewriteTablegenericMin:    rewriteValuegeneric_OpStructSelect,
+	OpSub16 - rewriteTablegenericMin:           rewriteValuegeneric_OpSub16,
+	OpSub32 - rewriteTablegenericMin:           rewriteValuegeneric_OpSub32,
+	OpSub32F - rewriteTablegenericMin:          rewriteValuegeneric_OpSub32F,
+	OpSub64 - rewriteTablegenericMin:           rewriteValuegeneric_OpSub64,
+	OpSub64F - rewriteTablegenericMin:          rewriteValuegeneric_OpSub64F,
+	OpSub8 - rewriteTablegenericMin:            rewriteValuegeneric_OpSub8,
+	OpTrunc16to8 - rewriteTablegenericMin:      rewriteValuegeneric_OpTrunc16to8,
+	OpTrunc32to16 - rewriteTablegenericMin:     rewriteValuegeneric_OpTrunc32to16,
+	OpTrunc32to8 - rewriteTablegenericMin:      rewriteValuegeneric_OpTrunc32to8,
+	OpTrunc64to16 - rewriteTablegenericMin:     rewriteValuegeneric_OpTrunc64to16,
+	OpTrunc64to32 - rewriteTablegenericMin:     rewriteValuegeneric_OpTrunc64to32,
+	OpTrunc64to8 - rewriteTablegenericMin:      rewriteValuegeneric_OpTrunc64to8,
+	OpXor16 - rewriteTablegenericMin:           rewriteValuegeneric_OpXor16,
+	OpXor32 - rewriteTablegenericMin:           rewriteValuegeneric_OpXor32,
+	OpXor64 - rewriteTablegenericMin:           rewriteValuegeneric_OpXor64,
+	OpXor8 - rewriteTablegenericMin:            rewriteValuegeneric_OpXor8,
+	OpZero - rewriteTablegenericMin:            rewriteValuegeneric_OpZero,
+}
+
 func rewriteValuegeneric(v *Value, config *Config) bool {
-	switch v.Op {
-	case OpAdd16:
-		return rewriteValuegeneric_OpAdd16(v, config)
-	case OpAdd32:
-		return rewriteValuegeneric_OpAdd32(v, config)
-	case OpAdd32F:
-		return rewriteValuegeneric_OpAdd32F(v, config)
-	case OpAdd64:
-		return rewriteValuegeneric_OpAdd64(v, config)
-	case OpAdd64F:
-		return rewriteValuegeneric_OpAdd64F(v, config)
-	case OpAdd8:
-		return rewriteValuegeneric_OpAdd8(v, config)
-	case OpAddPtr:
-		return rewriteValuegeneric_OpAddPtr(v, config)
-	case OpAnd16:
-		return rewriteValuegeneric_OpAnd16(v, config)
-	case OpAnd32:
-		return rewriteValuegeneric_OpAnd32(v, config)
-	case OpAnd64:
-		return rewriteValuegeneric_OpAnd64(v, config)
-	case OpAnd8:
-		return rewriteValuegeneric_OpAnd8(v, config)
-	case OpArg:
-		return rewriteValuegeneric_OpArg(v, config)
-	case OpArrayIndex:
-		return rewriteValuegeneric_OpArrayIndex(v, config)
-	case OpCom16:
-		return rewriteValuegeneric_OpCom16(v, config)
-	case OpCom32:
-		return rewriteValuegeneric_OpCom32(v, config)
-	case OpCom64:
-		return rewriteValuegeneric_OpCom64(v, config)
-	case OpCom8:
-		return rewriteValuegeneric_OpCom8(v, config)
-	case OpConstInterface:
-		return rewriteValuegeneric_OpConstInterface(v, config)
-	case OpConstSlice:
-		return rewriteValuegeneric_OpConstSlice(v, config)
-	case OpConstString:
-		return rewriteValuegeneric_OpConstString(v, config)
-	case OpConvert:
-		return rewriteValuegeneric_OpConvert(v, config)
-	case OpCvt32Fto64F:
-		return rewriteValuegeneric_OpCvt32Fto64F(v, config)
-	case OpCvt64Fto32F:
-		return rewriteValuegeneric_OpCvt64Fto32F(v, config)
-	case OpDiv32F:
-		return rewriteValuegeneric_OpDiv32F(v, config)
-	case OpDiv64:
-		return rewriteValuegeneric_OpDiv64(v, config)
-	case OpDiv64F:
-		return rewriteValuegeneric_OpDiv64F(v, config)
-	case OpDiv64u:
-		return rewriteValuegeneric_OpDiv64u(v, config)
-	case OpEq16:
-		return rewriteValuegeneric_OpEq16(v, config)
-	case OpEq32:
-		return rewriteValuegeneric_OpEq32(v, config)
-	case OpEq64:
-		return rewriteValuegeneric_OpEq64(v, config)
-	case OpEq8:
-		return rewriteValuegeneric_OpEq8(v, config)
-	case OpEqB:
-		return rewriteValuegeneric_OpEqB(v, config)
-	case OpEqInter:
-		return rewriteValuegeneric_OpEqInter(v, config)
-	case OpEqPtr:
-		return rewriteValuegeneric_OpEqPtr(v, config)
-	case OpEqSlice:
-		return rewriteValuegeneric_OpEqSlice(v, config)
-	case OpGeq16:
-		return rewriteValuegeneric_OpGeq16(v, config)
-	case OpGeq16U:
-		return rewriteValuegeneric_OpGeq16U(v, config)
-	case OpGeq32:
-		return rewriteValuegeneric_OpGeq32(v, config)
-	case OpGeq32U:
-		return rewriteValuegeneric_OpGeq32U(v, config)
-	case OpGeq64:
-		return rewriteValuegeneric_OpGeq64(v, config)
-	case OpGeq64U:
-		return rewriteValuegeneric_OpGeq64U(v, config)
-	case OpGeq8:
-		return rewriteValuegeneric_OpGeq8(v, config)
-	case OpGeq8U:
-		return rewriteValuegeneric_OpGeq8U(v, config)
-	case OpGreater16:
-		return rewriteValuegeneric_OpGreater16(v, config)
-	case OpGreater16U:
-		return rewriteValuegeneric_OpGreater16U(v, config)
-	case OpGreater32:
-		return rewriteValuegeneric_OpGreater32(v, config)
-	case OpGreater32U:
-		return rewriteValuegeneric_OpGreater32U(v, config)
-	case OpGreater64:
-		return rewriteValuegeneric_OpGreater64(v, config)
-	case OpGreater64U:
-		return rewriteValuegeneric_OpGreater64U(v, config)
-	case OpGreater8:
-		return rewriteValuegeneric_OpGreater8(v, config)
-	case OpGreater8U:
-		return rewriteValuegeneric_OpGreater8U(v, config)
-	case OpIsInBounds:
-		return rewriteValuegeneric_OpIsInBounds(v, config)
-	case OpIsSliceInBounds:
-		return rewriteValuegeneric_OpIsSliceInBounds(v, config)
-	case OpLeq16:
-		return rewriteValuegeneric_OpLeq16(v, config)
-	case OpLeq16U:
-		return rewriteValuegeneric_OpLeq16U(v, config)
-	case OpLeq32:
-		return rewriteValuegeneric_OpLeq32(v, config)
-	case OpLeq32U:
-		return rewriteValuegeneric_OpLeq32U(v, config)
-	case OpLeq64:
-		return rewriteValuegeneric_OpLeq64(v, config)
-	case OpLeq64U:
-		return rewriteValuegeneric_OpLeq64U(v, config)
-	case OpLeq8:
-		return rewriteValuegeneric_OpLeq8(v, config)
-	case OpLeq8U:
-		return rewriteValuegeneric_OpLeq8U(v, config)
-	case OpLess16:
-		return rewriteValuegeneric_OpLess16(v, config)
-	case OpLess16U:
-		return rewriteValuegeneric_OpLess16U(v, config)
-	case OpLess32:
-		return rewriteValuegeneric_OpLess32(v, config)
-	case OpLess32U:
-		return rewriteValuegeneric_OpLess32U(v, config)
-	case OpLess64:
-		return rewriteValuegeneric_OpLess64(v, config)
-	case OpLess64U:
-		return rewriteValuegeneric_OpLess64U(v, config)
-	case OpLess8:
-		return rewriteValuegeneric_OpLess8(v, config)
-	case OpLess8U:
-		return rewriteValuegeneric_OpLess8U(v, config)
-	case OpLoad:
-		return rewriteValuegeneric_OpLoad(v, config)
-	case OpLsh16x16:
-		return rewriteValuegeneric_OpLsh16x16(v, config)
-	case OpLsh16x32:
-		return rewriteValuegeneric_OpLsh16x32(v, config)
-	case OpLsh16x64:
-		return rewriteValuegeneric_OpLsh16x64(v, config)
-	case OpLsh16x8:
-		return rewriteValuegeneric_OpLsh16x8(v, config)
-	case OpLsh32x16:
-		return rewriteValuegeneric_OpLsh32x16(v, config)
-	case OpLsh32x32:
-		return rewriteValuegeneric_OpLsh32x32(v, config)
-	case OpLsh32x64:
-		return rewriteValuegeneric_OpLsh32x64(v, config)
-	case OpLsh32x8:
-		return rewriteValuegeneric_OpLsh32x8(v, config)
-	case OpLsh64x16:
-		return rewriteValuegeneric_OpLsh64x16(v, config)
-	case OpLsh64x32:
-		return rewriteValuegeneric_OpLsh64x32(v, config)
-	case OpLsh64x64:
-		return rewriteValuegeneric_OpLsh64x64(v, config)
-	case OpLsh64x8:
-		return rewriteValuegeneric_OpLsh64x8(v, config)
-	case OpLsh8x16:
-		return rewriteValuegeneric_OpLsh8x16(v, config)
-	case OpLsh8x32:
-		return rewriteValuegeneric_OpLsh8x32(v, config)
-	case OpLsh8x64:
-		return rewriteValuegeneric_OpLsh8x64(v, config)
-	case OpLsh8x8:
-		return rewriteValuegeneric_OpLsh8x8(v, config)
-	case OpMod16:
-		return rewriteValuegeneric_OpMod16(v, config)
-	case OpMod16u:
-		return rewriteValuegeneric_OpMod16u(v, config)
-	case OpMod32:
-		return rewriteValuegeneric_OpMod32(v, config)
-	case OpMod32u:
-		return rewriteValuegeneric_OpMod32u(v, config)
-	case OpMod64:
-		return rewriteValuegeneric_OpMod64(v, config)
-	case OpMod64u:
-		return rewriteValuegeneric_OpMod64u(v, config)
-	case OpMod8:
-		return rewriteValuegeneric_OpMod8(v, config)
-	case OpMod8u:
-		return rewriteValuegeneric_OpMod8u(v, config)
-	case OpMul16:
-		return rewriteValuegeneric_OpMul16(v, config)
-	case OpMul32:
-		return rewriteValuegeneric_OpMul32(v, config)
-	case OpMul32F:
-		return rewriteValuegeneric_OpMul32F(v, config)
-	case OpMul64:
-		return rewriteValuegeneric_OpMul64(v, config)
-	case OpMul64F:
-		return rewriteValuegeneric_OpMul64F(v, config)
-	case OpMul8:
-		return rewriteValuegeneric_OpMul8(v, config)
-	case OpNeg16:
-		return rewriteValuegeneric_OpNeg16(v, config)
-	case OpNeg32:
-		return rewriteValuegeneric_OpNeg32(v, config)
-	case OpNeg64:
-		return rewriteValuegeneric_OpNeg64(v, config)
-	case OpNeg8:
-		return rewriteValuegeneric_OpNeg8(v, config)
-	case OpNeq16:
-		return rewriteValuegeneric_OpNeq16(v, config)
-	case OpNeq32:
-		return rewriteValuegeneric_OpNeq32(v, config)
-	case OpNeq64:
-		return rewriteValuegeneric_OpNeq64(v, config)
-	case OpNeq8:
-		return rewriteValuegeneric_OpNeq8(v, config)
-	case OpNeqB:
-		return rewriteValuegeneric_OpNeqB(v, config)
-	case OpNeqInter:
-		return rewriteValuegeneric_OpNeqInter(v, config)
-	case OpNeqPtr:
-		return rewriteValuegeneric_OpNeqPtr(v, config)
-	case OpNeqSlice:
-		return rewriteValuegeneric_OpNeqSlice(v, config)
-	case OpOffPtr:
-		return rewriteValuegeneric_OpOffPtr(v, config)
-	case OpOr16:
-		return rewriteValuegeneric_OpOr16(v, config)
-	case OpOr32:
-		return rewriteValuegeneric_OpOr32(v, config)
-	case OpOr64:
-		return rewriteValuegeneric_OpOr64(v, config)
-	case OpOr8:
-		return rewriteValuegeneric_OpOr8(v, config)
-	case OpPhi:
-		return rewriteValuegeneric_OpPhi(v, config)
-	case OpPtrIndex:
-		return rewriteValuegeneric_OpPtrIndex(v, config)
-	case OpRsh16Ux16:
-		return rewriteValuegeneric_OpRsh16Ux16(v, config)
-	case OpRsh16Ux32:
-		return rewriteValuegeneric_OpRsh16Ux32(v, config)
-	case OpRsh16Ux64:
-		return rewriteValuegeneric_OpRsh16Ux64(v, config)
-	case OpRsh16Ux8:
-		return rewriteValuegeneric_OpRsh16Ux8(v, config)
-	case OpRsh16x16:
-		return rewriteValuegeneric_OpRsh16x16(v, config)
-	case OpRsh16x32:
-		return rewriteValuegeneric_OpRsh16x32(v, config)
-	case OpRsh16x64:
-		return rewriteValuegeneric_OpRsh16x64(v, config)
-	case OpRsh16x8:
-		return rewriteValuegeneric_OpRsh16x8(v, config)
-	case OpRsh32Ux16:
-		return rewriteValuegeneric_OpRsh32Ux16(v, config)
-	case OpRsh32Ux32:
-		return rewriteValuegeneric_OpRsh32Ux32(v, config)
-	case OpRsh32Ux64:
-		return rewriteValuegeneric_OpRsh32Ux64(v, config)
-	case OpRsh32Ux8:
-		return rewriteValuegeneric_OpRsh32Ux8(v, config)
-	case OpRsh32x16:
-		return rewriteValuegeneric_OpRsh32x16(v, config)
-	case OpRsh32x32:
-		return rewriteValuegeneric_OpRsh32x32(v, config)
-	case OpRsh32x64:
-		return rewriteValuegeneric_OpRsh32x64(v, config)
-	case OpRsh32x8:
-		return rewriteValuegeneric_OpRsh32x8(v, config)
-	case OpRsh64Ux16:
-		return rewriteValuegeneric_OpRsh64Ux16(v, config)
-	case OpRsh64Ux32:
-		return rewriteValuegeneric_OpRsh64Ux32(v, config)
-	case OpRsh64Ux64:
-		return rewriteValuegeneric_OpRsh64Ux64(v, config)
-	case OpRsh64Ux8:
-		return rewriteValuegeneric_OpRsh64Ux8(v, config)
-	case OpRsh64x16:
-		return rewriteValuegeneric_OpRsh64x16(v, config)
-	case OpRsh64x32:
-		return rewriteValuegeneric_OpRsh64x32(v, config)
-	case OpRsh64x64:
-		return rewriteValuegeneric_OpRsh64x64(v, config)
-	case OpRsh64x8:
-		return rewriteValuegeneric_OpRsh64x8(v, config)
-	case OpRsh8Ux16:
-		return rewriteValuegeneric_OpRsh8Ux16(v, config)
-	case OpRsh8Ux32:
-		return rewriteValuegeneric_OpRsh8Ux32(v, config)
-	case OpRsh8Ux64:
-		return rewriteValuegeneric_OpRsh8Ux64(v, config)
-	case OpRsh8Ux8:
-		return rewriteValuegeneric_OpRsh8Ux8(v, config)
-	case OpRsh8x16:
-		return rewriteValuegeneric_OpRsh8x16(v, config)
-	case OpRsh8x32:
-		return rewriteValuegeneric_OpRsh8x32(v, config)
-	case OpRsh8x64:
-		return rewriteValuegeneric_OpRsh8x64(v, config)
-	case OpRsh8x8:
-		return rewriteValuegeneric_OpRsh8x8(v, config)
-	case OpSliceCap:
-		return rewriteValuegeneric_OpSliceCap(v, config)
-	case OpSliceLen:
-		return rewriteValuegeneric_OpSliceLen(v, config)
-	case OpSlicePtr:
-		return rewriteValuegeneric_OpSlicePtr(v, config)
-	case OpSqrt:
-		return rewriteValuegeneric_OpSqrt(v, config)
-	case OpStore:
-		return rewriteValuegeneric_OpStore(v, config)
-	case OpStringLen:
-		return rewriteValuegeneric_OpStringLen(v, config)
-	case OpStringPtr:
-		return rewriteValuegeneric_OpStringPtr(v, config)
-	case OpStructSelect:
-		return rewriteValuegeneric_OpStructSelect(v, config)
-	case OpSub16:
-		return rewriteValuegeneric_OpSub16(v, config)
-	case OpSub32:
-		return rewriteValuegeneric_OpSub32(v, config)
-	case OpSub32F:
-		return rewriteValuegeneric_OpSub32F(v, config)
-	case OpSub64:
-		return rewriteValuegeneric_OpSub64(v, config)
-	case OpSub64F:
-		return rewriteValuegeneric_OpSub64F(v, config)
-	case OpSub8:
-		return rewriteValuegeneric_OpSub8(v, config)
-	case OpTrunc16to8:
-		return rewriteValuegeneric_OpTrunc16to8(v, config)
-	case OpTrunc32to16:
-		return rewriteValuegeneric_OpTrunc32to16(v, config)
-	case OpTrunc32to8:
-		return rewriteValuegeneric_OpTrunc32to8(v, config)
-	case OpTrunc64to16:
-		return rewriteValuegeneric_OpTrunc64to16(v, config)
-	case OpTrunc64to32:
-		return rewriteValuegeneric_OpTrunc64to32(v, config)
-	case OpTrunc64to8:
-		return rewriteValuegeneric_OpTrunc64to8(v, config)
-	case OpXor16:
-		return rewriteValuegeneric_OpXor16(v, config)
-	case OpXor32:
-		return rewriteValuegeneric_OpXor32(v, config)
-	case OpXor64:
-		return rewriteValuegeneric_OpXor64(v, config)
-	case OpXor8:
-		return rewriteValuegeneric_OpXor8(v, config)
-	case OpZero:
-		return rewriteValuegeneric_OpZero(v, config)
+	if v.Op < rewriteTablegenericMin || v.Op > rewriteTablegenericMax {
+		return false
 	}
-	return false
+	fn := rewriteTablegeneric[v.Op-rewriteTablegenericMin]
+	if fn == nil {
+		return false
+	}
+	return fn(v, config)
 }
 func rewriteValuegeneric_OpAdd16(v *Value, config *Config) bool {
 	b := v.Block

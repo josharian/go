@@ -155,15 +155,39 @@ func genRules(arch arch) {
 	fmt.Fprintln(w, "import \"math\"")
 	fmt.Fprintln(w, "var _ = math.MinInt8 // in case not otherwise used")
 
-	// Main rewrite routine is a switch on v.Op.
-	fmt.Fprintf(w, "func rewriteValue%s(v *Value, config *Config) bool {\n", arch.name)
-	fmt.Fprintf(w, "switch v.Op {\n")
+	// Main rewrite routine is a look-up table keyed by v.Op.
+	min := 1 << 32
+	max := -1
+	var minname, maxname string
 	for _, op := range ops {
-		fmt.Fprintf(w, "case %s:\n", op)
-		fmt.Fprintf(w, "return rewriteValue%s_%s(v, config)\n", arch.name, op)
+		idx := opidx[op]
+		if idx < min {
+			min = idx
+			minname = op
+		}
+		if idx > max {
+			max = idx
+			maxname = op
+		}
+	}
+	minconst := fmt.Sprintf("rewriteTable%sMin", arch.name)
+	maxconst := fmt.Sprintf("rewriteTable%sMax", arch.name)
+	fmt.Fprintf(w, "const %s = %s\n", minconst, minname)
+	fmt.Fprintf(w, "const %s = %s\n", maxconst, maxname)
+	fmt.Fprintf(w, "var rewriteTable%s = [...]func(*Value, *Config) bool {\n", arch.name)
+	for _, op := range ops {
+		fmt.Fprintf(w, "%s - %s: rewriteValue%s_%s,\n", op, minconst, arch.name, op)
 	}
 	fmt.Fprintf(w, "}\n")
-	fmt.Fprintf(w, "return false\n")
+	fmt.Fprintf(w, "func rewriteValue%s(v *Value, config *Config) bool {\n", arch.name)
+	fmt.Fprintf(w, "	if v.Op < %s || v.Op > %s {\n", minconst, maxconst)
+	fmt.Fprintf(w, "		return false\n")
+	fmt.Fprintf(w, "	}\n")
+	fmt.Fprintf(w, "	fn := rewriteTable%s[v.Op-%s]\n", arch.name, minconst)
+	fmt.Fprintf(w, "	if fn == nil {\n")
+	fmt.Fprintf(w, "		return false\n")
+	fmt.Fprintf(w, "	}\n")
+	fmt.Fprintf(w, "	return fn(v, config)\n")
 	fmt.Fprintf(w, "}\n")
 
 	// Generate a routine per op. Note that we don't make one giant routine

@@ -6,680 +6,356 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
+const rewriteTableARM64Min = OpARM64ADD
+const rewriteTableARM64Max = OpCvt64Fto64U
+
+var rewriteTableARM64 = [...]func(*Value, *Config) bool{
+	OpARM64ADD - rewriteTableARM64Min:           rewriteValueARM64_OpARM64ADD,
+	OpARM64ADDconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64ADDconst,
+	OpARM64ADDshiftLL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64ADDshiftLL,
+	OpARM64ADDshiftRA - rewriteTableARM64Min:    rewriteValueARM64_OpARM64ADDshiftRA,
+	OpARM64ADDshiftRL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64ADDshiftRL,
+	OpARM64AND - rewriteTableARM64Min:           rewriteValueARM64_OpARM64AND,
+	OpARM64ANDconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64ANDconst,
+	OpARM64ANDshiftLL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64ANDshiftLL,
+	OpARM64ANDshiftRA - rewriteTableARM64Min:    rewriteValueARM64_OpARM64ANDshiftRA,
+	OpARM64ANDshiftRL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64ANDshiftRL,
+	OpARM64BIC - rewriteTableARM64Min:           rewriteValueARM64_OpARM64BIC,
+	OpARM64BICconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64BICconst,
+	OpARM64BICshiftLL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64BICshiftLL,
+	OpARM64BICshiftRA - rewriteTableARM64Min:    rewriteValueARM64_OpARM64BICshiftRA,
+	OpARM64BICshiftRL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64BICshiftRL,
+	OpARM64CMP - rewriteTableARM64Min:           rewriteValueARM64_OpARM64CMP,
+	OpARM64CMPW - rewriteTableARM64Min:          rewriteValueARM64_OpARM64CMPW,
+	OpARM64CMPWconst - rewriteTableARM64Min:     rewriteValueARM64_OpARM64CMPWconst,
+	OpARM64CMPconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64CMPconst,
+	OpARM64CMPshiftLL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64CMPshiftLL,
+	OpARM64CMPshiftRA - rewriteTableARM64Min:    rewriteValueARM64_OpARM64CMPshiftRA,
+	OpARM64CMPshiftRL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64CMPshiftRL,
+	OpARM64CSELULT - rewriteTableARM64Min:       rewriteValueARM64_OpARM64CSELULT,
+	OpARM64CSELULT0 - rewriteTableARM64Min:      rewriteValueARM64_OpARM64CSELULT0,
+	OpARM64DIV - rewriteTableARM64Min:           rewriteValueARM64_OpARM64DIV,
+	OpARM64DIVW - rewriteTableARM64Min:          rewriteValueARM64_OpARM64DIVW,
+	OpARM64Equal - rewriteTableARM64Min:         rewriteValueARM64_OpARM64Equal,
+	OpARM64FMOVDload - rewriteTableARM64Min:     rewriteValueARM64_OpARM64FMOVDload,
+	OpARM64FMOVDstore - rewriteTableARM64Min:    rewriteValueARM64_OpARM64FMOVDstore,
+	OpARM64FMOVSload - rewriteTableARM64Min:     rewriteValueARM64_OpARM64FMOVSload,
+	OpARM64FMOVSstore - rewriteTableARM64Min:    rewriteValueARM64_OpARM64FMOVSstore,
+	OpARM64GreaterEqual - rewriteTableARM64Min:  rewriteValueARM64_OpARM64GreaterEqual,
+	OpARM64GreaterEqualU - rewriteTableARM64Min: rewriteValueARM64_OpARM64GreaterEqualU,
+	OpARM64GreaterThan - rewriteTableARM64Min:   rewriteValueARM64_OpARM64GreaterThan,
+	OpARM64GreaterThanU - rewriteTableARM64Min:  rewriteValueARM64_OpARM64GreaterThanU,
+	OpARM64LessEqual - rewriteTableARM64Min:     rewriteValueARM64_OpARM64LessEqual,
+	OpARM64LessEqualU - rewriteTableARM64Min:    rewriteValueARM64_OpARM64LessEqualU,
+	OpARM64LessThan - rewriteTableARM64Min:      rewriteValueARM64_OpARM64LessThan,
+	OpARM64LessThanU - rewriteTableARM64Min:     rewriteValueARM64_OpARM64LessThanU,
+	OpARM64MOD - rewriteTableARM64Min:           rewriteValueARM64_OpARM64MOD,
+	OpARM64MODW - rewriteTableARM64Min:          rewriteValueARM64_OpARM64MODW,
+	OpARM64MOVBUload - rewriteTableARM64Min:     rewriteValueARM64_OpARM64MOVBUload,
+	OpARM64MOVBUreg - rewriteTableARM64Min:      rewriteValueARM64_OpARM64MOVBUreg,
+	OpARM64MOVBload - rewriteTableARM64Min:      rewriteValueARM64_OpARM64MOVBload,
+	OpARM64MOVBreg - rewriteTableARM64Min:       rewriteValueARM64_OpARM64MOVBreg,
+	OpARM64MOVBstore - rewriteTableARM64Min:     rewriteValueARM64_OpARM64MOVBstore,
+	OpARM64MOVBstorezero - rewriteTableARM64Min: rewriteValueARM64_OpARM64MOVBstorezero,
+	OpARM64MOVDload - rewriteTableARM64Min:      rewriteValueARM64_OpARM64MOVDload,
+	OpARM64MOVDreg - rewriteTableARM64Min:       rewriteValueARM64_OpARM64MOVDreg,
+	OpARM64MOVDstore - rewriteTableARM64Min:     rewriteValueARM64_OpARM64MOVDstore,
+	OpARM64MOVDstorezero - rewriteTableARM64Min: rewriteValueARM64_OpARM64MOVDstorezero,
+	OpARM64MOVHUload - rewriteTableARM64Min:     rewriteValueARM64_OpARM64MOVHUload,
+	OpARM64MOVHUreg - rewriteTableARM64Min:      rewriteValueARM64_OpARM64MOVHUreg,
+	OpARM64MOVHload - rewriteTableARM64Min:      rewriteValueARM64_OpARM64MOVHload,
+	OpARM64MOVHreg - rewriteTableARM64Min:       rewriteValueARM64_OpARM64MOVHreg,
+	OpARM64MOVHstore - rewriteTableARM64Min:     rewriteValueARM64_OpARM64MOVHstore,
+	OpARM64MOVHstorezero - rewriteTableARM64Min: rewriteValueARM64_OpARM64MOVHstorezero,
+	OpARM64MOVWUload - rewriteTableARM64Min:     rewriteValueARM64_OpARM64MOVWUload,
+	OpARM64MOVWUreg - rewriteTableARM64Min:      rewriteValueARM64_OpARM64MOVWUreg,
+	OpARM64MOVWload - rewriteTableARM64Min:      rewriteValueARM64_OpARM64MOVWload,
+	OpARM64MOVWreg - rewriteTableARM64Min:       rewriteValueARM64_OpARM64MOVWreg,
+	OpARM64MOVWstore - rewriteTableARM64Min:     rewriteValueARM64_OpARM64MOVWstore,
+	OpARM64MOVWstorezero - rewriteTableARM64Min: rewriteValueARM64_OpARM64MOVWstorezero,
+	OpARM64MUL - rewriteTableARM64Min:           rewriteValueARM64_OpARM64MUL,
+	OpARM64MULW - rewriteTableARM64Min:          rewriteValueARM64_OpARM64MULW,
+	OpARM64MVN - rewriteTableARM64Min:           rewriteValueARM64_OpARM64MVN,
+	OpARM64NEG - rewriteTableARM64Min:           rewriteValueARM64_OpARM64NEG,
+	OpARM64NotEqual - rewriteTableARM64Min:      rewriteValueARM64_OpARM64NotEqual,
+	OpARM64OR - rewriteTableARM64Min:            rewriteValueARM64_OpARM64OR,
+	OpARM64ORconst - rewriteTableARM64Min:       rewriteValueARM64_OpARM64ORconst,
+	OpARM64ORshiftLL - rewriteTableARM64Min:     rewriteValueARM64_OpARM64ORshiftLL,
+	OpARM64ORshiftRA - rewriteTableARM64Min:     rewriteValueARM64_OpARM64ORshiftRA,
+	OpARM64ORshiftRL - rewriteTableARM64Min:     rewriteValueARM64_OpARM64ORshiftRL,
+	OpARM64SLL - rewriteTableARM64Min:           rewriteValueARM64_OpARM64SLL,
+	OpARM64SLLconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64SLLconst,
+	OpARM64SRA - rewriteTableARM64Min:           rewriteValueARM64_OpARM64SRA,
+	OpARM64SRAconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64SRAconst,
+	OpARM64SRL - rewriteTableARM64Min:           rewriteValueARM64_OpARM64SRL,
+	OpARM64SRLconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64SRLconst,
+	OpARM64SUB - rewriteTableARM64Min:           rewriteValueARM64_OpARM64SUB,
+	OpARM64SUBconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64SUBconst,
+	OpARM64SUBshiftLL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64SUBshiftLL,
+	OpARM64SUBshiftRA - rewriteTableARM64Min:    rewriteValueARM64_OpARM64SUBshiftRA,
+	OpARM64SUBshiftRL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64SUBshiftRL,
+	OpARM64UDIV - rewriteTableARM64Min:          rewriteValueARM64_OpARM64UDIV,
+	OpARM64UDIVW - rewriteTableARM64Min:         rewriteValueARM64_OpARM64UDIVW,
+	OpARM64UMOD - rewriteTableARM64Min:          rewriteValueARM64_OpARM64UMOD,
+	OpARM64UMODW - rewriteTableARM64Min:         rewriteValueARM64_OpARM64UMODW,
+	OpARM64XOR - rewriteTableARM64Min:           rewriteValueARM64_OpARM64XOR,
+	OpARM64XORconst - rewriteTableARM64Min:      rewriteValueARM64_OpARM64XORconst,
+	OpARM64XORshiftLL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64XORshiftLL,
+	OpARM64XORshiftRA - rewriteTableARM64Min:    rewriteValueARM64_OpARM64XORshiftRA,
+	OpARM64XORshiftRL - rewriteTableARM64Min:    rewriteValueARM64_OpARM64XORshiftRL,
+	OpAdd16 - rewriteTableARM64Min:              rewriteValueARM64_OpAdd16,
+	OpAdd32 - rewriteTableARM64Min:              rewriteValueARM64_OpAdd32,
+	OpAdd32F - rewriteTableARM64Min:             rewriteValueARM64_OpAdd32F,
+	OpAdd64 - rewriteTableARM64Min:              rewriteValueARM64_OpAdd64,
+	OpAdd64F - rewriteTableARM64Min:             rewriteValueARM64_OpAdd64F,
+	OpAdd8 - rewriteTableARM64Min:               rewriteValueARM64_OpAdd8,
+	OpAddPtr - rewriteTableARM64Min:             rewriteValueARM64_OpAddPtr,
+	OpAddr - rewriteTableARM64Min:               rewriteValueARM64_OpAddr,
+	OpAnd16 - rewriteTableARM64Min:              rewriteValueARM64_OpAnd16,
+	OpAnd32 - rewriteTableARM64Min:              rewriteValueARM64_OpAnd32,
+	OpAnd64 - rewriteTableARM64Min:              rewriteValueARM64_OpAnd64,
+	OpAnd8 - rewriteTableARM64Min:               rewriteValueARM64_OpAnd8,
+	OpAndB - rewriteTableARM64Min:               rewriteValueARM64_OpAndB,
+	OpAvg64u - rewriteTableARM64Min:             rewriteValueARM64_OpAvg64u,
+	OpClosureCall - rewriteTableARM64Min:        rewriteValueARM64_OpClosureCall,
+	OpCom16 - rewriteTableARM64Min:              rewriteValueARM64_OpCom16,
+	OpCom32 - rewriteTableARM64Min:              rewriteValueARM64_OpCom32,
+	OpCom64 - rewriteTableARM64Min:              rewriteValueARM64_OpCom64,
+	OpCom8 - rewriteTableARM64Min:               rewriteValueARM64_OpCom8,
+	OpConst16 - rewriteTableARM64Min:            rewriteValueARM64_OpConst16,
+	OpConst32 - rewriteTableARM64Min:            rewriteValueARM64_OpConst32,
+	OpConst32F - rewriteTableARM64Min:           rewriteValueARM64_OpConst32F,
+	OpConst64 - rewriteTableARM64Min:            rewriteValueARM64_OpConst64,
+	OpConst64F - rewriteTableARM64Min:           rewriteValueARM64_OpConst64F,
+	OpConst8 - rewriteTableARM64Min:             rewriteValueARM64_OpConst8,
+	OpConstBool - rewriteTableARM64Min:          rewriteValueARM64_OpConstBool,
+	OpConstNil - rewriteTableARM64Min:           rewriteValueARM64_OpConstNil,
+	OpConvert - rewriteTableARM64Min:            rewriteValueARM64_OpConvert,
+	OpCvt32Fto32 - rewriteTableARM64Min:         rewriteValueARM64_OpCvt32Fto32,
+	OpCvt32Fto32U - rewriteTableARM64Min:        rewriteValueARM64_OpCvt32Fto32U,
+	OpCvt32Fto64 - rewriteTableARM64Min:         rewriteValueARM64_OpCvt32Fto64,
+	OpCvt32Fto64F - rewriteTableARM64Min:        rewriteValueARM64_OpCvt32Fto64F,
+	OpCvt32Fto64U - rewriteTableARM64Min:        rewriteValueARM64_OpCvt32Fto64U,
+	OpCvt32Uto32F - rewriteTableARM64Min:        rewriteValueARM64_OpCvt32Uto32F,
+	OpCvt32Uto64F - rewriteTableARM64Min:        rewriteValueARM64_OpCvt32Uto64F,
+	OpCvt32to32F - rewriteTableARM64Min:         rewriteValueARM64_OpCvt32to32F,
+	OpCvt32to64F - rewriteTableARM64Min:         rewriteValueARM64_OpCvt32to64F,
+	OpCvt64Fto32 - rewriteTableARM64Min:         rewriteValueARM64_OpCvt64Fto32,
+	OpCvt64Fto32F - rewriteTableARM64Min:        rewriteValueARM64_OpCvt64Fto32F,
+	OpCvt64Fto32U - rewriteTableARM64Min:        rewriteValueARM64_OpCvt64Fto32U,
+	OpCvt64Fto64 - rewriteTableARM64Min:         rewriteValueARM64_OpCvt64Fto64,
+	OpCvt64Fto64U - rewriteTableARM64Min:        rewriteValueARM64_OpCvt64Fto64U,
+	OpCvt64Uto32F - rewriteTableARM64Min:        rewriteValueARM64_OpCvt64Uto32F,
+	OpCvt64Uto64F - rewriteTableARM64Min:        rewriteValueARM64_OpCvt64Uto64F,
+	OpCvt64to32F - rewriteTableARM64Min:         rewriteValueARM64_OpCvt64to32F,
+	OpCvt64to64F - rewriteTableARM64Min:         rewriteValueARM64_OpCvt64to64F,
+	OpDeferCall - rewriteTableARM64Min:          rewriteValueARM64_OpDeferCall,
+	OpDiv16 - rewriteTableARM64Min:              rewriteValueARM64_OpDiv16,
+	OpDiv16u - rewriteTableARM64Min:             rewriteValueARM64_OpDiv16u,
+	OpDiv32 - rewriteTableARM64Min:              rewriteValueARM64_OpDiv32,
+	OpDiv32F - rewriteTableARM64Min:             rewriteValueARM64_OpDiv32F,
+	OpDiv32u - rewriteTableARM64Min:             rewriteValueARM64_OpDiv32u,
+	OpDiv64 - rewriteTableARM64Min:              rewriteValueARM64_OpDiv64,
+	OpDiv64F - rewriteTableARM64Min:             rewriteValueARM64_OpDiv64F,
+	OpDiv64u - rewriteTableARM64Min:             rewriteValueARM64_OpDiv64u,
+	OpDiv8 - rewriteTableARM64Min:               rewriteValueARM64_OpDiv8,
+	OpDiv8u - rewriteTableARM64Min:              rewriteValueARM64_OpDiv8u,
+	OpEq16 - rewriteTableARM64Min:               rewriteValueARM64_OpEq16,
+	OpEq32 - rewriteTableARM64Min:               rewriteValueARM64_OpEq32,
+	OpEq32F - rewriteTableARM64Min:              rewriteValueARM64_OpEq32F,
+	OpEq64 - rewriteTableARM64Min:               rewriteValueARM64_OpEq64,
+	OpEq64F - rewriteTableARM64Min:              rewriteValueARM64_OpEq64F,
+	OpEq8 - rewriteTableARM64Min:                rewriteValueARM64_OpEq8,
+	OpEqB - rewriteTableARM64Min:                rewriteValueARM64_OpEqB,
+	OpEqPtr - rewriteTableARM64Min:              rewriteValueARM64_OpEqPtr,
+	OpGeq16 - rewriteTableARM64Min:              rewriteValueARM64_OpGeq16,
+	OpGeq16U - rewriteTableARM64Min:             rewriteValueARM64_OpGeq16U,
+	OpGeq32 - rewriteTableARM64Min:              rewriteValueARM64_OpGeq32,
+	OpGeq32F - rewriteTableARM64Min:             rewriteValueARM64_OpGeq32F,
+	OpGeq32U - rewriteTableARM64Min:             rewriteValueARM64_OpGeq32U,
+	OpGeq64 - rewriteTableARM64Min:              rewriteValueARM64_OpGeq64,
+	OpGeq64F - rewriteTableARM64Min:             rewriteValueARM64_OpGeq64F,
+	OpGeq64U - rewriteTableARM64Min:             rewriteValueARM64_OpGeq64U,
+	OpGeq8 - rewriteTableARM64Min:               rewriteValueARM64_OpGeq8,
+	OpGeq8U - rewriteTableARM64Min:              rewriteValueARM64_OpGeq8U,
+	OpGetClosurePtr - rewriteTableARM64Min:      rewriteValueARM64_OpGetClosurePtr,
+	OpGoCall - rewriteTableARM64Min:             rewriteValueARM64_OpGoCall,
+	OpGreater16 - rewriteTableARM64Min:          rewriteValueARM64_OpGreater16,
+	OpGreater16U - rewriteTableARM64Min:         rewriteValueARM64_OpGreater16U,
+	OpGreater32 - rewriteTableARM64Min:          rewriteValueARM64_OpGreater32,
+	OpGreater32F - rewriteTableARM64Min:         rewriteValueARM64_OpGreater32F,
+	OpGreater32U - rewriteTableARM64Min:         rewriteValueARM64_OpGreater32U,
+	OpGreater64 - rewriteTableARM64Min:          rewriteValueARM64_OpGreater64,
+	OpGreater64F - rewriteTableARM64Min:         rewriteValueARM64_OpGreater64F,
+	OpGreater64U - rewriteTableARM64Min:         rewriteValueARM64_OpGreater64U,
+	OpGreater8 - rewriteTableARM64Min:           rewriteValueARM64_OpGreater8,
+	OpGreater8U - rewriteTableARM64Min:          rewriteValueARM64_OpGreater8U,
+	OpHmul16 - rewriteTableARM64Min:             rewriteValueARM64_OpHmul16,
+	OpHmul16u - rewriteTableARM64Min:            rewriteValueARM64_OpHmul16u,
+	OpHmul32 - rewriteTableARM64Min:             rewriteValueARM64_OpHmul32,
+	OpHmul32u - rewriteTableARM64Min:            rewriteValueARM64_OpHmul32u,
+	OpHmul64 - rewriteTableARM64Min:             rewriteValueARM64_OpHmul64,
+	OpHmul64u - rewriteTableARM64Min:            rewriteValueARM64_OpHmul64u,
+	OpHmul8 - rewriteTableARM64Min:              rewriteValueARM64_OpHmul8,
+	OpHmul8u - rewriteTableARM64Min:             rewriteValueARM64_OpHmul8u,
+	OpInterCall - rewriteTableARM64Min:          rewriteValueARM64_OpInterCall,
+	OpIsInBounds - rewriteTableARM64Min:         rewriteValueARM64_OpIsInBounds,
+	OpIsNonNil - rewriteTableARM64Min:           rewriteValueARM64_OpIsNonNil,
+	OpIsSliceInBounds - rewriteTableARM64Min:    rewriteValueARM64_OpIsSliceInBounds,
+	OpLeq16 - rewriteTableARM64Min:              rewriteValueARM64_OpLeq16,
+	OpLeq16U - rewriteTableARM64Min:             rewriteValueARM64_OpLeq16U,
+	OpLeq32 - rewriteTableARM64Min:              rewriteValueARM64_OpLeq32,
+	OpLeq32F - rewriteTableARM64Min:             rewriteValueARM64_OpLeq32F,
+	OpLeq32U - rewriteTableARM64Min:             rewriteValueARM64_OpLeq32U,
+	OpLeq64 - rewriteTableARM64Min:              rewriteValueARM64_OpLeq64,
+	OpLeq64F - rewriteTableARM64Min:             rewriteValueARM64_OpLeq64F,
+	OpLeq64U - rewriteTableARM64Min:             rewriteValueARM64_OpLeq64U,
+	OpLeq8 - rewriteTableARM64Min:               rewriteValueARM64_OpLeq8,
+	OpLeq8U - rewriteTableARM64Min:              rewriteValueARM64_OpLeq8U,
+	OpLess16 - rewriteTableARM64Min:             rewriteValueARM64_OpLess16,
+	OpLess16U - rewriteTableARM64Min:            rewriteValueARM64_OpLess16U,
+	OpLess32 - rewriteTableARM64Min:             rewriteValueARM64_OpLess32,
+	OpLess32F - rewriteTableARM64Min:            rewriteValueARM64_OpLess32F,
+	OpLess32U - rewriteTableARM64Min:            rewriteValueARM64_OpLess32U,
+	OpLess64 - rewriteTableARM64Min:             rewriteValueARM64_OpLess64,
+	OpLess64F - rewriteTableARM64Min:            rewriteValueARM64_OpLess64F,
+	OpLess64U - rewriteTableARM64Min:            rewriteValueARM64_OpLess64U,
+	OpLess8 - rewriteTableARM64Min:              rewriteValueARM64_OpLess8,
+	OpLess8U - rewriteTableARM64Min:             rewriteValueARM64_OpLess8U,
+	OpLoad - rewriteTableARM64Min:               rewriteValueARM64_OpLoad,
+	OpLrot16 - rewriteTableARM64Min:             rewriteValueARM64_OpLrot16,
+	OpLrot32 - rewriteTableARM64Min:             rewriteValueARM64_OpLrot32,
+	OpLrot64 - rewriteTableARM64Min:             rewriteValueARM64_OpLrot64,
+	OpLrot8 - rewriteTableARM64Min:              rewriteValueARM64_OpLrot8,
+	OpLsh16x16 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh16x16,
+	OpLsh16x32 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh16x32,
+	OpLsh16x64 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh16x64,
+	OpLsh16x8 - rewriteTableARM64Min:            rewriteValueARM64_OpLsh16x8,
+	OpLsh32x16 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh32x16,
+	OpLsh32x32 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh32x32,
+	OpLsh32x64 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh32x64,
+	OpLsh32x8 - rewriteTableARM64Min:            rewriteValueARM64_OpLsh32x8,
+	OpLsh64x16 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh64x16,
+	OpLsh64x32 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh64x32,
+	OpLsh64x64 - rewriteTableARM64Min:           rewriteValueARM64_OpLsh64x64,
+	OpLsh64x8 - rewriteTableARM64Min:            rewriteValueARM64_OpLsh64x8,
+	OpLsh8x16 - rewriteTableARM64Min:            rewriteValueARM64_OpLsh8x16,
+	OpLsh8x32 - rewriteTableARM64Min:            rewriteValueARM64_OpLsh8x32,
+	OpLsh8x64 - rewriteTableARM64Min:            rewriteValueARM64_OpLsh8x64,
+	OpLsh8x8 - rewriteTableARM64Min:             rewriteValueARM64_OpLsh8x8,
+	OpMod16 - rewriteTableARM64Min:              rewriteValueARM64_OpMod16,
+	OpMod16u - rewriteTableARM64Min:             rewriteValueARM64_OpMod16u,
+	OpMod32 - rewriteTableARM64Min:              rewriteValueARM64_OpMod32,
+	OpMod32u - rewriteTableARM64Min:             rewriteValueARM64_OpMod32u,
+	OpMod64 - rewriteTableARM64Min:              rewriteValueARM64_OpMod64,
+	OpMod64u - rewriteTableARM64Min:             rewriteValueARM64_OpMod64u,
+	OpMod8 - rewriteTableARM64Min:               rewriteValueARM64_OpMod8,
+	OpMod8u - rewriteTableARM64Min:              rewriteValueARM64_OpMod8u,
+	OpMove - rewriteTableARM64Min:               rewriteValueARM64_OpMove,
+	OpMul16 - rewriteTableARM64Min:              rewriteValueARM64_OpMul16,
+	OpMul32 - rewriteTableARM64Min:              rewriteValueARM64_OpMul32,
+	OpMul32F - rewriteTableARM64Min:             rewriteValueARM64_OpMul32F,
+	OpMul64 - rewriteTableARM64Min:              rewriteValueARM64_OpMul64,
+	OpMul64F - rewriteTableARM64Min:             rewriteValueARM64_OpMul64F,
+	OpMul8 - rewriteTableARM64Min:               rewriteValueARM64_OpMul8,
+	OpNeg16 - rewriteTableARM64Min:              rewriteValueARM64_OpNeg16,
+	OpNeg32 - rewriteTableARM64Min:              rewriteValueARM64_OpNeg32,
+	OpNeg32F - rewriteTableARM64Min:             rewriteValueARM64_OpNeg32F,
+	OpNeg64 - rewriteTableARM64Min:              rewriteValueARM64_OpNeg64,
+	OpNeg64F - rewriteTableARM64Min:             rewriteValueARM64_OpNeg64F,
+	OpNeg8 - rewriteTableARM64Min:               rewriteValueARM64_OpNeg8,
+	OpNeq16 - rewriteTableARM64Min:              rewriteValueARM64_OpNeq16,
+	OpNeq32 - rewriteTableARM64Min:              rewriteValueARM64_OpNeq32,
+	OpNeq32F - rewriteTableARM64Min:             rewriteValueARM64_OpNeq32F,
+	OpNeq64 - rewriteTableARM64Min:              rewriteValueARM64_OpNeq64,
+	OpNeq64F - rewriteTableARM64Min:             rewriteValueARM64_OpNeq64F,
+	OpNeq8 - rewriteTableARM64Min:               rewriteValueARM64_OpNeq8,
+	OpNeqB - rewriteTableARM64Min:               rewriteValueARM64_OpNeqB,
+	OpNeqPtr - rewriteTableARM64Min:             rewriteValueARM64_OpNeqPtr,
+	OpNilCheck - rewriteTableARM64Min:           rewriteValueARM64_OpNilCheck,
+	OpNot - rewriteTableARM64Min:                rewriteValueARM64_OpNot,
+	OpOffPtr - rewriteTableARM64Min:             rewriteValueARM64_OpOffPtr,
+	OpOr16 - rewriteTableARM64Min:               rewriteValueARM64_OpOr16,
+	OpOr32 - rewriteTableARM64Min:               rewriteValueARM64_OpOr32,
+	OpOr64 - rewriteTableARM64Min:               rewriteValueARM64_OpOr64,
+	OpOr8 - rewriteTableARM64Min:                rewriteValueARM64_OpOr8,
+	OpOrB - rewriteTableARM64Min:                rewriteValueARM64_OpOrB,
+	OpRsh16Ux16 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh16Ux16,
+	OpRsh16Ux32 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh16Ux32,
+	OpRsh16Ux64 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh16Ux64,
+	OpRsh16Ux8 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh16Ux8,
+	OpRsh16x16 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh16x16,
+	OpRsh16x32 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh16x32,
+	OpRsh16x64 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh16x64,
+	OpRsh16x8 - rewriteTableARM64Min:            rewriteValueARM64_OpRsh16x8,
+	OpRsh32Ux16 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh32Ux16,
+	OpRsh32Ux32 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh32Ux32,
+	OpRsh32Ux64 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh32Ux64,
+	OpRsh32Ux8 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh32Ux8,
+	OpRsh32x16 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh32x16,
+	OpRsh32x32 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh32x32,
+	OpRsh32x64 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh32x64,
+	OpRsh32x8 - rewriteTableARM64Min:            rewriteValueARM64_OpRsh32x8,
+	OpRsh64Ux16 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh64Ux16,
+	OpRsh64Ux32 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh64Ux32,
+	OpRsh64Ux64 - rewriteTableARM64Min:          rewriteValueARM64_OpRsh64Ux64,
+	OpRsh64Ux8 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh64Ux8,
+	OpRsh64x16 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh64x16,
+	OpRsh64x32 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh64x32,
+	OpRsh64x64 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh64x64,
+	OpRsh64x8 - rewriteTableARM64Min:            rewriteValueARM64_OpRsh64x8,
+	OpRsh8Ux16 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh8Ux16,
+	OpRsh8Ux32 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh8Ux32,
+	OpRsh8Ux64 - rewriteTableARM64Min:           rewriteValueARM64_OpRsh8Ux64,
+	OpRsh8Ux8 - rewriteTableARM64Min:            rewriteValueARM64_OpRsh8Ux8,
+	OpRsh8x16 - rewriteTableARM64Min:            rewriteValueARM64_OpRsh8x16,
+	OpRsh8x32 - rewriteTableARM64Min:            rewriteValueARM64_OpRsh8x32,
+	OpRsh8x64 - rewriteTableARM64Min:            rewriteValueARM64_OpRsh8x64,
+	OpRsh8x8 - rewriteTableARM64Min:             rewriteValueARM64_OpRsh8x8,
+	OpSignExt16to32 - rewriteTableARM64Min:      rewriteValueARM64_OpSignExt16to32,
+	OpSignExt16to64 - rewriteTableARM64Min:      rewriteValueARM64_OpSignExt16to64,
+	OpSignExt32to64 - rewriteTableARM64Min:      rewriteValueARM64_OpSignExt32to64,
+	OpSignExt8to16 - rewriteTableARM64Min:       rewriteValueARM64_OpSignExt8to16,
+	OpSignExt8to32 - rewriteTableARM64Min:       rewriteValueARM64_OpSignExt8to32,
+	OpSignExt8to64 - rewriteTableARM64Min:       rewriteValueARM64_OpSignExt8to64,
+	OpSqrt - rewriteTableARM64Min:               rewriteValueARM64_OpSqrt,
+	OpStaticCall - rewriteTableARM64Min:         rewriteValueARM64_OpStaticCall,
+	OpStore - rewriteTableARM64Min:              rewriteValueARM64_OpStore,
+	OpSub16 - rewriteTableARM64Min:              rewriteValueARM64_OpSub16,
+	OpSub32 - rewriteTableARM64Min:              rewriteValueARM64_OpSub32,
+	OpSub32F - rewriteTableARM64Min:             rewriteValueARM64_OpSub32F,
+	OpSub64 - rewriteTableARM64Min:              rewriteValueARM64_OpSub64,
+	OpSub64F - rewriteTableARM64Min:             rewriteValueARM64_OpSub64F,
+	OpSub8 - rewriteTableARM64Min:               rewriteValueARM64_OpSub8,
+	OpSubPtr - rewriteTableARM64Min:             rewriteValueARM64_OpSubPtr,
+	OpTrunc16to8 - rewriteTableARM64Min:         rewriteValueARM64_OpTrunc16to8,
+	OpTrunc32to16 - rewriteTableARM64Min:        rewriteValueARM64_OpTrunc32to16,
+	OpTrunc32to8 - rewriteTableARM64Min:         rewriteValueARM64_OpTrunc32to8,
+	OpTrunc64to16 - rewriteTableARM64Min:        rewriteValueARM64_OpTrunc64to16,
+	OpTrunc64to32 - rewriteTableARM64Min:        rewriteValueARM64_OpTrunc64to32,
+	OpTrunc64to8 - rewriteTableARM64Min:         rewriteValueARM64_OpTrunc64to8,
+	OpXor16 - rewriteTableARM64Min:              rewriteValueARM64_OpXor16,
+	OpXor32 - rewriteTableARM64Min:              rewriteValueARM64_OpXor32,
+	OpXor64 - rewriteTableARM64Min:              rewriteValueARM64_OpXor64,
+	OpXor8 - rewriteTableARM64Min:               rewriteValueARM64_OpXor8,
+	OpZero - rewriteTableARM64Min:               rewriteValueARM64_OpZero,
+	OpZeroExt16to32 - rewriteTableARM64Min:      rewriteValueARM64_OpZeroExt16to32,
+	OpZeroExt16to64 - rewriteTableARM64Min:      rewriteValueARM64_OpZeroExt16to64,
+	OpZeroExt32to64 - rewriteTableARM64Min:      rewriteValueARM64_OpZeroExt32to64,
+	OpZeroExt8to16 - rewriteTableARM64Min:       rewriteValueARM64_OpZeroExt8to16,
+	OpZeroExt8to32 - rewriteTableARM64Min:       rewriteValueARM64_OpZeroExt8to32,
+	OpZeroExt8to64 - rewriteTableARM64Min:       rewriteValueARM64_OpZeroExt8to64,
+}
+
 func rewriteValueARM64(v *Value, config *Config) bool {
-	switch v.Op {
-	case OpARM64ADD:
-		return rewriteValueARM64_OpARM64ADD(v, config)
-	case OpARM64ADDconst:
-		return rewriteValueARM64_OpARM64ADDconst(v, config)
-	case OpARM64ADDshiftLL:
-		return rewriteValueARM64_OpARM64ADDshiftLL(v, config)
-	case OpARM64ADDshiftRA:
-		return rewriteValueARM64_OpARM64ADDshiftRA(v, config)
-	case OpARM64ADDshiftRL:
-		return rewriteValueARM64_OpARM64ADDshiftRL(v, config)
-	case OpARM64AND:
-		return rewriteValueARM64_OpARM64AND(v, config)
-	case OpARM64ANDconst:
-		return rewriteValueARM64_OpARM64ANDconst(v, config)
-	case OpARM64ANDshiftLL:
-		return rewriteValueARM64_OpARM64ANDshiftLL(v, config)
-	case OpARM64ANDshiftRA:
-		return rewriteValueARM64_OpARM64ANDshiftRA(v, config)
-	case OpARM64ANDshiftRL:
-		return rewriteValueARM64_OpARM64ANDshiftRL(v, config)
-	case OpARM64BIC:
-		return rewriteValueARM64_OpARM64BIC(v, config)
-	case OpARM64BICconst:
-		return rewriteValueARM64_OpARM64BICconst(v, config)
-	case OpARM64BICshiftLL:
-		return rewriteValueARM64_OpARM64BICshiftLL(v, config)
-	case OpARM64BICshiftRA:
-		return rewriteValueARM64_OpARM64BICshiftRA(v, config)
-	case OpARM64BICshiftRL:
-		return rewriteValueARM64_OpARM64BICshiftRL(v, config)
-	case OpARM64CMP:
-		return rewriteValueARM64_OpARM64CMP(v, config)
-	case OpARM64CMPW:
-		return rewriteValueARM64_OpARM64CMPW(v, config)
-	case OpARM64CMPWconst:
-		return rewriteValueARM64_OpARM64CMPWconst(v, config)
-	case OpARM64CMPconst:
-		return rewriteValueARM64_OpARM64CMPconst(v, config)
-	case OpARM64CMPshiftLL:
-		return rewriteValueARM64_OpARM64CMPshiftLL(v, config)
-	case OpARM64CMPshiftRA:
-		return rewriteValueARM64_OpARM64CMPshiftRA(v, config)
-	case OpARM64CMPshiftRL:
-		return rewriteValueARM64_OpARM64CMPshiftRL(v, config)
-	case OpARM64CSELULT:
-		return rewriteValueARM64_OpARM64CSELULT(v, config)
-	case OpARM64CSELULT0:
-		return rewriteValueARM64_OpARM64CSELULT0(v, config)
-	case OpARM64DIV:
-		return rewriteValueARM64_OpARM64DIV(v, config)
-	case OpARM64DIVW:
-		return rewriteValueARM64_OpARM64DIVW(v, config)
-	case OpARM64Equal:
-		return rewriteValueARM64_OpARM64Equal(v, config)
-	case OpARM64FMOVDload:
-		return rewriteValueARM64_OpARM64FMOVDload(v, config)
-	case OpARM64FMOVDstore:
-		return rewriteValueARM64_OpARM64FMOVDstore(v, config)
-	case OpARM64FMOVSload:
-		return rewriteValueARM64_OpARM64FMOVSload(v, config)
-	case OpARM64FMOVSstore:
-		return rewriteValueARM64_OpARM64FMOVSstore(v, config)
-	case OpARM64GreaterEqual:
-		return rewriteValueARM64_OpARM64GreaterEqual(v, config)
-	case OpARM64GreaterEqualU:
-		return rewriteValueARM64_OpARM64GreaterEqualU(v, config)
-	case OpARM64GreaterThan:
-		return rewriteValueARM64_OpARM64GreaterThan(v, config)
-	case OpARM64GreaterThanU:
-		return rewriteValueARM64_OpARM64GreaterThanU(v, config)
-	case OpARM64LessEqual:
-		return rewriteValueARM64_OpARM64LessEqual(v, config)
-	case OpARM64LessEqualU:
-		return rewriteValueARM64_OpARM64LessEqualU(v, config)
-	case OpARM64LessThan:
-		return rewriteValueARM64_OpARM64LessThan(v, config)
-	case OpARM64LessThanU:
-		return rewriteValueARM64_OpARM64LessThanU(v, config)
-	case OpARM64MOD:
-		return rewriteValueARM64_OpARM64MOD(v, config)
-	case OpARM64MODW:
-		return rewriteValueARM64_OpARM64MODW(v, config)
-	case OpARM64MOVBUload:
-		return rewriteValueARM64_OpARM64MOVBUload(v, config)
-	case OpARM64MOVBUreg:
-		return rewriteValueARM64_OpARM64MOVBUreg(v, config)
-	case OpARM64MOVBload:
-		return rewriteValueARM64_OpARM64MOVBload(v, config)
-	case OpARM64MOVBreg:
-		return rewriteValueARM64_OpARM64MOVBreg(v, config)
-	case OpARM64MOVBstore:
-		return rewriteValueARM64_OpARM64MOVBstore(v, config)
-	case OpARM64MOVBstorezero:
-		return rewriteValueARM64_OpARM64MOVBstorezero(v, config)
-	case OpARM64MOVDload:
-		return rewriteValueARM64_OpARM64MOVDload(v, config)
-	case OpARM64MOVDreg:
-		return rewriteValueARM64_OpARM64MOVDreg(v, config)
-	case OpARM64MOVDstore:
-		return rewriteValueARM64_OpARM64MOVDstore(v, config)
-	case OpARM64MOVDstorezero:
-		return rewriteValueARM64_OpARM64MOVDstorezero(v, config)
-	case OpARM64MOVHUload:
-		return rewriteValueARM64_OpARM64MOVHUload(v, config)
-	case OpARM64MOVHUreg:
-		return rewriteValueARM64_OpARM64MOVHUreg(v, config)
-	case OpARM64MOVHload:
-		return rewriteValueARM64_OpARM64MOVHload(v, config)
-	case OpARM64MOVHreg:
-		return rewriteValueARM64_OpARM64MOVHreg(v, config)
-	case OpARM64MOVHstore:
-		return rewriteValueARM64_OpARM64MOVHstore(v, config)
-	case OpARM64MOVHstorezero:
-		return rewriteValueARM64_OpARM64MOVHstorezero(v, config)
-	case OpARM64MOVWUload:
-		return rewriteValueARM64_OpARM64MOVWUload(v, config)
-	case OpARM64MOVWUreg:
-		return rewriteValueARM64_OpARM64MOVWUreg(v, config)
-	case OpARM64MOVWload:
-		return rewriteValueARM64_OpARM64MOVWload(v, config)
-	case OpARM64MOVWreg:
-		return rewriteValueARM64_OpARM64MOVWreg(v, config)
-	case OpARM64MOVWstore:
-		return rewriteValueARM64_OpARM64MOVWstore(v, config)
-	case OpARM64MOVWstorezero:
-		return rewriteValueARM64_OpARM64MOVWstorezero(v, config)
-	case OpARM64MUL:
-		return rewriteValueARM64_OpARM64MUL(v, config)
-	case OpARM64MULW:
-		return rewriteValueARM64_OpARM64MULW(v, config)
-	case OpARM64MVN:
-		return rewriteValueARM64_OpARM64MVN(v, config)
-	case OpARM64NEG:
-		return rewriteValueARM64_OpARM64NEG(v, config)
-	case OpARM64NotEqual:
-		return rewriteValueARM64_OpARM64NotEqual(v, config)
-	case OpARM64OR:
-		return rewriteValueARM64_OpARM64OR(v, config)
-	case OpARM64ORconst:
-		return rewriteValueARM64_OpARM64ORconst(v, config)
-	case OpARM64ORshiftLL:
-		return rewriteValueARM64_OpARM64ORshiftLL(v, config)
-	case OpARM64ORshiftRA:
-		return rewriteValueARM64_OpARM64ORshiftRA(v, config)
-	case OpARM64ORshiftRL:
-		return rewriteValueARM64_OpARM64ORshiftRL(v, config)
-	case OpARM64SLL:
-		return rewriteValueARM64_OpARM64SLL(v, config)
-	case OpARM64SLLconst:
-		return rewriteValueARM64_OpARM64SLLconst(v, config)
-	case OpARM64SRA:
-		return rewriteValueARM64_OpARM64SRA(v, config)
-	case OpARM64SRAconst:
-		return rewriteValueARM64_OpARM64SRAconst(v, config)
-	case OpARM64SRL:
-		return rewriteValueARM64_OpARM64SRL(v, config)
-	case OpARM64SRLconst:
-		return rewriteValueARM64_OpARM64SRLconst(v, config)
-	case OpARM64SUB:
-		return rewriteValueARM64_OpARM64SUB(v, config)
-	case OpARM64SUBconst:
-		return rewriteValueARM64_OpARM64SUBconst(v, config)
-	case OpARM64SUBshiftLL:
-		return rewriteValueARM64_OpARM64SUBshiftLL(v, config)
-	case OpARM64SUBshiftRA:
-		return rewriteValueARM64_OpARM64SUBshiftRA(v, config)
-	case OpARM64SUBshiftRL:
-		return rewriteValueARM64_OpARM64SUBshiftRL(v, config)
-	case OpARM64UDIV:
-		return rewriteValueARM64_OpARM64UDIV(v, config)
-	case OpARM64UDIVW:
-		return rewriteValueARM64_OpARM64UDIVW(v, config)
-	case OpARM64UMOD:
-		return rewriteValueARM64_OpARM64UMOD(v, config)
-	case OpARM64UMODW:
-		return rewriteValueARM64_OpARM64UMODW(v, config)
-	case OpARM64XOR:
-		return rewriteValueARM64_OpARM64XOR(v, config)
-	case OpARM64XORconst:
-		return rewriteValueARM64_OpARM64XORconst(v, config)
-	case OpARM64XORshiftLL:
-		return rewriteValueARM64_OpARM64XORshiftLL(v, config)
-	case OpARM64XORshiftRA:
-		return rewriteValueARM64_OpARM64XORshiftRA(v, config)
-	case OpARM64XORshiftRL:
-		return rewriteValueARM64_OpARM64XORshiftRL(v, config)
-	case OpAdd16:
-		return rewriteValueARM64_OpAdd16(v, config)
-	case OpAdd32:
-		return rewriteValueARM64_OpAdd32(v, config)
-	case OpAdd32F:
-		return rewriteValueARM64_OpAdd32F(v, config)
-	case OpAdd64:
-		return rewriteValueARM64_OpAdd64(v, config)
-	case OpAdd64F:
-		return rewriteValueARM64_OpAdd64F(v, config)
-	case OpAdd8:
-		return rewriteValueARM64_OpAdd8(v, config)
-	case OpAddPtr:
-		return rewriteValueARM64_OpAddPtr(v, config)
-	case OpAddr:
-		return rewriteValueARM64_OpAddr(v, config)
-	case OpAnd16:
-		return rewriteValueARM64_OpAnd16(v, config)
-	case OpAnd32:
-		return rewriteValueARM64_OpAnd32(v, config)
-	case OpAnd64:
-		return rewriteValueARM64_OpAnd64(v, config)
-	case OpAnd8:
-		return rewriteValueARM64_OpAnd8(v, config)
-	case OpAndB:
-		return rewriteValueARM64_OpAndB(v, config)
-	case OpAvg64u:
-		return rewriteValueARM64_OpAvg64u(v, config)
-	case OpClosureCall:
-		return rewriteValueARM64_OpClosureCall(v, config)
-	case OpCom16:
-		return rewriteValueARM64_OpCom16(v, config)
-	case OpCom32:
-		return rewriteValueARM64_OpCom32(v, config)
-	case OpCom64:
-		return rewriteValueARM64_OpCom64(v, config)
-	case OpCom8:
-		return rewriteValueARM64_OpCom8(v, config)
-	case OpConst16:
-		return rewriteValueARM64_OpConst16(v, config)
-	case OpConst32:
-		return rewriteValueARM64_OpConst32(v, config)
-	case OpConst32F:
-		return rewriteValueARM64_OpConst32F(v, config)
-	case OpConst64:
-		return rewriteValueARM64_OpConst64(v, config)
-	case OpConst64F:
-		return rewriteValueARM64_OpConst64F(v, config)
-	case OpConst8:
-		return rewriteValueARM64_OpConst8(v, config)
-	case OpConstBool:
-		return rewriteValueARM64_OpConstBool(v, config)
-	case OpConstNil:
-		return rewriteValueARM64_OpConstNil(v, config)
-	case OpConvert:
-		return rewriteValueARM64_OpConvert(v, config)
-	case OpCvt32Fto32:
-		return rewriteValueARM64_OpCvt32Fto32(v, config)
-	case OpCvt32Fto32U:
-		return rewriteValueARM64_OpCvt32Fto32U(v, config)
-	case OpCvt32Fto64:
-		return rewriteValueARM64_OpCvt32Fto64(v, config)
-	case OpCvt32Fto64F:
-		return rewriteValueARM64_OpCvt32Fto64F(v, config)
-	case OpCvt32Fto64U:
-		return rewriteValueARM64_OpCvt32Fto64U(v, config)
-	case OpCvt32Uto32F:
-		return rewriteValueARM64_OpCvt32Uto32F(v, config)
-	case OpCvt32Uto64F:
-		return rewriteValueARM64_OpCvt32Uto64F(v, config)
-	case OpCvt32to32F:
-		return rewriteValueARM64_OpCvt32to32F(v, config)
-	case OpCvt32to64F:
-		return rewriteValueARM64_OpCvt32to64F(v, config)
-	case OpCvt64Fto32:
-		return rewriteValueARM64_OpCvt64Fto32(v, config)
-	case OpCvt64Fto32F:
-		return rewriteValueARM64_OpCvt64Fto32F(v, config)
-	case OpCvt64Fto32U:
-		return rewriteValueARM64_OpCvt64Fto32U(v, config)
-	case OpCvt64Fto64:
-		return rewriteValueARM64_OpCvt64Fto64(v, config)
-	case OpCvt64Fto64U:
-		return rewriteValueARM64_OpCvt64Fto64U(v, config)
-	case OpCvt64Uto32F:
-		return rewriteValueARM64_OpCvt64Uto32F(v, config)
-	case OpCvt64Uto64F:
-		return rewriteValueARM64_OpCvt64Uto64F(v, config)
-	case OpCvt64to32F:
-		return rewriteValueARM64_OpCvt64to32F(v, config)
-	case OpCvt64to64F:
-		return rewriteValueARM64_OpCvt64to64F(v, config)
-	case OpDeferCall:
-		return rewriteValueARM64_OpDeferCall(v, config)
-	case OpDiv16:
-		return rewriteValueARM64_OpDiv16(v, config)
-	case OpDiv16u:
-		return rewriteValueARM64_OpDiv16u(v, config)
-	case OpDiv32:
-		return rewriteValueARM64_OpDiv32(v, config)
-	case OpDiv32F:
-		return rewriteValueARM64_OpDiv32F(v, config)
-	case OpDiv32u:
-		return rewriteValueARM64_OpDiv32u(v, config)
-	case OpDiv64:
-		return rewriteValueARM64_OpDiv64(v, config)
-	case OpDiv64F:
-		return rewriteValueARM64_OpDiv64F(v, config)
-	case OpDiv64u:
-		return rewriteValueARM64_OpDiv64u(v, config)
-	case OpDiv8:
-		return rewriteValueARM64_OpDiv8(v, config)
-	case OpDiv8u:
-		return rewriteValueARM64_OpDiv8u(v, config)
-	case OpEq16:
-		return rewriteValueARM64_OpEq16(v, config)
-	case OpEq32:
-		return rewriteValueARM64_OpEq32(v, config)
-	case OpEq32F:
-		return rewriteValueARM64_OpEq32F(v, config)
-	case OpEq64:
-		return rewriteValueARM64_OpEq64(v, config)
-	case OpEq64F:
-		return rewriteValueARM64_OpEq64F(v, config)
-	case OpEq8:
-		return rewriteValueARM64_OpEq8(v, config)
-	case OpEqB:
-		return rewriteValueARM64_OpEqB(v, config)
-	case OpEqPtr:
-		return rewriteValueARM64_OpEqPtr(v, config)
-	case OpGeq16:
-		return rewriteValueARM64_OpGeq16(v, config)
-	case OpGeq16U:
-		return rewriteValueARM64_OpGeq16U(v, config)
-	case OpGeq32:
-		return rewriteValueARM64_OpGeq32(v, config)
-	case OpGeq32F:
-		return rewriteValueARM64_OpGeq32F(v, config)
-	case OpGeq32U:
-		return rewriteValueARM64_OpGeq32U(v, config)
-	case OpGeq64:
-		return rewriteValueARM64_OpGeq64(v, config)
-	case OpGeq64F:
-		return rewriteValueARM64_OpGeq64F(v, config)
-	case OpGeq64U:
-		return rewriteValueARM64_OpGeq64U(v, config)
-	case OpGeq8:
-		return rewriteValueARM64_OpGeq8(v, config)
-	case OpGeq8U:
-		return rewriteValueARM64_OpGeq8U(v, config)
-	case OpGetClosurePtr:
-		return rewriteValueARM64_OpGetClosurePtr(v, config)
-	case OpGoCall:
-		return rewriteValueARM64_OpGoCall(v, config)
-	case OpGreater16:
-		return rewriteValueARM64_OpGreater16(v, config)
-	case OpGreater16U:
-		return rewriteValueARM64_OpGreater16U(v, config)
-	case OpGreater32:
-		return rewriteValueARM64_OpGreater32(v, config)
-	case OpGreater32F:
-		return rewriteValueARM64_OpGreater32F(v, config)
-	case OpGreater32U:
-		return rewriteValueARM64_OpGreater32U(v, config)
-	case OpGreater64:
-		return rewriteValueARM64_OpGreater64(v, config)
-	case OpGreater64F:
-		return rewriteValueARM64_OpGreater64F(v, config)
-	case OpGreater64U:
-		return rewriteValueARM64_OpGreater64U(v, config)
-	case OpGreater8:
-		return rewriteValueARM64_OpGreater8(v, config)
-	case OpGreater8U:
-		return rewriteValueARM64_OpGreater8U(v, config)
-	case OpHmul16:
-		return rewriteValueARM64_OpHmul16(v, config)
-	case OpHmul16u:
-		return rewriteValueARM64_OpHmul16u(v, config)
-	case OpHmul32:
-		return rewriteValueARM64_OpHmul32(v, config)
-	case OpHmul32u:
-		return rewriteValueARM64_OpHmul32u(v, config)
-	case OpHmul64:
-		return rewriteValueARM64_OpHmul64(v, config)
-	case OpHmul64u:
-		return rewriteValueARM64_OpHmul64u(v, config)
-	case OpHmul8:
-		return rewriteValueARM64_OpHmul8(v, config)
-	case OpHmul8u:
-		return rewriteValueARM64_OpHmul8u(v, config)
-	case OpInterCall:
-		return rewriteValueARM64_OpInterCall(v, config)
-	case OpIsInBounds:
-		return rewriteValueARM64_OpIsInBounds(v, config)
-	case OpIsNonNil:
-		return rewriteValueARM64_OpIsNonNil(v, config)
-	case OpIsSliceInBounds:
-		return rewriteValueARM64_OpIsSliceInBounds(v, config)
-	case OpLeq16:
-		return rewriteValueARM64_OpLeq16(v, config)
-	case OpLeq16U:
-		return rewriteValueARM64_OpLeq16U(v, config)
-	case OpLeq32:
-		return rewriteValueARM64_OpLeq32(v, config)
-	case OpLeq32F:
-		return rewriteValueARM64_OpLeq32F(v, config)
-	case OpLeq32U:
-		return rewriteValueARM64_OpLeq32U(v, config)
-	case OpLeq64:
-		return rewriteValueARM64_OpLeq64(v, config)
-	case OpLeq64F:
-		return rewriteValueARM64_OpLeq64F(v, config)
-	case OpLeq64U:
-		return rewriteValueARM64_OpLeq64U(v, config)
-	case OpLeq8:
-		return rewriteValueARM64_OpLeq8(v, config)
-	case OpLeq8U:
-		return rewriteValueARM64_OpLeq8U(v, config)
-	case OpLess16:
-		return rewriteValueARM64_OpLess16(v, config)
-	case OpLess16U:
-		return rewriteValueARM64_OpLess16U(v, config)
-	case OpLess32:
-		return rewriteValueARM64_OpLess32(v, config)
-	case OpLess32F:
-		return rewriteValueARM64_OpLess32F(v, config)
-	case OpLess32U:
-		return rewriteValueARM64_OpLess32U(v, config)
-	case OpLess64:
-		return rewriteValueARM64_OpLess64(v, config)
-	case OpLess64F:
-		return rewriteValueARM64_OpLess64F(v, config)
-	case OpLess64U:
-		return rewriteValueARM64_OpLess64U(v, config)
-	case OpLess8:
-		return rewriteValueARM64_OpLess8(v, config)
-	case OpLess8U:
-		return rewriteValueARM64_OpLess8U(v, config)
-	case OpLoad:
-		return rewriteValueARM64_OpLoad(v, config)
-	case OpLrot16:
-		return rewriteValueARM64_OpLrot16(v, config)
-	case OpLrot32:
-		return rewriteValueARM64_OpLrot32(v, config)
-	case OpLrot64:
-		return rewriteValueARM64_OpLrot64(v, config)
-	case OpLrot8:
-		return rewriteValueARM64_OpLrot8(v, config)
-	case OpLsh16x16:
-		return rewriteValueARM64_OpLsh16x16(v, config)
-	case OpLsh16x32:
-		return rewriteValueARM64_OpLsh16x32(v, config)
-	case OpLsh16x64:
-		return rewriteValueARM64_OpLsh16x64(v, config)
-	case OpLsh16x8:
-		return rewriteValueARM64_OpLsh16x8(v, config)
-	case OpLsh32x16:
-		return rewriteValueARM64_OpLsh32x16(v, config)
-	case OpLsh32x32:
-		return rewriteValueARM64_OpLsh32x32(v, config)
-	case OpLsh32x64:
-		return rewriteValueARM64_OpLsh32x64(v, config)
-	case OpLsh32x8:
-		return rewriteValueARM64_OpLsh32x8(v, config)
-	case OpLsh64x16:
-		return rewriteValueARM64_OpLsh64x16(v, config)
-	case OpLsh64x32:
-		return rewriteValueARM64_OpLsh64x32(v, config)
-	case OpLsh64x64:
-		return rewriteValueARM64_OpLsh64x64(v, config)
-	case OpLsh64x8:
-		return rewriteValueARM64_OpLsh64x8(v, config)
-	case OpLsh8x16:
-		return rewriteValueARM64_OpLsh8x16(v, config)
-	case OpLsh8x32:
-		return rewriteValueARM64_OpLsh8x32(v, config)
-	case OpLsh8x64:
-		return rewriteValueARM64_OpLsh8x64(v, config)
-	case OpLsh8x8:
-		return rewriteValueARM64_OpLsh8x8(v, config)
-	case OpMod16:
-		return rewriteValueARM64_OpMod16(v, config)
-	case OpMod16u:
-		return rewriteValueARM64_OpMod16u(v, config)
-	case OpMod32:
-		return rewriteValueARM64_OpMod32(v, config)
-	case OpMod32u:
-		return rewriteValueARM64_OpMod32u(v, config)
-	case OpMod64:
-		return rewriteValueARM64_OpMod64(v, config)
-	case OpMod64u:
-		return rewriteValueARM64_OpMod64u(v, config)
-	case OpMod8:
-		return rewriteValueARM64_OpMod8(v, config)
-	case OpMod8u:
-		return rewriteValueARM64_OpMod8u(v, config)
-	case OpMove:
-		return rewriteValueARM64_OpMove(v, config)
-	case OpMul16:
-		return rewriteValueARM64_OpMul16(v, config)
-	case OpMul32:
-		return rewriteValueARM64_OpMul32(v, config)
-	case OpMul32F:
-		return rewriteValueARM64_OpMul32F(v, config)
-	case OpMul64:
-		return rewriteValueARM64_OpMul64(v, config)
-	case OpMul64F:
-		return rewriteValueARM64_OpMul64F(v, config)
-	case OpMul8:
-		return rewriteValueARM64_OpMul8(v, config)
-	case OpNeg16:
-		return rewriteValueARM64_OpNeg16(v, config)
-	case OpNeg32:
-		return rewriteValueARM64_OpNeg32(v, config)
-	case OpNeg32F:
-		return rewriteValueARM64_OpNeg32F(v, config)
-	case OpNeg64:
-		return rewriteValueARM64_OpNeg64(v, config)
-	case OpNeg64F:
-		return rewriteValueARM64_OpNeg64F(v, config)
-	case OpNeg8:
-		return rewriteValueARM64_OpNeg8(v, config)
-	case OpNeq16:
-		return rewriteValueARM64_OpNeq16(v, config)
-	case OpNeq32:
-		return rewriteValueARM64_OpNeq32(v, config)
-	case OpNeq32F:
-		return rewriteValueARM64_OpNeq32F(v, config)
-	case OpNeq64:
-		return rewriteValueARM64_OpNeq64(v, config)
-	case OpNeq64F:
-		return rewriteValueARM64_OpNeq64F(v, config)
-	case OpNeq8:
-		return rewriteValueARM64_OpNeq8(v, config)
-	case OpNeqB:
-		return rewriteValueARM64_OpNeqB(v, config)
-	case OpNeqPtr:
-		return rewriteValueARM64_OpNeqPtr(v, config)
-	case OpNilCheck:
-		return rewriteValueARM64_OpNilCheck(v, config)
-	case OpNot:
-		return rewriteValueARM64_OpNot(v, config)
-	case OpOffPtr:
-		return rewriteValueARM64_OpOffPtr(v, config)
-	case OpOr16:
-		return rewriteValueARM64_OpOr16(v, config)
-	case OpOr32:
-		return rewriteValueARM64_OpOr32(v, config)
-	case OpOr64:
-		return rewriteValueARM64_OpOr64(v, config)
-	case OpOr8:
-		return rewriteValueARM64_OpOr8(v, config)
-	case OpOrB:
-		return rewriteValueARM64_OpOrB(v, config)
-	case OpRsh16Ux16:
-		return rewriteValueARM64_OpRsh16Ux16(v, config)
-	case OpRsh16Ux32:
-		return rewriteValueARM64_OpRsh16Ux32(v, config)
-	case OpRsh16Ux64:
-		return rewriteValueARM64_OpRsh16Ux64(v, config)
-	case OpRsh16Ux8:
-		return rewriteValueARM64_OpRsh16Ux8(v, config)
-	case OpRsh16x16:
-		return rewriteValueARM64_OpRsh16x16(v, config)
-	case OpRsh16x32:
-		return rewriteValueARM64_OpRsh16x32(v, config)
-	case OpRsh16x64:
-		return rewriteValueARM64_OpRsh16x64(v, config)
-	case OpRsh16x8:
-		return rewriteValueARM64_OpRsh16x8(v, config)
-	case OpRsh32Ux16:
-		return rewriteValueARM64_OpRsh32Ux16(v, config)
-	case OpRsh32Ux32:
-		return rewriteValueARM64_OpRsh32Ux32(v, config)
-	case OpRsh32Ux64:
-		return rewriteValueARM64_OpRsh32Ux64(v, config)
-	case OpRsh32Ux8:
-		return rewriteValueARM64_OpRsh32Ux8(v, config)
-	case OpRsh32x16:
-		return rewriteValueARM64_OpRsh32x16(v, config)
-	case OpRsh32x32:
-		return rewriteValueARM64_OpRsh32x32(v, config)
-	case OpRsh32x64:
-		return rewriteValueARM64_OpRsh32x64(v, config)
-	case OpRsh32x8:
-		return rewriteValueARM64_OpRsh32x8(v, config)
-	case OpRsh64Ux16:
-		return rewriteValueARM64_OpRsh64Ux16(v, config)
-	case OpRsh64Ux32:
-		return rewriteValueARM64_OpRsh64Ux32(v, config)
-	case OpRsh64Ux64:
-		return rewriteValueARM64_OpRsh64Ux64(v, config)
-	case OpRsh64Ux8:
-		return rewriteValueARM64_OpRsh64Ux8(v, config)
-	case OpRsh64x16:
-		return rewriteValueARM64_OpRsh64x16(v, config)
-	case OpRsh64x32:
-		return rewriteValueARM64_OpRsh64x32(v, config)
-	case OpRsh64x64:
-		return rewriteValueARM64_OpRsh64x64(v, config)
-	case OpRsh64x8:
-		return rewriteValueARM64_OpRsh64x8(v, config)
-	case OpRsh8Ux16:
-		return rewriteValueARM64_OpRsh8Ux16(v, config)
-	case OpRsh8Ux32:
-		return rewriteValueARM64_OpRsh8Ux32(v, config)
-	case OpRsh8Ux64:
-		return rewriteValueARM64_OpRsh8Ux64(v, config)
-	case OpRsh8Ux8:
-		return rewriteValueARM64_OpRsh8Ux8(v, config)
-	case OpRsh8x16:
-		return rewriteValueARM64_OpRsh8x16(v, config)
-	case OpRsh8x32:
-		return rewriteValueARM64_OpRsh8x32(v, config)
-	case OpRsh8x64:
-		return rewriteValueARM64_OpRsh8x64(v, config)
-	case OpRsh8x8:
-		return rewriteValueARM64_OpRsh8x8(v, config)
-	case OpSignExt16to32:
-		return rewriteValueARM64_OpSignExt16to32(v, config)
-	case OpSignExt16to64:
-		return rewriteValueARM64_OpSignExt16to64(v, config)
-	case OpSignExt32to64:
-		return rewriteValueARM64_OpSignExt32to64(v, config)
-	case OpSignExt8to16:
-		return rewriteValueARM64_OpSignExt8to16(v, config)
-	case OpSignExt8to32:
-		return rewriteValueARM64_OpSignExt8to32(v, config)
-	case OpSignExt8to64:
-		return rewriteValueARM64_OpSignExt8to64(v, config)
-	case OpSqrt:
-		return rewriteValueARM64_OpSqrt(v, config)
-	case OpStaticCall:
-		return rewriteValueARM64_OpStaticCall(v, config)
-	case OpStore:
-		return rewriteValueARM64_OpStore(v, config)
-	case OpSub16:
-		return rewriteValueARM64_OpSub16(v, config)
-	case OpSub32:
-		return rewriteValueARM64_OpSub32(v, config)
-	case OpSub32F:
-		return rewriteValueARM64_OpSub32F(v, config)
-	case OpSub64:
-		return rewriteValueARM64_OpSub64(v, config)
-	case OpSub64F:
-		return rewriteValueARM64_OpSub64F(v, config)
-	case OpSub8:
-		return rewriteValueARM64_OpSub8(v, config)
-	case OpSubPtr:
-		return rewriteValueARM64_OpSubPtr(v, config)
-	case OpTrunc16to8:
-		return rewriteValueARM64_OpTrunc16to8(v, config)
-	case OpTrunc32to16:
-		return rewriteValueARM64_OpTrunc32to16(v, config)
-	case OpTrunc32to8:
-		return rewriteValueARM64_OpTrunc32to8(v, config)
-	case OpTrunc64to16:
-		return rewriteValueARM64_OpTrunc64to16(v, config)
-	case OpTrunc64to32:
-		return rewriteValueARM64_OpTrunc64to32(v, config)
-	case OpTrunc64to8:
-		return rewriteValueARM64_OpTrunc64to8(v, config)
-	case OpXor16:
-		return rewriteValueARM64_OpXor16(v, config)
-	case OpXor32:
-		return rewriteValueARM64_OpXor32(v, config)
-	case OpXor64:
-		return rewriteValueARM64_OpXor64(v, config)
-	case OpXor8:
-		return rewriteValueARM64_OpXor8(v, config)
-	case OpZero:
-		return rewriteValueARM64_OpZero(v, config)
-	case OpZeroExt16to32:
-		return rewriteValueARM64_OpZeroExt16to32(v, config)
-	case OpZeroExt16to64:
-		return rewriteValueARM64_OpZeroExt16to64(v, config)
-	case OpZeroExt32to64:
-		return rewriteValueARM64_OpZeroExt32to64(v, config)
-	case OpZeroExt8to16:
-		return rewriteValueARM64_OpZeroExt8to16(v, config)
-	case OpZeroExt8to32:
-		return rewriteValueARM64_OpZeroExt8to32(v, config)
-	case OpZeroExt8to64:
-		return rewriteValueARM64_OpZeroExt8to64(v, config)
+	if v.Op < rewriteTableARM64Min || v.Op > rewriteTableARM64Max {
+		return false
 	}
-	return false
+	fn := rewriteTableARM64[v.Op-rewriteTableARM64Min]
+	if fn == nil {
+		return false
+	}
+	return fn(v, config)
 }
 func rewriteValueARM64_OpARM64ADD(v *Value, config *Config) bool {
 	b := v.Block

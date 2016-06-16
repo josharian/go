@@ -6,724 +6,378 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
+const rewriteTableARMMin = OpARMADD
+const rewriteTableARMMax = OpCvt64Fto32U
+
+var rewriteTableARM = [...]func(*Value, *Config) bool{
+	OpARMADC - rewriteTableARMMin:              rewriteValueARM_OpARMADC,
+	OpARMADCconst - rewriteTableARMMin:         rewriteValueARM_OpARMADCconst,
+	OpARMADCshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMADCshiftLL,
+	OpARMADCshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMADCshiftLLreg,
+	OpARMADCshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMADCshiftRA,
+	OpARMADCshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMADCshiftRAreg,
+	OpARMADCshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMADCshiftRL,
+	OpARMADCshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMADCshiftRLreg,
+	OpARMADD - rewriteTableARMMin:              rewriteValueARM_OpARMADD,
+	OpARMADDS - rewriteTableARMMin:             rewriteValueARM_OpARMADDS,
+	OpARMADDSshiftLL - rewriteTableARMMin:      rewriteValueARM_OpARMADDSshiftLL,
+	OpARMADDSshiftLLreg - rewriteTableARMMin:   rewriteValueARM_OpARMADDSshiftLLreg,
+	OpARMADDSshiftRA - rewriteTableARMMin:      rewriteValueARM_OpARMADDSshiftRA,
+	OpARMADDSshiftRAreg - rewriteTableARMMin:   rewriteValueARM_OpARMADDSshiftRAreg,
+	OpARMADDSshiftRL - rewriteTableARMMin:      rewriteValueARM_OpARMADDSshiftRL,
+	OpARMADDSshiftRLreg - rewriteTableARMMin:   rewriteValueARM_OpARMADDSshiftRLreg,
+	OpARMADDconst - rewriteTableARMMin:         rewriteValueARM_OpARMADDconst,
+	OpARMADDshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMADDshiftLL,
+	OpARMADDshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMADDshiftLLreg,
+	OpARMADDshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMADDshiftRA,
+	OpARMADDshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMADDshiftRAreg,
+	OpARMADDshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMADDshiftRL,
+	OpARMADDshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMADDshiftRLreg,
+	OpARMAND - rewriteTableARMMin:              rewriteValueARM_OpARMAND,
+	OpARMANDconst - rewriteTableARMMin:         rewriteValueARM_OpARMANDconst,
+	OpARMANDshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMANDshiftLL,
+	OpARMANDshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMANDshiftLLreg,
+	OpARMANDshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMANDshiftRA,
+	OpARMANDshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMANDshiftRAreg,
+	OpARMANDshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMANDshiftRL,
+	OpARMANDshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMANDshiftRLreg,
+	OpARMBIC - rewriteTableARMMin:              rewriteValueARM_OpARMBIC,
+	OpARMBICconst - rewriteTableARMMin:         rewriteValueARM_OpARMBICconst,
+	OpARMBICshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMBICshiftLL,
+	OpARMBICshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMBICshiftLLreg,
+	OpARMBICshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMBICshiftRA,
+	OpARMBICshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMBICshiftRAreg,
+	OpARMBICshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMBICshiftRL,
+	OpARMBICshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMBICshiftRLreg,
+	OpARMCMOVWHSconst - rewriteTableARMMin:     rewriteValueARM_OpARMCMOVWHSconst,
+	OpARMCMOVWLSconst - rewriteTableARMMin:     rewriteValueARM_OpARMCMOVWLSconst,
+	OpARMCMP - rewriteTableARMMin:              rewriteValueARM_OpARMCMP,
+	OpARMCMPD - rewriteTableARMMin:             rewriteValueARM_OpARMCMPD,
+	OpARMCMPF - rewriteTableARMMin:             rewriteValueARM_OpARMCMPF,
+	OpARMCMPconst - rewriteTableARMMin:         rewriteValueARM_OpARMCMPconst,
+	OpARMCMPshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMCMPshiftLL,
+	OpARMCMPshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMCMPshiftLLreg,
+	OpARMCMPshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMCMPshiftRA,
+	OpARMCMPshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMCMPshiftRAreg,
+	OpARMCMPshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMCMPshiftRL,
+	OpARMCMPshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMCMPshiftRLreg,
+	OpARMDIV - rewriteTableARMMin:              rewriteValueARM_OpARMDIV,
+	OpARMDIVU - rewriteTableARMMin:             rewriteValueARM_OpARMDIVU,
+	OpARMEqual - rewriteTableARMMin:            rewriteValueARM_OpARMEqual,
+	OpARMGreaterEqual - rewriteTableARMMin:     rewriteValueARM_OpARMGreaterEqual,
+	OpARMGreaterEqualU - rewriteTableARMMin:    rewriteValueARM_OpARMGreaterEqualU,
+	OpARMGreaterThan - rewriteTableARMMin:      rewriteValueARM_OpARMGreaterThan,
+	OpARMGreaterThanU - rewriteTableARMMin:     rewriteValueARM_OpARMGreaterThanU,
+	OpARMLessEqual - rewriteTableARMMin:        rewriteValueARM_OpARMLessEqual,
+	OpARMLessEqualU - rewriteTableARMMin:       rewriteValueARM_OpARMLessEqualU,
+	OpARMLessThan - rewriteTableARMMin:         rewriteValueARM_OpARMLessThan,
+	OpARMLessThanU - rewriteTableARMMin:        rewriteValueARM_OpARMLessThanU,
+	OpARMMOVBUload - rewriteTableARMMin:        rewriteValueARM_OpARMMOVBUload,
+	OpARMMOVBUreg - rewriteTableARMMin:         rewriteValueARM_OpARMMOVBUreg,
+	OpARMMOVBload - rewriteTableARMMin:         rewriteValueARM_OpARMMOVBload,
+	OpARMMOVBreg - rewriteTableARMMin:          rewriteValueARM_OpARMMOVBreg,
+	OpARMMOVBstore - rewriteTableARMMin:        rewriteValueARM_OpARMMOVBstore,
+	OpARMMOVDload - rewriteTableARMMin:         rewriteValueARM_OpARMMOVDload,
+	OpARMMOVDstore - rewriteTableARMMin:        rewriteValueARM_OpARMMOVDstore,
+	OpARMMOVFload - rewriteTableARMMin:         rewriteValueARM_OpARMMOVFload,
+	OpARMMOVFstore - rewriteTableARMMin:        rewriteValueARM_OpARMMOVFstore,
+	OpARMMOVHUload - rewriteTableARMMin:        rewriteValueARM_OpARMMOVHUload,
+	OpARMMOVHUreg - rewriteTableARMMin:         rewriteValueARM_OpARMMOVHUreg,
+	OpARMMOVHload - rewriteTableARMMin:         rewriteValueARM_OpARMMOVHload,
+	OpARMMOVHreg - rewriteTableARMMin:          rewriteValueARM_OpARMMOVHreg,
+	OpARMMOVHstore - rewriteTableARMMin:        rewriteValueARM_OpARMMOVHstore,
+	OpARMMOVWload - rewriteTableARMMin:         rewriteValueARM_OpARMMOVWload,
+	OpARMMOVWloadidx - rewriteTableARMMin:      rewriteValueARM_OpARMMOVWloadidx,
+	OpARMMOVWloadshiftLL - rewriteTableARMMin:  rewriteValueARM_OpARMMOVWloadshiftLL,
+	OpARMMOVWloadshiftRA - rewriteTableARMMin:  rewriteValueARM_OpARMMOVWloadshiftRA,
+	OpARMMOVWloadshiftRL - rewriteTableARMMin:  rewriteValueARM_OpARMMOVWloadshiftRL,
+	OpARMMOVWreg - rewriteTableARMMin:          rewriteValueARM_OpARMMOVWreg,
+	OpARMMOVWstore - rewriteTableARMMin:        rewriteValueARM_OpARMMOVWstore,
+	OpARMMOVWstoreidx - rewriteTableARMMin:     rewriteValueARM_OpARMMOVWstoreidx,
+	OpARMMOVWstoreshiftLL - rewriteTableARMMin: rewriteValueARM_OpARMMOVWstoreshiftLL,
+	OpARMMOVWstoreshiftRA - rewriteTableARMMin: rewriteValueARM_OpARMMOVWstoreshiftRA,
+	OpARMMOVWstoreshiftRL - rewriteTableARMMin: rewriteValueARM_OpARMMOVWstoreshiftRL,
+	OpARMMUL - rewriteTableARMMin:              rewriteValueARM_OpARMMUL,
+	OpARMMULA - rewriteTableARMMin:             rewriteValueARM_OpARMMULA,
+	OpARMMVN - rewriteTableARMMin:              rewriteValueARM_OpARMMVN,
+	OpARMMVNshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMMVNshiftLL,
+	OpARMMVNshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMMVNshiftLLreg,
+	OpARMMVNshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMMVNshiftRA,
+	OpARMMVNshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMMVNshiftRAreg,
+	OpARMMVNshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMMVNshiftRL,
+	OpARMMVNshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMMVNshiftRLreg,
+	OpARMNotEqual - rewriteTableARMMin:         rewriteValueARM_OpARMNotEqual,
+	OpARMOR - rewriteTableARMMin:               rewriteValueARM_OpARMOR,
+	OpARMORconst - rewriteTableARMMin:          rewriteValueARM_OpARMORconst,
+	OpARMORshiftLL - rewriteTableARMMin:        rewriteValueARM_OpARMORshiftLL,
+	OpARMORshiftLLreg - rewriteTableARMMin:     rewriteValueARM_OpARMORshiftLLreg,
+	OpARMORshiftRA - rewriteTableARMMin:        rewriteValueARM_OpARMORshiftRA,
+	OpARMORshiftRAreg - rewriteTableARMMin:     rewriteValueARM_OpARMORshiftRAreg,
+	OpARMORshiftRL - rewriteTableARMMin:        rewriteValueARM_OpARMORshiftRL,
+	OpARMORshiftRLreg - rewriteTableARMMin:     rewriteValueARM_OpARMORshiftRLreg,
+	OpARMRSB - rewriteTableARMMin:              rewriteValueARM_OpARMRSB,
+	OpARMRSBSshiftLL - rewriteTableARMMin:      rewriteValueARM_OpARMRSBSshiftLL,
+	OpARMRSBSshiftLLreg - rewriteTableARMMin:   rewriteValueARM_OpARMRSBSshiftLLreg,
+	OpARMRSBSshiftRA - rewriteTableARMMin:      rewriteValueARM_OpARMRSBSshiftRA,
+	OpARMRSBSshiftRAreg - rewriteTableARMMin:   rewriteValueARM_OpARMRSBSshiftRAreg,
+	OpARMRSBSshiftRL - rewriteTableARMMin:      rewriteValueARM_OpARMRSBSshiftRL,
+	OpARMRSBSshiftRLreg - rewriteTableARMMin:   rewriteValueARM_OpARMRSBSshiftRLreg,
+	OpARMRSBconst - rewriteTableARMMin:         rewriteValueARM_OpARMRSBconst,
+	OpARMRSBshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMRSBshiftLL,
+	OpARMRSBshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMRSBshiftLLreg,
+	OpARMRSBshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMRSBshiftRA,
+	OpARMRSBshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMRSBshiftRAreg,
+	OpARMRSBshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMRSBshiftRL,
+	OpARMRSBshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMRSBshiftRLreg,
+	OpARMRSCconst - rewriteTableARMMin:         rewriteValueARM_OpARMRSCconst,
+	OpARMRSCshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMRSCshiftLL,
+	OpARMRSCshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMRSCshiftLLreg,
+	OpARMRSCshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMRSCshiftRA,
+	OpARMRSCshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMRSCshiftRAreg,
+	OpARMRSCshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMRSCshiftRL,
+	OpARMRSCshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMRSCshiftRLreg,
+	OpARMSBC - rewriteTableARMMin:              rewriteValueARM_OpARMSBC,
+	OpARMSBCconst - rewriteTableARMMin:         rewriteValueARM_OpARMSBCconst,
+	OpARMSBCshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMSBCshiftLL,
+	OpARMSBCshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMSBCshiftLLreg,
+	OpARMSBCshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMSBCshiftRA,
+	OpARMSBCshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMSBCshiftRAreg,
+	OpARMSBCshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMSBCshiftRL,
+	OpARMSBCshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMSBCshiftRLreg,
+	OpARMSLL - rewriteTableARMMin:              rewriteValueARM_OpARMSLL,
+	OpARMSLLconst - rewriteTableARMMin:         rewriteValueARM_OpARMSLLconst,
+	OpARMSRA - rewriteTableARMMin:              rewriteValueARM_OpARMSRA,
+	OpARMSRAcond - rewriteTableARMMin:          rewriteValueARM_OpARMSRAcond,
+	OpARMSRAconst - rewriteTableARMMin:         rewriteValueARM_OpARMSRAconst,
+	OpARMSRL - rewriteTableARMMin:              rewriteValueARM_OpARMSRL,
+	OpARMSRLconst - rewriteTableARMMin:         rewriteValueARM_OpARMSRLconst,
+	OpARMSUB - rewriteTableARMMin:              rewriteValueARM_OpARMSUB,
+	OpARMSUBS - rewriteTableARMMin:             rewriteValueARM_OpARMSUBS,
+	OpARMSUBSshiftLL - rewriteTableARMMin:      rewriteValueARM_OpARMSUBSshiftLL,
+	OpARMSUBSshiftLLreg - rewriteTableARMMin:   rewriteValueARM_OpARMSUBSshiftLLreg,
+	OpARMSUBSshiftRA - rewriteTableARMMin:      rewriteValueARM_OpARMSUBSshiftRA,
+	OpARMSUBSshiftRAreg - rewriteTableARMMin:   rewriteValueARM_OpARMSUBSshiftRAreg,
+	OpARMSUBSshiftRL - rewriteTableARMMin:      rewriteValueARM_OpARMSUBSshiftRL,
+	OpARMSUBSshiftRLreg - rewriteTableARMMin:   rewriteValueARM_OpARMSUBSshiftRLreg,
+	OpARMSUBconst - rewriteTableARMMin:         rewriteValueARM_OpARMSUBconst,
+	OpARMSUBshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMSUBshiftLL,
+	OpARMSUBshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMSUBshiftLLreg,
+	OpARMSUBshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMSUBshiftRA,
+	OpARMSUBshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMSUBshiftRAreg,
+	OpARMSUBshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMSUBshiftRL,
+	OpARMSUBshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMSUBshiftRLreg,
+	OpARMXOR - rewriteTableARMMin:              rewriteValueARM_OpARMXOR,
+	OpARMXORconst - rewriteTableARMMin:         rewriteValueARM_OpARMXORconst,
+	OpARMXORshiftLL - rewriteTableARMMin:       rewriteValueARM_OpARMXORshiftLL,
+	OpARMXORshiftLLreg - rewriteTableARMMin:    rewriteValueARM_OpARMXORshiftLLreg,
+	OpARMXORshiftRA - rewriteTableARMMin:       rewriteValueARM_OpARMXORshiftRA,
+	OpARMXORshiftRAreg - rewriteTableARMMin:    rewriteValueARM_OpARMXORshiftRAreg,
+	OpARMXORshiftRL - rewriteTableARMMin:       rewriteValueARM_OpARMXORshiftRL,
+	OpARMXORshiftRLreg - rewriteTableARMMin:    rewriteValueARM_OpARMXORshiftRLreg,
+	OpAdd16 - rewriteTableARMMin:               rewriteValueARM_OpAdd16,
+	OpAdd32 - rewriteTableARMMin:               rewriteValueARM_OpAdd32,
+	OpAdd32F - rewriteTableARMMin:              rewriteValueARM_OpAdd32F,
+	OpAdd32carry - rewriteTableARMMin:          rewriteValueARM_OpAdd32carry,
+	OpAdd32withcarry - rewriteTableARMMin:      rewriteValueARM_OpAdd32withcarry,
+	OpAdd64F - rewriteTableARMMin:              rewriteValueARM_OpAdd64F,
+	OpAdd8 - rewriteTableARMMin:                rewriteValueARM_OpAdd8,
+	OpAddPtr - rewriteTableARMMin:              rewriteValueARM_OpAddPtr,
+	OpAddr - rewriteTableARMMin:                rewriteValueARM_OpAddr,
+	OpAnd16 - rewriteTableARMMin:               rewriteValueARM_OpAnd16,
+	OpAnd32 - rewriteTableARMMin:               rewriteValueARM_OpAnd32,
+	OpAnd8 - rewriteTableARMMin:                rewriteValueARM_OpAnd8,
+	OpAndB - rewriteTableARMMin:                rewriteValueARM_OpAndB,
+	OpClosureCall - rewriteTableARMMin:         rewriteValueARM_OpClosureCall,
+	OpCom16 - rewriteTableARMMin:               rewriteValueARM_OpCom16,
+	OpCom32 - rewriteTableARMMin:               rewriteValueARM_OpCom32,
+	OpCom8 - rewriteTableARMMin:                rewriteValueARM_OpCom8,
+	OpConst16 - rewriteTableARMMin:             rewriteValueARM_OpConst16,
+	OpConst32 - rewriteTableARMMin:             rewriteValueARM_OpConst32,
+	OpConst32F - rewriteTableARMMin:            rewriteValueARM_OpConst32F,
+	OpConst64F - rewriteTableARMMin:            rewriteValueARM_OpConst64F,
+	OpConst8 - rewriteTableARMMin:              rewriteValueARM_OpConst8,
+	OpConstBool - rewriteTableARMMin:           rewriteValueARM_OpConstBool,
+	OpConstNil - rewriteTableARMMin:            rewriteValueARM_OpConstNil,
+	OpConvert - rewriteTableARMMin:             rewriteValueARM_OpConvert,
+	OpCvt32Fto32 - rewriteTableARMMin:          rewriteValueARM_OpCvt32Fto32,
+	OpCvt32Fto32U - rewriteTableARMMin:         rewriteValueARM_OpCvt32Fto32U,
+	OpCvt32Fto64F - rewriteTableARMMin:         rewriteValueARM_OpCvt32Fto64F,
+	OpCvt32Uto32F - rewriteTableARMMin:         rewriteValueARM_OpCvt32Uto32F,
+	OpCvt32Uto64F - rewriteTableARMMin:         rewriteValueARM_OpCvt32Uto64F,
+	OpCvt32to32F - rewriteTableARMMin:          rewriteValueARM_OpCvt32to32F,
+	OpCvt32to64F - rewriteTableARMMin:          rewriteValueARM_OpCvt32to64F,
+	OpCvt64Fto32 - rewriteTableARMMin:          rewriteValueARM_OpCvt64Fto32,
+	OpCvt64Fto32F - rewriteTableARMMin:         rewriteValueARM_OpCvt64Fto32F,
+	OpCvt64Fto32U - rewriteTableARMMin:         rewriteValueARM_OpCvt64Fto32U,
+	OpDeferCall - rewriteTableARMMin:           rewriteValueARM_OpDeferCall,
+	OpDiv16 - rewriteTableARMMin:               rewriteValueARM_OpDiv16,
+	OpDiv16u - rewriteTableARMMin:              rewriteValueARM_OpDiv16u,
+	OpDiv32 - rewriteTableARMMin:               rewriteValueARM_OpDiv32,
+	OpDiv32F - rewriteTableARMMin:              rewriteValueARM_OpDiv32F,
+	OpDiv32u - rewriteTableARMMin:              rewriteValueARM_OpDiv32u,
+	OpDiv64F - rewriteTableARMMin:              rewriteValueARM_OpDiv64F,
+	OpDiv8 - rewriteTableARMMin:                rewriteValueARM_OpDiv8,
+	OpDiv8u - rewriteTableARMMin:               rewriteValueARM_OpDiv8u,
+	OpEq16 - rewriteTableARMMin:                rewriteValueARM_OpEq16,
+	OpEq32 - rewriteTableARMMin:                rewriteValueARM_OpEq32,
+	OpEq32F - rewriteTableARMMin:               rewriteValueARM_OpEq32F,
+	OpEq64F - rewriteTableARMMin:               rewriteValueARM_OpEq64F,
+	OpEq8 - rewriteTableARMMin:                 rewriteValueARM_OpEq8,
+	OpEqB - rewriteTableARMMin:                 rewriteValueARM_OpEqB,
+	OpEqPtr - rewriteTableARMMin:               rewriteValueARM_OpEqPtr,
+	OpGeq16 - rewriteTableARMMin:               rewriteValueARM_OpGeq16,
+	OpGeq16U - rewriteTableARMMin:              rewriteValueARM_OpGeq16U,
+	OpGeq32 - rewriteTableARMMin:               rewriteValueARM_OpGeq32,
+	OpGeq32F - rewriteTableARMMin:              rewriteValueARM_OpGeq32F,
+	OpGeq32U - rewriteTableARMMin:              rewriteValueARM_OpGeq32U,
+	OpGeq64F - rewriteTableARMMin:              rewriteValueARM_OpGeq64F,
+	OpGeq8 - rewriteTableARMMin:                rewriteValueARM_OpGeq8,
+	OpGeq8U - rewriteTableARMMin:               rewriteValueARM_OpGeq8U,
+	OpGetClosurePtr - rewriteTableARMMin:       rewriteValueARM_OpGetClosurePtr,
+	OpGoCall - rewriteTableARMMin:              rewriteValueARM_OpGoCall,
+	OpGreater16 - rewriteTableARMMin:           rewriteValueARM_OpGreater16,
+	OpGreater16U - rewriteTableARMMin:          rewriteValueARM_OpGreater16U,
+	OpGreater32 - rewriteTableARMMin:           rewriteValueARM_OpGreater32,
+	OpGreater32F - rewriteTableARMMin:          rewriteValueARM_OpGreater32F,
+	OpGreater32U - rewriteTableARMMin:          rewriteValueARM_OpGreater32U,
+	OpGreater64F - rewriteTableARMMin:          rewriteValueARM_OpGreater64F,
+	OpGreater8 - rewriteTableARMMin:            rewriteValueARM_OpGreater8,
+	OpGreater8U - rewriteTableARMMin:           rewriteValueARM_OpGreater8U,
+	OpHmul16 - rewriteTableARMMin:              rewriteValueARM_OpHmul16,
+	OpHmul16u - rewriteTableARMMin:             rewriteValueARM_OpHmul16u,
+	OpHmul32 - rewriteTableARMMin:              rewriteValueARM_OpHmul32,
+	OpHmul32u - rewriteTableARMMin:             rewriteValueARM_OpHmul32u,
+	OpHmul8 - rewriteTableARMMin:               rewriteValueARM_OpHmul8,
+	OpHmul8u - rewriteTableARMMin:              rewriteValueARM_OpHmul8u,
+	OpInterCall - rewriteTableARMMin:           rewriteValueARM_OpInterCall,
+	OpIsInBounds - rewriteTableARMMin:          rewriteValueARM_OpIsInBounds,
+	OpIsNonNil - rewriteTableARMMin:            rewriteValueARM_OpIsNonNil,
+	OpIsSliceInBounds - rewriteTableARMMin:     rewriteValueARM_OpIsSliceInBounds,
+	OpLeq16 - rewriteTableARMMin:               rewriteValueARM_OpLeq16,
+	OpLeq16U - rewriteTableARMMin:              rewriteValueARM_OpLeq16U,
+	OpLeq32 - rewriteTableARMMin:               rewriteValueARM_OpLeq32,
+	OpLeq32F - rewriteTableARMMin:              rewriteValueARM_OpLeq32F,
+	OpLeq32U - rewriteTableARMMin:              rewriteValueARM_OpLeq32U,
+	OpLeq64F - rewriteTableARMMin:              rewriteValueARM_OpLeq64F,
+	OpLeq8 - rewriteTableARMMin:                rewriteValueARM_OpLeq8,
+	OpLeq8U - rewriteTableARMMin:               rewriteValueARM_OpLeq8U,
+	OpLess16 - rewriteTableARMMin:              rewriteValueARM_OpLess16,
+	OpLess16U - rewriteTableARMMin:             rewriteValueARM_OpLess16U,
+	OpLess32 - rewriteTableARMMin:              rewriteValueARM_OpLess32,
+	OpLess32F - rewriteTableARMMin:             rewriteValueARM_OpLess32F,
+	OpLess32U - rewriteTableARMMin:             rewriteValueARM_OpLess32U,
+	OpLess64F - rewriteTableARMMin:             rewriteValueARM_OpLess64F,
+	OpLess8 - rewriteTableARMMin:               rewriteValueARM_OpLess8,
+	OpLess8U - rewriteTableARMMin:              rewriteValueARM_OpLess8U,
+	OpLoad - rewriteTableARMMin:                rewriteValueARM_OpLoad,
+	OpLrot16 - rewriteTableARMMin:              rewriteValueARM_OpLrot16,
+	OpLrot32 - rewriteTableARMMin:              rewriteValueARM_OpLrot32,
+	OpLrot8 - rewriteTableARMMin:               rewriteValueARM_OpLrot8,
+	OpLsh16x16 - rewriteTableARMMin:            rewriteValueARM_OpLsh16x16,
+	OpLsh16x32 - rewriteTableARMMin:            rewriteValueARM_OpLsh16x32,
+	OpLsh16x64 - rewriteTableARMMin:            rewriteValueARM_OpLsh16x64,
+	OpLsh16x8 - rewriteTableARMMin:             rewriteValueARM_OpLsh16x8,
+	OpLsh32x16 - rewriteTableARMMin:            rewriteValueARM_OpLsh32x16,
+	OpLsh32x32 - rewriteTableARMMin:            rewriteValueARM_OpLsh32x32,
+	OpLsh32x64 - rewriteTableARMMin:            rewriteValueARM_OpLsh32x64,
+	OpLsh32x8 - rewriteTableARMMin:             rewriteValueARM_OpLsh32x8,
+	OpLsh8x16 - rewriteTableARMMin:             rewriteValueARM_OpLsh8x16,
+	OpLsh8x32 - rewriteTableARMMin:             rewriteValueARM_OpLsh8x32,
+	OpLsh8x64 - rewriteTableARMMin:             rewriteValueARM_OpLsh8x64,
+	OpLsh8x8 - rewriteTableARMMin:              rewriteValueARM_OpLsh8x8,
+	OpMod16 - rewriteTableARMMin:               rewriteValueARM_OpMod16,
+	OpMod16u - rewriteTableARMMin:              rewriteValueARM_OpMod16u,
+	OpMod32 - rewriteTableARMMin:               rewriteValueARM_OpMod32,
+	OpMod32u - rewriteTableARMMin:              rewriteValueARM_OpMod32u,
+	OpMod8 - rewriteTableARMMin:                rewriteValueARM_OpMod8,
+	OpMod8u - rewriteTableARMMin:               rewriteValueARM_OpMod8u,
+	OpMove - rewriteTableARMMin:                rewriteValueARM_OpMove,
+	OpMul16 - rewriteTableARMMin:               rewriteValueARM_OpMul16,
+	OpMul32 - rewriteTableARMMin:               rewriteValueARM_OpMul32,
+	OpMul32F - rewriteTableARMMin:              rewriteValueARM_OpMul32F,
+	OpMul32uhilo - rewriteTableARMMin:          rewriteValueARM_OpMul32uhilo,
+	OpMul64F - rewriteTableARMMin:              rewriteValueARM_OpMul64F,
+	OpMul8 - rewriteTableARMMin:                rewriteValueARM_OpMul8,
+	OpNeg16 - rewriteTableARMMin:               rewriteValueARM_OpNeg16,
+	OpNeg32 - rewriteTableARMMin:               rewriteValueARM_OpNeg32,
+	OpNeg32F - rewriteTableARMMin:              rewriteValueARM_OpNeg32F,
+	OpNeg64F - rewriteTableARMMin:              rewriteValueARM_OpNeg64F,
+	OpNeg8 - rewriteTableARMMin:                rewriteValueARM_OpNeg8,
+	OpNeq16 - rewriteTableARMMin:               rewriteValueARM_OpNeq16,
+	OpNeq32 - rewriteTableARMMin:               rewriteValueARM_OpNeq32,
+	OpNeq32F - rewriteTableARMMin:              rewriteValueARM_OpNeq32F,
+	OpNeq64F - rewriteTableARMMin:              rewriteValueARM_OpNeq64F,
+	OpNeq8 - rewriteTableARMMin:                rewriteValueARM_OpNeq8,
+	OpNeqB - rewriteTableARMMin:                rewriteValueARM_OpNeqB,
+	OpNeqPtr - rewriteTableARMMin:              rewriteValueARM_OpNeqPtr,
+	OpNilCheck - rewriteTableARMMin:            rewriteValueARM_OpNilCheck,
+	OpNot - rewriteTableARMMin:                 rewriteValueARM_OpNot,
+	OpOffPtr - rewriteTableARMMin:              rewriteValueARM_OpOffPtr,
+	OpOr16 - rewriteTableARMMin:                rewriteValueARM_OpOr16,
+	OpOr32 - rewriteTableARMMin:                rewriteValueARM_OpOr32,
+	OpOr8 - rewriteTableARMMin:                 rewriteValueARM_OpOr8,
+	OpOrB - rewriteTableARMMin:                 rewriteValueARM_OpOrB,
+	OpRsh16Ux16 - rewriteTableARMMin:           rewriteValueARM_OpRsh16Ux16,
+	OpRsh16Ux32 - rewriteTableARMMin:           rewriteValueARM_OpRsh16Ux32,
+	OpRsh16Ux64 - rewriteTableARMMin:           rewriteValueARM_OpRsh16Ux64,
+	OpRsh16Ux8 - rewriteTableARMMin:            rewriteValueARM_OpRsh16Ux8,
+	OpRsh16x16 - rewriteTableARMMin:            rewriteValueARM_OpRsh16x16,
+	OpRsh16x32 - rewriteTableARMMin:            rewriteValueARM_OpRsh16x32,
+	OpRsh16x64 - rewriteTableARMMin:            rewriteValueARM_OpRsh16x64,
+	OpRsh16x8 - rewriteTableARMMin:             rewriteValueARM_OpRsh16x8,
+	OpRsh32Ux16 - rewriteTableARMMin:           rewriteValueARM_OpRsh32Ux16,
+	OpRsh32Ux32 - rewriteTableARMMin:           rewriteValueARM_OpRsh32Ux32,
+	OpRsh32Ux64 - rewriteTableARMMin:           rewriteValueARM_OpRsh32Ux64,
+	OpRsh32Ux8 - rewriteTableARMMin:            rewriteValueARM_OpRsh32Ux8,
+	OpRsh32x16 - rewriteTableARMMin:            rewriteValueARM_OpRsh32x16,
+	OpRsh32x32 - rewriteTableARMMin:            rewriteValueARM_OpRsh32x32,
+	OpRsh32x64 - rewriteTableARMMin:            rewriteValueARM_OpRsh32x64,
+	OpRsh32x8 - rewriteTableARMMin:             rewriteValueARM_OpRsh32x8,
+	OpRsh8Ux16 - rewriteTableARMMin:            rewriteValueARM_OpRsh8Ux16,
+	OpRsh8Ux32 - rewriteTableARMMin:            rewriteValueARM_OpRsh8Ux32,
+	OpRsh8Ux64 - rewriteTableARMMin:            rewriteValueARM_OpRsh8Ux64,
+	OpRsh8Ux8 - rewriteTableARMMin:             rewriteValueARM_OpRsh8Ux8,
+	OpRsh8x16 - rewriteTableARMMin:             rewriteValueARM_OpRsh8x16,
+	OpRsh8x32 - rewriteTableARMMin:             rewriteValueARM_OpRsh8x32,
+	OpRsh8x64 - rewriteTableARMMin:             rewriteValueARM_OpRsh8x64,
+	OpRsh8x8 - rewriteTableARMMin:              rewriteValueARM_OpRsh8x8,
+	OpSignExt16to32 - rewriteTableARMMin:       rewriteValueARM_OpSignExt16to32,
+	OpSignExt8to16 - rewriteTableARMMin:        rewriteValueARM_OpSignExt8to16,
+	OpSignExt8to32 - rewriteTableARMMin:        rewriteValueARM_OpSignExt8to32,
+	OpSignmask - rewriteTableARMMin:            rewriteValueARM_OpSignmask,
+	OpSqrt - rewriteTableARMMin:                rewriteValueARM_OpSqrt,
+	OpStaticCall - rewriteTableARMMin:          rewriteValueARM_OpStaticCall,
+	OpStore - rewriteTableARMMin:               rewriteValueARM_OpStore,
+	OpSub16 - rewriteTableARMMin:               rewriteValueARM_OpSub16,
+	OpSub32 - rewriteTableARMMin:               rewriteValueARM_OpSub32,
+	OpSub32F - rewriteTableARMMin:              rewriteValueARM_OpSub32F,
+	OpSub32carry - rewriteTableARMMin:          rewriteValueARM_OpSub32carry,
+	OpSub32withcarry - rewriteTableARMMin:      rewriteValueARM_OpSub32withcarry,
+	OpSub64F - rewriteTableARMMin:              rewriteValueARM_OpSub64F,
+	OpSub8 - rewriteTableARMMin:                rewriteValueARM_OpSub8,
+	OpSubPtr - rewriteTableARMMin:              rewriteValueARM_OpSubPtr,
+	OpTrunc16to8 - rewriteTableARMMin:          rewriteValueARM_OpTrunc16to8,
+	OpTrunc32to16 - rewriteTableARMMin:         rewriteValueARM_OpTrunc32to16,
+	OpTrunc32to8 - rewriteTableARMMin:          rewriteValueARM_OpTrunc32to8,
+	OpXor16 - rewriteTableARMMin:               rewriteValueARM_OpXor16,
+	OpXor32 - rewriteTableARMMin:               rewriteValueARM_OpXor32,
+	OpXor8 - rewriteTableARMMin:                rewriteValueARM_OpXor8,
+	OpZero - rewriteTableARMMin:                rewriteValueARM_OpZero,
+	OpZeroExt16to32 - rewriteTableARMMin:       rewriteValueARM_OpZeroExt16to32,
+	OpZeroExt8to16 - rewriteTableARMMin:        rewriteValueARM_OpZeroExt8to16,
+	OpZeroExt8to32 - rewriteTableARMMin:        rewriteValueARM_OpZeroExt8to32,
+	OpZeromask - rewriteTableARMMin:            rewriteValueARM_OpZeromask,
+}
+
 func rewriteValueARM(v *Value, config *Config) bool {
-	switch v.Op {
-	case OpARMADC:
-		return rewriteValueARM_OpARMADC(v, config)
-	case OpARMADCconst:
-		return rewriteValueARM_OpARMADCconst(v, config)
-	case OpARMADCshiftLL:
-		return rewriteValueARM_OpARMADCshiftLL(v, config)
-	case OpARMADCshiftLLreg:
-		return rewriteValueARM_OpARMADCshiftLLreg(v, config)
-	case OpARMADCshiftRA:
-		return rewriteValueARM_OpARMADCshiftRA(v, config)
-	case OpARMADCshiftRAreg:
-		return rewriteValueARM_OpARMADCshiftRAreg(v, config)
-	case OpARMADCshiftRL:
-		return rewriteValueARM_OpARMADCshiftRL(v, config)
-	case OpARMADCshiftRLreg:
-		return rewriteValueARM_OpARMADCshiftRLreg(v, config)
-	case OpARMADD:
-		return rewriteValueARM_OpARMADD(v, config)
-	case OpARMADDS:
-		return rewriteValueARM_OpARMADDS(v, config)
-	case OpARMADDSshiftLL:
-		return rewriteValueARM_OpARMADDSshiftLL(v, config)
-	case OpARMADDSshiftLLreg:
-		return rewriteValueARM_OpARMADDSshiftLLreg(v, config)
-	case OpARMADDSshiftRA:
-		return rewriteValueARM_OpARMADDSshiftRA(v, config)
-	case OpARMADDSshiftRAreg:
-		return rewriteValueARM_OpARMADDSshiftRAreg(v, config)
-	case OpARMADDSshiftRL:
-		return rewriteValueARM_OpARMADDSshiftRL(v, config)
-	case OpARMADDSshiftRLreg:
-		return rewriteValueARM_OpARMADDSshiftRLreg(v, config)
-	case OpARMADDconst:
-		return rewriteValueARM_OpARMADDconst(v, config)
-	case OpARMADDshiftLL:
-		return rewriteValueARM_OpARMADDshiftLL(v, config)
-	case OpARMADDshiftLLreg:
-		return rewriteValueARM_OpARMADDshiftLLreg(v, config)
-	case OpARMADDshiftRA:
-		return rewriteValueARM_OpARMADDshiftRA(v, config)
-	case OpARMADDshiftRAreg:
-		return rewriteValueARM_OpARMADDshiftRAreg(v, config)
-	case OpARMADDshiftRL:
-		return rewriteValueARM_OpARMADDshiftRL(v, config)
-	case OpARMADDshiftRLreg:
-		return rewriteValueARM_OpARMADDshiftRLreg(v, config)
-	case OpARMAND:
-		return rewriteValueARM_OpARMAND(v, config)
-	case OpARMANDconst:
-		return rewriteValueARM_OpARMANDconst(v, config)
-	case OpARMANDshiftLL:
-		return rewriteValueARM_OpARMANDshiftLL(v, config)
-	case OpARMANDshiftLLreg:
-		return rewriteValueARM_OpARMANDshiftLLreg(v, config)
-	case OpARMANDshiftRA:
-		return rewriteValueARM_OpARMANDshiftRA(v, config)
-	case OpARMANDshiftRAreg:
-		return rewriteValueARM_OpARMANDshiftRAreg(v, config)
-	case OpARMANDshiftRL:
-		return rewriteValueARM_OpARMANDshiftRL(v, config)
-	case OpARMANDshiftRLreg:
-		return rewriteValueARM_OpARMANDshiftRLreg(v, config)
-	case OpARMBIC:
-		return rewriteValueARM_OpARMBIC(v, config)
-	case OpARMBICconst:
-		return rewriteValueARM_OpARMBICconst(v, config)
-	case OpARMBICshiftLL:
-		return rewriteValueARM_OpARMBICshiftLL(v, config)
-	case OpARMBICshiftLLreg:
-		return rewriteValueARM_OpARMBICshiftLLreg(v, config)
-	case OpARMBICshiftRA:
-		return rewriteValueARM_OpARMBICshiftRA(v, config)
-	case OpARMBICshiftRAreg:
-		return rewriteValueARM_OpARMBICshiftRAreg(v, config)
-	case OpARMBICshiftRL:
-		return rewriteValueARM_OpARMBICshiftRL(v, config)
-	case OpARMBICshiftRLreg:
-		return rewriteValueARM_OpARMBICshiftRLreg(v, config)
-	case OpARMCMOVWHSconst:
-		return rewriteValueARM_OpARMCMOVWHSconst(v, config)
-	case OpARMCMOVWLSconst:
-		return rewriteValueARM_OpARMCMOVWLSconst(v, config)
-	case OpARMCMP:
-		return rewriteValueARM_OpARMCMP(v, config)
-	case OpARMCMPD:
-		return rewriteValueARM_OpARMCMPD(v, config)
-	case OpARMCMPF:
-		return rewriteValueARM_OpARMCMPF(v, config)
-	case OpARMCMPconst:
-		return rewriteValueARM_OpARMCMPconst(v, config)
-	case OpARMCMPshiftLL:
-		return rewriteValueARM_OpARMCMPshiftLL(v, config)
-	case OpARMCMPshiftLLreg:
-		return rewriteValueARM_OpARMCMPshiftLLreg(v, config)
-	case OpARMCMPshiftRA:
-		return rewriteValueARM_OpARMCMPshiftRA(v, config)
-	case OpARMCMPshiftRAreg:
-		return rewriteValueARM_OpARMCMPshiftRAreg(v, config)
-	case OpARMCMPshiftRL:
-		return rewriteValueARM_OpARMCMPshiftRL(v, config)
-	case OpARMCMPshiftRLreg:
-		return rewriteValueARM_OpARMCMPshiftRLreg(v, config)
-	case OpARMDIV:
-		return rewriteValueARM_OpARMDIV(v, config)
-	case OpARMDIVU:
-		return rewriteValueARM_OpARMDIVU(v, config)
-	case OpARMEqual:
-		return rewriteValueARM_OpARMEqual(v, config)
-	case OpARMGreaterEqual:
-		return rewriteValueARM_OpARMGreaterEqual(v, config)
-	case OpARMGreaterEqualU:
-		return rewriteValueARM_OpARMGreaterEqualU(v, config)
-	case OpARMGreaterThan:
-		return rewriteValueARM_OpARMGreaterThan(v, config)
-	case OpARMGreaterThanU:
-		return rewriteValueARM_OpARMGreaterThanU(v, config)
-	case OpARMLessEqual:
-		return rewriteValueARM_OpARMLessEqual(v, config)
-	case OpARMLessEqualU:
-		return rewriteValueARM_OpARMLessEqualU(v, config)
-	case OpARMLessThan:
-		return rewriteValueARM_OpARMLessThan(v, config)
-	case OpARMLessThanU:
-		return rewriteValueARM_OpARMLessThanU(v, config)
-	case OpARMMOVBUload:
-		return rewriteValueARM_OpARMMOVBUload(v, config)
-	case OpARMMOVBUreg:
-		return rewriteValueARM_OpARMMOVBUreg(v, config)
-	case OpARMMOVBload:
-		return rewriteValueARM_OpARMMOVBload(v, config)
-	case OpARMMOVBreg:
-		return rewriteValueARM_OpARMMOVBreg(v, config)
-	case OpARMMOVBstore:
-		return rewriteValueARM_OpARMMOVBstore(v, config)
-	case OpARMMOVDload:
-		return rewriteValueARM_OpARMMOVDload(v, config)
-	case OpARMMOVDstore:
-		return rewriteValueARM_OpARMMOVDstore(v, config)
-	case OpARMMOVFload:
-		return rewriteValueARM_OpARMMOVFload(v, config)
-	case OpARMMOVFstore:
-		return rewriteValueARM_OpARMMOVFstore(v, config)
-	case OpARMMOVHUload:
-		return rewriteValueARM_OpARMMOVHUload(v, config)
-	case OpARMMOVHUreg:
-		return rewriteValueARM_OpARMMOVHUreg(v, config)
-	case OpARMMOVHload:
-		return rewriteValueARM_OpARMMOVHload(v, config)
-	case OpARMMOVHreg:
-		return rewriteValueARM_OpARMMOVHreg(v, config)
-	case OpARMMOVHstore:
-		return rewriteValueARM_OpARMMOVHstore(v, config)
-	case OpARMMOVWload:
-		return rewriteValueARM_OpARMMOVWload(v, config)
-	case OpARMMOVWloadidx:
-		return rewriteValueARM_OpARMMOVWloadidx(v, config)
-	case OpARMMOVWloadshiftLL:
-		return rewriteValueARM_OpARMMOVWloadshiftLL(v, config)
-	case OpARMMOVWloadshiftRA:
-		return rewriteValueARM_OpARMMOVWloadshiftRA(v, config)
-	case OpARMMOVWloadshiftRL:
-		return rewriteValueARM_OpARMMOVWloadshiftRL(v, config)
-	case OpARMMOVWreg:
-		return rewriteValueARM_OpARMMOVWreg(v, config)
-	case OpARMMOVWstore:
-		return rewriteValueARM_OpARMMOVWstore(v, config)
-	case OpARMMOVWstoreidx:
-		return rewriteValueARM_OpARMMOVWstoreidx(v, config)
-	case OpARMMOVWstoreshiftLL:
-		return rewriteValueARM_OpARMMOVWstoreshiftLL(v, config)
-	case OpARMMOVWstoreshiftRA:
-		return rewriteValueARM_OpARMMOVWstoreshiftRA(v, config)
-	case OpARMMOVWstoreshiftRL:
-		return rewriteValueARM_OpARMMOVWstoreshiftRL(v, config)
-	case OpARMMUL:
-		return rewriteValueARM_OpARMMUL(v, config)
-	case OpARMMULA:
-		return rewriteValueARM_OpARMMULA(v, config)
-	case OpARMMVN:
-		return rewriteValueARM_OpARMMVN(v, config)
-	case OpARMMVNshiftLL:
-		return rewriteValueARM_OpARMMVNshiftLL(v, config)
-	case OpARMMVNshiftLLreg:
-		return rewriteValueARM_OpARMMVNshiftLLreg(v, config)
-	case OpARMMVNshiftRA:
-		return rewriteValueARM_OpARMMVNshiftRA(v, config)
-	case OpARMMVNshiftRAreg:
-		return rewriteValueARM_OpARMMVNshiftRAreg(v, config)
-	case OpARMMVNshiftRL:
-		return rewriteValueARM_OpARMMVNshiftRL(v, config)
-	case OpARMMVNshiftRLreg:
-		return rewriteValueARM_OpARMMVNshiftRLreg(v, config)
-	case OpARMNotEqual:
-		return rewriteValueARM_OpARMNotEqual(v, config)
-	case OpARMOR:
-		return rewriteValueARM_OpARMOR(v, config)
-	case OpARMORconst:
-		return rewriteValueARM_OpARMORconst(v, config)
-	case OpARMORshiftLL:
-		return rewriteValueARM_OpARMORshiftLL(v, config)
-	case OpARMORshiftLLreg:
-		return rewriteValueARM_OpARMORshiftLLreg(v, config)
-	case OpARMORshiftRA:
-		return rewriteValueARM_OpARMORshiftRA(v, config)
-	case OpARMORshiftRAreg:
-		return rewriteValueARM_OpARMORshiftRAreg(v, config)
-	case OpARMORshiftRL:
-		return rewriteValueARM_OpARMORshiftRL(v, config)
-	case OpARMORshiftRLreg:
-		return rewriteValueARM_OpARMORshiftRLreg(v, config)
-	case OpARMRSB:
-		return rewriteValueARM_OpARMRSB(v, config)
-	case OpARMRSBSshiftLL:
-		return rewriteValueARM_OpARMRSBSshiftLL(v, config)
-	case OpARMRSBSshiftLLreg:
-		return rewriteValueARM_OpARMRSBSshiftLLreg(v, config)
-	case OpARMRSBSshiftRA:
-		return rewriteValueARM_OpARMRSBSshiftRA(v, config)
-	case OpARMRSBSshiftRAreg:
-		return rewriteValueARM_OpARMRSBSshiftRAreg(v, config)
-	case OpARMRSBSshiftRL:
-		return rewriteValueARM_OpARMRSBSshiftRL(v, config)
-	case OpARMRSBSshiftRLreg:
-		return rewriteValueARM_OpARMRSBSshiftRLreg(v, config)
-	case OpARMRSBconst:
-		return rewriteValueARM_OpARMRSBconst(v, config)
-	case OpARMRSBshiftLL:
-		return rewriteValueARM_OpARMRSBshiftLL(v, config)
-	case OpARMRSBshiftLLreg:
-		return rewriteValueARM_OpARMRSBshiftLLreg(v, config)
-	case OpARMRSBshiftRA:
-		return rewriteValueARM_OpARMRSBshiftRA(v, config)
-	case OpARMRSBshiftRAreg:
-		return rewriteValueARM_OpARMRSBshiftRAreg(v, config)
-	case OpARMRSBshiftRL:
-		return rewriteValueARM_OpARMRSBshiftRL(v, config)
-	case OpARMRSBshiftRLreg:
-		return rewriteValueARM_OpARMRSBshiftRLreg(v, config)
-	case OpARMRSCconst:
-		return rewriteValueARM_OpARMRSCconst(v, config)
-	case OpARMRSCshiftLL:
-		return rewriteValueARM_OpARMRSCshiftLL(v, config)
-	case OpARMRSCshiftLLreg:
-		return rewriteValueARM_OpARMRSCshiftLLreg(v, config)
-	case OpARMRSCshiftRA:
-		return rewriteValueARM_OpARMRSCshiftRA(v, config)
-	case OpARMRSCshiftRAreg:
-		return rewriteValueARM_OpARMRSCshiftRAreg(v, config)
-	case OpARMRSCshiftRL:
-		return rewriteValueARM_OpARMRSCshiftRL(v, config)
-	case OpARMRSCshiftRLreg:
-		return rewriteValueARM_OpARMRSCshiftRLreg(v, config)
-	case OpARMSBC:
-		return rewriteValueARM_OpARMSBC(v, config)
-	case OpARMSBCconst:
-		return rewriteValueARM_OpARMSBCconst(v, config)
-	case OpARMSBCshiftLL:
-		return rewriteValueARM_OpARMSBCshiftLL(v, config)
-	case OpARMSBCshiftLLreg:
-		return rewriteValueARM_OpARMSBCshiftLLreg(v, config)
-	case OpARMSBCshiftRA:
-		return rewriteValueARM_OpARMSBCshiftRA(v, config)
-	case OpARMSBCshiftRAreg:
-		return rewriteValueARM_OpARMSBCshiftRAreg(v, config)
-	case OpARMSBCshiftRL:
-		return rewriteValueARM_OpARMSBCshiftRL(v, config)
-	case OpARMSBCshiftRLreg:
-		return rewriteValueARM_OpARMSBCshiftRLreg(v, config)
-	case OpARMSLL:
-		return rewriteValueARM_OpARMSLL(v, config)
-	case OpARMSLLconst:
-		return rewriteValueARM_OpARMSLLconst(v, config)
-	case OpARMSRA:
-		return rewriteValueARM_OpARMSRA(v, config)
-	case OpARMSRAcond:
-		return rewriteValueARM_OpARMSRAcond(v, config)
-	case OpARMSRAconst:
-		return rewriteValueARM_OpARMSRAconst(v, config)
-	case OpARMSRL:
-		return rewriteValueARM_OpARMSRL(v, config)
-	case OpARMSRLconst:
-		return rewriteValueARM_OpARMSRLconst(v, config)
-	case OpARMSUB:
-		return rewriteValueARM_OpARMSUB(v, config)
-	case OpARMSUBS:
-		return rewriteValueARM_OpARMSUBS(v, config)
-	case OpARMSUBSshiftLL:
-		return rewriteValueARM_OpARMSUBSshiftLL(v, config)
-	case OpARMSUBSshiftLLreg:
-		return rewriteValueARM_OpARMSUBSshiftLLreg(v, config)
-	case OpARMSUBSshiftRA:
-		return rewriteValueARM_OpARMSUBSshiftRA(v, config)
-	case OpARMSUBSshiftRAreg:
-		return rewriteValueARM_OpARMSUBSshiftRAreg(v, config)
-	case OpARMSUBSshiftRL:
-		return rewriteValueARM_OpARMSUBSshiftRL(v, config)
-	case OpARMSUBSshiftRLreg:
-		return rewriteValueARM_OpARMSUBSshiftRLreg(v, config)
-	case OpARMSUBconst:
-		return rewriteValueARM_OpARMSUBconst(v, config)
-	case OpARMSUBshiftLL:
-		return rewriteValueARM_OpARMSUBshiftLL(v, config)
-	case OpARMSUBshiftLLreg:
-		return rewriteValueARM_OpARMSUBshiftLLreg(v, config)
-	case OpARMSUBshiftRA:
-		return rewriteValueARM_OpARMSUBshiftRA(v, config)
-	case OpARMSUBshiftRAreg:
-		return rewriteValueARM_OpARMSUBshiftRAreg(v, config)
-	case OpARMSUBshiftRL:
-		return rewriteValueARM_OpARMSUBshiftRL(v, config)
-	case OpARMSUBshiftRLreg:
-		return rewriteValueARM_OpARMSUBshiftRLreg(v, config)
-	case OpARMXOR:
-		return rewriteValueARM_OpARMXOR(v, config)
-	case OpARMXORconst:
-		return rewriteValueARM_OpARMXORconst(v, config)
-	case OpARMXORshiftLL:
-		return rewriteValueARM_OpARMXORshiftLL(v, config)
-	case OpARMXORshiftLLreg:
-		return rewriteValueARM_OpARMXORshiftLLreg(v, config)
-	case OpARMXORshiftRA:
-		return rewriteValueARM_OpARMXORshiftRA(v, config)
-	case OpARMXORshiftRAreg:
-		return rewriteValueARM_OpARMXORshiftRAreg(v, config)
-	case OpARMXORshiftRL:
-		return rewriteValueARM_OpARMXORshiftRL(v, config)
-	case OpARMXORshiftRLreg:
-		return rewriteValueARM_OpARMXORshiftRLreg(v, config)
-	case OpAdd16:
-		return rewriteValueARM_OpAdd16(v, config)
-	case OpAdd32:
-		return rewriteValueARM_OpAdd32(v, config)
-	case OpAdd32F:
-		return rewriteValueARM_OpAdd32F(v, config)
-	case OpAdd32carry:
-		return rewriteValueARM_OpAdd32carry(v, config)
-	case OpAdd32withcarry:
-		return rewriteValueARM_OpAdd32withcarry(v, config)
-	case OpAdd64F:
-		return rewriteValueARM_OpAdd64F(v, config)
-	case OpAdd8:
-		return rewriteValueARM_OpAdd8(v, config)
-	case OpAddPtr:
-		return rewriteValueARM_OpAddPtr(v, config)
-	case OpAddr:
-		return rewriteValueARM_OpAddr(v, config)
-	case OpAnd16:
-		return rewriteValueARM_OpAnd16(v, config)
-	case OpAnd32:
-		return rewriteValueARM_OpAnd32(v, config)
-	case OpAnd8:
-		return rewriteValueARM_OpAnd8(v, config)
-	case OpAndB:
-		return rewriteValueARM_OpAndB(v, config)
-	case OpClosureCall:
-		return rewriteValueARM_OpClosureCall(v, config)
-	case OpCom16:
-		return rewriteValueARM_OpCom16(v, config)
-	case OpCom32:
-		return rewriteValueARM_OpCom32(v, config)
-	case OpCom8:
-		return rewriteValueARM_OpCom8(v, config)
-	case OpConst16:
-		return rewriteValueARM_OpConst16(v, config)
-	case OpConst32:
-		return rewriteValueARM_OpConst32(v, config)
-	case OpConst32F:
-		return rewriteValueARM_OpConst32F(v, config)
-	case OpConst64F:
-		return rewriteValueARM_OpConst64F(v, config)
-	case OpConst8:
-		return rewriteValueARM_OpConst8(v, config)
-	case OpConstBool:
-		return rewriteValueARM_OpConstBool(v, config)
-	case OpConstNil:
-		return rewriteValueARM_OpConstNil(v, config)
-	case OpConvert:
-		return rewriteValueARM_OpConvert(v, config)
-	case OpCvt32Fto32:
-		return rewriteValueARM_OpCvt32Fto32(v, config)
-	case OpCvt32Fto32U:
-		return rewriteValueARM_OpCvt32Fto32U(v, config)
-	case OpCvt32Fto64F:
-		return rewriteValueARM_OpCvt32Fto64F(v, config)
-	case OpCvt32Uto32F:
-		return rewriteValueARM_OpCvt32Uto32F(v, config)
-	case OpCvt32Uto64F:
-		return rewriteValueARM_OpCvt32Uto64F(v, config)
-	case OpCvt32to32F:
-		return rewriteValueARM_OpCvt32to32F(v, config)
-	case OpCvt32to64F:
-		return rewriteValueARM_OpCvt32to64F(v, config)
-	case OpCvt64Fto32:
-		return rewriteValueARM_OpCvt64Fto32(v, config)
-	case OpCvt64Fto32F:
-		return rewriteValueARM_OpCvt64Fto32F(v, config)
-	case OpCvt64Fto32U:
-		return rewriteValueARM_OpCvt64Fto32U(v, config)
-	case OpDeferCall:
-		return rewriteValueARM_OpDeferCall(v, config)
-	case OpDiv16:
-		return rewriteValueARM_OpDiv16(v, config)
-	case OpDiv16u:
-		return rewriteValueARM_OpDiv16u(v, config)
-	case OpDiv32:
-		return rewriteValueARM_OpDiv32(v, config)
-	case OpDiv32F:
-		return rewriteValueARM_OpDiv32F(v, config)
-	case OpDiv32u:
-		return rewriteValueARM_OpDiv32u(v, config)
-	case OpDiv64F:
-		return rewriteValueARM_OpDiv64F(v, config)
-	case OpDiv8:
-		return rewriteValueARM_OpDiv8(v, config)
-	case OpDiv8u:
-		return rewriteValueARM_OpDiv8u(v, config)
-	case OpEq16:
-		return rewriteValueARM_OpEq16(v, config)
-	case OpEq32:
-		return rewriteValueARM_OpEq32(v, config)
-	case OpEq32F:
-		return rewriteValueARM_OpEq32F(v, config)
-	case OpEq64F:
-		return rewriteValueARM_OpEq64F(v, config)
-	case OpEq8:
-		return rewriteValueARM_OpEq8(v, config)
-	case OpEqB:
-		return rewriteValueARM_OpEqB(v, config)
-	case OpEqPtr:
-		return rewriteValueARM_OpEqPtr(v, config)
-	case OpGeq16:
-		return rewriteValueARM_OpGeq16(v, config)
-	case OpGeq16U:
-		return rewriteValueARM_OpGeq16U(v, config)
-	case OpGeq32:
-		return rewriteValueARM_OpGeq32(v, config)
-	case OpGeq32F:
-		return rewriteValueARM_OpGeq32F(v, config)
-	case OpGeq32U:
-		return rewriteValueARM_OpGeq32U(v, config)
-	case OpGeq64F:
-		return rewriteValueARM_OpGeq64F(v, config)
-	case OpGeq8:
-		return rewriteValueARM_OpGeq8(v, config)
-	case OpGeq8U:
-		return rewriteValueARM_OpGeq8U(v, config)
-	case OpGetClosurePtr:
-		return rewriteValueARM_OpGetClosurePtr(v, config)
-	case OpGoCall:
-		return rewriteValueARM_OpGoCall(v, config)
-	case OpGreater16:
-		return rewriteValueARM_OpGreater16(v, config)
-	case OpGreater16U:
-		return rewriteValueARM_OpGreater16U(v, config)
-	case OpGreater32:
-		return rewriteValueARM_OpGreater32(v, config)
-	case OpGreater32F:
-		return rewriteValueARM_OpGreater32F(v, config)
-	case OpGreater32U:
-		return rewriteValueARM_OpGreater32U(v, config)
-	case OpGreater64F:
-		return rewriteValueARM_OpGreater64F(v, config)
-	case OpGreater8:
-		return rewriteValueARM_OpGreater8(v, config)
-	case OpGreater8U:
-		return rewriteValueARM_OpGreater8U(v, config)
-	case OpHmul16:
-		return rewriteValueARM_OpHmul16(v, config)
-	case OpHmul16u:
-		return rewriteValueARM_OpHmul16u(v, config)
-	case OpHmul32:
-		return rewriteValueARM_OpHmul32(v, config)
-	case OpHmul32u:
-		return rewriteValueARM_OpHmul32u(v, config)
-	case OpHmul8:
-		return rewriteValueARM_OpHmul8(v, config)
-	case OpHmul8u:
-		return rewriteValueARM_OpHmul8u(v, config)
-	case OpInterCall:
-		return rewriteValueARM_OpInterCall(v, config)
-	case OpIsInBounds:
-		return rewriteValueARM_OpIsInBounds(v, config)
-	case OpIsNonNil:
-		return rewriteValueARM_OpIsNonNil(v, config)
-	case OpIsSliceInBounds:
-		return rewriteValueARM_OpIsSliceInBounds(v, config)
-	case OpLeq16:
-		return rewriteValueARM_OpLeq16(v, config)
-	case OpLeq16U:
-		return rewriteValueARM_OpLeq16U(v, config)
-	case OpLeq32:
-		return rewriteValueARM_OpLeq32(v, config)
-	case OpLeq32F:
-		return rewriteValueARM_OpLeq32F(v, config)
-	case OpLeq32U:
-		return rewriteValueARM_OpLeq32U(v, config)
-	case OpLeq64F:
-		return rewriteValueARM_OpLeq64F(v, config)
-	case OpLeq8:
-		return rewriteValueARM_OpLeq8(v, config)
-	case OpLeq8U:
-		return rewriteValueARM_OpLeq8U(v, config)
-	case OpLess16:
-		return rewriteValueARM_OpLess16(v, config)
-	case OpLess16U:
-		return rewriteValueARM_OpLess16U(v, config)
-	case OpLess32:
-		return rewriteValueARM_OpLess32(v, config)
-	case OpLess32F:
-		return rewriteValueARM_OpLess32F(v, config)
-	case OpLess32U:
-		return rewriteValueARM_OpLess32U(v, config)
-	case OpLess64F:
-		return rewriteValueARM_OpLess64F(v, config)
-	case OpLess8:
-		return rewriteValueARM_OpLess8(v, config)
-	case OpLess8U:
-		return rewriteValueARM_OpLess8U(v, config)
-	case OpLoad:
-		return rewriteValueARM_OpLoad(v, config)
-	case OpLrot16:
-		return rewriteValueARM_OpLrot16(v, config)
-	case OpLrot32:
-		return rewriteValueARM_OpLrot32(v, config)
-	case OpLrot8:
-		return rewriteValueARM_OpLrot8(v, config)
-	case OpLsh16x16:
-		return rewriteValueARM_OpLsh16x16(v, config)
-	case OpLsh16x32:
-		return rewriteValueARM_OpLsh16x32(v, config)
-	case OpLsh16x64:
-		return rewriteValueARM_OpLsh16x64(v, config)
-	case OpLsh16x8:
-		return rewriteValueARM_OpLsh16x8(v, config)
-	case OpLsh32x16:
-		return rewriteValueARM_OpLsh32x16(v, config)
-	case OpLsh32x32:
-		return rewriteValueARM_OpLsh32x32(v, config)
-	case OpLsh32x64:
-		return rewriteValueARM_OpLsh32x64(v, config)
-	case OpLsh32x8:
-		return rewriteValueARM_OpLsh32x8(v, config)
-	case OpLsh8x16:
-		return rewriteValueARM_OpLsh8x16(v, config)
-	case OpLsh8x32:
-		return rewriteValueARM_OpLsh8x32(v, config)
-	case OpLsh8x64:
-		return rewriteValueARM_OpLsh8x64(v, config)
-	case OpLsh8x8:
-		return rewriteValueARM_OpLsh8x8(v, config)
-	case OpMod16:
-		return rewriteValueARM_OpMod16(v, config)
-	case OpMod16u:
-		return rewriteValueARM_OpMod16u(v, config)
-	case OpMod32:
-		return rewriteValueARM_OpMod32(v, config)
-	case OpMod32u:
-		return rewriteValueARM_OpMod32u(v, config)
-	case OpMod8:
-		return rewriteValueARM_OpMod8(v, config)
-	case OpMod8u:
-		return rewriteValueARM_OpMod8u(v, config)
-	case OpMove:
-		return rewriteValueARM_OpMove(v, config)
-	case OpMul16:
-		return rewriteValueARM_OpMul16(v, config)
-	case OpMul32:
-		return rewriteValueARM_OpMul32(v, config)
-	case OpMul32F:
-		return rewriteValueARM_OpMul32F(v, config)
-	case OpMul32uhilo:
-		return rewriteValueARM_OpMul32uhilo(v, config)
-	case OpMul64F:
-		return rewriteValueARM_OpMul64F(v, config)
-	case OpMul8:
-		return rewriteValueARM_OpMul8(v, config)
-	case OpNeg16:
-		return rewriteValueARM_OpNeg16(v, config)
-	case OpNeg32:
-		return rewriteValueARM_OpNeg32(v, config)
-	case OpNeg32F:
-		return rewriteValueARM_OpNeg32F(v, config)
-	case OpNeg64F:
-		return rewriteValueARM_OpNeg64F(v, config)
-	case OpNeg8:
-		return rewriteValueARM_OpNeg8(v, config)
-	case OpNeq16:
-		return rewriteValueARM_OpNeq16(v, config)
-	case OpNeq32:
-		return rewriteValueARM_OpNeq32(v, config)
-	case OpNeq32F:
-		return rewriteValueARM_OpNeq32F(v, config)
-	case OpNeq64F:
-		return rewriteValueARM_OpNeq64F(v, config)
-	case OpNeq8:
-		return rewriteValueARM_OpNeq8(v, config)
-	case OpNeqB:
-		return rewriteValueARM_OpNeqB(v, config)
-	case OpNeqPtr:
-		return rewriteValueARM_OpNeqPtr(v, config)
-	case OpNilCheck:
-		return rewriteValueARM_OpNilCheck(v, config)
-	case OpNot:
-		return rewriteValueARM_OpNot(v, config)
-	case OpOffPtr:
-		return rewriteValueARM_OpOffPtr(v, config)
-	case OpOr16:
-		return rewriteValueARM_OpOr16(v, config)
-	case OpOr32:
-		return rewriteValueARM_OpOr32(v, config)
-	case OpOr8:
-		return rewriteValueARM_OpOr8(v, config)
-	case OpOrB:
-		return rewriteValueARM_OpOrB(v, config)
-	case OpRsh16Ux16:
-		return rewriteValueARM_OpRsh16Ux16(v, config)
-	case OpRsh16Ux32:
-		return rewriteValueARM_OpRsh16Ux32(v, config)
-	case OpRsh16Ux64:
-		return rewriteValueARM_OpRsh16Ux64(v, config)
-	case OpRsh16Ux8:
-		return rewriteValueARM_OpRsh16Ux8(v, config)
-	case OpRsh16x16:
-		return rewriteValueARM_OpRsh16x16(v, config)
-	case OpRsh16x32:
-		return rewriteValueARM_OpRsh16x32(v, config)
-	case OpRsh16x64:
-		return rewriteValueARM_OpRsh16x64(v, config)
-	case OpRsh16x8:
-		return rewriteValueARM_OpRsh16x8(v, config)
-	case OpRsh32Ux16:
-		return rewriteValueARM_OpRsh32Ux16(v, config)
-	case OpRsh32Ux32:
-		return rewriteValueARM_OpRsh32Ux32(v, config)
-	case OpRsh32Ux64:
-		return rewriteValueARM_OpRsh32Ux64(v, config)
-	case OpRsh32Ux8:
-		return rewriteValueARM_OpRsh32Ux8(v, config)
-	case OpRsh32x16:
-		return rewriteValueARM_OpRsh32x16(v, config)
-	case OpRsh32x32:
-		return rewriteValueARM_OpRsh32x32(v, config)
-	case OpRsh32x64:
-		return rewriteValueARM_OpRsh32x64(v, config)
-	case OpRsh32x8:
-		return rewriteValueARM_OpRsh32x8(v, config)
-	case OpRsh8Ux16:
-		return rewriteValueARM_OpRsh8Ux16(v, config)
-	case OpRsh8Ux32:
-		return rewriteValueARM_OpRsh8Ux32(v, config)
-	case OpRsh8Ux64:
-		return rewriteValueARM_OpRsh8Ux64(v, config)
-	case OpRsh8Ux8:
-		return rewriteValueARM_OpRsh8Ux8(v, config)
-	case OpRsh8x16:
-		return rewriteValueARM_OpRsh8x16(v, config)
-	case OpRsh8x32:
-		return rewriteValueARM_OpRsh8x32(v, config)
-	case OpRsh8x64:
-		return rewriteValueARM_OpRsh8x64(v, config)
-	case OpRsh8x8:
-		return rewriteValueARM_OpRsh8x8(v, config)
-	case OpSignExt16to32:
-		return rewriteValueARM_OpSignExt16to32(v, config)
-	case OpSignExt8to16:
-		return rewriteValueARM_OpSignExt8to16(v, config)
-	case OpSignExt8to32:
-		return rewriteValueARM_OpSignExt8to32(v, config)
-	case OpSignmask:
-		return rewriteValueARM_OpSignmask(v, config)
-	case OpSqrt:
-		return rewriteValueARM_OpSqrt(v, config)
-	case OpStaticCall:
-		return rewriteValueARM_OpStaticCall(v, config)
-	case OpStore:
-		return rewriteValueARM_OpStore(v, config)
-	case OpSub16:
-		return rewriteValueARM_OpSub16(v, config)
-	case OpSub32:
-		return rewriteValueARM_OpSub32(v, config)
-	case OpSub32F:
-		return rewriteValueARM_OpSub32F(v, config)
-	case OpSub32carry:
-		return rewriteValueARM_OpSub32carry(v, config)
-	case OpSub32withcarry:
-		return rewriteValueARM_OpSub32withcarry(v, config)
-	case OpSub64F:
-		return rewriteValueARM_OpSub64F(v, config)
-	case OpSub8:
-		return rewriteValueARM_OpSub8(v, config)
-	case OpSubPtr:
-		return rewriteValueARM_OpSubPtr(v, config)
-	case OpTrunc16to8:
-		return rewriteValueARM_OpTrunc16to8(v, config)
-	case OpTrunc32to16:
-		return rewriteValueARM_OpTrunc32to16(v, config)
-	case OpTrunc32to8:
-		return rewriteValueARM_OpTrunc32to8(v, config)
-	case OpXor16:
-		return rewriteValueARM_OpXor16(v, config)
-	case OpXor32:
-		return rewriteValueARM_OpXor32(v, config)
-	case OpXor8:
-		return rewriteValueARM_OpXor8(v, config)
-	case OpZero:
-		return rewriteValueARM_OpZero(v, config)
-	case OpZeroExt16to32:
-		return rewriteValueARM_OpZeroExt16to32(v, config)
-	case OpZeroExt8to16:
-		return rewriteValueARM_OpZeroExt8to16(v, config)
-	case OpZeroExt8to32:
-		return rewriteValueARM_OpZeroExt8to32(v, config)
-	case OpZeromask:
-		return rewriteValueARM_OpZeromask(v, config)
+	if v.Op < rewriteTableARMMin || v.Op > rewriteTableARMMax {
+		return false
 	}
-	return false
+	fn := rewriteTableARM[v.Op-rewriteTableARMMin]
+	if fn == nil {
+		return false
+	}
+	return fn(v, config)
 }
 func rewriteValueARM_OpARMADC(v *Value, config *Config) bool {
 	b := v.Block

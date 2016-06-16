@@ -6,794 +6,413 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
+const rewriteTableAMD64Min = OpAMD64MOVSSload
+const rewriteTableAMD64Max = OpAtomicOr8
+
+var rewriteTableAMD64 = [...]func(*Value, *Config) bool{
+	OpAMD64ADDL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64ADDL,
+	OpAMD64ADDLconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64ADDLconst,
+	OpAMD64ADDQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64ADDQ,
+	OpAMD64ADDQconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64ADDQconst,
+	OpAMD64ANDL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64ANDL,
+	OpAMD64ANDLconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64ANDLconst,
+	OpAMD64ANDQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64ANDQ,
+	OpAMD64ANDQconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64ANDQconst,
+	OpAMD64CMPB - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64CMPB,
+	OpAMD64CMPBconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64CMPBconst,
+	OpAMD64CMPL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64CMPL,
+	OpAMD64CMPLconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64CMPLconst,
+	OpAMD64CMPQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64CMPQ,
+	OpAMD64CMPQconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64CMPQconst,
+	OpAMD64CMPW - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64CMPW,
+	OpAMD64CMPWconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64CMPWconst,
+	OpAMD64CMPXCHGLlock - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64CMPXCHGLlock,
+	OpAMD64CMPXCHGQlock - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64CMPXCHGQlock,
+	OpAMD64LEAL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64LEAL,
+	OpAMD64LEAQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64LEAQ,
+	OpAMD64LEAQ1 - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64LEAQ1,
+	OpAMD64LEAQ2 - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64LEAQ2,
+	OpAMD64LEAQ4 - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64LEAQ4,
+	OpAMD64LEAQ8 - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64LEAQ8,
+	OpAMD64MOVBQSX - rewriteTableAMD64Min:            rewriteValueAMD64_OpAMD64MOVBQSX,
+	OpAMD64MOVBQSXload - rewriteTableAMD64Min:        rewriteValueAMD64_OpAMD64MOVBQSXload,
+	OpAMD64MOVBQZX - rewriteTableAMD64Min:            rewriteValueAMD64_OpAMD64MOVBQZX,
+	OpAMD64MOVBload - rewriteTableAMD64Min:           rewriteValueAMD64_OpAMD64MOVBload,
+	OpAMD64MOVBloadidx1 - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64MOVBloadidx1,
+	OpAMD64MOVBstore - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MOVBstore,
+	OpAMD64MOVBstoreconst - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVBstoreconst,
+	OpAMD64MOVBstoreconstidx1 - rewriteTableAMD64Min: rewriteValueAMD64_OpAMD64MOVBstoreconstidx1,
+	OpAMD64MOVBstoreidx1 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVBstoreidx1,
+	OpAMD64MOVLQSX - rewriteTableAMD64Min:            rewriteValueAMD64_OpAMD64MOVLQSX,
+	OpAMD64MOVLQSXload - rewriteTableAMD64Min:        rewriteValueAMD64_OpAMD64MOVLQSXload,
+	OpAMD64MOVLQZX - rewriteTableAMD64Min:            rewriteValueAMD64_OpAMD64MOVLQZX,
+	OpAMD64MOVLatomicload - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVLatomicload,
+	OpAMD64MOVLload - rewriteTableAMD64Min:           rewriteValueAMD64_OpAMD64MOVLload,
+	OpAMD64MOVLloadidx1 - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64MOVLloadidx1,
+	OpAMD64MOVLloadidx4 - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64MOVLloadidx4,
+	OpAMD64MOVLstore - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MOVLstore,
+	OpAMD64MOVLstoreconst - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVLstoreconst,
+	OpAMD64MOVLstoreconstidx1 - rewriteTableAMD64Min: rewriteValueAMD64_OpAMD64MOVLstoreconstidx1,
+	OpAMD64MOVLstoreconstidx4 - rewriteTableAMD64Min: rewriteValueAMD64_OpAMD64MOVLstoreconstidx4,
+	OpAMD64MOVLstoreidx1 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVLstoreidx1,
+	OpAMD64MOVLstoreidx4 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVLstoreidx4,
+	OpAMD64MOVOload - rewriteTableAMD64Min:           rewriteValueAMD64_OpAMD64MOVOload,
+	OpAMD64MOVOstore - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MOVOstore,
+	OpAMD64MOVQatomicload - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVQatomicload,
+	OpAMD64MOVQload - rewriteTableAMD64Min:           rewriteValueAMD64_OpAMD64MOVQload,
+	OpAMD64MOVQloadidx1 - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64MOVQloadidx1,
+	OpAMD64MOVQloadidx8 - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64MOVQloadidx8,
+	OpAMD64MOVQstore - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MOVQstore,
+	OpAMD64MOVQstoreconst - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVQstoreconst,
+	OpAMD64MOVQstoreconstidx1 - rewriteTableAMD64Min: rewriteValueAMD64_OpAMD64MOVQstoreconstidx1,
+	OpAMD64MOVQstoreconstidx8 - rewriteTableAMD64Min: rewriteValueAMD64_OpAMD64MOVQstoreconstidx8,
+	OpAMD64MOVQstoreidx1 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVQstoreidx1,
+	OpAMD64MOVQstoreidx8 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVQstoreidx8,
+	OpAMD64MOVSDload - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MOVSDload,
+	OpAMD64MOVSDloadidx1 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVSDloadidx1,
+	OpAMD64MOVSDloadidx8 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVSDloadidx8,
+	OpAMD64MOVSDstore - rewriteTableAMD64Min:         rewriteValueAMD64_OpAMD64MOVSDstore,
+	OpAMD64MOVSDstoreidx1 - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVSDstoreidx1,
+	OpAMD64MOVSDstoreidx8 - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVSDstoreidx8,
+	OpAMD64MOVSSload - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MOVSSload,
+	OpAMD64MOVSSloadidx1 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVSSloadidx1,
+	OpAMD64MOVSSloadidx4 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVSSloadidx4,
+	OpAMD64MOVSSstore - rewriteTableAMD64Min:         rewriteValueAMD64_OpAMD64MOVSSstore,
+	OpAMD64MOVSSstoreidx1 - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVSSstoreidx1,
+	OpAMD64MOVSSstoreidx4 - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVSSstoreidx4,
+	OpAMD64MOVWQSX - rewriteTableAMD64Min:            rewriteValueAMD64_OpAMD64MOVWQSX,
+	OpAMD64MOVWQSXload - rewriteTableAMD64Min:        rewriteValueAMD64_OpAMD64MOVWQSXload,
+	OpAMD64MOVWQZX - rewriteTableAMD64Min:            rewriteValueAMD64_OpAMD64MOVWQZX,
+	OpAMD64MOVWload - rewriteTableAMD64Min:           rewriteValueAMD64_OpAMD64MOVWload,
+	OpAMD64MOVWloadidx1 - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64MOVWloadidx1,
+	OpAMD64MOVWloadidx2 - rewriteTableAMD64Min:       rewriteValueAMD64_OpAMD64MOVWloadidx2,
+	OpAMD64MOVWstore - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MOVWstore,
+	OpAMD64MOVWstoreconst - rewriteTableAMD64Min:     rewriteValueAMD64_OpAMD64MOVWstoreconst,
+	OpAMD64MOVWstoreconstidx1 - rewriteTableAMD64Min: rewriteValueAMD64_OpAMD64MOVWstoreconstidx1,
+	OpAMD64MOVWstoreconstidx2 - rewriteTableAMD64Min: rewriteValueAMD64_OpAMD64MOVWstoreconstidx2,
+	OpAMD64MOVWstoreidx1 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVWstoreidx1,
+	OpAMD64MOVWstoreidx2 - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64MOVWstoreidx2,
+	OpAMD64MULL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64MULL,
+	OpAMD64MULLconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MULLconst,
+	OpAMD64MULQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64MULQ,
+	OpAMD64MULQconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64MULQconst,
+	OpAMD64NEGL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64NEGL,
+	OpAMD64NEGQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64NEGQ,
+	OpAMD64NOTL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64NOTL,
+	OpAMD64NOTQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64NOTQ,
+	OpAMD64ORL - rewriteTableAMD64Min:                rewriteValueAMD64_OpAMD64ORL,
+	OpAMD64ORLconst - rewriteTableAMD64Min:           rewriteValueAMD64_OpAMD64ORLconst,
+	OpAMD64ORQ - rewriteTableAMD64Min:                rewriteValueAMD64_OpAMD64ORQ,
+	OpAMD64ORQconst - rewriteTableAMD64Min:           rewriteValueAMD64_OpAMD64ORQconst,
+	OpAMD64ROLBconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64ROLBconst,
+	OpAMD64ROLLconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64ROLLconst,
+	OpAMD64ROLQconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64ROLQconst,
+	OpAMD64ROLWconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64ROLWconst,
+	OpAMD64SARB - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SARB,
+	OpAMD64SARBconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64SARBconst,
+	OpAMD64SARL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SARL,
+	OpAMD64SARLconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64SARLconst,
+	OpAMD64SARQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SARQ,
+	OpAMD64SARQconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64SARQconst,
+	OpAMD64SARW - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SARW,
+	OpAMD64SARWconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64SARWconst,
+	OpAMD64SBBLcarrymask - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64SBBLcarrymask,
+	OpAMD64SBBQcarrymask - rewriteTableAMD64Min:      rewriteValueAMD64_OpAMD64SBBQcarrymask,
+	OpAMD64SETA - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SETA,
+	OpAMD64SETAE - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64SETAE,
+	OpAMD64SETB - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SETB,
+	OpAMD64SETBE - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64SETBE,
+	OpAMD64SETEQ - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64SETEQ,
+	OpAMD64SETG - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SETG,
+	OpAMD64SETGE - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64SETGE,
+	OpAMD64SETL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SETL,
+	OpAMD64SETLE - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64SETLE,
+	OpAMD64SETNE - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64SETNE,
+	OpAMD64SHLL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SHLL,
+	OpAMD64SHLQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SHLQ,
+	OpAMD64SHRB - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SHRB,
+	OpAMD64SHRL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SHRL,
+	OpAMD64SHRQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SHRQ,
+	OpAMD64SHRW - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SHRW,
+	OpAMD64SUBL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SUBL,
+	OpAMD64SUBLconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64SUBLconst,
+	OpAMD64SUBQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64SUBQ,
+	OpAMD64SUBQconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64SUBQconst,
+	OpAMD64XADDLlock - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64XADDLlock,
+	OpAMD64XADDQlock - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64XADDQlock,
+	OpAMD64XCHGL - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64XCHGL,
+	OpAMD64XCHGQ - rewriteTableAMD64Min:              rewriteValueAMD64_OpAMD64XCHGQ,
+	OpAMD64XORL - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64XORL,
+	OpAMD64XORLconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64XORLconst,
+	OpAMD64XORQ - rewriteTableAMD64Min:               rewriteValueAMD64_OpAMD64XORQ,
+	OpAMD64XORQconst - rewriteTableAMD64Min:          rewriteValueAMD64_OpAMD64XORQconst,
+	OpAdd16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpAdd16,
+	OpAdd32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpAdd32,
+	OpAdd32F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpAdd32F,
+	OpAdd64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpAdd64,
+	OpAdd64F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpAdd64F,
+	OpAdd8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpAdd8,
+	OpAddPtr - rewriteTableAMD64Min:                  rewriteValueAMD64_OpAddPtr,
+	OpAddr - rewriteTableAMD64Min:                    rewriteValueAMD64_OpAddr,
+	OpAnd16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpAnd16,
+	OpAnd32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpAnd32,
+	OpAnd64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpAnd64,
+	OpAnd8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpAnd8,
+	OpAndB - rewriteTableAMD64Min:                    rewriteValueAMD64_OpAndB,
+	OpAtomicAdd32 - rewriteTableAMD64Min:             rewriteValueAMD64_OpAtomicAdd32,
+	OpAtomicAdd64 - rewriteTableAMD64Min:             rewriteValueAMD64_OpAtomicAdd64,
+	OpAtomicAnd8 - rewriteTableAMD64Min:              rewriteValueAMD64_OpAtomicAnd8,
+	OpAtomicCompareAndSwap32 - rewriteTableAMD64Min:  rewriteValueAMD64_OpAtomicCompareAndSwap32,
+	OpAtomicCompareAndSwap64 - rewriteTableAMD64Min:  rewriteValueAMD64_OpAtomicCompareAndSwap64,
+	OpAtomicExchange32 - rewriteTableAMD64Min:        rewriteValueAMD64_OpAtomicExchange32,
+	OpAtomicExchange64 - rewriteTableAMD64Min:        rewriteValueAMD64_OpAtomicExchange64,
+	OpAtomicLoad32 - rewriteTableAMD64Min:            rewriteValueAMD64_OpAtomicLoad32,
+	OpAtomicLoad64 - rewriteTableAMD64Min:            rewriteValueAMD64_OpAtomicLoad64,
+	OpAtomicLoadPtr - rewriteTableAMD64Min:           rewriteValueAMD64_OpAtomicLoadPtr,
+	OpAtomicOr8 - rewriteTableAMD64Min:               rewriteValueAMD64_OpAtomicOr8,
+	OpAtomicStore32 - rewriteTableAMD64Min:           rewriteValueAMD64_OpAtomicStore32,
+	OpAtomicStore64 - rewriteTableAMD64Min:           rewriteValueAMD64_OpAtomicStore64,
+	OpAtomicStorePtrNoWB - rewriteTableAMD64Min:      rewriteValueAMD64_OpAtomicStorePtrNoWB,
+	OpAvg64u - rewriteTableAMD64Min:                  rewriteValueAMD64_OpAvg64u,
+	OpBswap32 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpBswap32,
+	OpBswap64 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpBswap64,
+	OpClosureCall - rewriteTableAMD64Min:             rewriteValueAMD64_OpClosureCall,
+	OpCom16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpCom16,
+	OpCom32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpCom32,
+	OpCom64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpCom64,
+	OpCom8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpCom8,
+	OpConst16 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpConst16,
+	OpConst32 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpConst32,
+	OpConst32F - rewriteTableAMD64Min:                rewriteValueAMD64_OpConst32F,
+	OpConst64 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpConst64,
+	OpConst64F - rewriteTableAMD64Min:                rewriteValueAMD64_OpConst64F,
+	OpConst8 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpConst8,
+	OpConstBool - rewriteTableAMD64Min:               rewriteValueAMD64_OpConstBool,
+	OpConstNil - rewriteTableAMD64Min:                rewriteValueAMD64_OpConstNil,
+	OpConvert - rewriteTableAMD64Min:                 rewriteValueAMD64_OpConvert,
+	OpCtz32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpCtz32,
+	OpCtz64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpCtz64,
+	OpCvt32Fto32 - rewriteTableAMD64Min:              rewriteValueAMD64_OpCvt32Fto32,
+	OpCvt32Fto64 - rewriteTableAMD64Min:              rewriteValueAMD64_OpCvt32Fto64,
+	OpCvt32Fto64F - rewriteTableAMD64Min:             rewriteValueAMD64_OpCvt32Fto64F,
+	OpCvt32to32F - rewriteTableAMD64Min:              rewriteValueAMD64_OpCvt32to32F,
+	OpCvt32to64F - rewriteTableAMD64Min:              rewriteValueAMD64_OpCvt32to64F,
+	OpCvt64Fto32 - rewriteTableAMD64Min:              rewriteValueAMD64_OpCvt64Fto32,
+	OpCvt64Fto32F - rewriteTableAMD64Min:             rewriteValueAMD64_OpCvt64Fto32F,
+	OpCvt64Fto64 - rewriteTableAMD64Min:              rewriteValueAMD64_OpCvt64Fto64,
+	OpCvt64to32F - rewriteTableAMD64Min:              rewriteValueAMD64_OpCvt64to32F,
+	OpCvt64to64F - rewriteTableAMD64Min:              rewriteValueAMD64_OpCvt64to64F,
+	OpDeferCall - rewriteTableAMD64Min:               rewriteValueAMD64_OpDeferCall,
+	OpDiv16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpDiv16,
+	OpDiv16u - rewriteTableAMD64Min:                  rewriteValueAMD64_OpDiv16u,
+	OpDiv32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpDiv32,
+	OpDiv32F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpDiv32F,
+	OpDiv32u - rewriteTableAMD64Min:                  rewriteValueAMD64_OpDiv32u,
+	OpDiv64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpDiv64,
+	OpDiv64F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpDiv64F,
+	OpDiv64u - rewriteTableAMD64Min:                  rewriteValueAMD64_OpDiv64u,
+	OpDiv8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpDiv8,
+	OpDiv8u - rewriteTableAMD64Min:                   rewriteValueAMD64_OpDiv8u,
+	OpEq16 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpEq16,
+	OpEq32 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpEq32,
+	OpEq32F - rewriteTableAMD64Min:                   rewriteValueAMD64_OpEq32F,
+	OpEq64 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpEq64,
+	OpEq64F - rewriteTableAMD64Min:                   rewriteValueAMD64_OpEq64F,
+	OpEq8 - rewriteTableAMD64Min:                     rewriteValueAMD64_OpEq8,
+	OpEqB - rewriteTableAMD64Min:                     rewriteValueAMD64_OpEqB,
+	OpEqPtr - rewriteTableAMD64Min:                   rewriteValueAMD64_OpEqPtr,
+	OpGeq16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpGeq16,
+	OpGeq16U - rewriteTableAMD64Min:                  rewriteValueAMD64_OpGeq16U,
+	OpGeq32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpGeq32,
+	OpGeq32F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpGeq32F,
+	OpGeq32U - rewriteTableAMD64Min:                  rewriteValueAMD64_OpGeq32U,
+	OpGeq64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpGeq64,
+	OpGeq64F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpGeq64F,
+	OpGeq64U - rewriteTableAMD64Min:                  rewriteValueAMD64_OpGeq64U,
+	OpGeq8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpGeq8,
+	OpGeq8U - rewriteTableAMD64Min:                   rewriteValueAMD64_OpGeq8U,
+	OpGetClosurePtr - rewriteTableAMD64Min:           rewriteValueAMD64_OpGetClosurePtr,
+	OpGetG - rewriteTableAMD64Min:                    rewriteValueAMD64_OpGetG,
+	OpGoCall - rewriteTableAMD64Min:                  rewriteValueAMD64_OpGoCall,
+	OpGreater16 - rewriteTableAMD64Min:               rewriteValueAMD64_OpGreater16,
+	OpGreater16U - rewriteTableAMD64Min:              rewriteValueAMD64_OpGreater16U,
+	OpGreater32 - rewriteTableAMD64Min:               rewriteValueAMD64_OpGreater32,
+	OpGreater32F - rewriteTableAMD64Min:              rewriteValueAMD64_OpGreater32F,
+	OpGreater32U - rewriteTableAMD64Min:              rewriteValueAMD64_OpGreater32U,
+	OpGreater64 - rewriteTableAMD64Min:               rewriteValueAMD64_OpGreater64,
+	OpGreater64F - rewriteTableAMD64Min:              rewriteValueAMD64_OpGreater64F,
+	OpGreater64U - rewriteTableAMD64Min:              rewriteValueAMD64_OpGreater64U,
+	OpGreater8 - rewriteTableAMD64Min:                rewriteValueAMD64_OpGreater8,
+	OpGreater8U - rewriteTableAMD64Min:               rewriteValueAMD64_OpGreater8U,
+	OpHmul16 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpHmul16,
+	OpHmul16u - rewriteTableAMD64Min:                 rewriteValueAMD64_OpHmul16u,
+	OpHmul32 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpHmul32,
+	OpHmul32u - rewriteTableAMD64Min:                 rewriteValueAMD64_OpHmul32u,
+	OpHmul64 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpHmul64,
+	OpHmul64u - rewriteTableAMD64Min:                 rewriteValueAMD64_OpHmul64u,
+	OpHmul8 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpHmul8,
+	OpHmul8u - rewriteTableAMD64Min:                  rewriteValueAMD64_OpHmul8u,
+	OpInt64Hi - rewriteTableAMD64Min:                 rewriteValueAMD64_OpInt64Hi,
+	OpInterCall - rewriteTableAMD64Min:               rewriteValueAMD64_OpInterCall,
+	OpIsInBounds - rewriteTableAMD64Min:              rewriteValueAMD64_OpIsInBounds,
+	OpIsNonNil - rewriteTableAMD64Min:                rewriteValueAMD64_OpIsNonNil,
+	OpIsSliceInBounds - rewriteTableAMD64Min:         rewriteValueAMD64_OpIsSliceInBounds,
+	OpLeq16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpLeq16,
+	OpLeq16U - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLeq16U,
+	OpLeq32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpLeq32,
+	OpLeq32F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLeq32F,
+	OpLeq32U - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLeq32U,
+	OpLeq64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpLeq64,
+	OpLeq64F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLeq64F,
+	OpLeq64U - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLeq64U,
+	OpLeq8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpLeq8,
+	OpLeq8U - rewriteTableAMD64Min:                   rewriteValueAMD64_OpLeq8U,
+	OpLess16 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLess16,
+	OpLess16U - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLess16U,
+	OpLess32 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLess32,
+	OpLess32F - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLess32F,
+	OpLess32U - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLess32U,
+	OpLess64 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLess64,
+	OpLess64F - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLess64F,
+	OpLess64U - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLess64U,
+	OpLess8 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpLess8,
+	OpLess8U - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLess8U,
+	OpLoad - rewriteTableAMD64Min:                    rewriteValueAMD64_OpLoad,
+	OpLrot16 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLrot16,
+	OpLrot32 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLrot32,
+	OpLrot64 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLrot64,
+	OpLrot8 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpLrot8,
+	OpLsh16x16 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh16x16,
+	OpLsh16x32 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh16x32,
+	OpLsh16x64 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh16x64,
+	OpLsh16x8 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLsh16x8,
+	OpLsh32x16 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh32x16,
+	OpLsh32x32 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh32x32,
+	OpLsh32x64 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh32x64,
+	OpLsh32x8 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLsh32x8,
+	OpLsh64x16 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh64x16,
+	OpLsh64x32 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh64x32,
+	OpLsh64x64 - rewriteTableAMD64Min:                rewriteValueAMD64_OpLsh64x64,
+	OpLsh64x8 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLsh64x8,
+	OpLsh8x16 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLsh8x16,
+	OpLsh8x32 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLsh8x32,
+	OpLsh8x64 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpLsh8x64,
+	OpLsh8x8 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpLsh8x8,
+	OpMod16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpMod16,
+	OpMod16u - rewriteTableAMD64Min:                  rewriteValueAMD64_OpMod16u,
+	OpMod32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpMod32,
+	OpMod32u - rewriteTableAMD64Min:                  rewriteValueAMD64_OpMod32u,
+	OpMod64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpMod64,
+	OpMod64u - rewriteTableAMD64Min:                  rewriteValueAMD64_OpMod64u,
+	OpMod8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpMod8,
+	OpMod8u - rewriteTableAMD64Min:                   rewriteValueAMD64_OpMod8u,
+	OpMove - rewriteTableAMD64Min:                    rewriteValueAMD64_OpMove,
+	OpMul16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpMul16,
+	OpMul32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpMul32,
+	OpMul32F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpMul32F,
+	OpMul64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpMul64,
+	OpMul64F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpMul64F,
+	OpMul8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpMul8,
+	OpNeg16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpNeg16,
+	OpNeg32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpNeg32,
+	OpNeg32F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpNeg32F,
+	OpNeg64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpNeg64,
+	OpNeg64F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpNeg64F,
+	OpNeg8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpNeg8,
+	OpNeq16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpNeq16,
+	OpNeq32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpNeq32,
+	OpNeq32F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpNeq32F,
+	OpNeq64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpNeq64,
+	OpNeq64F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpNeq64F,
+	OpNeq8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpNeq8,
+	OpNeqB - rewriteTableAMD64Min:                    rewriteValueAMD64_OpNeqB,
+	OpNeqPtr - rewriteTableAMD64Min:                  rewriteValueAMD64_OpNeqPtr,
+	OpNilCheck - rewriteTableAMD64Min:                rewriteValueAMD64_OpNilCheck,
+	OpNot - rewriteTableAMD64Min:                     rewriteValueAMD64_OpNot,
+	OpOffPtr - rewriteTableAMD64Min:                  rewriteValueAMD64_OpOffPtr,
+	OpOr16 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpOr16,
+	OpOr32 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpOr32,
+	OpOr64 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpOr64,
+	OpOr8 - rewriteTableAMD64Min:                     rewriteValueAMD64_OpOr8,
+	OpOrB - rewriteTableAMD64Min:                     rewriteValueAMD64_OpOrB,
+	OpRsh16Ux16 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh16Ux16,
+	OpRsh16Ux32 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh16Ux32,
+	OpRsh16Ux64 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh16Ux64,
+	OpRsh16Ux8 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh16Ux8,
+	OpRsh16x16 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh16x16,
+	OpRsh16x32 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh16x32,
+	OpRsh16x64 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh16x64,
+	OpRsh16x8 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpRsh16x8,
+	OpRsh32Ux16 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh32Ux16,
+	OpRsh32Ux32 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh32Ux32,
+	OpRsh32Ux64 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh32Ux64,
+	OpRsh32Ux8 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh32Ux8,
+	OpRsh32x16 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh32x16,
+	OpRsh32x32 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh32x32,
+	OpRsh32x64 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh32x64,
+	OpRsh32x8 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpRsh32x8,
+	OpRsh64Ux16 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh64Ux16,
+	OpRsh64Ux32 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh64Ux32,
+	OpRsh64Ux64 - rewriteTableAMD64Min:               rewriteValueAMD64_OpRsh64Ux64,
+	OpRsh64Ux8 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh64Ux8,
+	OpRsh64x16 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh64x16,
+	OpRsh64x32 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh64x32,
+	OpRsh64x64 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh64x64,
+	OpRsh64x8 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpRsh64x8,
+	OpRsh8Ux16 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh8Ux16,
+	OpRsh8Ux32 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh8Ux32,
+	OpRsh8Ux64 - rewriteTableAMD64Min:                rewriteValueAMD64_OpRsh8Ux64,
+	OpRsh8Ux8 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpRsh8Ux8,
+	OpRsh8x16 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpRsh8x16,
+	OpRsh8x32 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpRsh8x32,
+	OpRsh8x64 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpRsh8x64,
+	OpRsh8x8 - rewriteTableAMD64Min:                  rewriteValueAMD64_OpRsh8x8,
+	OpSelect0 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpSelect0,
+	OpSelect1 - rewriteTableAMD64Min:                 rewriteValueAMD64_OpSelect1,
+	OpSignExt16to32 - rewriteTableAMD64Min:           rewriteValueAMD64_OpSignExt16to32,
+	OpSignExt16to64 - rewriteTableAMD64Min:           rewriteValueAMD64_OpSignExt16to64,
+	OpSignExt32to64 - rewriteTableAMD64Min:           rewriteValueAMD64_OpSignExt32to64,
+	OpSignExt8to16 - rewriteTableAMD64Min:            rewriteValueAMD64_OpSignExt8to16,
+	OpSignExt8to32 - rewriteTableAMD64Min:            rewriteValueAMD64_OpSignExt8to32,
+	OpSignExt8to64 - rewriteTableAMD64Min:            rewriteValueAMD64_OpSignExt8to64,
+	OpSqrt - rewriteTableAMD64Min:                    rewriteValueAMD64_OpSqrt,
+	OpStaticCall - rewriteTableAMD64Min:              rewriteValueAMD64_OpStaticCall,
+	OpStore - rewriteTableAMD64Min:                   rewriteValueAMD64_OpStore,
+	OpSub16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpSub16,
+	OpSub32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpSub32,
+	OpSub32F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpSub32F,
+	OpSub64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpSub64,
+	OpSub64F - rewriteTableAMD64Min:                  rewriteValueAMD64_OpSub64F,
+	OpSub8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpSub8,
+	OpSubPtr - rewriteTableAMD64Min:                  rewriteValueAMD64_OpSubPtr,
+	OpTrunc16to8 - rewriteTableAMD64Min:              rewriteValueAMD64_OpTrunc16to8,
+	OpTrunc32to16 - rewriteTableAMD64Min:             rewriteValueAMD64_OpTrunc32to16,
+	OpTrunc32to8 - rewriteTableAMD64Min:              rewriteValueAMD64_OpTrunc32to8,
+	OpTrunc64to16 - rewriteTableAMD64Min:             rewriteValueAMD64_OpTrunc64to16,
+	OpTrunc64to32 - rewriteTableAMD64Min:             rewriteValueAMD64_OpTrunc64to32,
+	OpTrunc64to8 - rewriteTableAMD64Min:              rewriteValueAMD64_OpTrunc64to8,
+	OpXor16 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpXor16,
+	OpXor32 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpXor32,
+	OpXor64 - rewriteTableAMD64Min:                   rewriteValueAMD64_OpXor64,
+	OpXor8 - rewriteTableAMD64Min:                    rewriteValueAMD64_OpXor8,
+	OpZero - rewriteTableAMD64Min:                    rewriteValueAMD64_OpZero,
+	OpZeroExt16to32 - rewriteTableAMD64Min:           rewriteValueAMD64_OpZeroExt16to32,
+	OpZeroExt16to64 - rewriteTableAMD64Min:           rewriteValueAMD64_OpZeroExt16to64,
+	OpZeroExt32to64 - rewriteTableAMD64Min:           rewriteValueAMD64_OpZeroExt32to64,
+	OpZeroExt8to16 - rewriteTableAMD64Min:            rewriteValueAMD64_OpZeroExt8to16,
+	OpZeroExt8to32 - rewriteTableAMD64Min:            rewriteValueAMD64_OpZeroExt8to32,
+	OpZeroExt8to64 - rewriteTableAMD64Min:            rewriteValueAMD64_OpZeroExt8to64,
+}
+
 func rewriteValueAMD64(v *Value, config *Config) bool {
-	switch v.Op {
-	case OpAMD64ADDL:
-		return rewriteValueAMD64_OpAMD64ADDL(v, config)
-	case OpAMD64ADDLconst:
-		return rewriteValueAMD64_OpAMD64ADDLconst(v, config)
-	case OpAMD64ADDQ:
-		return rewriteValueAMD64_OpAMD64ADDQ(v, config)
-	case OpAMD64ADDQconst:
-		return rewriteValueAMD64_OpAMD64ADDQconst(v, config)
-	case OpAMD64ANDL:
-		return rewriteValueAMD64_OpAMD64ANDL(v, config)
-	case OpAMD64ANDLconst:
-		return rewriteValueAMD64_OpAMD64ANDLconst(v, config)
-	case OpAMD64ANDQ:
-		return rewriteValueAMD64_OpAMD64ANDQ(v, config)
-	case OpAMD64ANDQconst:
-		return rewriteValueAMD64_OpAMD64ANDQconst(v, config)
-	case OpAMD64CMPB:
-		return rewriteValueAMD64_OpAMD64CMPB(v, config)
-	case OpAMD64CMPBconst:
-		return rewriteValueAMD64_OpAMD64CMPBconst(v, config)
-	case OpAMD64CMPL:
-		return rewriteValueAMD64_OpAMD64CMPL(v, config)
-	case OpAMD64CMPLconst:
-		return rewriteValueAMD64_OpAMD64CMPLconst(v, config)
-	case OpAMD64CMPQ:
-		return rewriteValueAMD64_OpAMD64CMPQ(v, config)
-	case OpAMD64CMPQconst:
-		return rewriteValueAMD64_OpAMD64CMPQconst(v, config)
-	case OpAMD64CMPW:
-		return rewriteValueAMD64_OpAMD64CMPW(v, config)
-	case OpAMD64CMPWconst:
-		return rewriteValueAMD64_OpAMD64CMPWconst(v, config)
-	case OpAMD64CMPXCHGLlock:
-		return rewriteValueAMD64_OpAMD64CMPXCHGLlock(v, config)
-	case OpAMD64CMPXCHGQlock:
-		return rewriteValueAMD64_OpAMD64CMPXCHGQlock(v, config)
-	case OpAMD64LEAL:
-		return rewriteValueAMD64_OpAMD64LEAL(v, config)
-	case OpAMD64LEAQ:
-		return rewriteValueAMD64_OpAMD64LEAQ(v, config)
-	case OpAMD64LEAQ1:
-		return rewriteValueAMD64_OpAMD64LEAQ1(v, config)
-	case OpAMD64LEAQ2:
-		return rewriteValueAMD64_OpAMD64LEAQ2(v, config)
-	case OpAMD64LEAQ4:
-		return rewriteValueAMD64_OpAMD64LEAQ4(v, config)
-	case OpAMD64LEAQ8:
-		return rewriteValueAMD64_OpAMD64LEAQ8(v, config)
-	case OpAMD64MOVBQSX:
-		return rewriteValueAMD64_OpAMD64MOVBQSX(v, config)
-	case OpAMD64MOVBQSXload:
-		return rewriteValueAMD64_OpAMD64MOVBQSXload(v, config)
-	case OpAMD64MOVBQZX:
-		return rewriteValueAMD64_OpAMD64MOVBQZX(v, config)
-	case OpAMD64MOVBload:
-		return rewriteValueAMD64_OpAMD64MOVBload(v, config)
-	case OpAMD64MOVBloadidx1:
-		return rewriteValueAMD64_OpAMD64MOVBloadidx1(v, config)
-	case OpAMD64MOVBstore:
-		return rewriteValueAMD64_OpAMD64MOVBstore(v, config)
-	case OpAMD64MOVBstoreconst:
-		return rewriteValueAMD64_OpAMD64MOVBstoreconst(v, config)
-	case OpAMD64MOVBstoreconstidx1:
-		return rewriteValueAMD64_OpAMD64MOVBstoreconstidx1(v, config)
-	case OpAMD64MOVBstoreidx1:
-		return rewriteValueAMD64_OpAMD64MOVBstoreidx1(v, config)
-	case OpAMD64MOVLQSX:
-		return rewriteValueAMD64_OpAMD64MOVLQSX(v, config)
-	case OpAMD64MOVLQSXload:
-		return rewriteValueAMD64_OpAMD64MOVLQSXload(v, config)
-	case OpAMD64MOVLQZX:
-		return rewriteValueAMD64_OpAMD64MOVLQZX(v, config)
-	case OpAMD64MOVLatomicload:
-		return rewriteValueAMD64_OpAMD64MOVLatomicload(v, config)
-	case OpAMD64MOVLload:
-		return rewriteValueAMD64_OpAMD64MOVLload(v, config)
-	case OpAMD64MOVLloadidx1:
-		return rewriteValueAMD64_OpAMD64MOVLloadidx1(v, config)
-	case OpAMD64MOVLloadidx4:
-		return rewriteValueAMD64_OpAMD64MOVLloadidx4(v, config)
-	case OpAMD64MOVLstore:
-		return rewriteValueAMD64_OpAMD64MOVLstore(v, config)
-	case OpAMD64MOVLstoreconst:
-		return rewriteValueAMD64_OpAMD64MOVLstoreconst(v, config)
-	case OpAMD64MOVLstoreconstidx1:
-		return rewriteValueAMD64_OpAMD64MOVLstoreconstidx1(v, config)
-	case OpAMD64MOVLstoreconstidx4:
-		return rewriteValueAMD64_OpAMD64MOVLstoreconstidx4(v, config)
-	case OpAMD64MOVLstoreidx1:
-		return rewriteValueAMD64_OpAMD64MOVLstoreidx1(v, config)
-	case OpAMD64MOVLstoreidx4:
-		return rewriteValueAMD64_OpAMD64MOVLstoreidx4(v, config)
-	case OpAMD64MOVOload:
-		return rewriteValueAMD64_OpAMD64MOVOload(v, config)
-	case OpAMD64MOVOstore:
-		return rewriteValueAMD64_OpAMD64MOVOstore(v, config)
-	case OpAMD64MOVQatomicload:
-		return rewriteValueAMD64_OpAMD64MOVQatomicload(v, config)
-	case OpAMD64MOVQload:
-		return rewriteValueAMD64_OpAMD64MOVQload(v, config)
-	case OpAMD64MOVQloadidx1:
-		return rewriteValueAMD64_OpAMD64MOVQloadidx1(v, config)
-	case OpAMD64MOVQloadidx8:
-		return rewriteValueAMD64_OpAMD64MOVQloadidx8(v, config)
-	case OpAMD64MOVQstore:
-		return rewriteValueAMD64_OpAMD64MOVQstore(v, config)
-	case OpAMD64MOVQstoreconst:
-		return rewriteValueAMD64_OpAMD64MOVQstoreconst(v, config)
-	case OpAMD64MOVQstoreconstidx1:
-		return rewriteValueAMD64_OpAMD64MOVQstoreconstidx1(v, config)
-	case OpAMD64MOVQstoreconstidx8:
-		return rewriteValueAMD64_OpAMD64MOVQstoreconstidx8(v, config)
-	case OpAMD64MOVQstoreidx1:
-		return rewriteValueAMD64_OpAMD64MOVQstoreidx1(v, config)
-	case OpAMD64MOVQstoreidx8:
-		return rewriteValueAMD64_OpAMD64MOVQstoreidx8(v, config)
-	case OpAMD64MOVSDload:
-		return rewriteValueAMD64_OpAMD64MOVSDload(v, config)
-	case OpAMD64MOVSDloadidx1:
-		return rewriteValueAMD64_OpAMD64MOVSDloadidx1(v, config)
-	case OpAMD64MOVSDloadidx8:
-		return rewriteValueAMD64_OpAMD64MOVSDloadidx8(v, config)
-	case OpAMD64MOVSDstore:
-		return rewriteValueAMD64_OpAMD64MOVSDstore(v, config)
-	case OpAMD64MOVSDstoreidx1:
-		return rewriteValueAMD64_OpAMD64MOVSDstoreidx1(v, config)
-	case OpAMD64MOVSDstoreidx8:
-		return rewriteValueAMD64_OpAMD64MOVSDstoreidx8(v, config)
-	case OpAMD64MOVSSload:
-		return rewriteValueAMD64_OpAMD64MOVSSload(v, config)
-	case OpAMD64MOVSSloadidx1:
-		return rewriteValueAMD64_OpAMD64MOVSSloadidx1(v, config)
-	case OpAMD64MOVSSloadidx4:
-		return rewriteValueAMD64_OpAMD64MOVSSloadidx4(v, config)
-	case OpAMD64MOVSSstore:
-		return rewriteValueAMD64_OpAMD64MOVSSstore(v, config)
-	case OpAMD64MOVSSstoreidx1:
-		return rewriteValueAMD64_OpAMD64MOVSSstoreidx1(v, config)
-	case OpAMD64MOVSSstoreidx4:
-		return rewriteValueAMD64_OpAMD64MOVSSstoreidx4(v, config)
-	case OpAMD64MOVWQSX:
-		return rewriteValueAMD64_OpAMD64MOVWQSX(v, config)
-	case OpAMD64MOVWQSXload:
-		return rewriteValueAMD64_OpAMD64MOVWQSXload(v, config)
-	case OpAMD64MOVWQZX:
-		return rewriteValueAMD64_OpAMD64MOVWQZX(v, config)
-	case OpAMD64MOVWload:
-		return rewriteValueAMD64_OpAMD64MOVWload(v, config)
-	case OpAMD64MOVWloadidx1:
-		return rewriteValueAMD64_OpAMD64MOVWloadidx1(v, config)
-	case OpAMD64MOVWloadidx2:
-		return rewriteValueAMD64_OpAMD64MOVWloadidx2(v, config)
-	case OpAMD64MOVWstore:
-		return rewriteValueAMD64_OpAMD64MOVWstore(v, config)
-	case OpAMD64MOVWstoreconst:
-		return rewriteValueAMD64_OpAMD64MOVWstoreconst(v, config)
-	case OpAMD64MOVWstoreconstidx1:
-		return rewriteValueAMD64_OpAMD64MOVWstoreconstidx1(v, config)
-	case OpAMD64MOVWstoreconstidx2:
-		return rewriteValueAMD64_OpAMD64MOVWstoreconstidx2(v, config)
-	case OpAMD64MOVWstoreidx1:
-		return rewriteValueAMD64_OpAMD64MOVWstoreidx1(v, config)
-	case OpAMD64MOVWstoreidx2:
-		return rewriteValueAMD64_OpAMD64MOVWstoreidx2(v, config)
-	case OpAMD64MULL:
-		return rewriteValueAMD64_OpAMD64MULL(v, config)
-	case OpAMD64MULLconst:
-		return rewriteValueAMD64_OpAMD64MULLconst(v, config)
-	case OpAMD64MULQ:
-		return rewriteValueAMD64_OpAMD64MULQ(v, config)
-	case OpAMD64MULQconst:
-		return rewriteValueAMD64_OpAMD64MULQconst(v, config)
-	case OpAMD64NEGL:
-		return rewriteValueAMD64_OpAMD64NEGL(v, config)
-	case OpAMD64NEGQ:
-		return rewriteValueAMD64_OpAMD64NEGQ(v, config)
-	case OpAMD64NOTL:
-		return rewriteValueAMD64_OpAMD64NOTL(v, config)
-	case OpAMD64NOTQ:
-		return rewriteValueAMD64_OpAMD64NOTQ(v, config)
-	case OpAMD64ORL:
-		return rewriteValueAMD64_OpAMD64ORL(v, config)
-	case OpAMD64ORLconst:
-		return rewriteValueAMD64_OpAMD64ORLconst(v, config)
-	case OpAMD64ORQ:
-		return rewriteValueAMD64_OpAMD64ORQ(v, config)
-	case OpAMD64ORQconst:
-		return rewriteValueAMD64_OpAMD64ORQconst(v, config)
-	case OpAMD64ROLBconst:
-		return rewriteValueAMD64_OpAMD64ROLBconst(v, config)
-	case OpAMD64ROLLconst:
-		return rewriteValueAMD64_OpAMD64ROLLconst(v, config)
-	case OpAMD64ROLQconst:
-		return rewriteValueAMD64_OpAMD64ROLQconst(v, config)
-	case OpAMD64ROLWconst:
-		return rewriteValueAMD64_OpAMD64ROLWconst(v, config)
-	case OpAMD64SARB:
-		return rewriteValueAMD64_OpAMD64SARB(v, config)
-	case OpAMD64SARBconst:
-		return rewriteValueAMD64_OpAMD64SARBconst(v, config)
-	case OpAMD64SARL:
-		return rewriteValueAMD64_OpAMD64SARL(v, config)
-	case OpAMD64SARLconst:
-		return rewriteValueAMD64_OpAMD64SARLconst(v, config)
-	case OpAMD64SARQ:
-		return rewriteValueAMD64_OpAMD64SARQ(v, config)
-	case OpAMD64SARQconst:
-		return rewriteValueAMD64_OpAMD64SARQconst(v, config)
-	case OpAMD64SARW:
-		return rewriteValueAMD64_OpAMD64SARW(v, config)
-	case OpAMD64SARWconst:
-		return rewriteValueAMD64_OpAMD64SARWconst(v, config)
-	case OpAMD64SBBLcarrymask:
-		return rewriteValueAMD64_OpAMD64SBBLcarrymask(v, config)
-	case OpAMD64SBBQcarrymask:
-		return rewriteValueAMD64_OpAMD64SBBQcarrymask(v, config)
-	case OpAMD64SETA:
-		return rewriteValueAMD64_OpAMD64SETA(v, config)
-	case OpAMD64SETAE:
-		return rewriteValueAMD64_OpAMD64SETAE(v, config)
-	case OpAMD64SETB:
-		return rewriteValueAMD64_OpAMD64SETB(v, config)
-	case OpAMD64SETBE:
-		return rewriteValueAMD64_OpAMD64SETBE(v, config)
-	case OpAMD64SETEQ:
-		return rewriteValueAMD64_OpAMD64SETEQ(v, config)
-	case OpAMD64SETG:
-		return rewriteValueAMD64_OpAMD64SETG(v, config)
-	case OpAMD64SETGE:
-		return rewriteValueAMD64_OpAMD64SETGE(v, config)
-	case OpAMD64SETL:
-		return rewriteValueAMD64_OpAMD64SETL(v, config)
-	case OpAMD64SETLE:
-		return rewriteValueAMD64_OpAMD64SETLE(v, config)
-	case OpAMD64SETNE:
-		return rewriteValueAMD64_OpAMD64SETNE(v, config)
-	case OpAMD64SHLL:
-		return rewriteValueAMD64_OpAMD64SHLL(v, config)
-	case OpAMD64SHLQ:
-		return rewriteValueAMD64_OpAMD64SHLQ(v, config)
-	case OpAMD64SHRB:
-		return rewriteValueAMD64_OpAMD64SHRB(v, config)
-	case OpAMD64SHRL:
-		return rewriteValueAMD64_OpAMD64SHRL(v, config)
-	case OpAMD64SHRQ:
-		return rewriteValueAMD64_OpAMD64SHRQ(v, config)
-	case OpAMD64SHRW:
-		return rewriteValueAMD64_OpAMD64SHRW(v, config)
-	case OpAMD64SUBL:
-		return rewriteValueAMD64_OpAMD64SUBL(v, config)
-	case OpAMD64SUBLconst:
-		return rewriteValueAMD64_OpAMD64SUBLconst(v, config)
-	case OpAMD64SUBQ:
-		return rewriteValueAMD64_OpAMD64SUBQ(v, config)
-	case OpAMD64SUBQconst:
-		return rewriteValueAMD64_OpAMD64SUBQconst(v, config)
-	case OpAMD64XADDLlock:
-		return rewriteValueAMD64_OpAMD64XADDLlock(v, config)
-	case OpAMD64XADDQlock:
-		return rewriteValueAMD64_OpAMD64XADDQlock(v, config)
-	case OpAMD64XCHGL:
-		return rewriteValueAMD64_OpAMD64XCHGL(v, config)
-	case OpAMD64XCHGQ:
-		return rewriteValueAMD64_OpAMD64XCHGQ(v, config)
-	case OpAMD64XORL:
-		return rewriteValueAMD64_OpAMD64XORL(v, config)
-	case OpAMD64XORLconst:
-		return rewriteValueAMD64_OpAMD64XORLconst(v, config)
-	case OpAMD64XORQ:
-		return rewriteValueAMD64_OpAMD64XORQ(v, config)
-	case OpAMD64XORQconst:
-		return rewriteValueAMD64_OpAMD64XORQconst(v, config)
-	case OpAdd16:
-		return rewriteValueAMD64_OpAdd16(v, config)
-	case OpAdd32:
-		return rewriteValueAMD64_OpAdd32(v, config)
-	case OpAdd32F:
-		return rewriteValueAMD64_OpAdd32F(v, config)
-	case OpAdd64:
-		return rewriteValueAMD64_OpAdd64(v, config)
-	case OpAdd64F:
-		return rewriteValueAMD64_OpAdd64F(v, config)
-	case OpAdd8:
-		return rewriteValueAMD64_OpAdd8(v, config)
-	case OpAddPtr:
-		return rewriteValueAMD64_OpAddPtr(v, config)
-	case OpAddr:
-		return rewriteValueAMD64_OpAddr(v, config)
-	case OpAnd16:
-		return rewriteValueAMD64_OpAnd16(v, config)
-	case OpAnd32:
-		return rewriteValueAMD64_OpAnd32(v, config)
-	case OpAnd64:
-		return rewriteValueAMD64_OpAnd64(v, config)
-	case OpAnd8:
-		return rewriteValueAMD64_OpAnd8(v, config)
-	case OpAndB:
-		return rewriteValueAMD64_OpAndB(v, config)
-	case OpAtomicAdd32:
-		return rewriteValueAMD64_OpAtomicAdd32(v, config)
-	case OpAtomicAdd64:
-		return rewriteValueAMD64_OpAtomicAdd64(v, config)
-	case OpAtomicAnd8:
-		return rewriteValueAMD64_OpAtomicAnd8(v, config)
-	case OpAtomicCompareAndSwap32:
-		return rewriteValueAMD64_OpAtomicCompareAndSwap32(v, config)
-	case OpAtomicCompareAndSwap64:
-		return rewriteValueAMD64_OpAtomicCompareAndSwap64(v, config)
-	case OpAtomicExchange32:
-		return rewriteValueAMD64_OpAtomicExchange32(v, config)
-	case OpAtomicExchange64:
-		return rewriteValueAMD64_OpAtomicExchange64(v, config)
-	case OpAtomicLoad32:
-		return rewriteValueAMD64_OpAtomicLoad32(v, config)
-	case OpAtomicLoad64:
-		return rewriteValueAMD64_OpAtomicLoad64(v, config)
-	case OpAtomicLoadPtr:
-		return rewriteValueAMD64_OpAtomicLoadPtr(v, config)
-	case OpAtomicOr8:
-		return rewriteValueAMD64_OpAtomicOr8(v, config)
-	case OpAtomicStore32:
-		return rewriteValueAMD64_OpAtomicStore32(v, config)
-	case OpAtomicStore64:
-		return rewriteValueAMD64_OpAtomicStore64(v, config)
-	case OpAtomicStorePtrNoWB:
-		return rewriteValueAMD64_OpAtomicStorePtrNoWB(v, config)
-	case OpAvg64u:
-		return rewriteValueAMD64_OpAvg64u(v, config)
-	case OpBswap32:
-		return rewriteValueAMD64_OpBswap32(v, config)
-	case OpBswap64:
-		return rewriteValueAMD64_OpBswap64(v, config)
-	case OpClosureCall:
-		return rewriteValueAMD64_OpClosureCall(v, config)
-	case OpCom16:
-		return rewriteValueAMD64_OpCom16(v, config)
-	case OpCom32:
-		return rewriteValueAMD64_OpCom32(v, config)
-	case OpCom64:
-		return rewriteValueAMD64_OpCom64(v, config)
-	case OpCom8:
-		return rewriteValueAMD64_OpCom8(v, config)
-	case OpConst16:
-		return rewriteValueAMD64_OpConst16(v, config)
-	case OpConst32:
-		return rewriteValueAMD64_OpConst32(v, config)
-	case OpConst32F:
-		return rewriteValueAMD64_OpConst32F(v, config)
-	case OpConst64:
-		return rewriteValueAMD64_OpConst64(v, config)
-	case OpConst64F:
-		return rewriteValueAMD64_OpConst64F(v, config)
-	case OpConst8:
-		return rewriteValueAMD64_OpConst8(v, config)
-	case OpConstBool:
-		return rewriteValueAMD64_OpConstBool(v, config)
-	case OpConstNil:
-		return rewriteValueAMD64_OpConstNil(v, config)
-	case OpConvert:
-		return rewriteValueAMD64_OpConvert(v, config)
-	case OpCtz32:
-		return rewriteValueAMD64_OpCtz32(v, config)
-	case OpCtz64:
-		return rewriteValueAMD64_OpCtz64(v, config)
-	case OpCvt32Fto32:
-		return rewriteValueAMD64_OpCvt32Fto32(v, config)
-	case OpCvt32Fto64:
-		return rewriteValueAMD64_OpCvt32Fto64(v, config)
-	case OpCvt32Fto64F:
-		return rewriteValueAMD64_OpCvt32Fto64F(v, config)
-	case OpCvt32to32F:
-		return rewriteValueAMD64_OpCvt32to32F(v, config)
-	case OpCvt32to64F:
-		return rewriteValueAMD64_OpCvt32to64F(v, config)
-	case OpCvt64Fto32:
-		return rewriteValueAMD64_OpCvt64Fto32(v, config)
-	case OpCvt64Fto32F:
-		return rewriteValueAMD64_OpCvt64Fto32F(v, config)
-	case OpCvt64Fto64:
-		return rewriteValueAMD64_OpCvt64Fto64(v, config)
-	case OpCvt64to32F:
-		return rewriteValueAMD64_OpCvt64to32F(v, config)
-	case OpCvt64to64F:
-		return rewriteValueAMD64_OpCvt64to64F(v, config)
-	case OpDeferCall:
-		return rewriteValueAMD64_OpDeferCall(v, config)
-	case OpDiv16:
-		return rewriteValueAMD64_OpDiv16(v, config)
-	case OpDiv16u:
-		return rewriteValueAMD64_OpDiv16u(v, config)
-	case OpDiv32:
-		return rewriteValueAMD64_OpDiv32(v, config)
-	case OpDiv32F:
-		return rewriteValueAMD64_OpDiv32F(v, config)
-	case OpDiv32u:
-		return rewriteValueAMD64_OpDiv32u(v, config)
-	case OpDiv64:
-		return rewriteValueAMD64_OpDiv64(v, config)
-	case OpDiv64F:
-		return rewriteValueAMD64_OpDiv64F(v, config)
-	case OpDiv64u:
-		return rewriteValueAMD64_OpDiv64u(v, config)
-	case OpDiv8:
-		return rewriteValueAMD64_OpDiv8(v, config)
-	case OpDiv8u:
-		return rewriteValueAMD64_OpDiv8u(v, config)
-	case OpEq16:
-		return rewriteValueAMD64_OpEq16(v, config)
-	case OpEq32:
-		return rewriteValueAMD64_OpEq32(v, config)
-	case OpEq32F:
-		return rewriteValueAMD64_OpEq32F(v, config)
-	case OpEq64:
-		return rewriteValueAMD64_OpEq64(v, config)
-	case OpEq64F:
-		return rewriteValueAMD64_OpEq64F(v, config)
-	case OpEq8:
-		return rewriteValueAMD64_OpEq8(v, config)
-	case OpEqB:
-		return rewriteValueAMD64_OpEqB(v, config)
-	case OpEqPtr:
-		return rewriteValueAMD64_OpEqPtr(v, config)
-	case OpGeq16:
-		return rewriteValueAMD64_OpGeq16(v, config)
-	case OpGeq16U:
-		return rewriteValueAMD64_OpGeq16U(v, config)
-	case OpGeq32:
-		return rewriteValueAMD64_OpGeq32(v, config)
-	case OpGeq32F:
-		return rewriteValueAMD64_OpGeq32F(v, config)
-	case OpGeq32U:
-		return rewriteValueAMD64_OpGeq32U(v, config)
-	case OpGeq64:
-		return rewriteValueAMD64_OpGeq64(v, config)
-	case OpGeq64F:
-		return rewriteValueAMD64_OpGeq64F(v, config)
-	case OpGeq64U:
-		return rewriteValueAMD64_OpGeq64U(v, config)
-	case OpGeq8:
-		return rewriteValueAMD64_OpGeq8(v, config)
-	case OpGeq8U:
-		return rewriteValueAMD64_OpGeq8U(v, config)
-	case OpGetClosurePtr:
-		return rewriteValueAMD64_OpGetClosurePtr(v, config)
-	case OpGetG:
-		return rewriteValueAMD64_OpGetG(v, config)
-	case OpGoCall:
-		return rewriteValueAMD64_OpGoCall(v, config)
-	case OpGreater16:
-		return rewriteValueAMD64_OpGreater16(v, config)
-	case OpGreater16U:
-		return rewriteValueAMD64_OpGreater16U(v, config)
-	case OpGreater32:
-		return rewriteValueAMD64_OpGreater32(v, config)
-	case OpGreater32F:
-		return rewriteValueAMD64_OpGreater32F(v, config)
-	case OpGreater32U:
-		return rewriteValueAMD64_OpGreater32U(v, config)
-	case OpGreater64:
-		return rewriteValueAMD64_OpGreater64(v, config)
-	case OpGreater64F:
-		return rewriteValueAMD64_OpGreater64F(v, config)
-	case OpGreater64U:
-		return rewriteValueAMD64_OpGreater64U(v, config)
-	case OpGreater8:
-		return rewriteValueAMD64_OpGreater8(v, config)
-	case OpGreater8U:
-		return rewriteValueAMD64_OpGreater8U(v, config)
-	case OpHmul16:
-		return rewriteValueAMD64_OpHmul16(v, config)
-	case OpHmul16u:
-		return rewriteValueAMD64_OpHmul16u(v, config)
-	case OpHmul32:
-		return rewriteValueAMD64_OpHmul32(v, config)
-	case OpHmul32u:
-		return rewriteValueAMD64_OpHmul32u(v, config)
-	case OpHmul64:
-		return rewriteValueAMD64_OpHmul64(v, config)
-	case OpHmul64u:
-		return rewriteValueAMD64_OpHmul64u(v, config)
-	case OpHmul8:
-		return rewriteValueAMD64_OpHmul8(v, config)
-	case OpHmul8u:
-		return rewriteValueAMD64_OpHmul8u(v, config)
-	case OpInt64Hi:
-		return rewriteValueAMD64_OpInt64Hi(v, config)
-	case OpInterCall:
-		return rewriteValueAMD64_OpInterCall(v, config)
-	case OpIsInBounds:
-		return rewriteValueAMD64_OpIsInBounds(v, config)
-	case OpIsNonNil:
-		return rewriteValueAMD64_OpIsNonNil(v, config)
-	case OpIsSliceInBounds:
-		return rewriteValueAMD64_OpIsSliceInBounds(v, config)
-	case OpLeq16:
-		return rewriteValueAMD64_OpLeq16(v, config)
-	case OpLeq16U:
-		return rewriteValueAMD64_OpLeq16U(v, config)
-	case OpLeq32:
-		return rewriteValueAMD64_OpLeq32(v, config)
-	case OpLeq32F:
-		return rewriteValueAMD64_OpLeq32F(v, config)
-	case OpLeq32U:
-		return rewriteValueAMD64_OpLeq32U(v, config)
-	case OpLeq64:
-		return rewriteValueAMD64_OpLeq64(v, config)
-	case OpLeq64F:
-		return rewriteValueAMD64_OpLeq64F(v, config)
-	case OpLeq64U:
-		return rewriteValueAMD64_OpLeq64U(v, config)
-	case OpLeq8:
-		return rewriteValueAMD64_OpLeq8(v, config)
-	case OpLeq8U:
-		return rewriteValueAMD64_OpLeq8U(v, config)
-	case OpLess16:
-		return rewriteValueAMD64_OpLess16(v, config)
-	case OpLess16U:
-		return rewriteValueAMD64_OpLess16U(v, config)
-	case OpLess32:
-		return rewriteValueAMD64_OpLess32(v, config)
-	case OpLess32F:
-		return rewriteValueAMD64_OpLess32F(v, config)
-	case OpLess32U:
-		return rewriteValueAMD64_OpLess32U(v, config)
-	case OpLess64:
-		return rewriteValueAMD64_OpLess64(v, config)
-	case OpLess64F:
-		return rewriteValueAMD64_OpLess64F(v, config)
-	case OpLess64U:
-		return rewriteValueAMD64_OpLess64U(v, config)
-	case OpLess8:
-		return rewriteValueAMD64_OpLess8(v, config)
-	case OpLess8U:
-		return rewriteValueAMD64_OpLess8U(v, config)
-	case OpLoad:
-		return rewriteValueAMD64_OpLoad(v, config)
-	case OpLrot16:
-		return rewriteValueAMD64_OpLrot16(v, config)
-	case OpLrot32:
-		return rewriteValueAMD64_OpLrot32(v, config)
-	case OpLrot64:
-		return rewriteValueAMD64_OpLrot64(v, config)
-	case OpLrot8:
-		return rewriteValueAMD64_OpLrot8(v, config)
-	case OpLsh16x16:
-		return rewriteValueAMD64_OpLsh16x16(v, config)
-	case OpLsh16x32:
-		return rewriteValueAMD64_OpLsh16x32(v, config)
-	case OpLsh16x64:
-		return rewriteValueAMD64_OpLsh16x64(v, config)
-	case OpLsh16x8:
-		return rewriteValueAMD64_OpLsh16x8(v, config)
-	case OpLsh32x16:
-		return rewriteValueAMD64_OpLsh32x16(v, config)
-	case OpLsh32x32:
-		return rewriteValueAMD64_OpLsh32x32(v, config)
-	case OpLsh32x64:
-		return rewriteValueAMD64_OpLsh32x64(v, config)
-	case OpLsh32x8:
-		return rewriteValueAMD64_OpLsh32x8(v, config)
-	case OpLsh64x16:
-		return rewriteValueAMD64_OpLsh64x16(v, config)
-	case OpLsh64x32:
-		return rewriteValueAMD64_OpLsh64x32(v, config)
-	case OpLsh64x64:
-		return rewriteValueAMD64_OpLsh64x64(v, config)
-	case OpLsh64x8:
-		return rewriteValueAMD64_OpLsh64x8(v, config)
-	case OpLsh8x16:
-		return rewriteValueAMD64_OpLsh8x16(v, config)
-	case OpLsh8x32:
-		return rewriteValueAMD64_OpLsh8x32(v, config)
-	case OpLsh8x64:
-		return rewriteValueAMD64_OpLsh8x64(v, config)
-	case OpLsh8x8:
-		return rewriteValueAMD64_OpLsh8x8(v, config)
-	case OpMod16:
-		return rewriteValueAMD64_OpMod16(v, config)
-	case OpMod16u:
-		return rewriteValueAMD64_OpMod16u(v, config)
-	case OpMod32:
-		return rewriteValueAMD64_OpMod32(v, config)
-	case OpMod32u:
-		return rewriteValueAMD64_OpMod32u(v, config)
-	case OpMod64:
-		return rewriteValueAMD64_OpMod64(v, config)
-	case OpMod64u:
-		return rewriteValueAMD64_OpMod64u(v, config)
-	case OpMod8:
-		return rewriteValueAMD64_OpMod8(v, config)
-	case OpMod8u:
-		return rewriteValueAMD64_OpMod8u(v, config)
-	case OpMove:
-		return rewriteValueAMD64_OpMove(v, config)
-	case OpMul16:
-		return rewriteValueAMD64_OpMul16(v, config)
-	case OpMul32:
-		return rewriteValueAMD64_OpMul32(v, config)
-	case OpMul32F:
-		return rewriteValueAMD64_OpMul32F(v, config)
-	case OpMul64:
-		return rewriteValueAMD64_OpMul64(v, config)
-	case OpMul64F:
-		return rewriteValueAMD64_OpMul64F(v, config)
-	case OpMul8:
-		return rewriteValueAMD64_OpMul8(v, config)
-	case OpNeg16:
-		return rewriteValueAMD64_OpNeg16(v, config)
-	case OpNeg32:
-		return rewriteValueAMD64_OpNeg32(v, config)
-	case OpNeg32F:
-		return rewriteValueAMD64_OpNeg32F(v, config)
-	case OpNeg64:
-		return rewriteValueAMD64_OpNeg64(v, config)
-	case OpNeg64F:
-		return rewriteValueAMD64_OpNeg64F(v, config)
-	case OpNeg8:
-		return rewriteValueAMD64_OpNeg8(v, config)
-	case OpNeq16:
-		return rewriteValueAMD64_OpNeq16(v, config)
-	case OpNeq32:
-		return rewriteValueAMD64_OpNeq32(v, config)
-	case OpNeq32F:
-		return rewriteValueAMD64_OpNeq32F(v, config)
-	case OpNeq64:
-		return rewriteValueAMD64_OpNeq64(v, config)
-	case OpNeq64F:
-		return rewriteValueAMD64_OpNeq64F(v, config)
-	case OpNeq8:
-		return rewriteValueAMD64_OpNeq8(v, config)
-	case OpNeqB:
-		return rewriteValueAMD64_OpNeqB(v, config)
-	case OpNeqPtr:
-		return rewriteValueAMD64_OpNeqPtr(v, config)
-	case OpNilCheck:
-		return rewriteValueAMD64_OpNilCheck(v, config)
-	case OpNot:
-		return rewriteValueAMD64_OpNot(v, config)
-	case OpOffPtr:
-		return rewriteValueAMD64_OpOffPtr(v, config)
-	case OpOr16:
-		return rewriteValueAMD64_OpOr16(v, config)
-	case OpOr32:
-		return rewriteValueAMD64_OpOr32(v, config)
-	case OpOr64:
-		return rewriteValueAMD64_OpOr64(v, config)
-	case OpOr8:
-		return rewriteValueAMD64_OpOr8(v, config)
-	case OpOrB:
-		return rewriteValueAMD64_OpOrB(v, config)
-	case OpRsh16Ux16:
-		return rewriteValueAMD64_OpRsh16Ux16(v, config)
-	case OpRsh16Ux32:
-		return rewriteValueAMD64_OpRsh16Ux32(v, config)
-	case OpRsh16Ux64:
-		return rewriteValueAMD64_OpRsh16Ux64(v, config)
-	case OpRsh16Ux8:
-		return rewriteValueAMD64_OpRsh16Ux8(v, config)
-	case OpRsh16x16:
-		return rewriteValueAMD64_OpRsh16x16(v, config)
-	case OpRsh16x32:
-		return rewriteValueAMD64_OpRsh16x32(v, config)
-	case OpRsh16x64:
-		return rewriteValueAMD64_OpRsh16x64(v, config)
-	case OpRsh16x8:
-		return rewriteValueAMD64_OpRsh16x8(v, config)
-	case OpRsh32Ux16:
-		return rewriteValueAMD64_OpRsh32Ux16(v, config)
-	case OpRsh32Ux32:
-		return rewriteValueAMD64_OpRsh32Ux32(v, config)
-	case OpRsh32Ux64:
-		return rewriteValueAMD64_OpRsh32Ux64(v, config)
-	case OpRsh32Ux8:
-		return rewriteValueAMD64_OpRsh32Ux8(v, config)
-	case OpRsh32x16:
-		return rewriteValueAMD64_OpRsh32x16(v, config)
-	case OpRsh32x32:
-		return rewriteValueAMD64_OpRsh32x32(v, config)
-	case OpRsh32x64:
-		return rewriteValueAMD64_OpRsh32x64(v, config)
-	case OpRsh32x8:
-		return rewriteValueAMD64_OpRsh32x8(v, config)
-	case OpRsh64Ux16:
-		return rewriteValueAMD64_OpRsh64Ux16(v, config)
-	case OpRsh64Ux32:
-		return rewriteValueAMD64_OpRsh64Ux32(v, config)
-	case OpRsh64Ux64:
-		return rewriteValueAMD64_OpRsh64Ux64(v, config)
-	case OpRsh64Ux8:
-		return rewriteValueAMD64_OpRsh64Ux8(v, config)
-	case OpRsh64x16:
-		return rewriteValueAMD64_OpRsh64x16(v, config)
-	case OpRsh64x32:
-		return rewriteValueAMD64_OpRsh64x32(v, config)
-	case OpRsh64x64:
-		return rewriteValueAMD64_OpRsh64x64(v, config)
-	case OpRsh64x8:
-		return rewriteValueAMD64_OpRsh64x8(v, config)
-	case OpRsh8Ux16:
-		return rewriteValueAMD64_OpRsh8Ux16(v, config)
-	case OpRsh8Ux32:
-		return rewriteValueAMD64_OpRsh8Ux32(v, config)
-	case OpRsh8Ux64:
-		return rewriteValueAMD64_OpRsh8Ux64(v, config)
-	case OpRsh8Ux8:
-		return rewriteValueAMD64_OpRsh8Ux8(v, config)
-	case OpRsh8x16:
-		return rewriteValueAMD64_OpRsh8x16(v, config)
-	case OpRsh8x32:
-		return rewriteValueAMD64_OpRsh8x32(v, config)
-	case OpRsh8x64:
-		return rewriteValueAMD64_OpRsh8x64(v, config)
-	case OpRsh8x8:
-		return rewriteValueAMD64_OpRsh8x8(v, config)
-	case OpSelect0:
-		return rewriteValueAMD64_OpSelect0(v, config)
-	case OpSelect1:
-		return rewriteValueAMD64_OpSelect1(v, config)
-	case OpSignExt16to32:
-		return rewriteValueAMD64_OpSignExt16to32(v, config)
-	case OpSignExt16to64:
-		return rewriteValueAMD64_OpSignExt16to64(v, config)
-	case OpSignExt32to64:
-		return rewriteValueAMD64_OpSignExt32to64(v, config)
-	case OpSignExt8to16:
-		return rewriteValueAMD64_OpSignExt8to16(v, config)
-	case OpSignExt8to32:
-		return rewriteValueAMD64_OpSignExt8to32(v, config)
-	case OpSignExt8to64:
-		return rewriteValueAMD64_OpSignExt8to64(v, config)
-	case OpSqrt:
-		return rewriteValueAMD64_OpSqrt(v, config)
-	case OpStaticCall:
-		return rewriteValueAMD64_OpStaticCall(v, config)
-	case OpStore:
-		return rewriteValueAMD64_OpStore(v, config)
-	case OpSub16:
-		return rewriteValueAMD64_OpSub16(v, config)
-	case OpSub32:
-		return rewriteValueAMD64_OpSub32(v, config)
-	case OpSub32F:
-		return rewriteValueAMD64_OpSub32F(v, config)
-	case OpSub64:
-		return rewriteValueAMD64_OpSub64(v, config)
-	case OpSub64F:
-		return rewriteValueAMD64_OpSub64F(v, config)
-	case OpSub8:
-		return rewriteValueAMD64_OpSub8(v, config)
-	case OpSubPtr:
-		return rewriteValueAMD64_OpSubPtr(v, config)
-	case OpTrunc16to8:
-		return rewriteValueAMD64_OpTrunc16to8(v, config)
-	case OpTrunc32to16:
-		return rewriteValueAMD64_OpTrunc32to16(v, config)
-	case OpTrunc32to8:
-		return rewriteValueAMD64_OpTrunc32to8(v, config)
-	case OpTrunc64to16:
-		return rewriteValueAMD64_OpTrunc64to16(v, config)
-	case OpTrunc64to32:
-		return rewriteValueAMD64_OpTrunc64to32(v, config)
-	case OpTrunc64to8:
-		return rewriteValueAMD64_OpTrunc64to8(v, config)
-	case OpXor16:
-		return rewriteValueAMD64_OpXor16(v, config)
-	case OpXor32:
-		return rewriteValueAMD64_OpXor32(v, config)
-	case OpXor64:
-		return rewriteValueAMD64_OpXor64(v, config)
-	case OpXor8:
-		return rewriteValueAMD64_OpXor8(v, config)
-	case OpZero:
-		return rewriteValueAMD64_OpZero(v, config)
-	case OpZeroExt16to32:
-		return rewriteValueAMD64_OpZeroExt16to32(v, config)
-	case OpZeroExt16to64:
-		return rewriteValueAMD64_OpZeroExt16to64(v, config)
-	case OpZeroExt32to64:
-		return rewriteValueAMD64_OpZeroExt32to64(v, config)
-	case OpZeroExt8to16:
-		return rewriteValueAMD64_OpZeroExt8to16(v, config)
-	case OpZeroExt8to32:
-		return rewriteValueAMD64_OpZeroExt8to32(v, config)
-	case OpZeroExt8to64:
-		return rewriteValueAMD64_OpZeroExt8to64(v, config)
+	if v.Op < rewriteTableAMD64Min || v.Op > rewriteTableAMD64Max {
+		return false
 	}
-	return false
+	fn := rewriteTableAMD64[v.Op-rewriteTableAMD64Min]
+	if fn == nil {
+		return false
+	}
+	return fn(v, config)
 }
 func rewriteValueAMD64_OpAMD64ADDL(v *Value, config *Config) bool {
 	b := v.Block
