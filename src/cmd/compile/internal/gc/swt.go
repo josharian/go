@@ -4,7 +4,10 @@
 
 package gc
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 const (
 	// expression switch
@@ -363,6 +366,41 @@ func casebody(sw *Node, typeswvar *Node) {
 	var def *Node    // defaults
 	br := Nod(OBREAK, nil, nil)
 
+	if typeswvar == nil && sw.Left != nil && sw.Left.Type.IsInteger() {
+		ok := true
+		var lhs *Node
+		for _, n := range sw.List.Slice() {
+			// fmt.Println("case nbody", n.Nbody, n.Nbody.Len())
+			switch s := n.Nbody.Slice(); len(s) {
+			case 0:
+			case 1:
+				if s[0].Op == OAS {
+					if !isStaticCompositeLiteral(s[0].Right) {
+						ok = false
+					}
+					x := s[0].Left
+					if lhs == nil {
+						lhs = x
+					} else if lhs != x {
+						ok = false
+					}
+					// fmt.Println("case body assign", n.Nbody)
+				} else {
+					ok = false
+				}
+			default:
+				ok = false
+				// case 2:
+				// 	if s[0].Op == OAS && s[1].Op == OGOTO {
+				// 		fmt.Println("case body possible ret assign", n.Nbody)
+				// 	}
+			}
+		}
+		if ok {
+			fmt.Println("CANDIDATE", sw.Line())
+		}
+	}
+
 	for i, n := range sw.List.Slice() {
 		setlineno(n)
 		if n.Op != OXCASE {
@@ -389,7 +427,7 @@ func casebody(sw *Node, typeswvar *Node) {
 			cas = append(cas, n)
 		default:
 			// Expand multi-valued cases and detect ranges of integer cases.
-			if typeswvar != nil || sw.Left.Type.IsInterface() || !n.List.First().Type.IsInteger() || n.List.Len() < integerRangeMin {
+			if typeswvar != nil || sw.Left == nil || !sw.Left.Type.IsInteger() || n.List.Len() < integerRangeMin {
 				// Can't use integer ranges. Expand each case into a separate node.
 				for _, n1 := range n.List.Slice() {
 					cas = append(cas, Nod(OCASE, n1, jmp))
