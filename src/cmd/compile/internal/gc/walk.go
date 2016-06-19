@@ -1558,18 +1558,18 @@ opswitch:
 		if isStaticCompositeLiteral(n) {
 			// n can be directly represented in the read-only data section.
 			// Make direct reference to the static data. See issue 12841.
-			vstat := staticname(n.Type, 0)
+			vstat := staticname(n.Type, staticReadonly)
 			if n.Op == OSTRUCTLIT {
-				structlit(0, 1, n, vstat, init)
+				structlit(staticReadonly, 1, n, vstat, init)
 			} else {
-				arraylit(0, 1, n, vstat, init)
+				arraylit(staticReadonly, 1, n, vstat, init)
 			}
 			n = vstat
 			n = typecheck(n, Erv)
 			break
 		}
 		var_ := temp(n.Type)
-		anylit(0, n, var_, init)
+		anylit(staticReadonly, n, var_, init)
 		n = var_
 
 	case OSEND:
