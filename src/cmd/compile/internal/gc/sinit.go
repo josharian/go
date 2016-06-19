@@ -314,33 +314,26 @@ func staticcopy(l *Node, r *Node, out *[]*Node) bool {
 
 	case OPTRLIT:
 		switch r.Left.Op {
-		//dump("not static addr", r);
-		default:
-			break
-
+		case OARRAYLIT, OSLICELIT, OSTRUCTLIT, OMAPLIT:
 			// copy pointer
-		case OARRAYLIT, OSTRUCTLIT, OMAPLIT:
 			gdata(l, Nod(OADDR, inittemps[r], nil), int(l.Type.Width))
-
 			return true
 		}
 
-	case OARRAYLIT:
-		if r.Type.IsSlice() {
-			// copy slice
-			a := inittemps[r]
+	case OSLICELIT:
+		// copy slice
+		a := inittemps[r]
 
-			n := *l
-			n.Xoffset = l.Xoffset + int64(Array_array)
-			gdata(&n, Nod(OADDR, a, nil), Widthptr)
-			n.Xoffset = l.Xoffset + int64(Array_nel)
-			gdata(&n, r.Right, Widthint)
-			n.Xoffset = l.Xoffset + int64(Array_cap)
-			gdata(&n, r.Right, Widthint)
-			return true
-		}
-		fallthrough
-	case OSTRUCTLIT:
+		n := *l
+		n.Xoffset = l.Xoffset + int64(Array_array)
+		gdata(&n, Nod(OADDR, a, nil), Widthptr)
+		n.Xoffset = l.Xoffset + int64(Array_nel)
+		gdata(&n, r.Right, Widthint)
+		n.Xoffset = l.Xoffset + int64(Array_cap)
+		gdata(&n, r.Right, Widthint)
+		return true
+
+	case OARRAYLIT, OSTRUCTLIT:
 		p := initplans[r]
 
 		n := *l
@@ -403,7 +396,7 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 
 	case OPTRLIT:
 		switch r.Left.Op {
-		case OARRAYLIT, OMAPLIT, OSTRUCTLIT:
+		case OARRAYLIT, OSLICELIT, OMAPLIT, OSTRUCTLIT:
 			// Init pointer.
 			a := staticname(r.Left.Type, 1)
 
@@ -425,28 +418,26 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 			return true
 		}
 
-	case OARRAYLIT:
+	case OSLICELIT:
 		initplan(r)
-		if r.Type.IsSlice() {
-			// Init slice.
-			bound := r.Right.Int64()
-			ta := typArray(r.Type.Elem(), bound)
-			a := staticname(ta, 1)
-			inittemps[r] = a
-			n := *l
-			n.Xoffset = l.Xoffset + int64(Array_array)
-			gdata(&n, Nod(OADDR, a, nil), Widthptr)
-			n.Xoffset = l.Xoffset + int64(Array_nel)
-			gdata(&n, r.Right, Widthint)
-			n.Xoffset = l.Xoffset + int64(Array_cap)
-			gdata(&n, r.Right, Widthint)
+		// Init slice.
+		bound := r.Right.Int64()
+		ta := typArray(r.Type.Elem(), bound)
+		a := staticname(ta, 1)
+		inittemps[r] = a
+		n := *l
+		n.Xoffset = l.Xoffset + int64(Array_array)
+		gdata(&n, Nod(OADDR, a, nil), Widthptr)
+		n.Xoffset = l.Xoffset + int64(Array_nel)
+		gdata(&n, r.Right, Widthint)
+		n.Xoffset = l.Xoffset + int64(Array_cap)
+		gdata(&n, r.Right, Widthint)
 
-			// Fall through to init underlying array.
-			l = a
-		}
+		// Fall through to init underlying array.
+		l = a
 		fallthrough
 
-	case OSTRUCTLIT:
+	case OARRAYLIT, OSTRUCTLIT:
 		initplan(r)
 
 		p := initplans[r]
@@ -601,12 +592,12 @@ func getdyn(n *Node, top bool) initGenType {
 		}
 		return initDynamic
 
-	case OARRAYLIT:
-		if !top && n.Type.IsSlice() {
+	case OSLICELIT:
+		if !top {
 			return initDynamic
 		}
 
-	case OSTRUCTLIT:
+	case OARRAYLIT, OSTRUCTLIT:
 	}
 
 	var mode initGenType
@@ -623,12 +614,9 @@ func getdyn(n *Node, top bool) initGenType {
 // isStaticCompositeLiteral reports whether n is a compile-time constant.
 func isStaticCompositeLiteral(n *Node) bool {
 	switch n.Op {
-	case OARRAYLIT:
-		if n.Type.IsSlice() {
-			return false
-		}
-		fallthrough
-	case OSTRUCTLIT:
+	case OSLICELIT:
+		return false
+	case OARRAYLIT, OSTRUCTLIT:
 		for _, r := range n.List.Slice() {
 			if r.Op != OKEY {
 				Fatalf("isStaticCompositeLiteral: rhs not OKEY: %v", r)
@@ -674,20 +662,19 @@ func structlit(ctxt int, pass int, n *Node, var_ *Node, init *Nodes) {
 		value := r.Right
 
 		switch value.Op {
-		case OARRAYLIT:
-			if value.Type.IsSlice() {
-				if pass == 1 && ctxt != 0 {
-					a := NodSym(ODOT, var_, index.Sym)
-					slicelit(ctxt, value, a, init)
-				} else if pass == 2 && ctxt == 0 {
-					a := NodSym(ODOT, var_, index.Sym)
-					slicelit(ctxt, value, a, init)
-				} else if pass == 3 {
-					break
-				}
-				continue
+		case OSLICELIT:
+			if pass == 1 && ctxt != 0 {
+				a := NodSym(ODOT, var_, index.Sym)
+				slicelit(ctxt, value, a, init)
+			} else if pass == 2 && ctxt == 0 {
+				a := NodSym(ODOT, var_, index.Sym)
+				slicelit(ctxt, value, a, init)
+			} else if pass == 3 {
+				break
 			}
+			continue
 
+		case OARRAYLIT:
 			a := NodSym(ODOT, var_, index.Sym)
 			arraylit(ctxt, pass, value, a, init)
 			continue
@@ -736,20 +723,19 @@ func arraylit(ctxt int, pass int, n *Node, var_ *Node, init *Nodes) {
 		value := r.Right
 
 		switch value.Op {
-		case OARRAYLIT:
-			if value.Type.IsSlice() {
-				if pass == 1 && ctxt != 0 {
-					a := Nod(OINDEX, var_, index)
-					slicelit(ctxt, value, a, init)
-				} else if pass == 2 && ctxt == 0 {
-					a := Nod(OINDEX, var_, index)
-					slicelit(ctxt, value, a, init)
-				} else if pass == 3 {
-					break
-				}
-				continue
+		case OSLICELIT:
+			if pass == 1 && ctxt != 0 {
+				a := Nod(OINDEX, var_, index)
+				slicelit(ctxt, value, a, init)
+			} else if pass == 2 && ctxt == 0 {
+				a := Nod(OINDEX, var_, index)
+				slicelit(ctxt, value, a, init)
+			} else if pass == 3 {
+				break
 			}
+			continue
 
+		case OARRAYLIT:
 			a := Nod(OINDEX, var_, index)
 			arraylit(ctxt, pass, value, a, init)
 			continue
@@ -899,10 +885,10 @@ func slicelit(ctxt int, n *Node, var_ *Node, init *Nodes) {
 		// TODO need to check bounds?
 
 		switch value.Op {
+		case OSLICELIT:
+			break
+
 		case OARRAYLIT:
-			if value.Type.IsSlice() {
-				break
-			}
 			arraylit(ctxt, 2, value, a, init)
 			continue
 
@@ -1152,15 +1138,10 @@ func anylit(ctxt int, n *Node, var_ *Node, init *Nodes) {
 
 		structlit(ctxt, 3, n, var_, init)
 
-	case OARRAYLIT:
-		if t.IsSlice() {
-			slicelit(ctxt, n, var_, init)
-			break
-		}
-		if !t.IsArray() {
-			Fatalf("anylit: not array")
-		}
+	case OSLICELIT:
+		slicelit(ctxt, n, var_, init)
 
+	case OARRAYLIT:
 		if var_.isSimpleName() && n.List.Len() > 4 {
 			if ctxt == 0 {
 				// lay out static data
@@ -1235,7 +1216,7 @@ func oaslit(n *Node, init *Nodes) bool {
 		// not a special composit literal assignment
 		return false
 
-	case OSTRUCTLIT, OARRAYLIT, OMAPLIT:
+	case OSTRUCTLIT, OARRAYLIT, OSLICELIT, OMAPLIT:
 		if vmatch1(n.Left, n.Right) {
 			// not a special composit literal assignment
 			return false
@@ -1308,7 +1289,7 @@ func initplan(n *Node) {
 	default:
 		Fatalf("initplan")
 
-	case OARRAYLIT:
+	case OARRAYLIT, OSLICELIT:
 		for _, a := range n.List.Slice() {
 			if a.Op != OKEY || !Smallintconst(a.Left) {
 				Fatalf("initplan arraylit")
@@ -1377,12 +1358,7 @@ func iszero(n *Node) bool {
 			return u.Real.CmpFloat64(0) == 0 && u.Imag.CmpFloat64(0) == 0
 		}
 
-	case OARRAYLIT:
-		if n.Type.IsSlice() {
-			break
-		}
-		fallthrough
-	case OSTRUCTLIT:
+	case OARRAYLIT, OSTRUCTLIT:
 		for _, n1 := range n.List.Slice() {
 			if !iszero(n1.Right) {
 				return false
@@ -1395,7 +1371,7 @@ func iszero(n *Node) bool {
 }
 
 func isvaluelit(n *Node) bool {
-	return (n.Op == OARRAYLIT && n.Type.IsArray()) || n.Op == OSTRUCTLIT
+	return n.Op == OARRAYLIT || n.Op == OSTRUCTLIT
 }
 
 // gen_as_init attempts to emit static data for n and reports whether it succeeded.

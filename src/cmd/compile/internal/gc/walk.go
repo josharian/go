@@ -1554,7 +1554,7 @@ opswitch:
 		r.Type = n.Type
 		n = r
 
-	case OARRAYLIT, OMAPLIT, OSTRUCTLIT, OPTRLIT:
+	case OARRAYLIT, OSLICELIT, OMAPLIT, OSTRUCTLIT, OPTRLIT:
 		if isStaticCompositeLiteral(n) {
 			// n can be directly represented in the read-only data section.
 			// Make direct reference to the static data. See issue 12841.
@@ -3883,6 +3883,7 @@ func candiscard(n *Node) bool {
 		OMAPLIT,
 		OSTRUCTLIT,
 		OARRAYLIT,
+		OSLICELIT,
 		OPTRLIT,
 		OCONV,
 		OCONVIFACE,

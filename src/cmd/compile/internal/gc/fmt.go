@@ -959,6 +959,7 @@ var opprec = []int{
 	OAPPEND:       8,
 	OARRAYBYTESTR: 8,
 	OARRAYLIT:     8,
+	OSLICELIT:     8,
 	OARRAYRUNESTR: 8,
 	OCALLFUNC:     8,
 	OCALLINTER:    8,
@@ -1249,7 +1250,7 @@ func exprfmt(n *Node, prec int) string {
 		}
 		fallthrough
 
-	case OARRAYLIT, OMAPLIT:
+	case OARRAYLIT, OSLICELIT, OMAPLIT:
 		if fmtmode == FErr {
 			return fmt.Sprintf("%v literal", n.Type)
 		}
