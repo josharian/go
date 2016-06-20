@@ -398,7 +398,7 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		switch r.Left.Op {
 		case OARRAYLIT, OSLICELIT, OMAPLIT, OSTRUCTLIT:
 			// Init pointer.
-			a := staticname(r.Left.Type, inNonInitFunction)
+			a := staticname(r.Left.Type, false)
 
 			inittemps[r] = a
 			gdata(l, Nod(OADDR, a, nil), int(l.Type.Width))
@@ -423,7 +423,7 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		// Init slice.
 		bound := r.Right.Int64()
 		ta := typArray(r.Type.Elem(), bound)
-		a := staticname(ta, inNonInitFunction)
+		a := staticname(ta, false)
 		inittemps[r] = a
 		n := *l
 		n.Xoffset = l.Xoffset + int64(Array_array)
@@ -528,7 +528,7 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 			}
 		} else {
 			// Construct temp to hold val, write pointer to temp into n.
-			a := staticname(val.Type, inNonInitFunction)
+			a := staticname(val.Type, false)
 			inittemps[val] = a
 			if !staticassign(a, val, out) {
 				*out = append(*out, Nod(OAS, a, val))
@@ -567,10 +567,12 @@ const (
 // most of the work is to generate
 // data statements for the constant
 // part of the composite literal.
-func staticname(t *Type, ctxt initContext) *Node {
+
+// staticname return a name backed by a static data symbol.
+func staticname(t *Type, readonly bool) *Node {
 	n := newname(LookupN("statictmp_", statuniqgen))
 	statuniqgen++
-	if ctxt == inInitFunction {
+	if readonly {
 		n.Name.Readonly = true
 	}
 	addvar(n, t, PEXTERN)
@@ -755,7 +757,7 @@ func slicelit(ctxt initContext, n *Node, var_ *Node, init *Nodes) {
 
 	if ctxt == inNonInitFunction {
 		// put everything into static array
-		vstat := staticname(t, ctxt)
+		vstat := staticname(t, false)
 
 		fixedlit(ctxt, initKindStatic, n, vstat, init)
 		fixedlit(ctxt, initKindDynamic, n, vstat, init)
@@ -795,7 +797,7 @@ func slicelit(ctxt initContext, n *Node, var_ *Node, init *Nodes) {
 
 	mode := getdyn(n, true)
 	if mode&initConst != 0 {
-		vstat = staticname(t, ctxt)
+		vstat = staticname(t, ctxt == inInitFunction)
 		fixedlit(ctxt, initKindStatic, n, vstat, init)
 	}
 
@@ -890,8 +892,6 @@ func slicelit(ctxt initContext, n *Node, var_ *Node, init *Nodes) {
 }
 
 func maplit(ctxt initContext, n *Node, m *Node, init *Nodes) {
-	ctxt = inInitFunction
-
 	// make the map var
 	nerr := nerrors
 
@@ -923,8 +923,8 @@ func maplit(ctxt initContext, n *Node, m *Node, init *Nodes) {
 		dowidth(tv)
 
 		// make and initialize static arrays
-		vstatk := staticname(tk, ctxt)
-		vstatv := staticname(tv, ctxt)
+		vstatk := staticname(tk, true)
+		vstatv := staticname(tv, true)
 
 		b := int64(0)
 		for _, r := range n.List.Slice() {
@@ -1075,7 +1075,7 @@ func anylit(ctxt initContext, n *Node, var_ *Node, init *Nodes) {
 		if var_.isSimpleName() && n.List.Len() > 4 {
 			if ctxt == inInitFunction {
 				// lay out static data
-				vstat := staticname(t, ctxt)
+				vstat := staticname(t, true)
 
 				litctxt := ctxt
 				if n.Op == OARRAYLIT {
