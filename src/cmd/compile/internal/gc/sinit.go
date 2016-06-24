@@ -898,6 +898,21 @@ func maplit(ctxt initContext, n *Node, m *Node, init *Nodes) {
 	a.List.Set1(typenod(n.Type))
 	litas(m, a, init)
 
+	isstatic := func(index, value *Node) bool {
+		if isliteral(index) && isliteral(value) {
+			return true
+		}
+		if ctxt == inInitFunction {
+			// fmt.Printf("OPT %s :: index=%v value=%v\n", n.Line(), index, value)
+			return true
+		}
+		// if ctxt == inInitFunction && isStaticCompositeLiteral(index) && isStaticCompositeLiteral(value) {
+		// 	fmt.Printf("OPT %s :: index=%v value=%v\n", n.Line(), index, value)
+		// 	return true
+		// }
+		return false
+	}
+
 	// count the initializers
 	b := 0
 	for _, r := range n.List.Slice() {
@@ -907,7 +922,7 @@ func maplit(ctxt initContext, n *Node, m *Node, init *Nodes) {
 		index := r.Left
 		value := r.Right
 
-		if isliteral(index) && isliteral(value) {
+		if isstatic(index, value) {
 			b++
 		}
 	}
@@ -922,8 +937,8 @@ func maplit(ctxt initContext, n *Node, m *Node, init *Nodes) {
 		dowidth(tv)
 
 		// make and initialize static arrays
-		vstatk := staticname(tk, true)
-		vstatv := staticname(tv, true)
+		vstatk := staticname(tk, false)
+		vstatv := staticname(tv, false)
 
 		b := int64(0)
 		for _, r := range n.List.Slice() {
@@ -933,14 +948,14 @@ func maplit(ctxt initContext, n *Node, m *Node, init *Nodes) {
 			index := r.Left
 			value := r.Right
 
-			if isliteral(index) && isliteral(value) {
+			if isstatic(index, value) {
 				// build vstatk[b] = index
 				setlineno(index)
 				lhs := Nod(OINDEX, vstatk, Nodintconst(b))
 				as := Nod(OAS, lhs, index)
 				as = typecheck(as, Etop)
 				as = walkexpr(as, init)
-				as.IsStatic = true
+				as.IsStatic = isliteral(index)
 				init.Append(as)
 
 				// build vstatv[b] = value
@@ -949,7 +964,7 @@ func maplit(ctxt initContext, n *Node, m *Node, init *Nodes) {
 				as = Nod(OAS, lhs, value)
 				as = typecheck(as, Etop)
 				as = walkexpr(as, init)
-				as.IsStatic = true
+				as.IsStatic = isliteral(value)
 				init.Append(as)
 
 				b++
@@ -991,7 +1006,7 @@ func maplit(ctxt initContext, n *Node, m *Node, init *Nodes) {
 		index := r.Left
 		value := r.Right
 
-		if isliteral(index) && isliteral(value) {
+		if isstatic(index, value) {
 			continue
 		}
 
