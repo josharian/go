@@ -580,8 +580,7 @@ func staticname(t *Type, readonly bool) *Node {
 }
 
 func isliteral(n *Node) bool {
-	// Treat nils as zeros rather than literals.
-	return n.Op == OLITERAL && n.Val().Ctype() != CTNIL
+	return n.Op == OLITERAL
 }
 
 func (n *Node) isSimpleName() bool {
@@ -1394,7 +1393,11 @@ func genAsInitNoCheck(n *Node, reportOnly bool) bool {
 
 	switch nr.Type.Etype {
 	default:
-		return false
+		ok := Isconst(nr, CTNIL)
+		if ok && !reportOnly {
+			gdata(&nam, nr, int(Widthptr))
+		}
+		return ok
 
 	case TBOOL, TINT8, TUINT8, TINT16, TUINT16,
 		TINT32, TUINT32, TINT64, TUINT64,

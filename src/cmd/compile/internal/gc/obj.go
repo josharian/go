@@ -415,6 +415,10 @@ func gdata(nam *Node, nr *Node, wid int) {
 				s.WriteFloat64(Ctxt, nam.Xoffset, f)
 			}
 
+		case *NilVal:
+			// Write out a zero int, for the side-effect of ensuring that the symbol is large enough.
+			Linksym(nam.Sym).WriteInt(Ctxt, nam.Xoffset, Widthptr, 0)
+
 		default:
 			Fatalf("gdata unhandled OLITERAL %v", nr)
 		}
