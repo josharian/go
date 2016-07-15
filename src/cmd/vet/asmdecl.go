@@ -170,6 +170,14 @@ Files:
 		for lineno, line := range lines {
 			lineno++
 
+			if strings.HasPrefix(strings.TrimSpace(line), "//") {
+				// Comment line.
+				if m := asmPlusBuild.FindStringSubmatch(line); m == nil {
+					// Not a build directive. Ignore the line.
+					continue
+				}
+			}
+
 			badf := func(format string, args ...interface{}) {
 				f.Badf(token.NoPos, "%s:%d: [%s] %s: %s", f.name, lineno, arch, fnName, fmt.Sprintf(format, args...))
 			}
