@@ -2049,7 +2049,7 @@ func (s *regAllocState) computeLive() {
 	var phis []*Value
 
 	live := newSparseMap(f.NumValues())
-	t := newSparseMap(f.NumValues())
+	t := newSparseLiveInfoMap(f.NumValues())
 
 	// Keep track of which value we want in each register.
 	var desired desiredState
@@ -2158,10 +2158,7 @@ func (s *regAllocState) computeLive() {
 				s.desired[p.ID].merge(&desired)
 
 				// Start t off with the previously known live values at the end of p.
-				t.clear()
-				for _, e := range s.live[p.ID] {
-					t.set(e.ID, e.dist)
-				}
+				t.setto(s.live[p.ID])
 				update := false
 
 				// Add new live values from scanning this block.
@@ -2187,13 +2184,12 @@ func (s *regAllocState) computeLive() {
 					continue
 				}
 				// The live set has changed, update it.
-				l := s.live[p.ID][:0]
+				l := s.live[p.ID]
 				if cap(l) < t.size() {
 					l = make([]liveInfo, 0, t.size())
 				}
-				for _, e := range t.contents() {
-					l = append(l, liveInfo{e.key, e.val})
-				}
+				l = l[:t.size()]
+				copy(l, t.contents())
 				s.live[p.ID] = l
 				changed = true
 			}
