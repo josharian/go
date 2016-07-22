@@ -375,8 +375,10 @@ func (s *state) endBlock() *ssa.Block {
 	if b == nil {
 		return nil
 	}
+	// s.defvars = s.defvars[:cap(s.defvars)]
 	for len(s.defvars) <= int(b.ID) {
 		s.defvars = append(s.defvars, nil)
+		// s.defvars = append(s.defvars[:cap(s.defvars)], nil)
 	}
 	s.defvars[b.ID] = s.vars
 	s.curBlock = nil

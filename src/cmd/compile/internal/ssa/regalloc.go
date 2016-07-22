@@ -309,6 +309,7 @@ func (s *regAllocState) freeRegs(m regMask) {
 func (s *regAllocState) setOrig(c *Value, v *Value) {
 	for int(c.ID) >= len(s.orig) {
 		s.orig = append(s.orig, nil)
+		// s.orig = append(s.orig[:cap(s.orig)], nil)
 	}
 	if s.orig[c.ID] != nil {
 		s.f.Fatalf("orig value set twice %s %s", c, v)
@@ -909,6 +910,7 @@ func (s *regAllocState) regalloc(f *Func) {
 
 		// Allocate space to record the desired registers for each value.
 		dinfo = dinfo[:0]
+		// TODO
 		for i := 0; i < len(oldSched); i++ {
 			dinfo = append(dinfo, dentry{})
 		}
