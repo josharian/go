@@ -2160,7 +2160,7 @@ func (s *regAllocState) computeLive() {
 	var phis []*Value
 
 	live := newSparseMap(f.NumValues())
-	t := newSparseMap(f.NumValues())
+	t := newSparseLiveInfoMap(f.NumValues())
 
 	// Keep track of which value we want in each register.
 	var desired desiredState
@@ -2268,18 +2268,14 @@ func (s *regAllocState) computeLive() {
 				// Update any desired registers at the end of p.
 				s.desired[p.ID].merge(&desired)
 
-				// Start t off with the previously known live values at the end of p.
-				t.clear()
-				for _, e := range s.live[p.ID] {
-					t.set(e.ID, e.dist)
-				}
-				update := false
+				// Hand control of s.live[p.ID] to t.
+				t.setDense(s.live[p.ID])
 
 				// Add new live values from scanning this block.
 				for _, e := range live.contents() {
 					d := e.val + delta
-					if !t.contains(e.key) || d < t.get(e.key) {
-						update = true
+					if x, ok := t.get(e.key); !ok || d < x {
+						changed = true
 						t.set(e.key, d)
 					}
 				}
@@ -2288,25 +2284,17 @@ func (s *regAllocState) computeLive() {
 				// simultaneously happening at the start of the block).
 				for _, v := range phis {
 					id := v.Args[i].ID
-					if s.values[id].needReg && (!t.contains(id) || delta < t.get(id)) {
-						update = true
+					if !s.values[id].needReg {
+						continue
+					}
+					if x, ok := t.get(id); !ok || delta < x {
+						changed = true
 						t.set(id, delta)
 					}
 				}
 
-				if !update {
-					continue
-				}
-				// The live set has changed, update it.
-				l := s.live[p.ID][:0]
-				if cap(l) < t.size() {
-					l = make([]liveInfo, 0, t.size())
-				}
-				for _, e := range t.contents() {
-					l = append(l, liveInfo{e.key, e.val})
-				}
-				s.live[p.ID] = l
-				changed = true
+				// Move t back to s.live[p.ID].
+				s.live[p.ID] = t.contents()
 			}
 		}
 
