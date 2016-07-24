@@ -2068,27 +2068,49 @@ func (s *regAllocState) computeLive() {
 
 	// Given a block b, we want to know the smallest index i in po such that
 	// po[i] is an ancestor of b.
+	// fmt.Println(f.Name, "calc inval", po)
 	inval := make([]int, f.NumBlocks())
-	for i, bv := range po {
-		b := bv.ID
-		for _, e := range bv.Succs {
-			s := e.b.ID
-			if inval[s] == 0 {
-				// Not yet initialized; initialize to i.
-				inval[s] = i
+	for {
+		changed := false
+		// fmt.Println("inval", inval)
+		for i, bv := range po {
+			b := bv.ID
+			if bv == f.Entry {
+				inval[b] = len(po)
 				continue
 			}
-			if inval[b] < inval[s] {
-				// We know a smaller index. Use it.
-				inval[s] = inval[b]
+			for _, e := range bv.Succs {
+				s := e.b.ID
+				if inval[s] == 0 {
+					// Not yet initialized; initialize to i.
+					inval[s] = i
+					changed = true
+					// fmt.Println("A", s, i)
+					continue
+				}
+				if inval[b] == 0 && i != 0 {
+					continue
+				}
+				if inval[b] < inval[s] {
+					// We know a smaller index. Use it.
+					inval[s] = inval[b]
+					// fmt.Println("B", s, b)
+					changed = true
+				}
 			}
+		}
+		if !changed {
+			break
 		}
 	}
 
 	mark := 0
+	iters := 0
 	for {
 		changed := false
-
+		if iters > 0 {
+			fmt.Println(f.Name, "iters=", iters, "mark=", mark)
+		}
 		for _, b := range po[mark:] {
 			// Start with known live values at the end of the block.
 			// Add len(b.Values) to adjust from end-of-block distance
@@ -2219,9 +2241,11 @@ func (s *regAllocState) computeLive() {
 				if changed {
 					if inval[p.ID] < mark {
 						mark = inval[p.ID]
+						fmt.Println("update mark for", p.ID, ":", mark)
 					}
 				} else {
 					mark = inval[p.ID]
+					fmt.Println("new mark for", p.ID, ":", mark)
 					changed = true
 				}
 			}
@@ -2230,6 +2254,7 @@ func (s *regAllocState) computeLive() {
 		if !changed {
 			break
 		}
+		iters++
 	}
 	if f.pass.debug > regDebug {
 		fmt.Println("live values at end of each block")
