@@ -2065,10 +2065,31 @@ func (s *regAllocState) computeLive() {
 	// out to all of them.
 	s.loopnest = loopnestfor(f)
 	po := s.loopnest.po
+
+	// Given a block b, we want to know the smallest index i in po such that
+	// po[i] is an ancestor of b.
+	inval := make([]int, f.NumBlocks())
+	for i, bv := range po {
+		b := bv.ID
+		for _, e := range bv.Succs {
+			s := e.b.ID
+			if inval[s] == 0 {
+				// Not yet initialized; initialize to i.
+				inval[s] = i
+				continue
+			}
+			if inval[b] < inval[s] {
+				// We know a smaller index. Use it.
+				inval[s] = inval[b]
+			}
+		}
+	}
+
+	mark := 0
 	for {
 		changed := false
 
-		for _, b := range po {
+		for _, b := range po[mark:] {
 			// Start with known live values at the end of the block.
 			// Add len(b.Values) to adjust from end-of-block distance
 			// to beginning-of-block distance.
@@ -2195,7 +2216,14 @@ func (s *regAllocState) computeLive() {
 					l = append(l, liveInfo{e.key, e.val})
 				}
 				s.live[p.ID] = l
-				changed = true
+				if changed {
+					if inval[p.ID] < mark {
+						mark = inval[p.ID]
+					}
+				} else {
+					mark = inval[p.ID]
+					changed = true
+				}
 			}
 		}
 
