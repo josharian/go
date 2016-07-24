@@ -2065,10 +2065,48 @@ func (s *regAllocState) computeLive() {
 	// out to all of them.
 	s.loopnest = loopnestfor(f)
 	po := s.loopnest.po
+
+	// First pass. Set inval[b.ID] to the minimum index in po
+	// of any of its immediate preds.
+	inval := make([]int, f.NumBlocks())
+	for i := range inval {
+		inval[i] = -1
+	}
+	for i, b := range po {
+		for _, e := range b.Succs {
+			s := e.b
+			if inval[s.ID] == -1 || i < inval[s.ID] {
+				inval[s.ID] = i
+				continue
+			}
+		}
+		if len(b.Preds) == 0 {
+			inval[b.ID] = len(po)
+		}
+	}
+
+	// Second pass. Propagate lower inval values to ancestors.
 	for {
 		changed := false
 
 		for _, b := range po {
+			for _, e := range b.Preds {
+				p := e.b
+				if inval[p.ID] < inval[b.ID] {
+					inval[b.ID] = inval[p.ID]
+					changed = true
+				}
+			}
+		}
+		if !changed {
+			break
+		}
+	}
+
+	mark := 0
+	for {
+		changed := false
+		for _, b := range po[mark:] {
 			// Start with known live values at the end of the block.
 			// Add len(b.Values) to adjust from end-of-block distance
 			// to beginning-of-block distance.
@@ -2195,7 +2233,14 @@ func (s *regAllocState) computeLive() {
 					l = append(l, liveInfo{e.key, e.val})
 				}
 				s.live[p.ID] = l
-				changed = true
+				if changed {
+					if inval[p.ID] < mark {
+						mark = inval[p.ID]
+					}
+				} else {
+					mark = inval[p.ID]
+					changed = true
+				}
 			}
 		}
 

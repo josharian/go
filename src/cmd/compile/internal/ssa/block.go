@@ -90,6 +90,10 @@ func (e Edge) Block() *Block {
 	return e.b
 }
 
+func (e Edge) String() string {
+	return e.b.String()
+}
+
 //     kind           control    successors
 //   ------------------------------------------
 //     Exit        return mem                []
