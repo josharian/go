@@ -2064,7 +2064,7 @@ func (s *regAllocState) computeLive() {
 	// components as single blocks, duplicated calculated liveness information
 	// out to all of them.
 	s.loopnest = loopnestfor(f)
-	po := s.loopnest.po
+	po := reversePostorderReverseCFG(f)
 	for {
 		changed := false
 

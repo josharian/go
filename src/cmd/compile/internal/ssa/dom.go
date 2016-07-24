@@ -20,42 +20,91 @@ const (
 // postorder computes a postorder traversal ordering for the
 // basic blocks in f. Unreachable blocks will not appear.
 func postorder(f *Func) []*Block {
-	return postorderWithNumbering(f, []int32{})
+	return postorderWithNumbering(f, nil, false, nil)
 }
-func postorderWithNumbering(f *Func, ponums []int32) []*Block {
+func reversePostorderReverseCFG(f *Func) []*Block {
+	// TODO: move this prelim work into postorderWithNumbering
+	// find exit blocks
+	var exits []*Block
+	for _, b := range f.Blocks {
+		if len(b.Succs) == 0 {
+			exits = append(exits, b)
+		}
+	}
+	po := postorderWithNumbering(f, nil, true, exits)
+	// TODO: iterate in reverse instead of reversing the slice
+	for i := 0; i < len(po)/2; i++ {
+		j := len(po) - i - 1
+		po[i], po[j] = po[j], po[i]
+	}
+	return po
+}
+
+// TODO: split into a separate function for reverseCFG?
+func postorderWithNumbering(f *Func, ponums []int32, reverseCFG bool, start []*Block) []*Block {
 	mark := make([]markKind, f.NumBlocks())
 
 	// result ordering
 	var order []*Block
 
 	// stack of blocks
-	var s []*Block
-	s = append(s, f.Entry)
-	mark[f.Entry.ID] = notExplored
-	for len(s) > 0 {
-		b := s[len(s)-1]
-		switch mark[b.ID] {
-		case explored:
-			// Children have all been visited. Pop & output block.
-			s = s[:len(s)-1]
-			mark[b.ID] = done
-			if len(ponums) > 0 {
-				ponums[b.ID] = int32(len(order))
+	s := make([]*Block, 0, len(f.Blocks))
+	if start == nil {
+		s = append(s, f.Entry)
+		mark[f.Entry.ID] = notExplored
+	} else {
+		s = append(s, start...)
+		for _, b := range start {
+			mark[b.ID] = notExplored
+		}
+	}
+
+	for {
+		for len(s) > 0 {
+			b := s[len(s)-1]
+			switch mark[b.ID] {
+			case explored:
+				// Children have all been visited. Pop & output block.
+				s = s[:len(s)-1]
+				mark[b.ID] = done
+				if len(ponums) > 0 {
+					ponums[b.ID] = int32(len(order))
+				}
+				order = append(order, b)
+			case notExplored:
+				// Children have not been visited yet. Mark as explored
+				// and queue any children we haven't seen yet.
+				mark[b.ID] = explored
+				succs := b.Succs
+				if reverseCFG {
+					succs = b.Preds
+				}
+				for _, e := range succs {
+					c := e.b
+					if mark[c.ID] == notFound {
+						mark[c.ID] = notExplored
+						s = append(s, c)
+					}
+				}
+			default:
+				b.Fatalf("bad stack state %v %d", b, mark[b.ID])
 			}
-			order = append(order, b)
-		case notExplored:
-			// Children have not been visited yet. Mark as explored
-			// and queue any children we haven't seen yet.
-			mark[b.ID] = explored
-			for _, e := range b.Succs {
-				c := e.b
-				if mark[c.ID] == notFound {
-					mark[c.ID] = notExplored
-					s = append(s, c)
+		}
+		done := true
+		if reverseCFG {
+			// TODO: instead of re-inspecting all blocks from scratch
+			// each time, mark progress and resume from there.
+			for _, b := range f.Blocks {
+				if mark[b.ID] == notFound {
+					s = append(s, b)
+					mark[b.ID] = notExplored
+					done = false
+					break
 				}
 			}
-		default:
-			b.Fatalf("bad stack state %v %d", b, mark[b.ID])
+		}
+		if done {
+			break
 		}
 	}
 	return order

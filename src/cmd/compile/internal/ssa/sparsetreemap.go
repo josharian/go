@@ -59,7 +59,7 @@ type SparseTreeHelper struct {
 func NewSparseTreeHelper(f *Func) *SparseTreeHelper {
 	dom := dominators(f)
 	ponums := make([]int32, f.NumBlocks())
-	po := postorderWithNumbering(f, ponums)
+	po := postorderWithNumbering(f, ponums, false, nil)
 	return makeSparseTreeHelper(newSparseTree(f, dom), dom, po, ponums)
 }
 
