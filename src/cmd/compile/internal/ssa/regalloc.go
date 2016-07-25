@@ -217,7 +217,7 @@ type regAllocState struct {
 	// live values at the end of each block.  live[b.ID] is a list of value IDs
 	// which are live at the end of b, together with a count of how many instructions
 	// forward to the next use.
-	live [][]liveInfo
+	live []blockLive
 	// desired register assignments at the end of each block.
 	// Note that this is a static map computed before allocation occurs. Dynamic
 	// register desires (from partially completed allocations) will trump
@@ -643,9 +643,12 @@ func (s *regAllocState) regalloc(f *Func) {
 		if b.Kind == BlockCall || b.Kind == BlockDefer {
 			d += unlikelyDistance
 		}
-		for _, e := range s.live[b.ID] {
-			s.addUse(e.ID, d+e.dist) // pseudo-uses from beyond end of block
-			liveSet.add(e.ID)
+		bli := s.live[b.ID]
+		for i := range bli.live {
+			id := bli.ID(i)
+			dist := bli.dist(i)
+			s.addUse(id, d+dist) // pseudo-uses from beyond end of block
+			liveSet.add(id)
 		}
 		if v := b.Control; v != nil && s.values[v.ID].needReg {
 			s.addUse(v.ID, int32(len(b.Values))) // psuedo-use by control value
@@ -1220,12 +1223,13 @@ func (s *regAllocState) regalloc(f *Func) {
 			}
 
 			// TODO: sort by distance, pick the closest ones?
-			for _, live := range s.live[b.ID] {
-				if live.dist >= unlikelyDistance {
+			bli := s.live[b.ID]
+			for i := range bli.live {
+				if bli.dist(i) >= unlikelyDistance {
 					// Don't preload anything live after the loop.
 					continue
 				}
-				vid := live.ID
+				vid := bli.ID(i)
 				vi := &s.values[vid]
 				if vi.regs != 0 {
 					continue
@@ -1266,8 +1270,9 @@ func (s *regAllocState) regalloc(f *Func) {
 		// Check. TODO: remove
 		{
 			liveSet.clear()
-			for _, x := range s.live[b.ID] {
-				liveSet.add(x.ID)
+			bli := s.live[b.ID]
+			for i := range bli.live {
+				liveSet.add(bli.ID(i))
 			}
 			for r := register(0); r < s.numRegs; r++ {
 				v := s.regs[r].v
@@ -1284,18 +1289,20 @@ func (s *regAllocState) regalloc(f *Func) {
 		// isn't in a register, remember that its spill location
 		// is live. We need to remember this information so that
 		// the liveness analysis in stackalloc is correct.
-		for _, e := range s.live[b.ID] {
-			if s.values[e.ID].regs != 0 {
+		bli = s.live[b.ID]
+		for i := range bli.live {
+			id := bli.ID(i)
+			if s.values[id].regs != 0 {
 				// in a register, we'll use that source for the merge.
 				continue
 			}
-			spill := s.values[e.ID].spill
+			spill := s.values[id].spill
 			if spill == nil {
 				// rematerializeable values will have spill==nil.
 				continue
 			}
 			s.spillLive[b.ID] = append(s.spillLive[b.ID], spill.ID)
-			s.values[e.ID].spillUsed = true
+			s.values[id].spillUsed = true
 		}
 
 		// Keep track of values that are spilled in the loop, but whose spill
@@ -1326,10 +1333,11 @@ func (s *regAllocState) regalloc(f *Func) {
 
 					for whichExit, ss := range loop.exits {
 						// Start with live at end.
-						for _, li := range s.live[ss.ID] {
-							if s.isLoopSpillCandidate(loop, s.orig[li.ID]) {
+						sli := s.live[ss.ID]
+						for i := range sli.live {
+							if s.isLoopSpillCandidate(loop, s.orig[sli.ID(i)]) {
 								// s.live contains original IDs, use s.orig above to map back to *Value
-								entryCandidates.setBit(li.ID, uint(whichExit))
+								entryCandidates.setBit(sli.ID(i), uint(whichExit))
 							}
 						}
 						// Control can also be live.
@@ -1369,15 +1377,17 @@ func (s *regAllocState) regalloc(f *Func) {
 		// Clear any final uses.
 		// All that is left should be the pseudo-uses added for values which
 		// are live at the end of b.
-		for _, e := range s.live[b.ID] {
-			u := s.values[e.ID].uses
+		bli = s.live[b.ID]
+		for i := range bli.live {
+			id := bli.ID(i)
+			u := s.values[id].uses
 			if u == nil {
-				f.Fatalf("live at end, no uses v%d", e.ID)
+				f.Fatalf("live at end, no uses v%d", id)
 			}
 			if u.next != nil {
-				f.Fatalf("live at end, too many uses v%d", e.ID)
+				f.Fatalf("live at end, too many uses v%d", id)
 			}
-			s.values[e.ID].uses = nil
+			s.values[id].uses = nil
 			u.next = s.freeUseRecords
 			s.freeUseRecords = u
 		}
@@ -2028,6 +2038,15 @@ type liveInfo struct {
 	dist int32 // # of instructions before next use
 }
 
+// blockLive contains information about values that are live in a block.
+type blockLive struct {
+	live  []liveInfo // TODO: doc
+	delta int32      // delta contains a distance to be added to every dist in live
+}
+
+func (b blockLive) dist(idx int) int32 { return b.live[idx].dist + b.delta }
+func (b blockLive) ID(idx int) ID      { return b.live[idx].ID }
+
 // dblock contains information about desired & avoid registers at the end of a block.
 type dblock struct {
 	prefers []desiredStateEntry
@@ -2044,7 +2063,8 @@ type dblock struct {
 // of this function) require only linear size & time.
 func (s *regAllocState) computeLive() {
 	f := s.f
-	s.live = make([][]liveInfo, f.NumBlocks())
+	s.live = make([]blockLive, f.NumBlocks())
+	hasAlias := make([]bool, f.NumBlocks())
 	s.desired = make([]desiredState, f.NumBlocks())
 	var phis []*Value
 
@@ -2079,8 +2099,9 @@ func (s *regAllocState) computeLive() {
 				// make every use past a call appear very far away.
 				d += unlikelyDistance
 			}
-			for _, e := range s.live[b.ID] {
-				live.set(e.ID, e.dist+d)
+			bli := s.live[b.ID]
+			for i := range bli.live {
+				live.set(bli.ID(i), bli.dist(i)+d)
 			}
 
 			// Mark control value as live
@@ -2159,8 +2180,9 @@ func (s *regAllocState) computeLive() {
 
 				// Start t off with the previously known live values at the end of p.
 				t.clear()
-				for _, e := range s.live[p.ID] {
-					t.set(e.ID, e.dist)
+				pli := s.live[p.ID]
+				for i := range pli.live {
+					t.set(pli.ID(i), pli.dist(i))
 				}
 				update := false
 
@@ -2186,15 +2208,57 @@ func (s *regAllocState) computeLive() {
 				if !update {
 					continue
 				}
+
 				// The live set has changed, update it.
-				l := s.live[p.ID][:0]
-				if cap(l) < t.size() {
-					l = make([]liveInfo, 0, t.size())
+				// First, check to see whether p can alias b's live info.
+				bli := s.live[b.ID]
+				c := t.contents()
+				canAlias := false
+				var dist int32
+				if len(c) == len(bli.live) {
+					canAlias = true
+					for i, e := range c {
+						if e.key != bli.ID(i) {
+							canAlias = false
+							break
+						}
+						delta := e.val - bli.dist(i)
+						if i == 0 {
+							dist = delta
+							continue
+						}
+						if dist != delta {
+							canAlias = false
+							break
+						}
+					}
 				}
-				for _, e := range t.contents() {
-					l = append(l, liveInfo{e.key, e.val})
+
+				if canAlias {
+					// The entries for p.ID alias the entries for d.ID,
+					// with distances additionally offset by dist.
+					hasAlias[b.ID] = true
+					hasAlias[p.ID] = true
+					s.live[p.ID] = blockLive{live: bli.live, delta: bli.delta + dist}
+				} else {
+					// The entries for p.ID can't alias the entries for b.ID.
+					// If someone else is aliasing p.ID's entries, we need to start clean.
+					// Otherwise, reuse the existing entries.
+					// Either way, the entries are ours alone, so dist is 0.
+					var l []liveInfo
+					if hasAlias[p.ID] {
+						hasAlias[p.ID] = false
+					} else {
+						l = s.live[p.ID].live[:0]
+					}
+					if cap(l) < t.size() {
+						l = make([]liveInfo, 0, t.size())
+					}
+					for _, e := range c {
+						l = append(l, liveInfo{e.key, e.val})
+					}
+					s.live[p.ID] = blockLive{live: l}
 				}
-				s.live[p.ID] = l
 				changed = true
 			}
 		}
@@ -2207,7 +2271,7 @@ func (s *regAllocState) computeLive() {
 		fmt.Println("live values at end of each block")
 		for _, b := range f.Blocks {
 			fmt.Printf("  %s:", b)
-			for _, x := range s.live[b.ID] {
+			for _, x := range s.live[b.ID].live {
 				fmt.Printf(" v%d", x.ID)
 				for _, e := range s.desired[b.ID].entries {
 					if e.ID != x.ID {
