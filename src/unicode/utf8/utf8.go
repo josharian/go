@@ -86,15 +86,22 @@ var first = [256]uint8{
 // sequence.
 type acceptRange struct {
 	lo uint8 // lowest value for second byte.
-	hi uint8 // highest value for second byte.
+	sz uint8 // highest value for second byte minus lowest value for second byte.
 }
 
 var acceptRanges = [...]acceptRange{
-	0: {locb, hicb},
-	1: {0xA0, hicb},
-	2: {locb, 0x9F},
-	3: {0x90, hicb},
-	4: {locb, 0x8F},
+	0: {locb, hicb - locb},
+	1: {0xA0, hicb - 0xA0},
+	2: {locb, 0x9F - locb},
+	3: {0x90, hicb - 0x90},
+	4: {locb, 0x8F - locb},
+}
+
+// inRange reports whether c is in r's acceptance range.
+func (r acceptRange) inRange(c byte) bool {
+	// This is equivalent to:
+	// return r.lo <= c && c <= r.sz - r.lo
+	return c-r.lo <= r.sz
 }
 
 // FullRune reports whether the bytes in p begin with a full UTF-8 encoding of a rune.
@@ -111,7 +118,7 @@ func FullRune(p []byte) bool {
 	// Must be short or invalid.
 	accept := acceptRanges[x>>4]
 	if n > 1 {
-		if c := p[1]; c < accept.lo || accept.hi < c {
+		if c := p[1]; !accept.inRange(c) {
 			return true
 		} else if n > 2 && (p[2] < locb || hicb < p[2]) {
 			return true
@@ -133,7 +140,7 @@ func FullRuneInString(s string) bool {
 	// Must be short or invalid.
 	accept := acceptRanges[x>>4]
 	if n > 1 {
-		if c := s[1]; c < accept.lo || accept.hi < c {
+		if c := s[1]; !accept.inRange(c) {
 			return true
 		} else if n > 2 && (s[2] < locb || hicb < s[2]) {
 			return true
@@ -165,12 +172,12 @@ func DecodeRune(p []byte) (r rune, size int) {
 		return rune(p[0])&^mask | RuneError&mask, 1
 	}
 	sz := x & 7
-	accept := acceptRanges[x>>4]
 	if n < int(sz) {
 		return RuneError, 1
 	}
+	accept := acceptRanges[x>>4]
 	b1 := p[1]
-	if b1 < accept.lo || accept.hi < b1 {
+	if !accept.inRange(b1) {
 		return RuneError, 1
 	}
 	if sz == 2 {
@@ -213,12 +220,12 @@ func DecodeRuneInString(s string) (r rune, size int) {
 		return rune(s[0])&^mask | RuneError&mask, 1
 	}
 	sz := x & 7
-	accept := acceptRanges[x>>4]
 	if n < int(sz) {
 		return RuneError, 1
 	}
+	accept := acceptRanges[x>>4]
 	s1 := s[1]
-	if s1 < accept.lo || accept.hi < s1 {
+	if !accept.inRange(s1) {
 		return RuneError, 1
 	}
 	if sz == 2 {
@@ -391,7 +398,7 @@ func RuneCount(p []byte) int {
 			continue
 		}
 		accept := acceptRanges[x>>4]
-		if c := p[i+1]; c < accept.lo || accept.hi < c {
+		if c := p[i+1]; !accept.inRange(c) {
 			size = 1
 		} else if size == 2 {
 		} else if c := p[i+2]; c < locb || hicb < c {
@@ -426,7 +433,7 @@ func RuneCountInString(s string) (n int) {
 			continue
 		}
 		accept := acceptRanges[x>>4]
-		if c := s[i+1]; c < accept.lo || accept.hi < c {
+		if c := s[i+1]; !accept.inRange(c) {
 			size = 1
 		} else if size == 2 {
 		} else if c := s[i+2]; c < locb || hicb < c {
@@ -463,7 +470,7 @@ func Valid(p []byte) bool {
 			return false // Short or invalid.
 		}
 		accept := acceptRanges[x>>4]
-		if c := p[i+1]; c < accept.lo || accept.hi < c {
+		if c := p[i+1]; !accept.inRange(c) {
 			return false
 		} else if size == 2 {
 		} else if c := p[i+2]; c < locb || hicb < c {
@@ -495,7 +502,7 @@ func ValidString(s string) bool {
 			return false // Short or invalid.
 		}
 		accept := acceptRanges[x>>4]
-		if c := s[i+1]; c < accept.lo || accept.hi < c {
+		if c := s[i+1]; !accept.inRange(c) {
 			return false
 		} else if size == 2 {
 		} else if c := s[i+2]; c < locb || hicb < c {
