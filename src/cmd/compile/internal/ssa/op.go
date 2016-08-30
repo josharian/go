@@ -20,9 +20,9 @@ type Op int32
 type opInfo struct {
 	name              string
 	reg               regInfo
-	auxType           auxType
-	argLen            int32 // the number of arugments, -1 if variable length
 	asm               obj.As
+	argLen            int8 // the number of arugments, -1 if variable length
+	auxType           auxType
 	generic           bool // this is a generic (arch-independent) opcode
 	rematerializeable bool // this op is rematerializeable
 	commutative       bool // this operation is commutative (e.g. addition)
