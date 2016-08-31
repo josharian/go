@@ -22,6 +22,7 @@ var ssaConfig *ssa.Config
 var ssaExp ssaExport
 
 func initssa() *ssa.Config {
+	ssaExp.strings = make(map[string]interface{})
 	ssaExp.unimplemented = false
 	ssaExp.mustImplement = true
 	if ssaConfig == nil {
@@ -2962,17 +2963,16 @@ func etypesign(e EType) int8 {
 func (s *state) lookupSymbol(n *Node, sym interface{}) interface{} {
 	switch sym.(type) {
 	default:
-		s.Fatalf("sym %v is of uknown type %T", sym, sym)
+		s.Fatalf("sym %v is of unknown type %T", sym, sym)
 	case *ssa.ExternSymbol, *ssa.ArgSymbol, *ssa.AutoSymbol:
 		// these are the only valid types
 	}
 
 	if lsym, ok := s.varsyms[n]; ok {
 		return lsym
-	} else {
-		s.varsyms[n] = sym
-		return sym
 	}
+	s.varsyms[n] = sym
+	return sym
 }
 
 // addr converts the address of the expression n to SSA, adds it to s and returns the SSA result.
@@ -4605,6 +4605,7 @@ func fieldIdx(n *Node) int {
 
 // ssaExport exports a bunch of compiler services for the ssa backend.
 type ssaExport struct {
+	strings       map[string]interface{} // map from constant strings to data symbols
 	log           bool
 	unimplemented bool
 	mustImplement bool
@@ -4628,10 +4629,14 @@ func (s *ssaExport) TypeBytePtr() ssa.Type { return Ptrto(Types[TUINT8]) }
 
 // StringData returns a symbol (a *Sym wrapped in an interface) which
 // is the data component of a global string constant containing s.
-func (*ssaExport) StringData(s string) interface{} {
-	// TODO: is idealstring correct?  It might not matter...
-	_, data := stringsym(s)
-	return &ssa.ExternSymbol{Typ: idealstring, Sym: data}
+func (s *ssaExport) StringData(str string) interface{} {
+	if aux, ok := s.strings[str]; ok {
+		return aux
+	}
+	_, data := stringsym(str)
+	aux := &ssa.ExternSymbol{Typ: idealstring, Sym: data}
+	s.strings[str] = aux
+	return aux
 }
 
 func (e *ssaExport) Auto(t ssa.Type) ssa.GCNode {
