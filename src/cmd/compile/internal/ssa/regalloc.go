@@ -438,6 +438,7 @@ func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, line
 }
 
 func (s *regAllocState) init(f *Func) {
+	f.RegAlloc = make([]Location, f.NumValues())
 	s.f = f
 	s.registers = f.Config.registers
 	if nr := len(s.registers); nr == 0 || nr > int(noRegister) || nr > int(unsafe.Sizeof(regMask(0))*8) {

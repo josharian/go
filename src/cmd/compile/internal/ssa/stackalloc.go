@@ -341,17 +341,17 @@ func (s *stackAllocState) computeLive(spillLive [][]ID) {
 }
 
 func (f *Func) getHome(vid ID) Location {
-	if int(vid) >= len(f.RegAlloc) {
-		return nil
-	}
+	// if int(vid) >= len(f.RegAlloc) {
+	// 	return nil
+	// }
 	return f.RegAlloc[vid]
 }
 
 func (f *Func) setHome(v *Value, loc Location) {
-	for v.ID >= ID(len(f.RegAlloc)) {
-		f.RegAlloc = append(f.RegAlloc, nil)
-		// f.RegAlloc = append(f.RegAlloc[:cap(f.RegAlloc)], nil)
-	}
+	// for v.ID >= ID(len(f.RegAlloc)) {
+	// 	f.RegAlloc = append(f.RegAlloc, nil)
+	// 	// f.RegAlloc = append(f.RegAlloc[:cap(f.RegAlloc)], nil)
+	// }
 	f.RegAlloc[v.ID] = loc
 }
 
