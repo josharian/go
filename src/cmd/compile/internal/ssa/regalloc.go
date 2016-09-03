@@ -308,6 +308,10 @@ func (s *regAllocState) freeRegs(m regMask) {
 // v's original value.
 func (s *regAllocState) setOrig(c *Value, v *Value) {
 	for int(c.ID) >= len(s.orig) {
+		if len(s.orig) < cap(s.orig) {
+			s.orig = s.orig[:cap(s.orig)]
+			continue
+		}
 		s.orig = append(s.orig, nil)
 	}
 	if s.orig[c.ID] != nil {
@@ -909,6 +913,7 @@ func (s *regAllocState) regalloc(f *Func) {
 
 		// Allocate space to record the desired registers for each value.
 		dinfo = dinfo[:0]
+		// TODO: append / memclr loop here
 		for i := 0; i < len(oldSched); i++ {
 			dinfo = append(dinfo, dentry{})
 		}

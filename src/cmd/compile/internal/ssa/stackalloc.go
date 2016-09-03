@@ -349,6 +349,10 @@ func (f *Func) getHome(vid ID) Location {
 
 func (f *Func) setHome(v *Value, loc Location) {
 	for v.ID >= ID(len(f.RegAlloc)) {
+		if len(f.RegAlloc) < cap(f.RegAlloc) {
+			f.RegAlloc = f.RegAlloc[:cap(f.RegAlloc)]
+			continue
+		}
 		f.RegAlloc = append(f.RegAlloc, nil)
 	}
 	f.RegAlloc[v.ID] = loc

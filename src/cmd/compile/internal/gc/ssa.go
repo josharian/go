@@ -376,6 +376,10 @@ func (s *state) endBlock() *ssa.Block {
 		return nil
 	}
 	for len(s.defvars) <= int(b.ID) {
+		if len(s.defvars) < cap(s.defvars) {
+			s.defvars = s.defvars[:cap(s.defvars)]
+			continue
+		}
 		s.defvars = append(s.defvars, nil)
 	}
 	s.defvars[b.ID] = s.vars
