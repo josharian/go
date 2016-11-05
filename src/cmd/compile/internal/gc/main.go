@@ -467,6 +467,9 @@ func Main() {
 		fninit(xtop)
 	}
 
+	ssaWaitGroup.Wait()
+
+	// xtop is now complete.
 	if compiling_runtime {
 		checknowritebarrierrec()
 	}

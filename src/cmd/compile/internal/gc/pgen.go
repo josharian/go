@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 )
 
 // "Portable" code generation.
@@ -294,6 +295,8 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 	stkptrsize = Rnd(stkptrsize, int64(Widthreg))
 }
 
+var ssaWaitGroup sync.WaitGroup
+
 func compile(fn *Node) {
 	if Newproc == nil {
 		Newproc = Sysfunc("newproc")
@@ -358,8 +361,16 @@ func compile(fn *Node) {
 		return
 	}
 
-	// Build an SSA backend function.
-	ssafn := buildssa(Curfn)
+	ssaWaitGroup.Add(1)
+	// go func(fn *Node) {
+	compileSSA(fn)
+	ssaWaitGroup.Done()
+	// }(fn)
+}
+
+// compileSSA builds an SSA backend function and uses it to generate a plist.
+func compileSSA(fn *Node) {
+	ssafn := buildssa(fn)
 	if nerrors != 0 {
 		return
 	}
