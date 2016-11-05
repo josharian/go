@@ -16,29 +16,28 @@ import (
 // Config holds architecture-specific SSA configuration.
 // It is intended to be initialized once and then read from concurrently.
 type Config struct {
-	arch            string                     // "amd64", etc.
-	IntSize         int64                      // 4 or 8
-	PtrSize         int64                      // 4 or 8
-	RegSize         int64                      // 4 or 8
-	lowerBlock      func(*Block, *Config) bool // lowering function
-	lowerValue      func(*Value, *Config) bool // lowering function
-	registers       []Register                 // machine registers
-	gpRegMask       regMask                    // general purpose integer register mask
-	fpRegMask       regMask                    // floating point register mask
-	specialRegMask  regMask                    // special register mask
-	FPReg           int8                       // register number of frame pointer, -1 if not used
-	LinkReg         int8                       // register number of link register if it is a general purpose register, -1 if not used
-	hasGReg         bool                       // has hardware g register
-	fe              Frontend                   // callbacks into compiler frontend
-	ctxt            *obj.Link                  // Generic arch information
-	optimize        bool                       // Do optimization
-	noDuffDevice    bool                       // Don't use Duff's device
-	nacl            bool                       // GOOS=nacl
-	use387          bool                       // GO386=387
-	OldArch         bool                       // True for older versions of architecture, e.g. true for PPC64BE, false for PPC64LE
-	NeedsFpScratch  bool                       // No direct move between GP and FP register sets
-	BigEndian       bool                       //
-	sparsePhiCutoff uint64                     // Sparse phi location algorithm used above this #blocks*#variables score
+	arch            string        // "amd64", etc.
+	IntSize         int64         // 4 or 8
+	PtrSize         int64         // 4 or 8
+	RegSize         int64         // 4 or 8
+	lowerBlock      blockRewriter // lowering function
+	lowerValue      valueRewriter // lowering function
+	registers       []Register    // machine registers
+	gpRegMask       regMask       // general purpose integer register mask
+	fpRegMask       regMask       // floating point register mask
+	specialRegMask  regMask       // special register mask
+	FPReg           int8          // register number of frame pointer, -1 if not used
+	LinkReg         int8          // register number of link register if it is a general purpose register, -1 if not used
+	hasGReg         bool          // has hardware g register
+	ctxt            *obj.Link     // Generic arch information
+	optimize        bool          // Do optimization
+	noDuffDevice    bool          // Don't use Duff's device
+	nacl            bool          // GOOS=nacl
+	use387          bool          // GO386=387
+	OldArch         bool          // True for older versions of architecture, e.g. true for PPC64BE, false for PPC64LE
+	NeedsFpScratch  bool          // No direct move between GP and FP register sets
+	BigEndian       bool          //
+	sparsePhiCutoff uint64        // Sparse phi location algorithm used above this #blocks*#variables score
 
 	// TODO: more stuff. Compiler flags of interest, ...
 
@@ -78,8 +77,8 @@ type Logger interface {
 	// Logf logs a message from the compiler.
 	Logf(string, ...interface{})
 
-	// Log returns true if logging is not a no-op
-	// some logging calls account for more than a few heap allocations.
+	// Log reports whether logging is not a no-op.
+	// Some logging calls are expensive.
 	Log() bool
 
 	// Fatal reports a compiler error and exits.
@@ -87,7 +86,9 @@ type Logger interface {
 
 	// Warnl writes compiler messages in the form expected by "errorcheck" tests
 	Warnl(line int32, fmt_ string, args ...interface{})
+}
 
+type DebugFlagger interface {
 	// Fowards the Debug flags from gc
 	Debug_checknil() bool
 	Debug_wb() bool
@@ -96,6 +97,7 @@ type Logger interface {
 type Frontend interface {
 	TypeSource
 	Logger
+	DebugFlagger
 
 	// StringData returns a symbol pointing to the given string's contents.
 	StringData(string) interface{} // returns *gc.Sym
@@ -133,8 +135,8 @@ type GCNode interface {
 }
 
 // NewConfig returns a new configuration object for the given architecture.
-func NewConfig(arch string, fe Frontend, ctxt *obj.Link, optimize bool) *Config {
-	c := &Config{arch: arch, fe: fe}
+func NewConfig(arch string, logger Logger, ctxt *obj.Link, optimize bool) *Config {
+	c := &Config{arch: arch}
 	switch arch {
 	case "amd64":
 		c.IntSize = 8
@@ -264,7 +266,7 @@ func NewConfig(arch string, fe Frontend, ctxt *obj.Link, optimize bool) *Config 
 		c.hasGReg = true
 		c.noDuffDevice = true
 	default:
-		fe.Fatalf(0, "arch %s not implemented", arch)
+		logger.Fatalf(0, "arch %s not implemented", arch)
 	}
 	c.ctxt = ctxt
 	c.optimize = optimize
@@ -296,7 +298,7 @@ func NewConfig(arch string, fe Frontend, ctxt *obj.Link, optimize bool) *Config 
 	if ev != "" {
 		v, err := strconv.ParseInt(ev, 10, 64)
 		if err != nil {
-			fe.Fatalf(0, "Environment variable GO_SSA_PHI_LOC_CUTOFF (value '%s') did not parse as a number", ev)
+			logger.Fatalf(0, "Environment variable GO_SSA_PHI_LOC_CUTOFF (value '%s') did not parse as a number", ev)
 		}
 		c.sparsePhiCutoff = uint64(v) // convert -1 to maxint, for never use sparse
 	}
@@ -309,16 +311,15 @@ func (c *Config) Set387(b bool) {
 	c.use387 = b
 }
 
-func (c *Config) Frontend() Frontend      { return c.fe }
 func (c *Config) SparsePhiCutoff() uint64 { return c.sparsePhiCutoff }
 func (c *Config) Ctxt() *obj.Link         { return c.ctxt }
 
 // NewFunc returns a new, empty function object.
 // Caller must call f.Free() before calling NewFunc again.
 // TODO: maintain a free list of Funcs.
-func (c *Config) NewFunc() *Func {
+func (c *Config) NewFunc(fe Frontend) *Func {
 	// TODO(khr): should this function take name, type, etc. as arguments?
-	f := &Func{Config: c, NamedValues: map[LocalSlot][]*Value{}}
+	f := &Func{Config: c, fe: fe, NamedValues: map[LocalSlot][]*Value{}}
 
 	// Assign IDs to preallocated values/blocks.
 	for i := range f.values {
@@ -331,14 +332,7 @@ func (c *Config) NewFunc() *Func {
 	return f
 }
 
-func (c *Config) Logf(msg string, args ...interface{})               { c.fe.Logf(msg, args...) }
-func (c *Config) Log() bool                                          { return c.fe.Log() }
-func (c *Config) Fatalf(line int32, msg string, args ...interface{}) { c.fe.Fatalf(line, msg, args...) }
-func (c *Config) Warnl(line int32, msg string, args ...interface{})  { c.fe.Warnl(line, msg, args...) }
-func (c *Config) Debug_checknil() bool                               { return c.fe.Debug_checknil() }
-func (c *Config) Debug_wb() bool                                     { return c.fe.Debug_wb() }
-
-func (c *Config) logDebugHashMatch(evname, name string) {
+func (c *Config) logDebugHashMatch(evname, name string, logger Logger) {
 	file := c.logfiles[evname]
 	if file == nil {
 		file = os.Stdout
@@ -347,7 +341,7 @@ func (c *Config) logDebugHashMatch(evname, name string) {
 			var ok error
 			file, ok = os.Create(tmpfile)
 			if ok != nil {
-				c.Fatalf(0, "Could not open hash-testing logfile %s", tmpfile)
+				logger.Fatalf(0, "Could not open hash-testing logfile %s", tmpfile)
 			}
 		}
 		c.logfiles[evname] = file
@@ -372,13 +366,13 @@ func (c *Config) logDebugHashMatch(evname, name string) {
 // or standard out if that is empty or there is an error
 // opening the file.
 
-func (c *Config) DebugHashMatch(evname, name string) bool {
+func (c *Config) DebugHashMatch(evname, name string, logger Logger) bool {
 	evhash := os.Getenv(evname)
 	if evhash == "" {
 		return true // default behavior with no EV is "on"
 	}
 	if evhash == "y" || evhash == "Y" {
-		c.logDebugHashMatch(evname, name)
+		c.logDebugHashMatch(evname, name, logger)
 		return true
 	}
 	if evhash == "n" || evhash == "N" {
@@ -393,7 +387,7 @@ func (c *Config) DebugHashMatch(evname, name string) bool {
 	}
 
 	if strings.HasSuffix(hstr, evhash) {
-		c.logDebugHashMatch(evname, name)
+		c.logDebugHashMatch(evname, name, logger)
 		return true
 	}
 
@@ -406,7 +400,7 @@ func (c *Config) DebugHashMatch(evname, name string) bool {
 			break
 		}
 		if strings.HasSuffix(hstr, evv) {
-			c.logDebugHashMatch(ev, name)
+			c.logDebugHashMatch(ev, name, logger)
 			return true
 		}
 	}

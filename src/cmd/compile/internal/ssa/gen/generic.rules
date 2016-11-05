@@ -416,30 +416,30 @@
 // ((x >> c1) << c2) >> c3
 (Rsh64Ux64 (Lsh64x64 (Rsh64Ux64 x (Const64 [c1])) (Const64 [c2])) (Const64 [c3]))
   && uint64(c1) >= uint64(c2) && uint64(c3) >= uint64(c2) && !uaddOvf(c1-c2, c3)
-  -> (Rsh64Ux64 x (Const64 <config.fe.TypeUInt64()> [c1-c2+c3]))
+  -> (Rsh64Ux64 x (Const64 <fe.TypeUInt64()> [c1-c2+c3]))
 (Rsh32Ux64 (Lsh32x64 (Rsh32Ux64 x (Const64 [c1])) (Const64 [c2])) (Const64 [c3]))
   && uint64(c1) >= uint64(c2) && uint64(c3) >= uint64(c2) && !uaddOvf(c1-c2, c3)
-  -> (Rsh32Ux64 x (Const64 <config.fe.TypeUInt64()> [c1-c2+c3]))
+  -> (Rsh32Ux64 x (Const64 <fe.TypeUInt64()> [c1-c2+c3]))
 (Rsh16Ux64 (Lsh16x64 (Rsh16Ux64 x (Const64 [c1])) (Const64 [c2])) (Const64 [c3]))
   && uint64(c1) >= uint64(c2) && uint64(c3) >= uint64(c2) && !uaddOvf(c1-c2, c3)
-  -> (Rsh16Ux64 x (Const64 <config.fe.TypeUInt64()> [c1-c2+c3]))
+  -> (Rsh16Ux64 x (Const64 <fe.TypeUInt64()> [c1-c2+c3]))
 (Rsh8Ux64 (Lsh8x64 (Rsh8Ux64 x (Const64 [c1])) (Const64 [c2])) (Const64 [c3]))
   && uint64(c1) >= uint64(c2) && uint64(c3) >= uint64(c2) && !uaddOvf(c1-c2, c3)
-  -> (Rsh8Ux64 x (Const64 <config.fe.TypeUInt64()> [c1-c2+c3]))
+  -> (Rsh8Ux64 x (Const64 <fe.TypeUInt64()> [c1-c2+c3]))
 
 // ((x << c1) >> c2) << c3
 (Lsh64x64 (Rsh64Ux64 (Lsh64x64 x (Const64 [c1])) (Const64 [c2])) (Const64 [c3]))
   && uint64(c1) >= uint64(c2) && uint64(c3) >= uint64(c2) && !uaddOvf(c1-c2, c3)
-  -> (Lsh64x64 x (Const64 <config.fe.TypeUInt64()> [c1-c2+c3]))
+  -> (Lsh64x64 x (Const64 <fe.TypeUInt64()> [c1-c2+c3]))
 (Lsh32x64 (Rsh32Ux64 (Lsh32x64 x (Const64 [c1])) (Const64 [c2])) (Const64 [c3]))
   && uint64(c1) >= uint64(c2) && uint64(c3) >= uint64(c2) && !uaddOvf(c1-c2, c3)
-  -> (Lsh32x64 x (Const64 <config.fe.TypeUInt64()> [c1-c2+c3]))
+  -> (Lsh32x64 x (Const64 <fe.TypeUInt64()> [c1-c2+c3]))
 (Lsh16x64 (Rsh16Ux64 (Lsh16x64 x (Const64 [c1])) (Const64 [c2])) (Const64 [c3]))
   && uint64(c1) >= uint64(c2) && uint64(c3) >= uint64(c2) && !uaddOvf(c1-c2, c3)
-  -> (Lsh16x64 x (Const64 <config.fe.TypeUInt64()> [c1-c2+c3]))
+  -> (Lsh16x64 x (Const64 <fe.TypeUInt64()> [c1-c2+c3]))
 (Lsh8x64 (Rsh8Ux64 (Lsh8x64 x (Const64 [c1])) (Const64 [c2])) (Const64 [c3]))
   && uint64(c1) >= uint64(c2) && uint64(c3) >= uint64(c2) && !uaddOvf(c1-c2, c3)
-  -> (Lsh8x64 x (Const64 <config.fe.TypeUInt64()> [c1-c2+c3]))
+  -> (Lsh8x64 x (Const64 <fe.TypeUInt64()> [c1-c2+c3]))
 
 // constant comparisons
 (Eq64 (Const64 [c]) (Const64 [d])) -> (ConstBool [b2i(c == d)])
@@ -668,8 +668,8 @@
 
 // indexing operations
 // Note: bounds check has already been done
-(PtrIndex <t> ptr idx) && config.PtrSize == 4 -> (AddPtr ptr (Mul32 <config.fe.TypeInt()> idx (Const32 <config.fe.TypeInt()> [t.ElemType().Size()])))
-(PtrIndex <t> ptr idx) && config.PtrSize == 8 -> (AddPtr ptr (Mul64 <config.fe.TypeInt()> idx (Const64 <config.fe.TypeInt()> [t.ElemType().Size()])))
+(PtrIndex <t> ptr idx) && config.PtrSize == 4 -> (AddPtr ptr (Mul32 <fe.TypeInt()> idx (Const32 <fe.TypeInt()> [t.ElemType().Size()])))
+(PtrIndex <t> ptr idx) && config.PtrSize == 8 -> (AddPtr ptr (Mul64 <fe.TypeInt()> idx (Const64 <fe.TypeInt()> [t.ElemType().Size()])))
 
 // struct operations
 (StructSelect (StructMake1 x)) -> x
@@ -683,28 +683,28 @@
 (StructSelect [2] (StructMake4 _ _ x _)) -> x
 (StructSelect [3] (StructMake4 _ _ _ x)) -> x
 
-(Load <t> _ _) && t.IsStruct() && t.NumFields() == 0 && config.fe.CanSSA(t) ->
+(Load <t> _ _) && t.IsStruct() && t.NumFields() == 0 && fe.CanSSA(t) ->
   (StructMake0)
-(Load <t> ptr mem) && t.IsStruct() && t.NumFields() == 1 && config.fe.CanSSA(t) ->
+(Load <t> ptr mem) && t.IsStruct() && t.NumFields() == 1 && fe.CanSSA(t) ->
   (StructMake1
     (Load <t.FieldType(0)> ptr mem))
-(Load <t> ptr mem) && t.IsStruct() && t.NumFields() == 2 && config.fe.CanSSA(t) ->
+(Load <t> ptr mem) && t.IsStruct() && t.NumFields() == 2 && fe.CanSSA(t) ->
   (StructMake2
     (Load <t.FieldType(0)> ptr mem)
     (Load <t.FieldType(1)> (OffPtr <t.FieldType(1).PtrTo()> [t.FieldOff(1)] ptr) mem))
-(Load <t> ptr mem) && t.IsStruct() && t.NumFields() == 3 && config.fe.CanSSA(t) ->
+(Load <t> ptr mem) && t.IsStruct() && t.NumFields() == 3 && fe.CanSSA(t) ->
   (StructMake3
     (Load <t.FieldType(0)> ptr mem)
     (Load <t.FieldType(1)> (OffPtr <t.FieldType(1).PtrTo()> [t.FieldOff(1)] ptr) mem)
     (Load <t.FieldType(2)> (OffPtr <t.FieldType(2).PtrTo()> [t.FieldOff(2)] ptr) mem))
-(Load <t> ptr mem) && t.IsStruct() && t.NumFields() == 4 && config.fe.CanSSA(t) ->
+(Load <t> ptr mem) && t.IsStruct() && t.NumFields() == 4 && fe.CanSSA(t) ->
   (StructMake4
     (Load <t.FieldType(0)> ptr mem)
     (Load <t.FieldType(1)> (OffPtr <t.FieldType(1).PtrTo()> [t.FieldOff(1)] ptr) mem)
     (Load <t.FieldType(2)> (OffPtr <t.FieldType(2).PtrTo()> [t.FieldOff(2)] ptr) mem)
     (Load <t.FieldType(3)> (OffPtr <t.FieldType(3).PtrTo()> [t.FieldOff(3)] ptr) mem))
 
-(StructSelect [i] x:(Load <t> ptr mem)) && !config.fe.CanSSA(t) ->
+(StructSelect [i] x:(Load <t> ptr mem)) && !fe.CanSSA(t) ->
   @x.Block (Load <v.Type> (OffPtr <v.Type.PtrTo()> [t.FieldOff(int(i))] ptr) mem)
 
 (Store _ (StructMake0) mem) -> mem
@@ -740,9 +740,9 @@
 (StructSelect [0] x:(IData _)) -> x
 
 // un-SSAable values use mem->mem copies
-(Store [size] dst (Load <t> src mem) mem) && !config.fe.CanSSA(t) ->
+(Store [size] dst (Load <t> src mem) mem) && !fe.CanSSA(t) ->
 	(Move [MakeSizeAndAlign(size, t.Alignment()).Int64()] dst src mem)
-(Store [size] dst (Load <t> src mem) (VarDef {x} mem)) && !config.fe.CanSSA(t) ->
+(Store [size] dst (Load <t> src mem) (VarDef {x} mem)) && !fe.CanSSA(t) ->
 	(Move [MakeSizeAndAlign(size, t.Alignment()).Int64()] dst src (VarDef {x} mem))
 
 // array ops
@@ -751,7 +751,7 @@
 (Load <t> _ _) && t.IsArray() && t.NumElem() == 0 ->
   (ArrayMake0)
 
-(Load <t> ptr mem) && t.IsArray() && t.NumElem() == 1 && config.fe.CanSSA(t) ->
+(Load <t> ptr mem) && t.IsArray() && t.NumElem() == 1 && fe.CanSSA(t) ->
   (ArrayMake1 (Load <t.ElemType()> ptr mem))
 
 (Store _ (ArrayMake0) mem) -> mem
@@ -770,19 +770,19 @@
 (StringPtr (StringMake (Const64 <t> [c]) _)) -> (Const64 <t> [c])
 (StringLen (StringMake _ (Const64 <t> [c]))) -> (Const64 <t> [c])
 (ConstString {s}) && config.PtrSize == 4 && s.(string) == "" ->
-  (StringMake (ConstNil) (Const32 <config.fe.TypeInt()> [0]))
+  (StringMake (ConstNil) (Const32 <fe.TypeInt()> [0]))
 (ConstString {s}) && config.PtrSize == 8 && s.(string) == "" ->
-  (StringMake (ConstNil) (Const64 <config.fe.TypeInt()> [0]))
+  (StringMake (ConstNil) (Const64 <fe.TypeInt()> [0]))
 (ConstString {s}) && config.PtrSize == 4 && s.(string) != "" ->
   (StringMake
-    (Addr <config.fe.TypeBytePtr()> {config.fe.StringData(s.(string))}
+    (Addr <fe.TypeBytePtr()> {fe.StringData(s.(string))}
       (SB))
-    (Const32 <config.fe.TypeInt()> [int64(len(s.(string)))]))
+    (Const32 <fe.TypeInt()> [int64(len(s.(string)))]))
 (ConstString {s}) && config.PtrSize == 8 && s.(string) != "" ->
   (StringMake
-    (Addr <config.fe.TypeBytePtr()> {config.fe.StringData(s.(string))}
+    (Addr <fe.TypeBytePtr()> {fe.StringData(s.(string))}
       (SB))
-    (Const64 <config.fe.TypeInt()> [int64(len(s.(string)))]))
+    (Const64 <fe.TypeInt()> [int64(len(s.(string)))]))
 
 // slice ops
 // Only a few slice rules are provided here.  See dec.rules for
@@ -798,19 +798,19 @@
 (ConstSlice) && config.PtrSize == 4 ->
   (SliceMake
     (ConstNil <v.Type.ElemType().PtrTo()>)
-    (Const32 <config.fe.TypeInt()> [0])
-    (Const32 <config.fe.TypeInt()> [0]))
+    (Const32 <fe.TypeInt()> [0])
+    (Const32 <fe.TypeInt()> [0]))
 (ConstSlice) && config.PtrSize == 8 ->
   (SliceMake
     (ConstNil <v.Type.ElemType().PtrTo()>)
-    (Const64 <config.fe.TypeInt()> [0])
-    (Const64 <config.fe.TypeInt()> [0]))
+    (Const64 <fe.TypeInt()> [0])
+    (Const64 <fe.TypeInt()> [0]))
 
 // interface ops
 (ConstInterface) ->
   (IMake
-    (ConstNil <config.fe.TypeBytePtr()>)
-    (ConstNil <config.fe.TypeBytePtr()>))
+    (ConstNil <fe.TypeBytePtr()>)
+    (ConstNil <fe.TypeBytePtr()>))
 
 (NilCheck (GetG mem) mem) -> mem
 
@@ -826,45 +826,45 @@
 // Decompose compound argument values
 (Arg {n} [off]) && v.Type.IsString() ->
   (StringMake
-    (Arg <config.fe.TypeBytePtr()> {n} [off])
-    (Arg <config.fe.TypeInt()> {n} [off+config.PtrSize]))
+    (Arg <fe.TypeBytePtr()> {n} [off])
+    (Arg <fe.TypeInt()> {n} [off+config.PtrSize]))
 
 (Arg {n} [off]) && v.Type.IsSlice() ->
   (SliceMake
     (Arg <v.Type.ElemType().PtrTo()> {n} [off])
-    (Arg <config.fe.TypeInt()> {n} [off+config.PtrSize])
-    (Arg <config.fe.TypeInt()> {n} [off+2*config.PtrSize]))
+    (Arg <fe.TypeInt()> {n} [off+config.PtrSize])
+    (Arg <fe.TypeInt()> {n} [off+2*config.PtrSize]))
 
 (Arg {n} [off]) && v.Type.IsInterface() ->
   (IMake
-    (Arg <config.fe.TypeBytePtr()> {n} [off])
-    (Arg <config.fe.TypeBytePtr()> {n} [off+config.PtrSize]))
+    (Arg <fe.TypeBytePtr()> {n} [off])
+    (Arg <fe.TypeBytePtr()> {n} [off+config.PtrSize]))
 
 (Arg {n} [off]) && v.Type.IsComplex() && v.Type.Size() == 16 ->
   (ComplexMake
-    (Arg <config.fe.TypeFloat64()> {n} [off])
-    (Arg <config.fe.TypeFloat64()> {n} [off+8]))
+    (Arg <fe.TypeFloat64()> {n} [off])
+    (Arg <fe.TypeFloat64()> {n} [off+8]))
 
 (Arg {n} [off]) && v.Type.IsComplex() && v.Type.Size() == 8 ->
   (ComplexMake
-    (Arg <config.fe.TypeFloat32()> {n} [off])
-    (Arg <config.fe.TypeFloat32()> {n} [off+4]))
+    (Arg <fe.TypeFloat32()> {n} [off])
+    (Arg <fe.TypeFloat32()> {n} [off+4]))
 
-(Arg <t>) && t.IsStruct() && t.NumFields() == 0 && config.fe.CanSSA(t) ->
+(Arg <t>) && t.IsStruct() && t.NumFields() == 0 && fe.CanSSA(t) ->
   (StructMake0)
-(Arg <t> {n} [off]) && t.IsStruct() && t.NumFields() == 1 && config.fe.CanSSA(t) ->
+(Arg <t> {n} [off]) && t.IsStruct() && t.NumFields() == 1 && fe.CanSSA(t) ->
   (StructMake1
     (Arg <t.FieldType(0)> {n} [off+t.FieldOff(0)]))
-(Arg <t> {n} [off]) && t.IsStruct() && t.NumFields() == 2 && config.fe.CanSSA(t) ->
+(Arg <t> {n} [off]) && t.IsStruct() && t.NumFields() == 2 && fe.CanSSA(t) ->
   (StructMake2
     (Arg <t.FieldType(0)> {n} [off+t.FieldOff(0)])
     (Arg <t.FieldType(1)> {n} [off+t.FieldOff(1)]))
-(Arg <t> {n} [off]) && t.IsStruct() && t.NumFields() == 3 && config.fe.CanSSA(t) ->
+(Arg <t> {n} [off]) && t.IsStruct() && t.NumFields() == 3 && fe.CanSSA(t) ->
   (StructMake3
     (Arg <t.FieldType(0)> {n} [off+t.FieldOff(0)])
     (Arg <t.FieldType(1)> {n} [off+t.FieldOff(1)])
     (Arg <t.FieldType(2)> {n} [off+t.FieldOff(2)]))
-(Arg <t> {n} [off]) && t.IsStruct() && t.NumFields() == 4 && config.fe.CanSSA(t) ->
+(Arg <t> {n} [off]) && t.IsStruct() && t.NumFields() == 4 && fe.CanSSA(t) ->
   (StructMake4
     (Arg <t.FieldType(0)> {n} [off+t.FieldOff(0)])
     (Arg <t.FieldType(1)> {n} [off+t.FieldOff(1)])
@@ -873,7 +873,7 @@
 
 (Arg <t>) && t.IsArray() && t.NumElem() == 0 ->
   (ArrayMake0)
-(Arg <t> {n} [off]) && t.IsArray() && t.NumElem() == 1 && config.fe.CanSSA(t) ->
+(Arg <t> {n} [off]) && t.IsArray() && t.NumElem() == 1 && fe.CanSSA(t) ->
   (ArrayMake1 (Arg <t.ElemType()> {n} [off]))
 
 // strength reduction of divide by a constant.
@@ -1009,11 +1009,11 @@
 	&& mem.Op == OpStaticCall
 	&& isSameSym(mem.Aux, "runtime.newobject")
 	&& c == config.ctxt.FixedFrameSize() + config.RegSize // offset of return value
-	&& warnRule(config.Debug_checknil() && int(v.Line) > 1, v, "removed nil check")
+	&& warnRule(fe.Debug_checknil() && int(v.Line) > 1, v, "removed nil check")
 	-> (Invalid)
 (NilCheck (OffPtr (Load (OffPtr [c] (SP)) mem)) mem)
 	&& mem.Op == OpStaticCall
 	&& isSameSym(mem.Aux, "runtime.newobject")
 	&& c == config.ctxt.FixedFrameSize() + config.RegSize // offset of return value
-	&& warnRule(config.Debug_checknil() && int(v.Line) > 1, v, "removed nil check")
+	&& warnRule(fe.Debug_checknil() && int(v.Line) > 1, v, "removed nil check")
 	-> (Invalid)

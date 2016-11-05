@@ -27,12 +27,12 @@
 
 (Hmul64 x y) -> (MULH x y)
 (Hmul64u x y) -> (UMULH x y)
-(Hmul32 x y) -> (SRAconst (MULL <config.fe.TypeInt64()> x y) [32])
-(Hmul32u x y) -> (SRAconst (UMULL <config.fe.TypeUInt64()> x y) [32])
-(Hmul16 x y) -> (SRAconst (MULW <config.fe.TypeInt32()> (SignExt16to32 x) (SignExt16to32 y)) [16])
-(Hmul16u x y) -> (SRLconst (MUL <config.fe.TypeUInt32()> (ZeroExt16to32 x) (ZeroExt16to32 y)) [16])
-(Hmul8 x y) -> (SRAconst (MULW <config.fe.TypeInt16()> (SignExt8to32 x) (SignExt8to32 y)) [8])
-(Hmul8u x y) -> (SRLconst (MUL <config.fe.TypeUInt16()> (ZeroExt8to32 x) (ZeroExt8to32 y)) [8])
+(Hmul32 x y) -> (SRAconst (MULL <fe.TypeInt64()> x y) [32])
+(Hmul32u x y) -> (SRAconst (UMULL <fe.TypeUInt64()> x y) [32])
+(Hmul16 x y) -> (SRAconst (MULW <fe.TypeInt32()> (SignExt16to32 x) (SignExt16to32 y)) [16])
+(Hmul16u x y) -> (SRLconst (MUL <fe.TypeUInt32()> (ZeroExt16to32 x) (ZeroExt16to32 y)) [16])
+(Hmul8 x y) -> (SRAconst (MULW <fe.TypeInt16()> (SignExt8to32 x) (SignExt8to32 y)) [8])
+(Hmul8u x y) -> (SRLconst (MUL <fe.TypeUInt16()> (ZeroExt8to32 x) (ZeroExt8to32 y)) [8])
 
 (Div64 x y) -> (DIV x y)
 (Div64u x y) -> (UDIV x y)
@@ -95,7 +95,7 @@
 // boolean ops -- booleans are represented with 0=false, 1=true
 (AndB x y) -> (AND x y)
 (OrB x y) -> (OR x y)
-(EqB x y) -> (XOR (MOVDconst [1]) (XOR <config.fe.TypeBool()> x y))
+(EqB x y) -> (XOR (MOVDconst [1]) (XOR <fe.TypeBool()> x y))
 (NeqB x y) -> (XOR x y)
 (Not x) -> (XOR (MOVDconst [1]) x)
 

@@ -229,11 +229,9 @@ func (v *Value) copyInto(b *Block) *Value {
 	return c
 }
 
-func (v *Value) Logf(msg string, args ...interface{}) { v.Block.Logf(msg, args...) }
-func (v *Value) Log() bool                            { return v.Block.Log() }
-func (v *Value) Fatalf(msg string, args ...interface{}) {
-	v.Block.Func.Config.Fatalf(v.Line, msg, args...)
-}
+func (v *Value) Logf(msg string, args ...interface{})   { v.Block.Logf(msg, args...) }
+func (v *Value) Log() bool                              { return v.Block.Log() }
+func (v *Value) Fatalf(msg string, args ...interface{}) { v.Block.Func.fe.Fatalf(v.Line, msg, args...) }
 
 // isGenericIntConst returns whether v is a generic integer constant.
 func (v *Value) isGenericIntConst() bool {

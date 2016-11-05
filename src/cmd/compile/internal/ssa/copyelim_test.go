@@ -17,7 +17,7 @@ func BenchmarkCopyElim10000(b *testing.B)  { benchmarkCopyElim(b, 10000) }
 func BenchmarkCopyElim100000(b *testing.B) { benchmarkCopyElim(b, 100000) }
 
 func benchmarkCopyElim(b *testing.B, n int) {
-	c := testConfig(b)
+	c, fe := testConfig(b)
 
 	values := make([]interface{}, 0, n+2)
 	values = append(values, Valu("mem", OpInitMem, TypeMem, 0, nil))
@@ -34,7 +34,7 @@ func benchmarkCopyElim(b *testing.B, n int) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		fun := Fun(c, "entry", Bloc("entry", values...))
+		fun := Fun(c, fe, "entry", Bloc("entry", values...))
 		Copyelim(fun.f)
 		fun.f.Free()
 	}

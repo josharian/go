@@ -113,7 +113,7 @@ func mergePhi(v *Value, i int, b *Block) *Value {
 	u := v.Args[i]
 	if u.Block == b {
 		if u.Op != OpPhi {
-			b.Func.Fatalf("value %s is not a phi operation", u.LongString())
+			b.Fatalf("value %s is not a phi operation", u.LongString())
 		}
 		// If the original block contained u = φ(u0, u1, ..., un) and
 		// the current phi is

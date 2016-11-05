@@ -8,8 +8,8 @@ import (
 
 func TestFuseEliminatesOneBranch(t *testing.T) {
 	ptrType := &TypeImpl{Size_: 8, Ptr: true, Name: "testptr"} // dummy for testing
-	c := NewConfig("amd64", DummyFrontend{t}, nil, true)
-	fun := Fun(c, "entry",
+	c, fe := testConfig(t)
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Valu("sb", OpSB, TypeInvalid, 0, nil),
@@ -36,8 +36,8 @@ func TestFuseEliminatesOneBranch(t *testing.T) {
 
 func TestFuseEliminatesBothBranches(t *testing.T) {
 	ptrType := &TypeImpl{Size_: 8, Ptr: true, Name: "testptr"} // dummy for testing
-	c := NewConfig("amd64", DummyFrontend{t}, nil, true)
-	fun := Fun(c, "entry",
+	c, fe := testConfig(t)
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Valu("sb", OpSB, TypeInvalid, 0, nil),
@@ -69,8 +69,8 @@ func TestFuseEliminatesBothBranches(t *testing.T) {
 
 func TestFuseHandlesPhis(t *testing.T) {
 	ptrType := &TypeImpl{Size_: 8, Ptr: true, Name: "testptr"} // dummy for testing
-	c := NewConfig("amd64", DummyFrontend{t}, nil, true)
-	fun := Fun(c, "entry",
+	c, fe := testConfig(t)
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Valu("sb", OpSB, TypeInvalid, 0, nil),
@@ -102,8 +102,8 @@ func TestFuseHandlesPhis(t *testing.T) {
 }
 
 func TestFuseEliminatesEmptyBlocks(t *testing.T) {
-	c := NewConfig("amd64", DummyFrontend{t}, nil, true)
-	fun := Fun(c, "entry",
+	c, fe := testConfig(t)
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Valu("sb", OpSB, TypeInvalid, 0, nil),
@@ -133,7 +133,7 @@ func TestFuseEliminatesEmptyBlocks(t *testing.T) {
 func BenchmarkFuse(b *testing.B) {
 	for _, n := range [...]int{1, 10, 100, 1000, 10000} {
 		b.Run(strconv.Itoa(n), func(b *testing.B) {
-			c := testConfig(b)
+			c, fe := testConfig(b)
 
 			blocks := make([]bloc, 0, 2*n+3)
 			blocks = append(blocks,
@@ -160,7 +160,7 @@ func BenchmarkFuse(b *testing.B) {
 
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				fun := Fun(c, "entry", blocks...)
+				fun := Fun(c, fe, "entry", blocks...)
 				fuse(fun.f)
 				fun.f.Free()
 			}

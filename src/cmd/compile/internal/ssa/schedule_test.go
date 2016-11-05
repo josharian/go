@@ -7,9 +7,9 @@ package ssa
 import "testing"
 
 func TestSchedule(t *testing.T) {
-	c := testConfig(t)
+	c, fe := testConfig(t)
 	cases := []fun{
-		Fun(c, "entry",
+		Fun(c, fe, "entry",
 			Bloc("entry",
 				Valu("mem0", OpInitMem, TypeMem, 0, nil),
 				Valu("ptr", OpConst64, TypeInt64, 0xABCD, nil),

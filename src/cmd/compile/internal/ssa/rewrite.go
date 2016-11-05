@@ -11,7 +11,12 @@ import (
 	"path/filepath"
 )
 
-func applyRewrite(f *Func, rb func(*Block, *Config) bool, rv func(*Value, *Config) bool) {
+type (
+	blockRewriter func(*Block, *Config, Frontend) bool
+	valueRewriter func(*Value, *Config, Frontend) bool
+)
+
+func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
 	// repeat rewrites until we find no more rewrites
 	var curb *Block
 	var curv *Value
@@ -25,6 +30,7 @@ func applyRewrite(f *Func, rb func(*Block, *Config) bool, rv func(*Value, *Confi
 		}
 	}()
 	config := f.Config
+	fe := f.Frontend()
 	for {
 		change := false
 		for _, b := range f.Blocks {
@@ -34,7 +40,7 @@ func applyRewrite(f *Func, rb func(*Block, *Config) bool, rv func(*Value, *Confi
 				}
 			}
 			curb = b
-			if rb(b, config) {
+			if rb(b, config, fe) {
 				change = true
 			}
 			curb = nil
@@ -63,7 +69,7 @@ func applyRewrite(f *Func, rb func(*Block, *Config) bool, rv func(*Value, *Confi
 
 				// apply rewrite function
 				curv = v
-				if rv(v, config) {
+				if rv(v, config, fe) {
 					change = true
 				}
 				curv = nil
@@ -489,7 +495,7 @@ func noteRule(s string) bool {
 // cond is true and the rule is fired.
 func warnRule(cond bool, v *Value, s string) bool {
 	if cond {
-		v.Block.Func.Config.Warnl(v.Line, s)
+		v.Block.Func.Warnl(v.Line, s)
 	}
 	return true
 }

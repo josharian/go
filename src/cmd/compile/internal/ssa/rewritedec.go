@@ -6,34 +6,34 @@ package ssa
 import "math"
 
 var _ = math.MinInt8 // in case not otherwise used
-func rewriteValuedec(v *Value, config *Config) bool {
+func rewriteValuedec(v *Value, config *Config, fe Frontend) bool {
 	switch v.Op {
 	case OpComplexImag:
-		return rewriteValuedec_OpComplexImag(v, config)
+		return rewriteValuedec_OpComplexImag(v, config, fe)
 	case OpComplexReal:
-		return rewriteValuedec_OpComplexReal(v, config)
+		return rewriteValuedec_OpComplexReal(v, config, fe)
 	case OpIData:
-		return rewriteValuedec_OpIData(v, config)
+		return rewriteValuedec_OpIData(v, config, fe)
 	case OpITab:
-		return rewriteValuedec_OpITab(v, config)
+		return rewriteValuedec_OpITab(v, config, fe)
 	case OpLoad:
-		return rewriteValuedec_OpLoad(v, config)
+		return rewriteValuedec_OpLoad(v, config, fe)
 	case OpSliceCap:
-		return rewriteValuedec_OpSliceCap(v, config)
+		return rewriteValuedec_OpSliceCap(v, config, fe)
 	case OpSliceLen:
-		return rewriteValuedec_OpSliceLen(v, config)
+		return rewriteValuedec_OpSliceLen(v, config, fe)
 	case OpSlicePtr:
-		return rewriteValuedec_OpSlicePtr(v, config)
+		return rewriteValuedec_OpSlicePtr(v, config, fe)
 	case OpStore:
-		return rewriteValuedec_OpStore(v, config)
+		return rewriteValuedec_OpStore(v, config, fe)
 	case OpStringLen:
-		return rewriteValuedec_OpStringLen(v, config)
+		return rewriteValuedec_OpStringLen(v, config, fe)
 	case OpStringPtr:
-		return rewriteValuedec_OpStringPtr(v, config)
+		return rewriteValuedec_OpStringPtr(v, config, fe)
 	}
 	return false
 }
-func rewriteValuedec_OpComplexImag(v *Value, config *Config) bool {
+func rewriteValuedec_OpComplexImag(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (ComplexImag (ComplexMake _ imag ))
@@ -52,7 +52,7 @@ func rewriteValuedec_OpComplexImag(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpComplexReal(v *Value, config *Config) bool {
+func rewriteValuedec_OpComplexReal(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (ComplexReal (ComplexMake real _  ))
@@ -71,7 +71,7 @@ func rewriteValuedec_OpComplexReal(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpIData(v *Value, config *Config) bool {
+func rewriteValuedec_OpIData(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (IData (IMake _ data))
@@ -90,7 +90,7 @@ func rewriteValuedec_OpIData(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpITab(v *Value, config *Config) bool {
+func rewriteValuedec_OpITab(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (ITab (IMake itab _))
@@ -109,12 +109,12 @@ func rewriteValuedec_OpITab(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
+func rewriteValuedec_OpLoad(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (Load <t> ptr mem)
 	// cond: t.IsComplex() && t.Size() == 8
-	// result: (ComplexMake     (Load <config.fe.TypeFloat32()> ptr mem)     (Load <config.fe.TypeFloat32()>       (OffPtr <config.fe.TypeFloat32().PtrTo()> [4] ptr)       mem)     )
+	// result: (ComplexMake     (Load <fe.TypeFloat32()> ptr mem)     (Load <fe.TypeFloat32()>       (OffPtr <fe.TypeFloat32().PtrTo()> [4] ptr)       mem)     )
 	for {
 		t := v.Type
 		ptr := v.Args[0]
@@ -123,12 +123,12 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 			break
 		}
 		v.reset(OpComplexMake)
-		v0 := b.NewValue0(v.Line, OpLoad, config.fe.TypeFloat32())
+		v0 := b.NewValue0(v.Line, OpLoad, fe.TypeFloat32())
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
 		v.AddArg(v0)
-		v1 := b.NewValue0(v.Line, OpLoad, config.fe.TypeFloat32())
-		v2 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeFloat32().PtrTo())
+		v1 := b.NewValue0(v.Line, OpLoad, fe.TypeFloat32())
+		v2 := b.NewValue0(v.Line, OpOffPtr, fe.TypeFloat32().PtrTo())
 		v2.AuxInt = 4
 		v2.AddArg(ptr)
 		v1.AddArg(v2)
@@ -138,7 +138,7 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 	}
 	// match: (Load <t> ptr mem)
 	// cond: t.IsComplex() && t.Size() == 16
-	// result: (ComplexMake     (Load <config.fe.TypeFloat64()> ptr mem)     (Load <config.fe.TypeFloat64()>       (OffPtr <config.fe.TypeFloat64().PtrTo()> [8] ptr)       mem)     )
+	// result: (ComplexMake     (Load <fe.TypeFloat64()> ptr mem)     (Load <fe.TypeFloat64()>       (OffPtr <fe.TypeFloat64().PtrTo()> [8] ptr)       mem)     )
 	for {
 		t := v.Type
 		ptr := v.Args[0]
@@ -147,12 +147,12 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 			break
 		}
 		v.reset(OpComplexMake)
-		v0 := b.NewValue0(v.Line, OpLoad, config.fe.TypeFloat64())
+		v0 := b.NewValue0(v.Line, OpLoad, fe.TypeFloat64())
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
 		v.AddArg(v0)
-		v1 := b.NewValue0(v.Line, OpLoad, config.fe.TypeFloat64())
-		v2 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeFloat64().PtrTo())
+		v1 := b.NewValue0(v.Line, OpLoad, fe.TypeFloat64())
+		v2 := b.NewValue0(v.Line, OpOffPtr, fe.TypeFloat64().PtrTo())
 		v2.AuxInt = 8
 		v2.AddArg(ptr)
 		v1.AddArg(v2)
@@ -162,7 +162,7 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 	}
 	// match: (Load <t> ptr mem)
 	// cond: t.IsString()
-	// result: (StringMake     (Load <config.fe.TypeBytePtr()> ptr mem)     (Load <config.fe.TypeInt()>       (OffPtr <config.fe.TypeInt().PtrTo()> [config.PtrSize] ptr)       mem))
+	// result: (StringMake     (Load <fe.TypeBytePtr()> ptr mem)     (Load <fe.TypeInt()>       (OffPtr <fe.TypeInt().PtrTo()> [config.PtrSize] ptr)       mem))
 	for {
 		t := v.Type
 		ptr := v.Args[0]
@@ -171,12 +171,12 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 			break
 		}
 		v.reset(OpStringMake)
-		v0 := b.NewValue0(v.Line, OpLoad, config.fe.TypeBytePtr())
+		v0 := b.NewValue0(v.Line, OpLoad, fe.TypeBytePtr())
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
 		v.AddArg(v0)
-		v1 := b.NewValue0(v.Line, OpLoad, config.fe.TypeInt())
-		v2 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeInt().PtrTo())
+		v1 := b.NewValue0(v.Line, OpLoad, fe.TypeInt())
+		v2 := b.NewValue0(v.Line, OpOffPtr, fe.TypeInt().PtrTo())
 		v2.AuxInt = config.PtrSize
 		v2.AddArg(ptr)
 		v1.AddArg(v2)
@@ -186,7 +186,7 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 	}
 	// match: (Load <t> ptr mem)
 	// cond: t.IsSlice()
-	// result: (SliceMake     (Load <t.ElemType().PtrTo()> ptr mem)     (Load <config.fe.TypeInt()>       (OffPtr <config.fe.TypeInt().PtrTo()> [config.PtrSize] ptr)       mem)     (Load <config.fe.TypeInt()>       (OffPtr <config.fe.TypeInt().PtrTo()> [2*config.PtrSize] ptr)       mem))
+	// result: (SliceMake     (Load <t.ElemType().PtrTo()> ptr mem)     (Load <fe.TypeInt()>       (OffPtr <fe.TypeInt().PtrTo()> [config.PtrSize] ptr)       mem)     (Load <fe.TypeInt()>       (OffPtr <fe.TypeInt().PtrTo()> [2*config.PtrSize] ptr)       mem))
 	for {
 		t := v.Type
 		ptr := v.Args[0]
@@ -199,15 +199,15 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
 		v.AddArg(v0)
-		v1 := b.NewValue0(v.Line, OpLoad, config.fe.TypeInt())
-		v2 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeInt().PtrTo())
+		v1 := b.NewValue0(v.Line, OpLoad, fe.TypeInt())
+		v2 := b.NewValue0(v.Line, OpOffPtr, fe.TypeInt().PtrTo())
 		v2.AuxInt = config.PtrSize
 		v2.AddArg(ptr)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v.AddArg(v1)
-		v3 := b.NewValue0(v.Line, OpLoad, config.fe.TypeInt())
-		v4 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeInt().PtrTo())
+		v3 := b.NewValue0(v.Line, OpLoad, fe.TypeInt())
+		v4 := b.NewValue0(v.Line, OpOffPtr, fe.TypeInt().PtrTo())
 		v4.AuxInt = 2 * config.PtrSize
 		v4.AddArg(ptr)
 		v3.AddArg(v4)
@@ -217,7 +217,7 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 	}
 	// match: (Load <t> ptr mem)
 	// cond: t.IsInterface()
-	// result: (IMake     (Load <config.fe.TypeBytePtr()> ptr mem)     (Load <config.fe.TypeBytePtr()>       (OffPtr <config.fe.TypeBytePtr().PtrTo()> [config.PtrSize] ptr)       mem))
+	// result: (IMake     (Load <fe.TypeBytePtr()> ptr mem)     (Load <fe.TypeBytePtr()>       (OffPtr <fe.TypeBytePtr().PtrTo()> [config.PtrSize] ptr)       mem))
 	for {
 		t := v.Type
 		ptr := v.Args[0]
@@ -226,12 +226,12 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 			break
 		}
 		v.reset(OpIMake)
-		v0 := b.NewValue0(v.Line, OpLoad, config.fe.TypeBytePtr())
+		v0 := b.NewValue0(v.Line, OpLoad, fe.TypeBytePtr())
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
 		v.AddArg(v0)
-		v1 := b.NewValue0(v.Line, OpLoad, config.fe.TypeBytePtr())
-		v2 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeBytePtr().PtrTo())
+		v1 := b.NewValue0(v.Line, OpLoad, fe.TypeBytePtr())
+		v2 := b.NewValue0(v.Line, OpOffPtr, fe.TypeBytePtr().PtrTo())
 		v2.AuxInt = config.PtrSize
 		v2.AddArg(ptr)
 		v1.AddArg(v2)
@@ -241,7 +241,7 @@ func rewriteValuedec_OpLoad(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpSliceCap(v *Value, config *Config) bool {
+func rewriteValuedec_OpSliceCap(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (SliceCap (SliceMake _ _ cap))
@@ -260,7 +260,7 @@ func rewriteValuedec_OpSliceCap(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpSliceLen(v *Value, config *Config) bool {
+func rewriteValuedec_OpSliceLen(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (SliceLen (SliceMake _ len _))
@@ -279,7 +279,7 @@ func rewriteValuedec_OpSliceLen(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpSlicePtr(v *Value, config *Config) bool {
+func rewriteValuedec_OpSlicePtr(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (SlicePtr (SliceMake ptr _ _ ))
@@ -298,12 +298,12 @@ func rewriteValuedec_OpSlicePtr(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpStore(v *Value, config *Config) bool {
+func rewriteValuedec_OpStore(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (Store [8] dst (ComplexMake real imag) mem)
 	// cond:
-	// result: (Store [4]     (OffPtr <config.fe.TypeFloat32().PtrTo()> [4] dst)     imag     (Store [4] dst real mem))
+	// result: (Store [4]     (OffPtr <fe.TypeFloat32().PtrTo()> [4] dst)     imag     (Store [4] dst real mem))
 	for {
 		if v.AuxInt != 8 {
 			break
@@ -318,7 +318,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 		mem := v.Args[2]
 		v.reset(OpStore)
 		v.AuxInt = 4
-		v0 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeFloat32().PtrTo())
+		v0 := b.NewValue0(v.Line, OpOffPtr, fe.TypeFloat32().PtrTo())
 		v0.AuxInt = 4
 		v0.AddArg(dst)
 		v.AddArg(v0)
@@ -333,7 +333,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 	}
 	// match: (Store [16] dst (ComplexMake real imag) mem)
 	// cond:
-	// result: (Store [8]     (OffPtr <config.fe.TypeFloat64().PtrTo()> [8] dst)     imag     (Store [8] dst real mem))
+	// result: (Store [8]     (OffPtr <fe.TypeFloat64().PtrTo()> [8] dst)     imag     (Store [8] dst real mem))
 	for {
 		if v.AuxInt != 16 {
 			break
@@ -348,7 +348,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 		mem := v.Args[2]
 		v.reset(OpStore)
 		v.AuxInt = 8
-		v0 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeFloat64().PtrTo())
+		v0 := b.NewValue0(v.Line, OpOffPtr, fe.TypeFloat64().PtrTo())
 		v0.AuxInt = 8
 		v0.AddArg(dst)
 		v.AddArg(v0)
@@ -363,7 +363,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 	}
 	// match: (Store [2*config.PtrSize] dst (StringMake ptr len) mem)
 	// cond:
-	// result: (Store [config.PtrSize]     (OffPtr <config.fe.TypeInt().PtrTo()> [config.PtrSize] dst)     len     (Store [config.PtrSize] dst ptr mem))
+	// result: (Store [config.PtrSize]     (OffPtr <fe.TypeInt().PtrTo()> [config.PtrSize] dst)     len     (Store [config.PtrSize] dst ptr mem))
 	for {
 		if v.AuxInt != 2*config.PtrSize {
 			break
@@ -378,7 +378,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 		mem := v.Args[2]
 		v.reset(OpStore)
 		v.AuxInt = config.PtrSize
-		v0 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeInt().PtrTo())
+		v0 := b.NewValue0(v.Line, OpOffPtr, fe.TypeInt().PtrTo())
 		v0.AuxInt = config.PtrSize
 		v0.AddArg(dst)
 		v.AddArg(v0)
@@ -393,7 +393,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 	}
 	// match: (Store [3*config.PtrSize] dst (SliceMake ptr len cap) mem)
 	// cond:
-	// result: (Store [config.PtrSize]     (OffPtr <config.fe.TypeInt().PtrTo()> [2*config.PtrSize] dst)     cap     (Store [config.PtrSize]       (OffPtr <config.fe.TypeInt().PtrTo()> [config.PtrSize] dst)       len       (Store [config.PtrSize] dst ptr mem)))
+	// result: (Store [config.PtrSize]     (OffPtr <fe.TypeInt().PtrTo()> [2*config.PtrSize] dst)     cap     (Store [config.PtrSize]       (OffPtr <fe.TypeInt().PtrTo()> [config.PtrSize] dst)       len       (Store [config.PtrSize] dst ptr mem)))
 	for {
 		if v.AuxInt != 3*config.PtrSize {
 			break
@@ -409,14 +409,14 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 		mem := v.Args[2]
 		v.reset(OpStore)
 		v.AuxInt = config.PtrSize
-		v0 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeInt().PtrTo())
+		v0 := b.NewValue0(v.Line, OpOffPtr, fe.TypeInt().PtrTo())
 		v0.AuxInt = 2 * config.PtrSize
 		v0.AddArg(dst)
 		v.AddArg(v0)
 		v.AddArg(cap)
 		v1 := b.NewValue0(v.Line, OpStore, TypeMem)
 		v1.AuxInt = config.PtrSize
-		v2 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeInt().PtrTo())
+		v2 := b.NewValue0(v.Line, OpOffPtr, fe.TypeInt().PtrTo())
 		v2.AuxInt = config.PtrSize
 		v2.AddArg(dst)
 		v1.AddArg(v2)
@@ -432,7 +432,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 	}
 	// match: (Store [2*config.PtrSize] dst (IMake itab data) mem)
 	// cond:
-	// result: (Store [config.PtrSize]     (OffPtr <config.fe.TypeBytePtr().PtrTo()> [config.PtrSize] dst)     data     (Store [config.PtrSize] dst itab mem))
+	// result: (Store [config.PtrSize]     (OffPtr <fe.TypeBytePtr().PtrTo()> [config.PtrSize] dst)     data     (Store [config.PtrSize] dst itab mem))
 	for {
 		if v.AuxInt != 2*config.PtrSize {
 			break
@@ -447,7 +447,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 		mem := v.Args[2]
 		v.reset(OpStore)
 		v.AuxInt = config.PtrSize
-		v0 := b.NewValue0(v.Line, OpOffPtr, config.fe.TypeBytePtr().PtrTo())
+		v0 := b.NewValue0(v.Line, OpOffPtr, fe.TypeBytePtr().PtrTo())
 		v0.AuxInt = config.PtrSize
 		v0.AddArg(dst)
 		v.AddArg(v0)
@@ -462,7 +462,7 @@ func rewriteValuedec_OpStore(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpStringLen(v *Value, config *Config) bool {
+func rewriteValuedec_OpStringLen(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (StringLen (StringMake _ len))
@@ -481,7 +481,7 @@ func rewriteValuedec_OpStringLen(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteValuedec_OpStringPtr(v *Value, config *Config) bool {
+func rewriteValuedec_OpStringPtr(v *Value, config *Config, fe Frontend) bool {
 	b := v.Block
 	_ = b
 	// match: (StringPtr (StringMake ptr _))
@@ -500,7 +500,7 @@ func rewriteValuedec_OpStringPtr(v *Value, config *Config) bool {
 	}
 	return false
 }
-func rewriteBlockdec(b *Block, config *Config) bool {
+func rewriteBlockdec(b *Block, config *Config, fe Frontend) bool {
 	switch b.Kind {
 	}
 	return false

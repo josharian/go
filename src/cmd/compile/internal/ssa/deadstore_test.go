@@ -7,10 +7,10 @@ package ssa
 import "testing"
 
 func TestDeadStore(t *testing.T) {
-	c := testConfig(t)
+	c, fe := testConfig(t)
 	elemType := &TypeImpl{Size_: 1, Name: "testtype"}
 	ptrType := &TypeImpl{Size_: 8, Ptr: true, Name: "testptr", Elem_: elemType} // dummy for testing
-	fun := Fun(c, "entry",
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("start", OpInitMem, TypeMem, 0, nil),
 			Valu("sb", OpSB, TypeInvalid, 0, nil),
@@ -43,9 +43,9 @@ func TestDeadStore(t *testing.T) {
 }
 func TestDeadStorePhi(t *testing.T) {
 	// make sure we don't get into an infinite loop with phi values.
-	c := testConfig(t)
+	c, fe := testConfig(t)
 	ptrType := &TypeImpl{Size_: 8, Ptr: true, Name: "testptr"} // dummy for testing
-	fun := Fun(c, "entry",
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("start", OpInitMem, TypeMem, 0, nil),
 			Valu("sb", OpSB, TypeInvalid, 0, nil),
@@ -69,10 +69,10 @@ func TestDeadStoreTypes(t *testing.T) {
 	// stronger restriction, that one store can't shadow another unless the
 	// types of the address fields are identical (where identicalness is
 	// decided by the CSE pass).
-	c := testConfig(t)
+	c, fe := testConfig(t)
 	t1 := &TypeImpl{Size_: 8, Ptr: true, Name: "t1"}
 	t2 := &TypeImpl{Size_: 4, Ptr: true, Name: "t2"}
-	fun := Fun(c, "entry",
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("start", OpInitMem, TypeMem, 0, nil),
 			Valu("sb", OpSB, TypeInvalid, 0, nil),
@@ -100,9 +100,9 @@ func TestDeadStoreUnsafe(t *testing.T) {
 	// Make sure a narrow store can't shadow a wider one. The test above
 	// covers the case of two different types, but unsafe pointer casting
 	// can get to a point where the size is changed but type unchanged.
-	c := testConfig(t)
+	c, fe := testConfig(t)
 	ptrType := &TypeImpl{Size_: 8, Ptr: true, Name: "testptr"} // dummy for testing
-	fun := Fun(c, "entry",
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("start", OpInitMem, TypeMem, 0, nil),
 			Valu("sb", OpSB, TypeInvalid, 0, nil),

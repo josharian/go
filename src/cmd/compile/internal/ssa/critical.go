@@ -63,7 +63,7 @@ func critical(f *Func) {
 					d.Line = p.Line
 					blocks[argID] = d
 					if f.pass.debug > 0 {
-						f.Config.Warnl(p.Line, "split critical edge")
+						f.Warnl(p.Line, "split critical edge")
 					}
 				} else {
 					reusedBlock = true
@@ -74,7 +74,7 @@ func critical(f *Func) {
 				d = f.NewBlock(BlockPlain)
 				d.Line = p.Line
 				if f.pass.debug > 0 {
-					f.Config.Warnl(p.Line, "split critical edge")
+					f.Warnl(p.Line, "split critical edge")
 				}
 			}
 

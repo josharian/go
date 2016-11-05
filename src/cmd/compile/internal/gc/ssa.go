@@ -23,12 +23,10 @@ var (
 	ssaConfig   *ssa.Config
 )
 
-var ssaExp ssaExport
-
 func initssa() *ssa.Config {
 	ssaInitOnce.Do(func() {
 		if ssaConfig == nil {
-			ssaConfig = ssa.NewConfig(Thearch.LinkArch.Name, &ssaExp, Ctxt, Debug['N'] == 0)
+			ssaConfig = ssa.NewConfig(Thearch.LinkArch.Name, &ssaExport{}, Ctxt, Debug['N'] == 0)
 			if Thearch.LinkArch.Name == "386" {
 				ssaConfig.Set387(Thearch.Use387)
 			}
@@ -63,19 +61,19 @@ func buildssa(fn *Node) *ssa.Func {
 			fn.Func.WBLineno = s.WBLineno
 		}
 	}()
-	ssaExp.log = printssa
 
 	s.config = initssa()
-	s.f = s.config.NewFunc()
+	fe := &ssaExport{log: printssa}
+	s.f = s.config.NewFunc(fe)
 	s.f.Name = name
 	s.exitCode = fn.Func.Exit
 	s.panics = map[funcLine]*ssa.Block{}
-	s.f.DebugTest = s.config.DebugHashMatch("GOSSAHASH", name)
+	s.f.DebugTest = s.config.DebugHashMatch("GOSSAHASH", name, fe)
 
 	if name == os.Getenv("GOSSAFUNC") {
 		// TODO: tempfile? it is handy to have the location
 		// of this file be stable, so you can just reload in the browser.
-		s.f.HTMLWriter = ssa.NewHTMLWriter("ssa.html", s.config, name)
+		s.f.HTMLWriter = ssa.NewHTMLWriter("ssa.html", fe, name)
 		// TODO: generate and print a mapping from nodes to values and blocks
 	}
 
@@ -282,11 +280,13 @@ func (s *state) label(sym *Sym) *ssaLabel {
 	return lab
 }
 
-func (s *state) Logf(msg string, args ...interface{})              { s.config.Logf(msg, args...) }
-func (s *state) Log() bool                                         { return s.config.Log() }
-func (s *state) Fatalf(msg string, args ...interface{})            { s.config.Fatalf(s.peekLine(), msg, args...) }
-func (s *state) Warnl(line int32, msg string, args ...interface{}) { s.config.Warnl(line, msg, args...) }
-func (s *state) Debug_checknil() bool                              { return s.config.Debug_checknil() }
+func (s *state) Logf(msg string, args ...interface{}) { s.f.Logf(msg, args...) }
+func (s *state) Log() bool                            { return s.f.Log() }
+func (s *state) Fatalf(msg string, args ...interface{}) {
+	s.f.Frontend().Fatalf(s.peekLine(), msg, args...)
+}
+func (s *state) Warnl(line int32, msg string, args ...interface{}) { s.f.Warnl(line, msg, args...) }
+func (s *state) Debug_checknil() bool                              { return s.f.Debug_checknil() }
 
 var (
 	// dummy node for the memory variable
@@ -3264,8 +3264,8 @@ func canSSAType(t *Type) bool {
 func (s *state) exprPtr(n *Node, bounded bool, lineno int32) *ssa.Value {
 	p := s.expr(n)
 	if bounded || n.NonNil {
-		if s.f.Config.Debug_checknil() && lineno > 1 {
-			s.f.Config.Warnl(lineno, "removed nil check")
+		if s.f.Frontend().Debug_checknil() && lineno > 1 {
+			s.f.Warnl(lineno, "removed nil check")
 		}
 		return p
 	}
@@ -4391,14 +4391,12 @@ func (s *SSAGenState) SetLineno(l int32) {
 func genssa(f *ssa.Func, ptxt *obj.Prog, gcargs, gclocals *Sym) {
 	var s SSAGenState
 
-	e := f.Config.Frontend().(*ssaExport)
-
 	// Remember where each block starts.
 	s.bstart = make([]*obj.Prog, f.NumBlocks())
 
 	var valueProgs map[*obj.Prog]*ssa.Value
 	var blockProgs map[*obj.Prog]*ssa.Block
-	var logProgs = e.log
+	var logProgs = f.Log()
 	if logProgs {
 		valueProgs = make(map[*obj.Prog]*ssa.Value, f.NumValues())
 		blockProgs = make(map[*obj.Prog]*ssa.Block, f.NumBlocks())

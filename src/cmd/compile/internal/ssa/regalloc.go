@@ -445,7 +445,7 @@ func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, line
 		// Load v from its spill location.
 		case vi.spill != nil:
 			if s.f.pass.debug > logSpills {
-				s.f.Config.Warnl(vi.spill.Line, "load spill for %v from %v", v, vi.spill)
+				s.f.Warnl(vi.spill.Line, "load spill for %v from %v", v, vi.spill)
 			}
 			c = s.curBlock.NewValue1(line, OpLoadReg, v.Type, vi.spill)
 			vi.spillUsed = true
@@ -554,7 +554,7 @@ func (s *regAllocState) init(f *Func) {
 		case "s390x":
 			// nothing to do, R10 & R11 already reserved
 		default:
-			s.f.Config.fe.Fatalf(0, "arch %s not implemented", s.f.Config.arch)
+			s.f.fe.Fatalf(0, "arch %s not implemented", s.f.Config.arch)
 		}
 	}
 	if s.f.Config.nacl {
@@ -1585,7 +1585,7 @@ func (s *regAllocState) regalloc(f *Func) {
 		vi := s.values[i]
 		if vi.spillUsed {
 			if s.f.pass.debug > logSpills && vi.spill.Op != OpArg {
-				s.f.Config.Warnl(vi.spill.Line, "spilled value at %v remains", vi.spill)
+				s.f.Warnl(vi.spill.Line, "spilled value at %v remains", vi.spill)
 			}
 			continue
 		}
@@ -1683,7 +1683,7 @@ sinking:
 			}
 			// If here, the register assignment was lost down at least one exit and it can't be sunk
 			if s.f.pass.debug > moveSpills {
-				s.f.Config.Warnl(e.Line, "lost register assignment for spill %v in %v at exit %v to %v",
+				s.f.Warnl(e.Line, "lost register assignment for spill %v in %v at exit %v to %v",
 					vsp, b, p, d)
 			}
 			nSpillsChanged++
@@ -1722,7 +1722,7 @@ sinking:
 				vspnew = d.NewValue1(e.Line, OpStoreReg, e.Type, e)
 				f.setHome(vspnew, f.getHome(vsp.ID)) // copy stack home
 				if s.f.pass.debug > moveSpills {
-					s.f.Config.Warnl(e.Line, "copied spill %v in %v for %v to %v in %v",
+					s.f.Warnl(e.Line, "copied spill %v in %v for %v to %v in %v",
 						vsp, b, e, vspnew, d)
 				}
 			} else {
@@ -1730,7 +1730,7 @@ sinking:
 				vspnew.Block = d
 				d.Values = append(d.Values, vspnew)
 				if s.f.pass.debug > moveSpills {
-					s.f.Config.Warnl(e.Line, "moved spill %v in %v for %v to %v in %v",
+					s.f.Warnl(e.Line, "moved spill %v in %v for %v to %v in %v",
 						vsp, b, e, vspnew, d)
 				}
 			}
@@ -2192,9 +2192,9 @@ func (e *edgeState) findRegFor(typ Type) Location {
 	// Which registers are possibilities.
 	var m regMask
 	if typ.IsFloat() {
-		m = e.s.compatRegs(e.s.f.Config.fe.TypeFloat64())
+		m = e.s.compatRegs(e.s.f.fe.TypeFloat64())
 	} else {
-		m = e.s.compatRegs(e.s.f.Config.fe.TypeInt64())
+		m = e.s.compatRegs(e.s.f.fe.TypeInt64())
 	}
 
 	// Pick a register. In priority order:
@@ -2217,8 +2217,8 @@ func (e *edgeState) findRegFor(typ Type) Location {
 	// No register is available. Allocate a temp location to spill a register to.
 	// The type of the slot is immaterial - it will not be live across
 	// any safepoint. Just use a type big enough to hold any register.
-	typ = e.s.f.Config.fe.TypeInt64()
-	t := LocalSlot{e.s.f.Config.fe.Auto(typ), typ, 0}
+	typ = e.s.f.fe.TypeInt64()
+	t := LocalSlot{e.s.f.fe.Auto(typ), typ, 0}
 	// TODO: reuse these slots.
 
 	// Pick a register to spill.

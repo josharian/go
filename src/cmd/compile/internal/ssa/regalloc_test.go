@@ -7,8 +7,8 @@ package ssa
 import "testing"
 
 func TestLiveControlOps(t *testing.T) {
-	c := testConfig(t)
-	f := Fun(c, "entry",
+	c, fe := testConfig(t)
+	f := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Valu("x", OpAMD64MOVLconst, TypeInt8, 1, nil),

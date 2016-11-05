@@ -11,8 +11,8 @@ import (
 )
 
 func TestDeadLoop(t *testing.T) {
-	c := testConfig(t)
-	fun := Fun(c, "entry",
+	c, fe := testConfig(t)
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Goto("exit")),
@@ -41,8 +41,8 @@ func TestDeadLoop(t *testing.T) {
 }
 
 func TestDeadValue(t *testing.T) {
-	c := testConfig(t)
-	fun := Fun(c, "entry",
+	c, fe := testConfig(t)
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Valu("deadval", OpConst64, TypeInt64, 37, nil),
@@ -64,8 +64,8 @@ func TestDeadValue(t *testing.T) {
 }
 
 func TestNeverTaken(t *testing.T) {
-	c := testConfig(t)
-	fun := Fun(c, "entry",
+	c, fe := testConfig(t)
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("cond", OpConstBool, TypeBool, 0, nil),
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
@@ -99,8 +99,8 @@ func TestNeverTaken(t *testing.T) {
 }
 
 func TestNestedDeadBlocks(t *testing.T) {
-	c := testConfig(t)
-	fun := Fun(c, "entry",
+	c, fe := testConfig(t)
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Valu("cond", OpConstBool, TypeBool, 0, nil),
@@ -140,7 +140,7 @@ func TestNestedDeadBlocks(t *testing.T) {
 func BenchmarkDeadCode(b *testing.B) {
 	for _, n := range [...]int{1, 10, 100, 1000, 10000, 100000, 200000} {
 		b.Run(strconv.Itoa(n), func(b *testing.B) {
-			c := testConfig(b)
+			c, fe := testConfig(b)
 			blocks := make([]bloc, 0, n+2)
 			blocks = append(blocks,
 				Bloc("entry",
@@ -152,7 +152,7 @@ func BenchmarkDeadCode(b *testing.B) {
 			}
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				fun := Fun(c, "entry", blocks...)
+				fun := Fun(c, fe, "entry", blocks...)
 				Deadcode(fun.f)
 				fun.f.Free()
 			}

@@ -28,6 +28,8 @@ type Func struct {
 	values [2000]Value
 	blocks [200]Block
 
+	fe Frontend
+
 	// Debugging-related
 	DebugTest  bool        // default true unless $GOSSAHASH != ""; as a debugging aid, make new code conditional on this and use GOSSAHASH to binary search for failing cases
 	HTMLWriter *HTMLWriter // html writer, for debugging
@@ -125,7 +127,7 @@ func (f *Func) LogStat(key string, args ...interface{}) {
 	if f.pass != nil {
 		n = strings.Replace(f.pass.name, " ", "_", -1)
 	}
-	f.Config.Warnl(f.Entry.Line, "\t%s\t%s%s\t%s", n, key, value, f.Name)
+	f.Warnl(f.Entry.Line, "\t%s\t%s%s\t%s", n, key, value, f.Name)
 }
 
 // freeValue frees a value. It must no longer be referenced.
@@ -417,9 +419,13 @@ func (f *Func) ConstEmptyString(line int32, t Type) *Value {
 	return v
 }
 
-func (f *Func) Logf(msg string, args ...interface{})   { f.Config.Logf(msg, args...) }
-func (f *Func) Log() bool                              { return f.Config.Log() }
-func (f *Func) Fatalf(msg string, args ...interface{}) { f.Config.Fatalf(f.Entry.Line, msg, args...) }
+func (f *Func) Frontend() Frontend                                { return f.fe }
+func (f *Func) Logf(msg string, args ...interface{})              { f.fe.Logf(msg, args...) }
+func (f *Func) Log() bool                                         { return f.fe.Log() }
+func (f *Func) Fatalf(msg string, args ...interface{})            { f.fe.Fatalf(0, msg, args...) }
+func (f *Func) Warnl(line int32, msg string, args ...interface{}) { f.fe.Warnl(line, msg, args...) }
+func (f *Func) Debug_checknil() bool                              { return f.fe.Debug_checknil() }
+func (f *Func) Debug_wb() bool                                    { return f.fe.Debug_wb() }
 
 func (f *Func) Free() {
 	// TODO: move to free list of funcs

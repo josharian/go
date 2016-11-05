@@ -9,30 +9,30 @@ import (
 )
 
 func TestShiftConstAMD64(t *testing.T) {
-	c := testConfig(t)
-	fun := makeConstShiftFunc(c, 18, OpLsh64x64, TypeUInt64)
+	c, fe := testConfig(t)
+	fun := makeConstShiftFunc(c, fe, 18, OpLsh64x64, TypeUInt64)
 	checkOpcodeCounts(t, fun.f, map[Op]int{OpAMD64SHLQconst: 1, OpAMD64CMPQconst: 0, OpAMD64ANDQconst: 0})
 	fun.f.Free()
-	fun = makeConstShiftFunc(c, 66, OpLsh64x64, TypeUInt64)
+	fun = makeConstShiftFunc(c, fe, 66, OpLsh64x64, TypeUInt64)
 	checkOpcodeCounts(t, fun.f, map[Op]int{OpAMD64SHLQconst: 0, OpAMD64CMPQconst: 0, OpAMD64ANDQconst: 0})
 	fun.f.Free()
-	fun = makeConstShiftFunc(c, 18, OpRsh64Ux64, TypeUInt64)
+	fun = makeConstShiftFunc(c, fe, 18, OpRsh64Ux64, TypeUInt64)
 	checkOpcodeCounts(t, fun.f, map[Op]int{OpAMD64SHRQconst: 1, OpAMD64CMPQconst: 0, OpAMD64ANDQconst: 0})
 	fun.f.Free()
-	fun = makeConstShiftFunc(c, 66, OpRsh64Ux64, TypeUInt64)
+	fun = makeConstShiftFunc(c, fe, 66, OpRsh64Ux64, TypeUInt64)
 	checkOpcodeCounts(t, fun.f, map[Op]int{OpAMD64SHRQconst: 0, OpAMD64CMPQconst: 0, OpAMD64ANDQconst: 0})
 	fun.f.Free()
-	fun = makeConstShiftFunc(c, 18, OpRsh64x64, TypeInt64)
+	fun = makeConstShiftFunc(c, fe, 18, OpRsh64x64, TypeInt64)
 	checkOpcodeCounts(t, fun.f, map[Op]int{OpAMD64SARQconst: 1, OpAMD64CMPQconst: 0})
 	fun.f.Free()
-	fun = makeConstShiftFunc(c, 66, OpRsh64x64, TypeInt64)
+	fun = makeConstShiftFunc(c, fe, 66, OpRsh64x64, TypeInt64)
 	checkOpcodeCounts(t, fun.f, map[Op]int{OpAMD64SARQconst: 1, OpAMD64CMPQconst: 0})
 	fun.f.Free()
 }
 
-func makeConstShiftFunc(c *Config, amount int64, op Op, typ Type) fun {
+func makeConstShiftFunc(c *Config, fe Frontend, amount int64, op Op, typ Type) fun {
 	ptyp := &TypeImpl{Size_: 8, Ptr: true, Name: "ptr"}
-	fun := Fun(c, "entry",
+	fun := Fun(c, fe, "entry",
 		Bloc("entry",
 			Valu("mem", OpInitMem, TypeMem, 0, nil),
 			Valu("SP", OpSP, TypeUInt64, 0, nil),

@@ -15,9 +15,10 @@ var Opt = opt
 var Deadcode = deadcode
 var Copyelim = copyelim
 
-func testConfig(t testing.TB) *Config {
+func testConfig(t testing.TB) (*Config, Frontend) {
 	testCtxt := &obj.Link{}
-	return NewConfig("amd64", DummyFrontend{t}, testCtxt, true)
+	fe := DummyFrontend{t}
+	return NewConfig("amd64", fe, testCtxt, true), fe
 }
 
 // DummyFrontend is a test-only frontend.

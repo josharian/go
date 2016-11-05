@@ -156,11 +156,11 @@ func genRules(arch arch) {
 	fmt.Fprintln(w, "var _ = math.MinInt8 // in case not otherwise used")
 
 	// Main rewrite routine is a switch on v.Op.
-	fmt.Fprintf(w, "func rewriteValue%s(v *Value, config *Config) bool {\n", arch.name)
+	fmt.Fprintf(w, "func rewriteValue%s(v *Value, config *Config, fe Frontend) bool {\n", arch.name)
 	fmt.Fprintf(w, "switch v.Op {\n")
 	for _, op := range ops {
 		fmt.Fprintf(w, "case %s:\n", op)
-		fmt.Fprintf(w, "return rewriteValue%s_%s(v, config)\n", arch.name, op)
+		fmt.Fprintf(w, "return rewriteValue%s_%s(v, config, fe)\n", arch.name, op)
 	}
 	fmt.Fprintf(w, "}\n")
 	fmt.Fprintf(w, "return false\n")
@@ -169,7 +169,7 @@ func genRules(arch arch) {
 	// Generate a routine per op. Note that we don't make one giant routine
 	// because it is too big for some compilers.
 	for _, op := range ops {
-		fmt.Fprintf(w, "func rewriteValue%s_%s(v *Value, config *Config) bool {\n", arch.name, op)
+		fmt.Fprintf(w, "func rewriteValue%s_%s(v *Value, config *Config, fe Frontend) bool {\n", arch.name, op)
 		fmt.Fprintln(w, "b := v.Block")
 		fmt.Fprintln(w, "_ = b")
 		var canFail bool
@@ -209,7 +209,7 @@ func genRules(arch arch) {
 
 	// Generate block rewrite function. There are only a few block types
 	// so we can make this one function with a switch.
-	fmt.Fprintf(w, "func rewriteBlock%s(b *Block, config *Config) bool {\n", arch.name)
+	fmt.Fprintf(w, "func rewriteBlock%s(b *Block, config *Config, fe Frontend) bool {\n", arch.name)
 	fmt.Fprintf(w, "switch b.Kind {\n")
 	ops = nil
 	for op := range blockrules {
@@ -695,7 +695,7 @@ func typeName(typ string) string {
 	case "Flags", "Mem", "Void", "Int128":
 		return "Type" + typ
 	default:
-		return "config.fe.Type" + typ + "()"
+		return "fe.Type" + typ + "()"
 	}
 }
 

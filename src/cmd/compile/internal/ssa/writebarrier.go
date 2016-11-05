@@ -63,16 +63,16 @@ func writebarrier(f *Func) {
 						}
 					}
 					if sb == nil {
-						sb = f.Entry.NewValue0(initln, OpSB, f.Config.fe.TypeUintptr())
+						sb = f.Entry.NewValue0(initln, OpSB, f.fe.TypeUintptr())
 					}
 					if sp == nil {
-						sp = f.Entry.NewValue0(initln, OpSP, f.Config.fe.TypeUintptr())
+						sp = f.Entry.NewValue0(initln, OpSP, f.fe.TypeUintptr())
 					}
-					wbsym := &ExternSymbol{Typ: f.Config.fe.TypeBool(), Sym: f.Config.fe.Syslook("writeBarrier").(fmt.Stringer)}
-					wbaddr = f.Entry.NewValue1A(initln, OpAddr, f.Config.fe.TypeUInt32().PtrTo(), wbsym, sb)
-					writebarrierptr = f.Config.fe.Syslook("writebarrierptr")
-					typedmemmove = f.Config.fe.Syslook("typedmemmove")
-					typedmemclr = f.Config.fe.Syslook("typedmemclr")
+					wbsym := &ExternSymbol{Typ: f.fe.TypeBool(), Sym: f.fe.Syslook("writeBarrier").(fmt.Stringer)}
+					wbaddr = f.Entry.NewValue1A(initln, OpAddr, f.fe.TypeUInt32().PtrTo(), wbsym, sb)
+					writebarrierptr = f.fe.Syslook("writebarrierptr")
+					typedmemmove = f.fe.Syslook("typedmemmove")
+					typedmemclr = f.fe.Syslook("typedmemclr")
 
 					wbs = f.newSparseSet(f.NumValues())
 					defer f.retSparseSet(wbs)
@@ -125,9 +125,9 @@ func writebarrier(f *Func) {
 
 				// set up control flow for write barrier test
 				// load word, test word, avoiding partial register write from load byte.
-				flag := b.NewValue2(line, OpLoad, f.Config.fe.TypeUInt32(), wbaddr, mem)
-				const0 := f.ConstInt32(line, f.Config.fe.TypeUInt32(), 0)
-				flag = b.NewValue2(line, OpNeq32, f.Config.fe.TypeBool(), flag, const0)
+				flag := b.NewValue2(line, OpLoad, f.fe.TypeUInt32(), wbaddr, mem)
+				const0 := f.ConstInt32(line, f.fe.TypeUInt32(), 0)
+				flag = b.NewValue2(line, OpNeq32, f.fe.TypeBool(), flag, const0)
 				b.Kind = BlockIf
 				b.SetControl(flag)
 				b.Likely = BranchUnlikely
@@ -193,8 +193,8 @@ func writebarrier(f *Func) {
 					f.freeValue(w)
 				}
 
-				if f.Config.fe.Debug_wb() {
-					f.Config.Warnl(line, "write barrier")
+				if f.fe.Debug_wb() {
+					f.Warnl(line, "write barrier")
 				}
 
 				break valueLoop
@@ -206,7 +206,8 @@ func writebarrier(f *Func) {
 // wbcall emits write barrier runtime call in b, returns memory.
 // if valIsVolatile, it moves val into temp space before making the call.
 func wbcall(line int32, b *Block, fn interface{}, typ interface{}, ptr, val, mem, sp, sb *Value, valIsVolatile bool) *Value {
-	config := b.Func.Config
+	f := b.Func
+	config := f.Config
 
 	var tmp GCNode
 	if valIsVolatile {
@@ -214,7 +215,7 @@ func wbcall(line int32, b *Block, fn interface{}, typ interface{}, ptr, val, mem
 		// a function call). Marshaling the args to typedmemmove might clobber the
 		// value we're trying to move.
 		t := val.Type.ElemType()
-		tmp = config.fe.Auto(t)
+		tmp = f.fe.Auto(t)
 		aux := &AutoSymbol{Typ: t, Node: tmp}
 		mem = b.NewValue1A(line, OpVarDef, TypeMem, tmp, mem)
 		tmpaddr := b.NewValue1A(line, OpAddr, t.PtrTo(), aux, sp)
@@ -227,7 +228,7 @@ func wbcall(line int32, b *Block, fn interface{}, typ interface{}, ptr, val, mem
 	off := config.ctxt.FixedFrameSize()
 
 	if typ != nil { // for typedmemmove
-		taddr := b.NewValue1A(line, OpAddr, config.fe.TypeUintptr(), typ, sb)
+		taddr := b.NewValue1A(line, OpAddr, f.fe.TypeUintptr(), typ, sb)
 		off = round(off, taddr.Type.Alignment())
 		arg := b.NewValue1I(line, OpOffPtr, taddr.Type.PtrTo(), off, sp)
 		mem = b.NewValue3I(line, OpStore, TypeMem, ptr.Type.Size(), arg, taddr, mem)
