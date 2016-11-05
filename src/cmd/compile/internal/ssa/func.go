@@ -10,8 +10,9 @@ import (
 	"strings"
 )
 
-// A Func represents a Go func declaration (or function literal) and
-// its body. This package compiles each Func independently.
+// A Func represents a Go func declaration (or function literal) and its body.
+// This package compiles each Func independently.
+// Funcs are not safe for concurrent use.
 type Func struct {
 	Config     *Config     // architecture information
 	pass       *pass       // current pass information (name, options, etc.)
@@ -22,6 +23,14 @@ type Func struct {
 	Entry      *Block      // the entry basic block
 	bid        idAlloc     // block ID allocator
 	vid        idAlloc     // value ID allocator
+
+	// Storage for low-numbered values and blocks.
+	values [2000]Value
+	blocks [200]Block
+
+	// Debugging-related
+	DebugTest  bool        // default true unless $GOSSAHASH != ""; as a debugging aid, make new code conditional on this and use GOSSAHASH to binary search for failing cases
+	HTMLWriter *HTMLWriter // html writer, for debugging
 
 	scheduled bool // Values in Blocks are in final order
 
@@ -87,8 +96,8 @@ func (f *Func) newValue(op Op, t Type, b *Block, line int32) *Value {
 		v.argstorage[0] = nil
 	} else {
 		ID := f.vid.get()
-		if int(ID) < len(f.Config.values) {
-			v = &f.Config.values[ID]
+		if int(ID) < len(f.values) {
+			v = &f.values[ID]
 		} else {
 			v = &Value{ID: ID}
 		}
@@ -157,8 +166,8 @@ func (f *Func) NewBlock(kind BlockKind) *Block {
 		b.succstorage[0].b = nil
 	} else {
 		ID := f.bid.get()
-		if int(ID) < len(f.Config.blocks) {
-			b = &f.Config.blocks[ID]
+		if int(ID) < len(f.blocks) {
+			b = &f.blocks[ID]
 		} else {
 			b = &Block{ID: ID}
 		}
@@ -413,34 +422,31 @@ func (f *Func) Log() bool                              { return f.Config.Log() }
 func (f *Func) Fatalf(msg string, args ...interface{}) { f.Config.Fatalf(f.Entry.Line, msg, args...) }
 
 func (f *Func) Free() {
+	// TODO: move to free list of funcs
+
 	// Clear cached CFG info.
 	f.invalidateCFG()
 
 	// Clear values.
 	n := f.vid.num()
-	if n > len(f.Config.values) {
-		n = len(f.Config.values)
+	if n > len(f.values) {
+		n = len(f.values)
 	}
 	for i := 1; i < n; i++ {
-		f.Config.values[i] = Value{}
-		f.Config.values[i].ID = ID(i)
+		f.values[i] = Value{}
+		f.values[i].ID = ID(i)
 	}
 
 	// Clear blocks.
 	n = f.bid.num()
-	if n > len(f.Config.blocks) {
-		n = len(f.Config.blocks)
+	if n > len(f.blocks) {
+		n = len(f.blocks)
 	}
 	for i := 1; i < n; i++ {
-		f.Config.blocks[i] = Block{}
-		f.Config.blocks[i].ID = ID(i)
+		f.blocks[i] = Block{}
+		f.blocks[i].ID = ID(i)
 	}
 
-	// Unregister from config.
-	if f.Config.curFunc != f {
-		f.Fatalf("free of function which isn't the last one allocated")
-	}
-	f.Config.curFunc = nil
 	*f = Func{} // just in case
 }
 

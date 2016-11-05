@@ -13,6 +13,8 @@ import (
 	"strings"
 )
 
+// Config holds architecture-specific SSA configuration.
+// It is intended to be initialized once and then read from concurrently.
 type Config struct {
 	arch            string                     // "amd64", etc.
 	IntSize         int64                      // 4 or 8
@@ -28,7 +30,6 @@ type Config struct {
 	LinkReg         int8                       // register number of link register if it is a general purpose register, -1 if not used
 	hasGReg         bool                       // has hardware g register
 	fe              Frontend                   // callbacks into compiler frontend
-	HTML            *HTMLWriter                // html writer, for debugging
 	ctxt            *obj.Link                  // Generic arch information
 	optimize        bool                       // Do optimization
 	noDuffDevice    bool                       // Don't use Duff's device
@@ -37,19 +38,13 @@ type Config struct {
 	OldArch         bool                       // True for older versions of architecture, e.g. true for PPC64BE, false for PPC64LE
 	NeedsFpScratch  bool                       // No direct move between GP and FP register sets
 	BigEndian       bool                       //
-	DebugTest       bool                       // default true unless $GOSSAHASH != ""; as a debugging aid, make new code conditional on this and use GOSSAHASH to binary search for failing cases
 	sparsePhiCutoff uint64                     // Sparse phi location algorithm used above this #blocks*#variables score
-	curFunc         *Func
 
 	// TODO: more stuff. Compiler flags of interest, ...
 
 	// Given an environment variable used for debug hash match,
 	// what file (if any) receives the yes/no logging?
 	logfiles map[string]*os.File
-
-	// Storage for low-numbered values and blocks.
-	values [2000]Value
-	blocks [200]Block
 
 	// Reusable stackAllocState.
 	// See stackalloc.go's {new,put}StackAllocState.
@@ -288,14 +283,6 @@ func NewConfig(arch string, fe Frontend, ctxt *obj.Link, optimize bool) *Config 
 		opcodeTable[OpARMUDIVrtcall].reg.clobbers |= 1 << 12 // R12
 	}
 
-	// Assign IDs to preallocated values/blocks.
-	for i := range c.values {
-		c.values[i].ID = ID(i)
-	}
-	for i := range c.blocks {
-		c.blocks[i].ID = ID(i)
-	}
-
 	c.logfiles = make(map[string]*os.File)
 
 	// cutoff is compared with product of numblocks and numvalues,
@@ -328,13 +315,19 @@ func (c *Config) Ctxt() *obj.Link         { return c.ctxt }
 
 // NewFunc returns a new, empty function object.
 // Caller must call f.Free() before calling NewFunc again.
+// TODO: maintain a free list of Funcs.
 func (c *Config) NewFunc() *Func {
 	// TODO(khr): should this function take name, type, etc. as arguments?
-	if c.curFunc != nil {
-		c.Fatalf(0, "NewFunc called without previous Free")
-	}
 	f := &Func{Config: c, NamedValues: map[LocalSlot][]*Value{}}
-	c.curFunc = f
+
+	// Assign IDs to preallocated values/blocks.
+	for i := range f.values {
+		f.values[i].ID = ID(i)
+	}
+	for i := range f.blocks {
+		f.blocks[i].ID = ID(i)
+	}
+
 	return f
 }
 

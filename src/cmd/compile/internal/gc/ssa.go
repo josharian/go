@@ -11,23 +11,29 @@ import (
 	"html"
 	"os"
 	"sort"
+	"sync"
 
 	"cmd/compile/internal/ssa"
 	"cmd/internal/obj"
 	"cmd/internal/sys"
 )
 
-var ssaConfig *ssa.Config
+var (
+	ssaInitOnce sync.Once
+	ssaConfig   *ssa.Config
+)
+
 var ssaExp ssaExport
 
 func initssa() *ssa.Config {
-	if ssaConfig == nil {
-		ssaConfig = ssa.NewConfig(Thearch.LinkArch.Name, &ssaExp, Ctxt, Debug['N'] == 0)
-		if Thearch.LinkArch.Name == "386" {
-			ssaConfig.Set387(Thearch.Use387)
+	ssaInitOnce.Do(func() {
+		if ssaConfig == nil {
+			ssaConfig = ssa.NewConfig(Thearch.LinkArch.Name, &ssaExp, Ctxt, Debug['N'] == 0)
+			if Thearch.LinkArch.Name == "386" {
+				ssaConfig.Set387(Thearch.Use387)
+			}
 		}
-	}
-	ssaConfig.HTML = nil
+	})
 	return ssaConfig
 }
 
@@ -57,8 +63,6 @@ func buildssa(fn *Node) *ssa.Func {
 			fn.Func.WBLineno = s.WBLineno
 		}
 	}()
-	// TODO(khr): build config just once at the start of the compiler binary
-
 	ssaExp.log = printssa
 
 	s.config = initssa()
@@ -66,12 +70,12 @@ func buildssa(fn *Node) *ssa.Func {
 	s.f.Name = name
 	s.exitCode = fn.Func.Exit
 	s.panics = map[funcLine]*ssa.Block{}
-	s.config.DebugTest = s.config.DebugHashMatch("GOSSAHASH", name)
+	s.f.DebugTest = s.config.DebugHashMatch("GOSSAHASH", name)
 
 	if name == os.Getenv("GOSSAFUNC") {
 		// TODO: tempfile? it is handy to have the location
 		// of this file be stable, so you can just reload in the browser.
-		s.config.HTML = ssa.NewHTMLWriter("ssa.html", s.config, name)
+		s.f.HTMLWriter = ssa.NewHTMLWriter("ssa.html", s.config, name)
 		// TODO: generate and print a mapping from nodes to values and blocks
 	}
 
@@ -4458,7 +4462,7 @@ func genssa(f *ssa.Func, ptxt *obj.Prog, gcargs, gclocals *Sym) {
 			}
 			f.Logf("%s\t%s\n", s, p)
 		}
-		if f.Config.HTML != nil {
+		if f.HTMLWriter != nil {
 			saved := ptxt.Ctxt.LineHist.PrintFilenameOnly
 			ptxt.Ctxt.LineHist.PrintFilenameOnly = true
 			var buf bytes.Buffer
@@ -4479,7 +4483,7 @@ func genssa(f *ssa.Func, ptxt *obj.Prog, gcargs, gclocals *Sym) {
 			}
 			buf.WriteString("</dl>")
 			buf.WriteString("</code>")
-			f.Config.HTML.WriteColumn("genssa", buf.String())
+			f.HTMLWriter.WriteColumn("genssa", buf.String())
 			ptxt.Ctxt.LineHist.PrintFilenameOnly = saved
 		}
 	}
@@ -4505,8 +4509,8 @@ func genssa(f *ssa.Func, ptxt *obj.Prog, gcargs, gclocals *Sym) {
 	// Remove leftover instrumentation from the instruction stream.
 	removevardef(ptxt)
 
-	f.Config.HTML.Close()
-	f.Config.HTML = nil
+	f.HTMLWriter.Close()
+	f.HTMLWriter = nil
 }
 
 type FloatingEQNEJump struct {
