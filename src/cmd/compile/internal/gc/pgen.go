@@ -366,9 +366,9 @@ func compile(fn *Node) {
 
 	newplist()
 
-	setlineno(Curfn)
+	setlineno(fn)
 
-	nam := Curfn.Func.Nname
+	nam := fn.Func.Nname
 	if isblank(nam) {
 		nam = nil
 	}
