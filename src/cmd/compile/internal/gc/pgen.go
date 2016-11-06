@@ -349,7 +349,6 @@ func compile(fn *Node) {
 		return
 	}
 
-	hasdefer = false
 	walk(Curfn)
 	if nerrors != 0 {
 		return

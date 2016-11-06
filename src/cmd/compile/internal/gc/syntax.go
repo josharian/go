@@ -317,6 +317,7 @@ type Func struct {
 	Needctxt        bool   // function uses context register (has closure variables)
 	ReflectMethod   bool   // function calls reflect.Type.Method or MethodByName
 	IsHiddenClosure bool
+	HasDefer        bool // whether this function contains a defer statement
 }
 
 type Op uint8

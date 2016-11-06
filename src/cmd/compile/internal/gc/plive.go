@@ -1198,7 +1198,7 @@ func livenessepilogue(lv *Liveness) {
 	// are implicitly read by post-deferreturn code and thus must be
 	// kept live throughout the function (if there is any defer that
 	// recovers).
-	if hasdefer {
+	if lv.fn.Func.HasDefer {
 		for _, n := range lv.vars {
 			if n.IsOutputParamHeapAddr() {
 				n.Name.Needzero = true
