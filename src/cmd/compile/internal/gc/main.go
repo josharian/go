@@ -161,6 +161,7 @@ func Main() {
 	obj.Flagcount("W", "debug parse tree after type checking", &Debug['W'])
 	flag.StringVar(&asmhdr, "asmhdr", "", "write assembly header to `file`")
 	flag.StringVar(&buildid, "buildid", "", "record `id` as the build id in the export metadata")
+	flag.IntVar(&ncpu, "c", 1, "number of concurrent compilations allowed")
 	flag.BoolVar(&pure_go, "complete", false, "compiling complete package (no C or assembly)")
 	flag.StringVar(&debugstr, "d", "", "print debug information about items in `list`")
 	obj.Flagcount("e", "no limit on number of errors reported", &Debug['e'])
@@ -290,6 +291,11 @@ func Main() {
 	Widthint = Thearch.LinkArch.IntSize
 	Widthptr = Thearch.LinkArch.PtrSize
 	Widthreg = Thearch.LinkArch.RegSize
+
+	if ncpu < 1 {
+		log.Fatalf("-c must be at least 1, got %d", ncpu)
+	}
+	cpugate = make(chan struct{}, ncpu)
 
 	initUniverse()
 

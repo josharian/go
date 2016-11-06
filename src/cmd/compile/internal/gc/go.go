@@ -243,6 +243,11 @@ var compiling_wrappers int
 
 var use_writebarrier bool
 
+var (
+	ncpu    int
+	cpugate chan struct{}
+)
+
 var pure_go bool
 
 var flag_installsuffix string

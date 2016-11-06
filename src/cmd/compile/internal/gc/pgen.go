@@ -295,6 +295,7 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 	fn.StackPtrSize = Rnd(fn.StackPtrSize, int64(Widthreg))
 }
 
+// TODO: rename to backendWaitGroup, backendResults?
 var ssaWaitGroup sync.WaitGroup
 var ssaResults []ssaResult
 
@@ -370,10 +371,19 @@ func compile(fn *Node) {
 	ssaWaitGroup.Add(1)
 	ssaResults = append(ssaResults, ssaResult{})
 	res := &ssaResults[len(ssaResults)-1]
-	// go func(fn *Node, res *ssaResult) {
-	compileSSA(fn, res)
-	ssaWaitGroup.Done()
-	// }(fn, res)
+	// TODO: turn into build flag indicating concurrency level
+	if ncpu == 1 {
+		// Ensure full reproducibility by not even starting a goroutine.
+		compileSSA(fn, res)
+		ssaWaitGroup.Done()
+	} else {
+		go func(fn *Node, res *ssaResult) {
+			cpugate <- struct{}{}
+			compileSSA(fn, res)
+			<-cpugate
+			ssaWaitGroup.Done()
+		}(fn, res)
+	}
 }
 
 // compileSSA builds an SSA backend function and uses it to generate a plist.
