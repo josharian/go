@@ -311,6 +311,7 @@ type Func struct {
 
 	Label int32 // largest auto-generated label in this function
 
+	StartLine int32
 	Endlineno int32
 	WBLineno  int32 // line number of first write barrier
 

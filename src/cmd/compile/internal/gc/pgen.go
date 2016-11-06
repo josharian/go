@@ -285,7 +285,7 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 			fn.StackSize = Rnd(fn.StackSize, int64(Widthptr))
 		}
 		if fn.StackSize >= 1<<31 {
-			yyerror("stack frame for %s too large (>2GB)", fn.Nname.Sym.Name)
+			yyerrorl(fn.StartLine, "stack frame too large (>2GB)")
 		}
 
 		n.Xoffset = -fn.StackSize
@@ -319,10 +319,12 @@ func compile(fn *Node) {
 		assertI2I2 = Sysfunc("assertI2I2")
 	}
 
+	// TODO: Can this be deleted?
 	defer func(lno int32) {
 		lineno = lno
 	}(setlineno(fn))
 
+	fn.Func.StartLine = fn.Lineno
 	Curfn = fn
 	dowidth(Curfn.Type)
 
