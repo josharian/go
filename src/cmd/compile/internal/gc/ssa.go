@@ -36,7 +36,7 @@ func initssa() *ssa.Config {
 }
 
 // buildssa builds an SSA function.
-func buildssa(fn *Node) *ssa.Func {
+func buildssa(fn *Node) (*ssa.Func, []lineErr) {
 	name := fn.Func.Nname.Sym.Name
 	printssa := name == os.Getenv("GOSSAFUNC")
 	if printssa {
@@ -135,6 +135,8 @@ func buildssa(fn *Node) *ssa.Func {
 	}
 
 	// Convert the AST-based IR to the SSA-based IR
+	// TODO: consider adding recover of special panics to stop conversion immediately
+	// when len(s.errors) > 10 and -e flag not provided.
 	s.stmtList(fn.Func.Enter)
 	s.stmtList(fn.Nbody)
 
@@ -148,11 +150,11 @@ func buildssa(fn *Node) *ssa.Func {
 	// Check that we used all labels
 	for name, lab := range s.labels {
 		if !lab.used() && !lab.reported && !lab.defNode.Used {
-			yyerrorl(lab.defNode.Lineno, "label %v defined and not used", name)
+			s.Errorl(lab.defNode.Lineno, "label %v defined and not used", name)
 			lab.reported = true
 		}
 		if lab.used() && !lab.defined() && !lab.reported {
-			yyerrorl(lab.useNode.Lineno, "label %v not defined", name)
+			s.Errorl(lab.useNode.Lineno, "label %v not defined", name)
 			lab.reported = true
 		}
 	}
@@ -166,9 +168,9 @@ func buildssa(fn *Node) *ssa.Func {
 		}
 	}
 
-	if nerrors > 0 {
+	if len(s.errors) > 0 {
 		s.f.Free()
-		return nil
+		return nil, s.errors
 	}
 
 	s.insertPhis()
@@ -179,7 +181,7 @@ func buildssa(fn *Node) *ssa.Func {
 	// Main call to ssa package to compile function
 	ssa.Compile(s.f)
 
-	return s.f
+	return s.f, nil
 }
 
 type state struct {
@@ -243,6 +245,10 @@ type state struct {
 	// A dummy value used during phi construction.
 	placeholder *ssa.Value
 
+	// Errors encountered during SSA construction.
+	// Passed up the stack to be presented to the user.
+	errors []lineErr
+
 	cgoUnsafeArgs bool
 	noWB          bool
 	hasdefer      bool  // whether function contains a defer statement
@@ -264,6 +270,11 @@ type ssaLabel struct {
 	// There might be multiple uses, but we only need to track one.
 	useNode  *Node
 	reported bool // reported indicates whether an error has already been reported for this label
+}
+
+type lineErr struct {
+	Line int32
+	Err  string
 }
 
 // defined reports whether the label has a definition (OLABEL node).
@@ -357,7 +368,19 @@ func (s *state) peekLine() int32 {
 }
 
 func (s *state) Error(msg string, args ...interface{}) {
-	yyerrorl(s.peekLine(), msg, args...)
+	e := lineErr{
+		Line: s.peekLine(),
+		Err:  fmt.Sprintf(msg, args...),
+	}
+	s.errors = append(s.errors, e)
+}
+
+func (s *state) Errorl(line int32, msg string, args ...interface{}) {
+	e := lineErr{
+		Line: line,
+		Err:  fmt.Sprintf(msg, args...),
+	}
+	s.errors = append(s.errors, e)
 }
 
 // newValue0 adds a new value with no arguments to the current block.
@@ -4298,9 +4321,9 @@ func (s *state) checkgoto(from *Node, to *Node) {
 
 		lno := from.Left.Lineno
 		if block != nil {
-			yyerrorl(lno, "goto %v jumps into block starting at %v", from.Left.Sym, linestr(block.Lastlineno))
+			s.Errorl(lno, "goto %v jumps into block starting at %v", from.Left.Sym, linestr(block.Lastlineno))
 		} else {
-			yyerrorl(lno, "goto %v jumps over declaration of %v at %v", from.Left.Sym, dcl, linestr(dcl.Lastlineno))
+			s.Errorl(lno, "goto %v jumps over declaration of %v at %v", from.Left.Sym, dcl, linestr(dcl.Lastlineno))
 		}
 	}
 }

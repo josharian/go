@@ -468,6 +468,15 @@ func Main() {
 	}
 
 	ssaWaitGroup.Wait()
+	for _, res := range ssaResults {
+		for _, err := range res.errs {
+			yyerrorl(err.Line, "%s", err.Err)
+		}
+		if len(res.errs) > 0 {
+			continue
+		}
+		// TODO: the rest
+	}
 
 	// xtop is now complete.
 	if compiling_runtime {

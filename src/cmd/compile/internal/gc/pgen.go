@@ -296,6 +296,11 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 }
 
 var ssaWaitGroup sync.WaitGroup
+var ssaResults []ssaResult
+
+type ssaResult struct {
+	errs []lineErr
+}
 
 func compile(fn *Node) {
 	if Newproc == nil {
@@ -361,16 +366,19 @@ func compile(fn *Node) {
 	}
 
 	ssaWaitGroup.Add(1)
-	// go func(fn *Node) {
-	compileSSA(fn)
+	ssaResults = append(ssaResults, ssaResult{})
+	res := &ssaResults[len(ssaResults)-1]
+	// go func(fn *Node, res *ssaResult) {
+	compileSSA(fn, res)
 	ssaWaitGroup.Done()
-	// }(fn)
+	// }(fn, res)
 }
 
 // compileSSA builds an SSA backend function and uses it to generate a plist.
-func compileSSA(fn *Node) {
-	ssafn := buildssa(fn)
-	if nerrors != 0 {
+func compileSSA(fn *Node, res *ssaResult) {
+	ssafn, errs := buildssa(fn)
+	if len(errs) != 0 {
+		res.errs = errs
 		return
 	}
 
