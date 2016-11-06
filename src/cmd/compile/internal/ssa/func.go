@@ -58,6 +58,7 @@ type Func struct {
 	// Reusable stackAllocState.
 	// See stackalloc.go's {new,put}StackAllocState.
 	stackAllocState *stackAllocState
+	GCFunc          interface{} // holds the *gc.Func for the current function
 
 	domblockstore []ID         // scratch space for computing dominators
 	scrSparse     []*sparseSet // scratch sparse sets to be re-used.

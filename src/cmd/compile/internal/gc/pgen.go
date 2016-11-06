@@ -222,9 +222,10 @@ var scratchFpMem *Node
 func (s *ssaExport) AllocFrame(f *ssa.Func) {
 	Stksize = 0
 	stkptrsize = 0
+	fn := f.GCFunc.(*Func)
 
 	// Mark the PAUTO's unused.
-	for _, ln := range Curfn.Func.Dcl {
+	for _, ln := range fn.Dcl {
 		if ln.Class == PAUTO {
 			ln.Used = false
 		}
@@ -258,15 +259,15 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 		scratchFpMem.Used = scratchUsed
 	}
 
-	sort.Sort(byStackVar(Curfn.Func.Dcl))
+	sort.Sort(byStackVar(fn.Dcl))
 
 	// Reassign stack offsets of the locals that are used.
-	for i, n := range Curfn.Func.Dcl {
+	for i, n := range fn.Dcl {
 		if n.Op != ONAME || n.Class != PAUTO {
 			continue
 		}
 		if !n.Used {
-			Curfn.Func.Dcl = Curfn.Func.Dcl[:i]
+			fn.Dcl = fn.Dcl[:i]
 			break
 		}
 
@@ -284,8 +285,7 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 			Stksize = Rnd(Stksize, int64(Widthptr))
 		}
 		if Stksize >= 1<<31 {
-			setlineno(Curfn)
-			yyerror("stack frame too large (>2GB)")
+			yyerror("stack frame for %s too large (>2GB)", fn.Nname.Sym.Name)
 		}
 
 		n.Xoffset = -Stksize

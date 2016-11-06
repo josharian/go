@@ -67,6 +67,7 @@ func buildssa(fn *Node) (*ssa.Func, []lineErr) {
 	fe := &ssaExport{log: printssa}
 	s.f = s.config.NewFunc(fe)
 	s.f.Name = name
+	s.f.GCFunc = fn.Func
 	s.exitCode = fn.Func.Exit
 	s.panics = map[funcLine]*ssa.Block{}
 	s.f.DebugTest = s.config.DebugHashMatch("GOSSAHASH", name, fe)
