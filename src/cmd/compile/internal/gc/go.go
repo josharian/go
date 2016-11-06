@@ -225,8 +225,6 @@ var lasttype *Node
 
 var Maxarg int64
 
-var Stksize int64 // stack size for current frame
-
 var stkptrsize int64 // prefix of stack containing pointers
 
 var Curfn *Node
@@ -342,7 +340,7 @@ type Arch struct {
 	REGSP    int
 	MAXWIDTH int64
 
-	Defframe func(*obj.Prog)
+	Defframe func(ptxt *obj.Prog, stacksize int64)
 	Proginfo func(*obj.Prog) ProgInfo
 	Use387   bool // should 8g use 387 FP instructions instead of sse2.
 

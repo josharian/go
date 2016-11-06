@@ -10,12 +10,12 @@ import (
 	"cmd/internal/obj/mips"
 )
 
-func defframe(ptxt *obj.Prog) {
+func defframe(ptxt *obj.Prog, stacksize int64) {
 	// fill in argument size, stack size
 	ptxt.To.Type = obj.TYPE_TEXTSIZE
 
 	ptxt.To.Val = int32(gc.Rnd(gc.Curfn.Type.ArgWidth(), int64(gc.Widthptr)))
-	frame := uint32(gc.Rnd(gc.Stksize+gc.Maxarg, int64(gc.Widthreg)))
+	frame := uint32(gc.Rnd(stacksize+gc.Maxarg, int64(gc.Widthreg)))
 	ptxt.To.Offset = int64(frame)
 
 	// insert code to zero ambiguously live variables

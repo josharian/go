@@ -220,9 +220,9 @@ func (s byStackVar) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 var scratchFpMem *Node
 
 func (s *ssaExport) AllocFrame(f *ssa.Func) {
-	Stksize = 0
 	stkptrsize = 0
 	fn := f.GCFunc.(*Func)
+	fn.StackSize = 0
 
 	// Mark the PAUTO's unused.
 	for _, ln := range fn.Dcl {
@@ -276,22 +276,22 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 		if w >= Thearch.MAXWIDTH || w < 0 {
 			Fatalf("bad width")
 		}
-		Stksize += w
-		Stksize = Rnd(Stksize, int64(n.Type.Align))
+		fn.StackSize += w
+		fn.StackSize = Rnd(fn.StackSize, int64(n.Type.Align))
 		if haspointers(n.Type) {
-			stkptrsize = Stksize
+			stkptrsize = fn.StackSize
 		}
 		if Thearch.LinkArch.InFamily(sys.MIPS, sys.MIPS64, sys.ARM, sys.ARM64, sys.PPC64, sys.S390X) {
-			Stksize = Rnd(Stksize, int64(Widthptr))
+			fn.StackSize = Rnd(fn.StackSize, int64(Widthptr))
 		}
-		if Stksize >= 1<<31 {
+		if fn.StackSize >= 1<<31 {
 			yyerror("stack frame for %s too large (>2GB)", fn.Nname.Sym.Name)
 		}
 
-		n.Xoffset = -Stksize
+		n.Xoffset = -fn.StackSize
 	}
 
-	Stksize = Rnd(Stksize, int64(Widthreg))
+	fn.StackSize = Rnd(fn.StackSize, int64(Widthreg))
 	stkptrsize = Rnd(stkptrsize, int64(Widthreg))
 }
 
