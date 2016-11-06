@@ -220,9 +220,9 @@ func (s byStackVar) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 var scratchFpMem *Node
 
 func (s *ssaExport) AllocFrame(f *ssa.Func) {
-	stkptrsize = 0
 	fn := f.GCFunc.(*Func)
 	fn.StackSize = 0
+	fn.StackPtrSize = 0
 
 	// Mark the PAUTO's unused.
 	for _, ln := range fn.Dcl {
@@ -279,7 +279,7 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 		fn.StackSize += w
 		fn.StackSize = Rnd(fn.StackSize, int64(n.Type.Align))
 		if haspointers(n.Type) {
-			stkptrsize = fn.StackSize
+			fn.StackPtrSize = fn.StackSize
 		}
 		if Thearch.LinkArch.InFamily(sys.MIPS, sys.MIPS64, sys.ARM, sys.ARM64, sys.PPC64, sys.S390X) {
 			fn.StackSize = Rnd(fn.StackSize, int64(Widthptr))
@@ -292,7 +292,7 @@ func (s *ssaExport) AllocFrame(f *ssa.Func) {
 	}
 
 	fn.StackSize = Rnd(fn.StackSize, int64(Widthreg))
-	stkptrsize = Rnd(stkptrsize, int64(Widthreg))
+	fn.StackPtrSize = Rnd(fn.StackPtrSize, int64(Widthreg))
 }
 
 var ssaWaitGroup sync.WaitGroup

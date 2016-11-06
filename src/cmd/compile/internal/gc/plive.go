@@ -969,8 +969,8 @@ func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 }
 
 // Returns the number of words of local variables.
-func localswords() int32 {
-	return int32(stkptrsize / int64(Widthptr))
+func (lv *Liveness) localswords() int32 {
+	return int32(lv.fn.Func.StackPtrSize / int64(Widthptr))
 }
 
 // Returns the number of words of in and out arguments.
@@ -992,7 +992,7 @@ func onebitlivepointermap(lv *Liveness, liveout bvec, vars []*Node, args bvec, l
 		node := vars[i]
 		switch node.Class {
 		case PAUTO:
-			xoffset = node.Xoffset + stkptrsize
+			xoffset = node.Xoffset + lv.fn.Func.StackPtrSize
 			onebitwalktype1(node.Type, &xoffset, locals)
 
 		case PPARAM, PPARAMOUT:
@@ -1161,7 +1161,7 @@ func livenesssolve(lv *Liveness) {
 
 // This function is slow but it is only used for generating debug prints.
 // Check whether n is marked live in args/locals.
-func islive(n *Node, args bvec, locals bvec) bool {
+func (lv *Liveness) islive(n *Node, args bvec, locals bvec) bool {
 	switch n.Class {
 	case PPARAM, PPARAMOUT:
 		for i := 0; int64(i) < n.Type.Width/int64(Widthptr); i++ {
@@ -1172,7 +1172,7 @@ func islive(n *Node, args bvec, locals bvec) bool {
 
 	case PAUTO:
 		for i := 0; int64(i) < n.Type.Width/int64(Widthptr); i++ {
-			if locals.Get(int32((n.Xoffset+stkptrsize)/int64(Widthptr) + int64(i))) {
+			if locals.Get(int32((n.Xoffset+lv.fn.Func.StackPtrSize)/int64(Widthptr) + int64(i))) {
 				return true
 			}
 		}
@@ -1192,7 +1192,7 @@ func livenessepilogue(lv *Liveness) {
 	avarinit := bvalloc(nvars)
 	any := bvalloc(nvars)
 	all := bvalloc(nvars)
-	pparamout := bvalloc(localswords())
+	pparamout := bvalloc(lv.localswords())
 
 	// Record pointers to heap-allocated pparamout variables.  These
 	// are implicitly read by post-deferreturn code and thus must be
@@ -1202,7 +1202,7 @@ func livenessepilogue(lv *Liveness) {
 		for _, n := range lv.vars {
 			if n.IsOutputParamHeapAddr() {
 				n.Name.Needzero = true
-				xoffset := n.Xoffset + stkptrsize
+				xoffset := n.Xoffset + lv.fn.Func.StackPtrSize
 				onebitwalktype1(n.Type, &xoffset, pparamout)
 			}
 		}
@@ -1266,7 +1266,7 @@ func livenessepilogue(lv *Liveness) {
 				args := bvalloc(argswords())
 
 				lv.argslivepointers = append(lv.argslivepointers, args)
-				locals := bvalloc(localswords())
+				locals := bvalloc(lv.localswords())
 				lv.livepointers = append(lv.livepointers, locals)
 
 				if debuglive >= 3 {
@@ -1381,7 +1381,7 @@ func livenessepilogue(lv *Liveness) {
 					numlive := 0
 					for j := 0; j < len(lv.vars); j++ {
 						n := lv.vars[j]
-						if islive(n, args, locals) {
+						if lv.islive(n, args, locals) {
 							fmt_ += fmt.Sprintf(" %v", n)
 							numlive++
 						}
@@ -1640,7 +1640,7 @@ func livenessprintdebug(lv *Liveness) {
 				printed = false
 				for j := 0; j < len(lv.vars); j++ {
 					n := lv.vars[j]
-					if islive(n, args, locals) {
+					if lv.islive(n, args, locals) {
 						if printed {
 							fmt.Printf(",")
 						}

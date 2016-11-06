@@ -302,7 +302,8 @@ type Func struct {
 	Closure    *Node // OCLOSURE <-> ODCLFUNC
 	Nname      *Node
 
-	StackSize int64 // stack size for this function
+	StackSize    int64 // stack size for this function
+	StackPtrSize int64 // prefix of stack containing pointers
 
 	Inl     Nodes // copy of the body for use in inlining
 	InlCost int32

@@ -225,8 +225,6 @@ var lasttype *Node
 
 var Maxarg int64
 
-var stkptrsize int64 // prefix of stack containing pointers
-
 var Curfn *Node
 
 var Widthptr int
