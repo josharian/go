@@ -12,6 +12,7 @@ package gc
 import (
 	"cmd/compile/internal/ssa"
 	"fmt"
+	"sync"
 )
 
 // EType describes a kind of type.
@@ -147,6 +148,7 @@ type Type struct {
 	Orig *Type // original type (type literal or predefined type)
 
 	sliceOf *Type
+	ptrMu   sync.Mutex // protects ptrTo
 	ptrTo   *Type
 
 	Sym    *Sym  // symbol containing name, for named types
@@ -462,6 +464,8 @@ func typMap(k, v *Type) *Type {
 
 // typPtr returns the pointer type pointing to t.
 func typPtr(elem *Type) *Type {
+	elem.ptrMu.Lock()
+	defer elem.ptrMu.Unlock()
 	if t := elem.ptrTo; t != nil {
 		if t.Elem() != elem {
 			Fatalf("elem mismatch")
@@ -1184,8 +1188,33 @@ func (t *Type) ElemType() ssa.Type {
 	// internal package, remove this silly wrapper.
 	return t.Elem()
 }
+
+// PtrTo generates the type pointer-to-t.
+// The returned type may have any Lineno.
+// To use the current global lineno, use ptrto or modify t.Lineno.
 func (t *Type) PtrTo() ssa.Type {
-	return ptrto(t)
+	if Tptr == 0 || t == nil {
+		Fatalf("PtrTo %v %v", Tptr, t)
+	}
+
+	t.ptrMu.Lock()
+	defer t.ptrMu.Unlock()
+	if pt := t.ptrTo; pt != nil {
+		if pt.Elem() != t {
+			Fatalf("elem mismatch")
+		}
+		return pt
+	}
+
+	pt := &Type{
+		Etype: Tptr,
+		Width: int64(Widthptr),
+		Align: uint8(Widthptr),
+		Extra: PtrType{Elem: t},
+	}
+	pt.Orig = pt
+	t.ptrTo = pt
+	return pt
 }
 
 func (t *Type) NumFields() int {

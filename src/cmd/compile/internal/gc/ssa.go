@@ -99,7 +99,7 @@ func buildssa(fn *Node) *ssa.Func {
 		switch n.Class {
 		case PPARAM, PPARAMOUT:
 			aux := s.lookupSymbol(n, &ssa.ArgSymbol{Typ: n.Type, Node: n})
-			s.decladdrs[n] = s.entryNewValue1A(ssa.OpAddr, ptrto(n.Type), aux, s.sp)
+			s.decladdrs[n] = s.entryNewValue1A(ssa.OpAddr, n.Type.PtrTo(), aux, s.sp)
 			if n.Class == PPARAMOUT && s.canSSA(n) {
 				// Save ssa-able PPARAMOUT variables so we can
 				// store them back to the stack at the end of
@@ -3042,7 +3042,7 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 		return nil
 	}
 	fp := res.Field(0)
-	return s.entryNewValue1I(ssa.OpOffPtr, ptrto(fp.Type), fp.Offset+Ctxt.FixedFrameSize(), s.sp)
+	return s.entryNewValue1I(ssa.OpOffPtr, fp.Type.PtrTo(), fp.Offset+Ctxt.FixedFrameSize(), s.sp)
 }
 
 // etypesign returns the signed-ness of e, for integer/pointer etypes.
@@ -3083,7 +3083,7 @@ func (s *state) lookupSymbol(n *Node, sym interface{}) interface{} {
 // If bounded is true then this address does not require a nil check for its operand
 // even if that would otherwise be implied.
 func (s *state) addr(n *Node, bounded bool) (*ssa.Value, bool) {
-	t := ptrto(n.Type)
+	t := n.Type.PtrTo()
 	switch n.Op {
 	case ONAME:
 		switch n.Class {
