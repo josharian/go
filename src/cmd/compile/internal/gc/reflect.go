@@ -959,7 +959,7 @@ func typenamesym(t *Type) *Sym {
 	}
 	s := typesym(t)
 	if s.Def == nil {
-		n := newname(s)
+		n := newnameNoLine(s)
 		n.Type = Types[TUINT8]
 		n.Class = PEXTERN
 		n.Typecheck = 1

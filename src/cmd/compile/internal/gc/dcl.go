@@ -340,6 +340,22 @@ func newname(s *Sym) *Node {
 	return n
 }
 
+// newnameNoLine returns a new ONAME Node associated with symbol s, with no line number.
+func newnameNoLine(s *Sym) *Node {
+	if s == nil {
+		Fatalf("newnameNoLine nil")
+	}
+
+	n := new(Node)
+	n.Op = ONAME
+	n.Name = new(Name)
+	n.Orig = n
+	n.Sym = s
+	n.Addable = true
+	n.Ullman = 1
+	return n
+}
+
 // newnoname returns a new ONONAME Node associated with symbol s.
 func newnoname(s *Sym) *Node {
 	if s == nil {
