@@ -44,13 +44,6 @@ type Config struct {
 	// Given an environment variable used for debug hash match,
 	// what file (if any) receives the yes/no logging?
 	logfiles map[string]*os.File
-
-	// Reusable stackAllocState.
-	// See stackalloc.go's {new,put}StackAllocState.
-	stackAllocState *stackAllocState
-
-	domblockstore []ID         // scratch space for computing dominators
-	scrSparse     []*sparseSet // scratch sparse sets to be re-used.
 }
 
 type TypeSource interface {

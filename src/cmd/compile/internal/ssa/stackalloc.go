@@ -32,7 +32,7 @@ type stackAllocState struct {
 }
 
 func newStackAllocState(f *Func) *stackAllocState {
-	s := f.Config.stackAllocState
+	s := f.stackAllocState
 	if s == nil {
 		return new(stackAllocState)
 	}
@@ -58,7 +58,7 @@ func putStackAllocState(s *stackAllocState) {
 	for i := range s.used {
 		s.used[i] = false
 	}
-	s.f.Config.stackAllocState = s
+	s.f.stackAllocState = s
 	s.f = nil
 	s.live = nil
 	s.nArgSlot, s.nNotNeed, s.nNamedSlot, s.nReuse, s.nAuto, s.nSelfInterfere = 0, 0, 0, 0, 0, 0

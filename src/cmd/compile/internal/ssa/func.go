@@ -54,6 +54,13 @@ type Func struct {
 	cachedLoopnest  *loopnest  // cached loop nest information
 
 	constants map[int64][]*Value // constants cache, keyed by constant value; users must check value's Op and Type
+
+	// Reusable stackAllocState.
+	// See stackalloc.go's {new,put}StackAllocState.
+	stackAllocState *stackAllocState
+
+	domblockstore []ID         // scratch space for computing dominators
+	scrSparse     []*sparseSet // scratch sparse sets to be re-used.
 }
 
 // NumBlocks returns an integer larger than the id of any Block in the Func.
@@ -68,9 +75,9 @@ func (f *Func) NumValues() int {
 
 // newSparseSet returns a sparse set that can store at least up to n integers.
 func (f *Func) newSparseSet(n int) *sparseSet {
-	for i, scr := range f.Config.scrSparse {
+	for i, scr := range f.scrSparse {
 		if scr != nil && scr.cap() >= n {
-			f.Config.scrSparse[i] = nil
+			f.scrSparse[i] = nil
 			scr.clear()
 			return scr
 		}
@@ -80,13 +87,13 @@ func (f *Func) newSparseSet(n int) *sparseSet {
 
 // retSparseSet returns a sparse set to the config's cache of sparse sets to be reused by f.newSparseSet.
 func (f *Func) retSparseSet(ss *sparseSet) {
-	for i, scr := range f.Config.scrSparse {
+	for i, scr := range f.scrSparse {
 		if scr == nil {
-			f.Config.scrSparse[i] = ss
+			f.scrSparse[i] = ss
 			return
 		}
 	}
-	f.Config.scrSparse = append(f.Config.scrSparse, ss)
+	f.scrSparse = append(f.scrSparse, ss)
 }
 
 // newValue allocates a new Value with the given fields and places it at the end of b.Values.
