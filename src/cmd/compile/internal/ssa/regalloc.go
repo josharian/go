@@ -295,7 +295,7 @@ type startReg struct {
 func (s *regAllocState) freeReg(r register) {
 	v := s.regs[r].v
 	if v == nil {
-		s.f.Fatalf("tried to free an already free register %d\n", r)
+		s.f.Entry.Fatalf("tried to free an already free register %d\n", r)
 	}
 
 	// Mark r as unused.
@@ -321,7 +321,7 @@ func (s *regAllocState) setOrig(c *Value, v *Value) {
 		s.orig = append(s.orig, nil)
 	}
 	if s.orig[c.ID] != nil {
-		s.f.Fatalf("orig value set twice %s %s", c, v)
+		s.orig[c.ID].Fatalf("orig value set twice %s %s", c, v)
 	}
 	s.orig[c.ID] = s.orig[v.ID]
 }
@@ -333,7 +333,7 @@ func (s *regAllocState) assignReg(r register, v *Value, c *Value) {
 		fmt.Printf("assignReg %s %s/%s\n", s.registers[r].Name(), v, c)
 	}
 	if s.regs[r].v != nil {
-		s.f.Fatalf("tried to assign register %d to %s/%s but it is already used by %s", r, v, c, s.regs[r].v)
+		s.regs[r].v.Fatalf("tried to assign register %d to %s/%s but it is already used by %s", r, v, c, s.regs[r].v)
 	}
 
 	// Update state.
@@ -350,7 +350,7 @@ func (s *regAllocState) allocReg(mask regMask, v *Value) register {
 	mask &= s.allocatable
 	mask &^= s.nospill
 	if mask == 0 {
-		s.f.Fatalf("no register available for %s", v)
+		v.Fatalf("no register available for %s", v)
 	}
 
 	// Pick an unused register if one is available.
@@ -383,7 +383,7 @@ func (s *regAllocState) allocReg(mask regMask, v *Value) register {
 		}
 	}
 	if maxuse == -1 {
-		s.f.Fatalf("couldn't find register to spill")
+		v.Fatalf("couldn't find register to spill")
 	}
 
 	// Try to move it around before kicking out, if there is a free register.
@@ -450,7 +450,7 @@ func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, line
 			c = s.curBlock.NewValue1(line, OpLoadReg, v.Type, vi.spill)
 			vi.spillUsed = true
 		default:
-			s.f.Fatalf("attempt to load unspilled value %v", v.LongString())
+			v.Fatalf("attempt to load unspilled value %v", v.LongString())
 		}
 	}
 	s.setOrig(c, v)
@@ -477,7 +477,7 @@ func (s *regAllocState) init(f *Func) {
 	s.f = f
 	s.registers = f.Config.registers
 	if nr := len(s.registers); nr == 0 || nr > int(noRegister) || nr > int(unsafe.Sizeof(regMask(0))*8) {
-		s.f.Fatalf("bad number of registers: %d", nr)
+		s.f.Entry.Fatalf("bad number of registers: %d", nr)
 	} else {
 		s.numRegs = register(nr)
 	}
@@ -498,12 +498,12 @@ func (s *regAllocState) init(f *Func) {
 	// Make sure we found all required registers.
 	switch noRegister {
 	case s.SPReg:
-		s.f.Fatalf("no SP register found")
+		s.f.Entry.Fatalf("no SP register found")
 	case s.SBReg:
-		s.f.Fatalf("no SB register found")
+		s.f.Entry.Fatalf("no SB register found")
 	case s.GReg:
 		if f.Config.hasGReg {
-			s.f.Fatalf("no g register found")
+			s.f.Entry.Fatalf("no g register found")
 		}
 	}
 
@@ -554,7 +554,7 @@ func (s *regAllocState) init(f *Func) {
 		case "s390x":
 			// nothing to do, R10 & R11 already reserved
 		default:
-			s.f.fe.Fatalf(0, "arch %s not implemented", s.f.Config.arch)
+			s.f.Entry.Fatalf("arch %s not implemented", s.f.Config.arch)
 		}
 	}
 	if s.f.Config.nacl {
@@ -629,7 +629,7 @@ func (s *regAllocState) addUse(id ID, dist int32, line int32) {
 	r.next = s.values[id].uses
 	s.values[id].uses = r
 	if r.next != nil && dist > r.next.dist {
-		s.f.Fatalf("uses added in wrong order")
+		s.f.Entry.Fatalf("uses added in wrong order")
 	}
 }
 
@@ -729,7 +729,7 @@ func (s *regAllocState) regalloc(f *Func) {
 	var dinfo []dentry
 
 	if f.Entry != f.Blocks[0] {
-		f.Fatalf("entry block must be first")
+		f.Entry.Fatalf("entry block must be first")
 	}
 
 	// Get loop nest so that spills in inner loops can be
@@ -813,13 +813,13 @@ func (s *regAllocState) regalloc(f *Func) {
 		if b == f.Entry {
 			// Regalloc state is empty to start.
 			if nphi > 0 {
-				f.Fatalf("phis in entry block")
+				f.Entry.Fatalf("phis in entry block")
 			}
 		} else if len(b.Preds) == 1 {
 			// Start regalloc state with the end state of the previous block.
 			s.setState(s.endRegs[b.Preds[0].b.ID])
 			if nphi > 0 {
-				f.Fatalf("phis in single-predecessor block")
+				b.Fatalf("phis in single-predecessor block")
 			}
 			// Drop any values which are no longer live.
 			// This may happen because at the end of p, a value may be
@@ -840,7 +840,7 @@ func (s *regAllocState) regalloc(f *Func) {
 			// Start with the final register state of the primary predecessor
 			idx := s.primary[b.ID]
 			if idx < 0 {
-				f.Fatalf("block with no primary predecessor %s", b)
+				b.Fatalf("block with no primary predecessor %s", b)
 			}
 			p := b.Preds[idx].b
 			s.setState(s.endRegs[p.ID])
@@ -1033,7 +1033,7 @@ func (s *regAllocState) regalloc(f *Func) {
 			}
 			regspec := opcodeTable[v.Op].reg
 			if v.Op == OpPhi {
-				f.Fatalf("phi %s not at start of block", v)
+				v.Fatalf("phi %s not at start of block", v)
 			}
 			if v.Op == OpSP {
 				s.assignReg(s.SPReg, v, v)
@@ -1472,7 +1472,7 @@ func (s *regAllocState) regalloc(f *Func) {
 					continue
 				}
 				if !liveSet.contains(v.ID) {
-					s.f.Fatalf("val %s is in reg but not live at end of %s", v, b)
+					v.Fatalf("val %s is in reg but not live at end of %s", v, b)
 				}
 			}
 		}
@@ -1569,10 +1569,10 @@ func (s *regAllocState) regalloc(f *Func) {
 		for _, e := range s.live[b.ID] {
 			u := s.values[e.ID].uses
 			if u == nil {
-				f.Fatalf("live at end, no uses v%d", e.ID)
+				f.Entry.Fatalf("live at end, no uses v%d", e.ID)
 			}
 			if u.next != nil {
-				f.Fatalf("live at end, too many uses v%d", e.ID)
+				f.Entry.Fatalf("live at end, too many uses v%d", e.ID)
 			}
 			s.values[e.ID].uses = nil
 			u.next = s.freeUseRecords
@@ -2053,7 +2053,7 @@ func (e *edgeState) processDest(loc Location, vid ID, splice **Value, line int32
 	var x *Value
 	if c == nil {
 		if !e.s.values[vid].rematerializeable {
-			e.s.f.Fatalf("can't find source for %s->%s: %s\n", e.p, e.b, v.LongString())
+			e.s.f.Entry.Fatalf("can't find source for %s->%s: %s\n", e.p, e.b, v.LongString())
 		}
 		if dstReg {
 			x = v.copyInto(e.p)
@@ -2246,7 +2246,7 @@ func (e *edgeState) findRegFor(typ Type) Location {
 			fmt.Printf("v%d: %s %s\n", vid, c, e.s.f.getHome(c.ID).Name())
 		}
 	}
-	e.s.f.Fatalf("can't find empty register on edge %s->%s", e.p, e.b)
+	e.b.Fatalf("can't find empty register on edge %s->%s", e.p, e.b)
 	return nil
 }
 

@@ -94,7 +94,7 @@ func schedule(f *Func) {
 				// in the entry block where there are no phi functions, so there is no
 				// conflict or ambiguity here.
 				if b != f.Entry {
-					f.Fatalf("LoweredGetClosurePtr appeared outside of entry block, b=%s", b.String())
+					b.Fatalf("LoweredGetClosurePtr appeared outside of entry block, b=%s", b.String())
 				}
 				score[v.ID] = ScorePhi
 			case v.Op == OpAMD64LoweredNilCheck || v.Op == OpPPC64LoweredNilCheck ||
@@ -268,7 +268,7 @@ func schedule(f *Func) {
 			}
 		}
 		if len(order) != len(b.Values) {
-			f.Fatalf("schedule does not include all values")
+			b.Fatalf("schedule does not include all values")
 		}
 		for i := 0; i < len(b.Values); i++ {
 			b.Values[i] = order[len(b.Values)-1-i]

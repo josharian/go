@@ -283,7 +283,7 @@ func (s *state) label(sym *Sym) *ssaLabel {
 func (s *state) Logf(msg string, args ...interface{}) { s.f.Logf(msg, args...) }
 func (s *state) Log() bool                            { return s.f.Log() }
 func (s *state) Fatalf(msg string, args ...interface{}) {
-	s.f.Frontend().Fatalf(s.peekLine(), msg, args...)
+	s.f.Fatalf(s.peekLine(), msg, args...)
 }
 func (s *state) Warnl(line int32, msg string, args ...interface{}) { s.f.Warnl(line, msg, args...) }
 func (s *state) Debug_checknil() bool                              { return s.f.Debug_checknil() }

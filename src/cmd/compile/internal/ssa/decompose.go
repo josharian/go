@@ -97,7 +97,7 @@ func decomposeBuiltIn(f *Func) {
 		case t.IsFloat():
 			// floats are never decomposed, even ones bigger than IntSize
 		case t.Size() > f.Config.IntSize:
-			f.Fatalf("undecomposed named type %v %v", name, t)
+			f.Entry.Fatalf("undecomposed named type %v %v", name, t)
 		default:
 			newNames = append(newNames, name)
 		}
@@ -260,7 +260,7 @@ func decomposeUser(f *Func) {
 				break
 			}
 			if t.NumElem() != 1 {
-				f.Fatalf("array not of size 1")
+				f.Entry.Fatalf("array not of size 1")
 			}
 			elemName := f.fe.SplitArray(name)
 			for _, v := range f.NamedValues[name] {

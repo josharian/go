@@ -133,10 +133,10 @@ func (f *Func) LogStat(key string, args ...interface{}) {
 // freeValue frees a value. It must no longer be referenced.
 func (f *Func) freeValue(v *Value) {
 	if v.Block == nil {
-		f.Fatalf("trying to free an already freed value")
+		v.Fatalf("trying to free an already freed value")
 	}
 	if v.Uses != 0 {
-		f.Fatalf("value %s still has %d uses", v, v.Uses)
+		v.Fatalf("value %s still has %d uses", v, v.Uses)
 	}
 	// Clear everything but ID (which we reuse).
 	id := v.ID
@@ -186,7 +186,7 @@ func (f *Func) NewBlock(kind BlockKind) *Block {
 
 func (f *Func) freeBlock(b *Block) {
 	if b.Func == nil {
-		f.Fatalf("trying to free an already freed block")
+		b.Fatalf("trying to free an already freed block")
 	}
 	// Clear everything but ID (which we reuse).
 	id := b.ID
@@ -419,13 +419,13 @@ func (f *Func) ConstEmptyString(line int32, t Type) *Value {
 	return v
 }
 
-func (f *Func) Frontend() Frontend                                { return f.fe }
-func (f *Func) Logf(msg string, args ...interface{})              { f.fe.Logf(msg, args...) }
-func (f *Func) Log() bool                                         { return f.fe.Log() }
-func (f *Func) Fatalf(msg string, args ...interface{})            { f.fe.Fatalf(0, msg, args...) }
-func (f *Func) Warnl(line int32, msg string, args ...interface{}) { f.fe.Warnl(line, msg, args...) }
-func (f *Func) Debug_checknil() bool                              { return f.fe.Debug_checknil() }
-func (f *Func) Debug_wb() bool                                    { return f.fe.Debug_wb() }
+func (f *Func) Frontend() Frontend                                 { return f.fe }
+func (f *Func) Logf(msg string, args ...interface{})               { f.fe.Logf(msg, args...) }
+func (f *Func) Log() bool                                          { return f.fe.Log() }
+func (f *Func) Fatalf(line int32, msg string, args ...interface{}) { f.fe.Fatalf(line, msg, args...) }
+func (f *Func) Warnl(line int32, msg string, args ...interface{})  { f.fe.Warnl(line, msg, args...) }
+func (f *Func) Debug_checknil() bool                               { return f.fe.Debug_checknil() }
+func (f *Func) Debug_wb() bool                                     { return f.fe.Debug_wb() }
 
 func (f *Func) Free() {
 	// TODO: move to free list of funcs

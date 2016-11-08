@@ -101,7 +101,7 @@ func writebarrier(f *Func) {
 					}
 					for _, a := range w.Args {
 						if wbs.contains(a.ID) {
-							f.Fatalf("value %v depends on WB store %v in the same block %v", w, a, b)
+							w.Fatalf("value %v depends on WB store %v in the same block %v", w, a, b)
 						}
 					}
 				}

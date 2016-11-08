@@ -102,7 +102,7 @@ func deadcode(f *Func) {
 	// required moves being eliminated. See the comment at the
 	// top of regalloc.go for details.
 	if f.RegAlloc != nil {
-		f.Fatalf("deadcode after regalloc")
+		f.Entry.Fatalf("deadcode after regalloc")
 	}
 
 	// Find reachable blocks.

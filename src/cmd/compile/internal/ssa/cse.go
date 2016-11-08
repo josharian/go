@@ -195,7 +195,7 @@ func cse(f *Func) {
 				continue
 			}
 			if !v.Args[0].Type.IsTuple() {
-				f.Fatalf("arg of tuple selector %s is not a tuple: %s", v.String(), v.Args[0].LongString())
+				v.Fatalf("arg of tuple selector %s is not a tuple: %s", v.String(), v.Args[0].LongString())
 			}
 			t := rewrite[v.Args[0].ID]
 			if t != nil && t.Block != b {

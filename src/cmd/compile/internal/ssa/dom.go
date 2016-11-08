@@ -258,7 +258,7 @@ func dominatorsSimple(f *Func) []*Block {
 	// Make the entry block a self-loop
 	idom[f.Entry.ID] = f.Entry
 	if postnum[f.Entry.ID] != len(post)-1 {
-		f.Fatalf("entry block %v not last in postorder", f.Entry)
+		f.Entry.Fatalf("entry block %v not last in postorder", f.Entry)
 	}
 
 	// Compute relaxation of idom entries

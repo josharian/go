@@ -73,13 +73,13 @@ func flagalloc(f *Func) {
 			for _, e := range b.Preds[1:] {
 				p := e.b
 				if end[p.ID] != flag {
-					f.Fatalf("live flag in %s's predecessors not consistent", b)
+					flag.Fatalf("live flag in %s's predecessors not consistent", b)
 				}
 			}
 		}
 		for _, v := range oldSched {
 			if v.Op == OpPhi && v.Type.IsFlags() {
-				f.Fatalf("phi of flags not supported: %s", v.LongString())
+				v.Fatalf("phi of flags not supported: %s", v.LongString())
 			}
 			// Make sure any flag arg of v is in the flags register.
 			// If not, recompute it.

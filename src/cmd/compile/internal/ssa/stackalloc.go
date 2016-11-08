@@ -37,7 +37,7 @@ func newStackAllocState(f *Func) *stackAllocState {
 		return new(stackAllocState)
 	}
 	if s.f != nil {
-		f.fe.Fatalf(0, "newStackAllocState called without previous free")
+		f.Entry.Fatalf("newStackAllocState called without previous free")
 	}
 	return s
 }
