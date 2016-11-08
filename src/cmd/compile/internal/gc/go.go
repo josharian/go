@@ -8,6 +8,7 @@ import (
 	"cmd/compile/internal/ssa"
 	"cmd/internal/bio"
 	"cmd/internal/obj"
+	"sync"
 )
 
 const (
@@ -152,7 +153,10 @@ var racepkg *Pkg // package runtime/race
 
 var msanpkg *Pkg // package runtime/msan
 
-var typepkg *Pkg // fake package for runtime type info (headers)
+var (
+	typepkg   *Pkg       // fake package for runtime type info (headers)
+	typepkgmu sync.Mutex // typepkgmu guards access to typepkg.Lookup; see Pkglookup
+)
 
 var unsafepkg *Pkg // package unsafe
 

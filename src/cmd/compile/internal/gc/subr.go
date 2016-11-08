@@ -302,6 +302,10 @@ func (pkg *Pkg) LookupBytes(name []byte) *Sym {
 }
 
 func Pkglookup(name string, pkg *Pkg) *Sym {
+	if pkg == typepkg {
+		typepkgmu.Lock()
+		defer typepkgmu.Unlock()
+	}
 	return pkg.Lookup(name)
 }
 
