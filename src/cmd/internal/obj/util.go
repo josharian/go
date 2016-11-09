@@ -162,24 +162,8 @@ func (p *Prog) String() string {
 	return buf.String()
 }
 
-func (ctxt *Link) NewProg() *Prog {
-	var p *Prog
-	if i := ctxt.allocIdx; i < len(ctxt.progs) {
-		p = &ctxt.progs[i]
-		ctxt.allocIdx = i + 1
-	} else {
-		p = new(Prog) // should be the only call to this; all others should use ctxt.NewProg
-	}
-	p.Ctxt = ctxt
-	return p
-}
-func (ctxt *Link) freeProgs() {
-	s := ctxt.progs[:ctxt.allocIdx]
-	for i := range s {
-		s[i] = Prog{}
-	}
-	ctxt.allocIdx = 0
-}
+func (ctxt *Link) NewProg() *Prog { return ctxt.ProgCache.Get(ctxt) }
+func (ctxt *Link) freeProgs()     { ctxt.ProgCache.Free() }
 
 func (ctxt *Link) Line(n int) string {
 	return ctxt.LineHist.LineString(n)

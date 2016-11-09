@@ -756,9 +756,35 @@ type Link struct {
 	Text []*LSym
 	Data []*LSym
 
-	// Cache of Progs
-	allocIdx int
+	ProgCache ProgCache
+}
+
+// ProgCache is a reuseable pool of Progs.
+type ProgCache struct {
 	progs    [10000]Prog
+	allocIdx int
+}
+
+// Get gets a prog from c.
+func (c *ProgCache) Get(ctxt *Link) *Prog {
+	var p *Prog
+	if i := c.allocIdx; i < len(c.progs) {
+		p = &c.progs[i]
+		c.allocIdx = i + 1
+	} else {
+		p = new(Prog) // should be the only call to this; all others should use ctxt.NewProg
+	}
+	p.Ctxt = ctxt
+	return p
+}
+
+// Free frees all progs in c.
+func (c *ProgCache) Free() {
+	s := c.progs[:c.allocIdx]
+	for i := range s {
+		s[i] = Prog{}
+	}
+	c.allocIdx = 0
 }
 
 func (ctxt *Link) Diag(format string, args ...interface{}) {
