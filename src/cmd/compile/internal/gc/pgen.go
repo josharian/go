@@ -22,7 +22,8 @@ func makefuncdatasym(nameprefix string, funcdatakind int64) *Sym {
 	makefuncdatasym_nsym++
 	pnod := newname(sym)
 	pnod.Class = PEXTERN
-	p := Gins(obj.AFUNCDATA, nil, pnod)
+	p := Prog(obj.AFUNCDATA)
+	Naddr(&p.To, pnod)
 	Addrconst(&p.From, funcdatakind)
 	return sym
 }
@@ -99,10 +100,11 @@ func gvardefx(n *Node, as obj.As) {
 			return
 		}
 
+		p := Prog(as)
 		if as == obj.AVARLIVE {
-			Gins(as, n, nil)
+			Naddr(&p.From, n)
 		} else {
-			Gins(as, nil, n)
+			Naddr(&p.To, n)
 		}
 	}
 }
@@ -372,7 +374,8 @@ func compile(fn *Node) {
 	if isblank(nam) {
 		nam = nil
 	}
-	ptxt := Gins(obj.ATEXT, nam, nil)
+	ptxt := Prog(obj.ATEXT)
+	Naddr(&ptxt.From, nam)
 	ptxt.From3 = new(obj.Addr)
 	if fn.Func.Dupok {
 		ptxt.From3.Offset |= obj.DUPOK
@@ -430,7 +433,8 @@ func compile(fn *Node) {
 			if n.IsAutoTmp() { // skip debugging info for temporaries
 				continue
 			}
-			p := Gins(obj.ATYPE, n, nil)
+			p := Prog(obj.ATYPE)
+			Naddr(&p.From, n)
 			p.From.Sym = obj.Linklookup(Ctxt, n.Sym.Name, 0)
 			p.To.Type = obj.TYPE_MEM
 			p.To.Name = obj.NAME_EXTERN

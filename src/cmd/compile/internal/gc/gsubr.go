@@ -96,7 +96,7 @@ func ggloblLSym(s *obj.LSym, width int32, flags int16) {
 }
 
 func gtrack(s *Sym) {
-	p := Gins(obj.AUSEFIELD, nil, nil)
+	p := Prog(obj.AUSEFIELD)
 	p.From.Type = obj.TYPE_MEM
 	p.From.Name = obj.NAME_EXTERN
 	p.From.Sym = Linksym(s)
@@ -285,19 +285,4 @@ func Patch(p *obj.Prog, to *obj.Prog) {
 	}
 	p.To.Val = to
 	p.To.Offset = to.Pc
-}
-
-// Gins inserts instruction as. f is from, t is to.
-func Gins(as obj.As, f, t *Node) *obj.Prog {
-	switch as {
-	case obj.AVARKILL, obj.AVARLIVE, obj.AVARDEF, obj.ATYPE,
-		obj.ATEXT, obj.AFUNCDATA, obj.AUSEFIELD:
-	default:
-		Fatalf("unhandled gins op %v", as)
-	}
-
-	p := Prog(as)
-	Naddr(&p.From, f)
-	Naddr(&p.To, t)
-	return p
 }
