@@ -14,9 +14,7 @@ type Plist struct {
 	Firstpc *Prog
 }
 
-/*
- * start a new Prog list.
- */
+// Linknewplist starts a new Prog list.
 func Linknewplist(ctxt *Link) *Plist {
 	pl := new(Plist)
 	ctxt.Plists = append(ctxt.Plists, pl)

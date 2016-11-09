@@ -33,9 +33,7 @@ package gc
 import "cmd/internal/obj"
 
 func Prog(as obj.As) *obj.Prog {
-	var p *obj.Prog
-
-	p = pc
+	p := pc
 	pc = Ctxt.NewProg()
 	Clearp(pc)
 	p.Link = pc
@@ -130,29 +128,24 @@ func Naddr(a *obj.Addr, n *Node) {
 	}
 
 	a.Offset = n.Xoffset
-	s := n.Sym
 	a.Node = n.Orig
+	a.Type = obj.TYPE_MEM
 
-	if s == nil {
+	if n.Sym == nil {
 		Fatalf("naddr: nil sym %v", n)
 	}
+	a.Sym = Linksym(n.Sym)
 
-	a.Type = obj.TYPE_MEM
 	switch n.Class {
 	default:
 		Fatalf("naddr: ONAME class %v %d\n", n.Sym, n.Class)
-
 	case PEXTERN, PFUNC:
 		a.Name = obj.NAME_EXTERN
-
 	case PAUTO:
 		a.Name = obj.NAME_AUTO
-
 	case PPARAM, PPARAMOUT:
 		a.Name = obj.NAME_PARAM
 	}
-
-	a.Sym = Linksym(s)
 }
 
 func Addrconst(a *obj.Addr, v int64) {
@@ -163,11 +156,9 @@ func Addrconst(a *obj.Addr, v int64) {
 
 func newplist() *obj.Plist {
 	pl := obj.Linknewplist(Ctxt)
-
 	pc = Ctxt.NewProg()
 	Clearp(pc)
 	pl.Firstpc = pc
-
 	return pl
 }
 
