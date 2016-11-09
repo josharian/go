@@ -295,7 +295,10 @@ func Main() {
 	if ncpu < 1 {
 		log.Fatalf("-c must be at least 1, got %d", ncpu)
 	}
-	cpugate = make(chan struct{}, ncpu)
+	cpugate = make(chan int, ncpu)
+	for i := 0; i < ncpu; i++ {
+		cpugate <- i
+	}
 
 	initUniverse()
 

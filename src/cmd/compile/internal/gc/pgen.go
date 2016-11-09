@@ -369,32 +369,42 @@ func compile(fn *Node) {
 	}
 
 	ssaWaitGroup.Add(1)
-	ssaResults = append(ssaResults, ssaResult{})
-	res := &ssaResults[len(ssaResults)-1]
-	// TODO: turn into build flag indicating concurrency level
+	if len(ssaResults) == 0 {
+		ssaResults = make([]ssaResults, ncpu)
+	}
+	if ncpu > 1 && len(Ctxt.ProgCaches) == 0 {
+		// TODO: create lazily
+		Ctxt.ProgCaches = make([]obj.ProgCache, ncpu)
+	}
+
 	if ncpu == 1 {
+		res := &ssaResults[0]
+		plist := newplist()
+		ssapc := pc
 		// Ensure full reproducibility by not even starting a goroutine.
-		compileSSA(fn, res)
+		compileSSA(fn, res, Ctxt.ProgCache, plist, ssapc)
 		ssaWaitGroup.Done()
 	} else {
-		go func(fn *Node, res *ssaResult) {
-			cpugate <- struct{}{}
+		i := <-cpugate
+		res := &ssaResults[i]
+		progCache := &Ctxt.ProgCaches[i]
+		plist := newplist()
+		ssapc := pc
+		go func(fn *Node, res *ssaResult, progCache *obj.ProgCache, plist *obj.Plist, ssapc *obj.Prog) {
 			compileSSA(fn, res)
 			<-cpugate
 			ssaWaitGroup.Done()
-		}(fn, res)
+		}(fn, res, progCache, plist, ssapc)
 	}
 }
 
 // compileSSA builds an SSA backend function and uses it to generate a plist.
-func compileSSA(fn *Node, res *ssaResult) {
+func compileSSA(fn *Node, res *ssaResult, progCache *obj.ProgCache, plist *obj.Plist, ssapc *obj.Prog) {
 	ssafn, errs := buildssa(fn)
 	if len(errs) != 0 {
 		res.errs = errs
 		return
 	}
-
-	newplist()
 
 	setlineno(fn)
 
