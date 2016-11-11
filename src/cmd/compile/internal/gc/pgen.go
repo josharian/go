@@ -23,8 +23,9 @@ func makefuncdatasym(nameprefix string, funcdatakind int64) *Sym {
 	pnod := newname(sym)
 	pnod.Class = PEXTERN
 	p := Prog(obj.AFUNCDATA)
+	p.From.Type = obj.TYPE_CONST
+	p.From.Offset = funcdatakind
 	Naddr(&p.To, pnod)
-	Addrconst(&p.From, funcdatakind)
 	return sym
 }
 

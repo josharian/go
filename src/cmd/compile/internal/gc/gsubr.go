@@ -148,12 +148,6 @@ func Naddr(a *obj.Addr, n *Node) {
 	}
 }
 
-func Addrconst(a *obj.Addr, v int64) {
-	a.Sym = nil
-	a.Type = obj.TYPE_CONST
-	a.Offset = v
-}
-
 func newplist() *obj.Plist {
 	pl := obj.Linknewplist(Ctxt)
 	pc = Ctxt.NewProg()
