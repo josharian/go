@@ -1583,6 +1583,31 @@ func BenchmarkCallArgCopy(b *testing.B) {
 	}
 }
 
+var ptrtocount int
+
+func BenchmarkPtrTo(b *testing.B) {
+	inttyp := TypeOf(ptrtocount)
+	b.Run("create", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			b.StopTimer()
+			t := ArrayOf(ptrtocount, inttyp)
+			ptrtocount++
+			b.StartTimer()
+			for i := 0; i < 1000; i++ {
+				t = PtrTo(t)
+			}
+		}
+	})
+	b.Run("reuse", func(b *testing.B) {
+		t := ArrayOf(100000, inttyp)
+		for i := 0; i < b.N; i++ {
+			for i := 0; i < 1000; i++ {
+				_ = PtrTo(t)
+			}
+		}
+	})
+}
+
 func TestMakeFunc(t *testing.T) {
 	f := dummy
 	fv := MakeFunc(TypeOf(f), func(in []Value) []Value { return in })

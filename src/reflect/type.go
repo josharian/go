@@ -19,6 +19,7 @@ import (
 	"runtime"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"unsafe"
 )
 
@@ -1413,11 +1414,26 @@ func TypeOf(i interface{}) Type {
 	return toType(eface.typ)
 }
 
-// ptrMap is the cache for PtrTo.
-var ptrMap struct {
-	sync.RWMutex
-	m map[*rtype]*ptrType
+var (
+	ptrMap      atomic.Value // of ptrCache
+	ptrMapMu    sync.Mutex   // guards ptrMap
+	ptrMapReads uint64       // number of remaining reads to switch to fast path
+)
+
+func decrPtrMapReads() {
+	for {
+		n := atomic.LoadUint64(&ptrMapReads)
+		if n == 0 {
+			return
+		}
+		if atomic.CompareAndSwapUint64(&ptrMapReads, n, n-1) {
+			return
+		}
+	}
 }
+
+// TODO: Why isn't this map[*rtype]*rtype?
+type ptrCache map[*rtype]*ptrType
 
 // PtrTo returns the pointer type with element t.
 // For example, if t represents type Foo, PtrTo(t) represents *Foo.
@@ -1430,35 +1446,57 @@ func (t *rtype) ptrTo() *rtype {
 		return t.typeOff(t.ptrToThis)
 	}
 
-	// Check the cache.
-	ptrMap.RLock()
-	if m := ptrMap.m; m != nil {
-		if p := m[t]; p != nil {
-			ptrMap.RUnlock()
-			return &p.rtype
+	// Check the readonly cache.
+	n := atomic.LoadUint64(&ptrMapReads)
+	if n == 0 {
+		cached := ptrMap.Load()
+		if m, ok := cached.(ptrCache); ok {
+			if p := m[t]; p != nil {
+				return &p.rtype
+			}
 		}
 	}
-	ptrMap.RUnlock()
 
-	ptrMap.Lock()
-	if ptrMap.m == nil {
-		ptrMap.m = make(map[*rtype]*ptrType)
+	// The readonly cache is disabled or there was a cache miss.
+	// Calculate the new value before taking the lock.
+	// May duplicate work but won't hold other computations back.
+	p := t.createPtrTo()
+
+	ptrMapMu.Lock()
+	defer ptrMapMu.Unlock() // TODO: is this defer cheap enough to keep?
+
+	cached := ptrMap.Load()
+	if cached == nil {
+		ptrMap.Store(ptrCache{t: p})
+		atomic.StoreUint64(&ptrMapReads, 1)
+		return &p.rtype
 	}
-	p := ptrMap.m[t]
-	if p != nil {
+	m := cached.(ptrCache)
+	if p := m[t]; p != nil {
 		// some other goroutine won the race and created it
-		ptrMap.Unlock()
+		n := atomic.LoadUint64(&ptrMapReads)
+		if n != 0 {
+			atomic.StoreUint64(&ptrMapReads, n-1)
+		}
 		return &p.rtype
 	}
 
+	// now no one can reading from ptrMap, we can update in-place
+	// TODO: Can this really be safe?
+	// Seems like we've re-invented (almost) the RWMutex but more efficiently, which seems unlikely.
+	atomic.StoreUint64(&ptrMapReads, uint64(len(m)+1))
+	m[t] = p
+	return &p.rtype
+}
+
+// createPtrTo creates *t. The result is cached; createPtrTo should only be called from ptrTo.
+func (t *rtype) createPtrTo() *ptrType {
 	// Look in known types.
 	s := "*" + t.String()
 	for _, tt := range typesByString(s) {
-		p = (*ptrType)(unsafe.Pointer(tt))
+		p := (*ptrType)(unsafe.Pointer(tt))
 		if p.elem == t {
-			ptrMap.m[t] = p
-			ptrMap.Unlock()
-			return &p.rtype
+			return p
 		}
 	}
 
@@ -1478,10 +1516,7 @@ func (t *rtype) ptrTo() *rtype {
 	pp.hash = fnv1(t.hash, '*')
 
 	pp.elem = t
-
-	ptrMap.m[t] = &pp
-	ptrMap.Unlock()
-	return &pp.rtype
+	return &pp
 }
 
 // fnv1 incorporates the list of bytes into the hash x using the FNV-1 hash function.
