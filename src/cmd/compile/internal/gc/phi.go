@@ -29,7 +29,8 @@ const debugPhi = false
 // TODO: make this part of cmd/compile/internal/ssa somehow?
 func (s *state) insertPhis() {
 	if len(s.f.Blocks) <= smallBlocks {
-		sps := simplePhiState{s: s, f: s.f, defvars: s.defvars}
+		reachable := ssa.ReachableBlocks(s.f)
+		sps := simplePhiState{s: s, f: s.f, defvars: s.defvars, reachable: reachable}
 		sps.insertPhis()
 		return
 	}
@@ -428,10 +429,11 @@ func (s *sparseSet) clear() {
 
 // Variant to use for small functions.
 type simplePhiState struct {
-	s       *state                 // SSA state
-	f       *ssa.Func              // function to work on
-	fwdrefs []*ssa.Value           // list of FwdRefs to be processed
-	defvars []map[*Node]*ssa.Value // defined variables at end of each block
+	s         *state                 // SSA state
+	f         *ssa.Func              // function to work on
+	fwdrefs   []*ssa.Value           // list of FwdRefs to be processed
+	defvars   []map[*Node]*ssa.Value // defined variables at end of each block
+	reachable []bool
 }
 
 func (s *simplePhiState) insertPhis() {
@@ -457,12 +459,12 @@ loop:
 		s.fwdrefs = s.fwdrefs[:len(s.fwdrefs)-1]
 		b := v.Block
 		var_ := v.Aux.(*Node)
-		if len(b.Preds) == 0 {
-			if b == s.f.Entry {
-				// No variable should be live at entry.
-				s.s.Fatalf("Value live at entry. It shouldn't be. func %s, node %v, value %v", s.f.Name, var_, v)
-			}
-			// This block is dead; it has no predecessors and it is not the entry block.
+		if b == s.f.Entry {
+			// No variable should be live at entry.
+			s.s.Fatalf("Value live at entry. It shouldn't be. func %s, node %v, value %v", s.f.Name, var_, v)
+		}
+		if !s.reachable[b.ID] {
+			// This block is dead.
 			// It doesn't matter what we use here as long as it is well-formed.
 			v.Op = ssa.OpUnknown
 			v.Aux = nil
@@ -483,6 +485,9 @@ loop:
 			}
 			if a == w {
 				continue // already have this witness
+			}
+			if !s.reachable[a.Block.ID] {
+				continue // this witness is dead
 			}
 			if w != nil {
 				// two witnesses, need a phi value
