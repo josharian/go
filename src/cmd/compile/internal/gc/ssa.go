@@ -359,56 +359,89 @@ func (s *state) Error(msg string, args ...interface{}) {
 
 // newValue0 adds a new value with no arguments to the current block.
 func (s *state) newValue0(op ssa.Op, t ssa.Type) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue0(s.peekLine(), op, t)
 }
 
 // newValue0A adds a new value with no arguments and an aux value to the current block.
 func (s *state) newValue0A(op ssa.Op, t ssa.Type, aux interface{}) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue0A(s.peekLine(), op, t, aux)
 }
 
 // newValue0I adds a new value with no arguments and an auxint value to the current block.
 func (s *state) newValue0I(op ssa.Op, t ssa.Type, auxint int64) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue0I(s.peekLine(), op, t, auxint)
 }
 
 // newValue1 adds a new value with one argument to the current block.
 func (s *state) newValue1(op ssa.Op, t ssa.Type, arg *ssa.Value) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue1(s.peekLine(), op, t, arg)
 }
 
 // newValue1A adds a new value with one argument and an aux value to the current block.
 func (s *state) newValue1A(op ssa.Op, t ssa.Type, aux interface{}, arg *ssa.Value) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue1A(s.peekLine(), op, t, aux, arg)
 }
 
 // newValue1I adds a new value with one argument and an auxint value to the current block.
 func (s *state) newValue1I(op ssa.Op, t ssa.Type, aux int64, arg *ssa.Value) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue1I(s.peekLine(), op, t, aux, arg)
 }
 
 // newValue2 adds a new value with two arguments to the current block.
 func (s *state) newValue2(op ssa.Op, t ssa.Type, arg0, arg1 *ssa.Value) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue2(s.peekLine(), op, t, arg0, arg1)
 }
 
 // newValue2I adds a new value with two arguments and an auxint value to the current block.
 func (s *state) newValue2I(op ssa.Op, t ssa.Type, aux int64, arg0, arg1 *ssa.Value) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue2I(s.peekLine(), op, t, aux, arg0, arg1)
 }
 
 // newValue3 adds a new value with three arguments to the current block.
 func (s *state) newValue3(op ssa.Op, t ssa.Type, arg0, arg1, arg2 *ssa.Value) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue3(s.peekLine(), op, t, arg0, arg1, arg2)
 }
 
 // newValue3I adds a new value with three arguments and an auxint value to the current block.
 func (s *state) newValue3I(op ssa.Op, t ssa.Type, aux int64, arg0, arg1, arg2 *ssa.Value) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue3I(s.peekLine(), op, t, aux, arg0, arg1, arg2)
 }
 
 // newValue4 adds a new value with four arguments to the current block.
 func (s *state) newValue4(op ssa.Op, t ssa.Type, arg0, arg1, arg2, arg3 *ssa.Value) *ssa.Value {
+	if s.curBlock == nil {
+		return s.f.Placeholder()
+	}
 	return s.curBlock.NewValue4(s.peekLine(), op, t, arg0, arg1, arg2, arg3)
 }
 
@@ -500,10 +533,10 @@ func (s *state) stmt(n *Node) {
 	// because we check labels and gotos as part of SSA generation.
 	// Provide a block for the dead code so that we don't have
 	// to add special cases everywhere else.
-	if s.curBlock == nil {
-		dead := s.f.NewBlock(ssa.BlockPlain)
-		s.startBlock(dead)
-	}
+	// if s.curBlock == nil {
+	// 	dead := s.f.NewBlock(ssa.BlockPlain)
+	// 	s.startBlock(dead)
+	// }
 
 	s.stmtList(n.Ninit)
 	switch n.Op {
@@ -529,8 +562,10 @@ func (s *state) stmt(n *Node) {
 				n.Left.Sym.Pkg == Runtimepkg && (fn == "throwinit" || fn == "gopanic" || fn == "panicwrap" || fn == "selectgo" || fn == "block") {
 				m := s.mem()
 				b := s.endBlock()
-				b.Kind = ssa.BlockExit
-				b.SetControl(m)
+				if b != nil {
+					b.Kind = ssa.BlockExit
+					b.SetControl(m)
+				}
 				// TODO: never rewrite OPANIC to OCALLFUNC in the
 				// first place. Need to wait until all backends
 				// go through SSA.
@@ -943,7 +978,7 @@ func (s *state) stmt(n *Node) {
 		// We only care about liveness info at call sites, so putting the
 		// varkill in the store chain is enough to keep it correctly ordered
 		// with respect to call ops.
-		if !s.canSSA(n.Left) {
+		if !s.canSSA(n.Left) && s.curBlock != nil {
 			s.vars[&memVar] = s.newValue1A(ssa.OpVarKill, ssa.TypeMem, n.Left, s.mem())
 		}
 
@@ -952,7 +987,9 @@ func (s *state) stmt(n *Node) {
 		if !n.Left.Addrtaken {
 			s.Fatalf("VARLIVE variable %v must have Addrtaken set", n.Left)
 		}
-		s.vars[&memVar] = s.newValue1A(ssa.OpVarLive, ssa.TypeMem, n.Left, s.mem())
+		if s.curBlock != nil {
+			s.vars[&memVar] = s.newValue1A(ssa.OpVarLive, ssa.TypeMem, n.Left, s.mem())
+		}
 
 	case OCHECKNIL:
 		p := s.expr(n.Left)
@@ -982,8 +1019,10 @@ func (s *state) exit() *ssa.Block {
 	for _, n := range s.returns {
 		addr := s.decladdrs[n]
 		val := s.variable(n, n.Type)
-		s.vars[&memVar] = s.newValue1A(ssa.OpVarDef, ssa.TypeMem, n, s.mem())
-		s.vars[&memVar] = s.newValue3I(ssa.OpStore, ssa.TypeMem, n.Type.Size(), addr, val, s.mem())
+		if s.curBlock != nil {
+			s.vars[&memVar] = s.newValue1A(ssa.OpVarDef, ssa.TypeMem, n, s.mem())
+			s.vars[&memVar] = s.newValue3I(ssa.OpStore, ssa.TypeMem, n.Type.Size(), addr, val, s.mem())
+		}
 		// TODO: if val is ever spilled, we'd like to use the
 		// PPARAMOUT slot for spilling it. That won't happen
 		// currently.
@@ -992,6 +1031,9 @@ func (s *state) exit() *ssa.Block {
 	// Do actual return.
 	m := s.mem()
 	b := s.endBlock()
+	if b == nil {
+		return nil
+	}
 	b.Kind = ssa.BlockRet
 	b.SetControl(m)
 	return b
@@ -2339,6 +2381,9 @@ func (s *state) condBranch(cond *Node, yes, no *ssa.Block, likely int8) {
 	}
 	c := s.expr(cond)
 	b := s.endBlock()
+	if b == nil {
+		return
+	}
 	b.Kind = ssa.BlockIf
 	b.SetControl(c)
 	b.Likely = ssa.BranchPrediction(likely) // gc and ssa both use -1/0/+1 for likeliness
@@ -2431,13 +2476,15 @@ func (s *state) assign(left *Node, right *ssa.Value, wb, deref bool, line int32,
 			return
 		}
 		// Update variable assignment.
-		s.vars[left] = right
+		if s.curBlock != nil {
+			s.vars[left] = right
+		}
 		s.addNamedValue(left, right)
 		return
 	}
 	// Left is not ssa-able. Compute its address.
 	addr, _ := s.addr(left, false)
-	if left.Op == ONAME && skip == 0 {
+	if left.Op == ONAME && skip == 0 && s.curBlock != nil {
 		s.vars[&memVar] = s.newValue1A(ssa.OpVarDef, ssa.TypeMem, left, s.mem())
 	}
 	if deref {
@@ -2471,7 +2518,9 @@ func (s *state) assign(left *Node, right *ssa.Value, wb, deref bool, line int32,
 		s.storeTypeScalars(t, addr, right, skip)
 		return
 	}
-	s.vars[&memVar] = s.newValue3I(ssa.OpStore, ssa.TypeMem, t.Size(), addr, right, s.mem())
+	if s.curBlock != nil {
+		s.vars[&memVar] = s.newValue3I(ssa.OpStore, ssa.TypeMem, t.Size(), addr, right, s.mem())
+	}
 }
 
 // zeroVal returns the zero value for type t.
@@ -2993,9 +3042,13 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 		argStart := Ctxt.FixedFrameSize()
 		argsize := s.constInt32(Types[TUINT32], int32(stksize))
 		addr := s.entryNewValue1I(ssa.OpOffPtr, ptrto(Types[TUINT32]), argStart, s.sp)
-		s.vars[&memVar] = s.newValue3I(ssa.OpStore, ssa.TypeMem, 4, addr, argsize, s.mem())
+		if s.curBlock != nil {
+			s.vars[&memVar] = s.newValue3I(ssa.OpStore, ssa.TypeMem, 4, addr, argsize, s.mem())
+		}
 		addr = s.entryNewValue1I(ssa.OpOffPtr, ptrto(Types[TUINTPTR]), argStart+int64(Widthptr), s.sp)
-		s.vars[&memVar] = s.newValue3I(ssa.OpStore, ssa.TypeMem, int64(Widthptr), addr, closure, s.mem())
+		if s.curBlock != nil {
+			s.vars[&memVar] = s.newValue3I(ssa.OpStore, ssa.TypeMem, int64(Widthptr), addr, closure, s.mem())
+		}
 		stksize += 2 * int64(Widthptr)
 	}
 
@@ -3017,22 +3070,26 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 		Fatalf("bad call type %v %v", n.Op, n)
 	}
 	call.AuxInt = stksize // Call operations carry the argsize of the callee along with them
-	s.vars[&memVar] = call
+	if s.curBlock != nil {
+		s.vars[&memVar] = call
+	}
 
 	// Finish block for defers
 	if k == callDefer {
 		b := s.endBlock()
-		b.Kind = ssa.BlockDefer
-		b.SetControl(call)
-		bNext := s.f.NewBlock(ssa.BlockPlain)
-		b.AddEdgeTo(bNext)
-		// Add recover edge to exit code.
-		r := s.f.NewBlock(ssa.BlockPlain)
-		s.startBlock(r)
-		s.exit()
-		b.AddEdgeTo(r)
-		b.Likely = ssa.BranchLikely
-		s.startBlock(bNext)
+		if b != nil {
+			b.Kind = ssa.BlockDefer
+			b.SetControl(call)
+			bNext := s.f.NewBlock(ssa.BlockPlain)
+			b.AddEdgeTo(bNext)
+			// Add recover edge to exit code.
+			r := s.f.NewBlock(ssa.BlockPlain)
+			s.startBlock(r)
+			s.exit()
+			b.AddEdgeTo(r)
+			b.Likely = ssa.BranchLikely
+			s.startBlock(bNext)
+		}
 	}
 
 	res := n.Left.Type.Results()
@@ -3311,6 +3368,9 @@ func (s *state) sliceBoundsCheck(idx, len *ssa.Value) {
 // If cmp (a bool) is false, panic using the given function.
 func (s *state) check(cmp *ssa.Value, fn *Node) {
 	b := s.endBlock()
+	if b == nil {
+		return
+	}
 	b.Kind = ssa.BlockIf
 	b.SetControl(cmp)
 	b.Likely = ssa.BranchLikely

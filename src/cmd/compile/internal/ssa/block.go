@@ -143,6 +143,9 @@ func (b *Block) SetControl(v *Value) {
 // AddEdgeTo adds an edge from block b to block c. Used during building of the
 // SSA graph; do not use on an already-completed SSA graph.
 func (b *Block) AddEdgeTo(c *Block) {
+	if b == nil {
+		return
+	}
 	i := len(b.Succs)
 	j := len(c.Preds)
 	b.Succs = append(b.Succs, Edge{c, j})

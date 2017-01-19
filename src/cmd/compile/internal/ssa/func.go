@@ -44,6 +44,8 @@ type Func struct {
 	cachedLoopnest  *loopnest  // cached loop nest information
 
 	constants map[int64][]*Value // constants cache, keyed by constant value; users must check value's Op and Type
+
+	placeholder *Value
 }
 
 // NumBlocks returns an integer larger than the id of any Block in the Func.
@@ -54,6 +56,14 @@ func (f *Func) NumBlocks() int {
 // NumValues returns an integer larger than the id of any Value in the Func.
 func (f *Func) NumValues() int {
 	return f.vid.num()
+}
+
+// Placeholder returns a dummy Value.
+func (f *Func) Placeholder() *Value {
+	if f.placeholder == nil {
+		f.placeholder = f.Entry.NewValue0(0, OpUnknown, TypeInvalid)
+	}
+	return f.placeholder
 }
 
 // newSparseSet returns a sparse set that can store at least up to n integers.
