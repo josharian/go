@@ -6,13 +6,13 @@ package ssa
 
 // findlive returns the reachable blocks and live values in f.
 func findlive(f *Func) (reachable []bool, live []bool) {
-	reachable = reachableBlocks(f)
+	reachable = ReachableBlocks(f)
 	live = liveValues(f, reachable)
 	return
 }
 
-// reachableBlocks returns the reachable blocks in f.
-func reachableBlocks(f *Func) []bool {
+// ReachableBlocks returns the reachable blocks in f.
+func ReachableBlocks(f *Func) []bool {
 	reachable := make([]bool, f.NumBlocks())
 	reachable[f.Entry.ID] = true
 	p := []*Block{f.Entry} // stack-like worklist
@@ -95,6 +95,64 @@ func liveValues(f *Func, reachable []bool) []bool {
 	return live
 }
 
+func PrePhiDeadcode(f *Func) {
+	reachable := ReachableBlocks(f)
+	for _, b := range f.Blocks {
+		if reachable[b.ID] {
+			continue
+		}
+		for i := 0; i < len(b.Succs); {
+			e := b.Succs[i]
+			if reachable[e.Block().ID] {
+				b.RemoveEdge(i)
+				continue
+			}
+			i++
+		}
+	}
+
+	// Unlink values.
+	for _, b := range f.Blocks {
+		if reachable[b.ID] {
+			continue
+		}
+		b.SetControl(nil)
+		for _, v := range b.Values {
+			v.resetArgs()
+		}
+	}
+
+	// Remove dead values from blocks' value list. Return dead
+	// values to the allocator.
+	for _, b := range f.Blocks {
+		if reachable[b.ID] {
+			continue
+		}
+		for _, v := range b.Values {
+			f.freeValue(v)
+		}
+		// aid GC
+		b.Values = nil
+	}
+
+	// Remove unreachable blocks. Return dead blocks to allocator.
+	i := 0
+	for _, b := range f.Blocks {
+		if reachable[b.ID] {
+			f.Blocks[i] = b
+			i++
+		} else {
+			f.freeBlock(b)
+		}
+	}
+	// zero remainder to help GC
+	tail := f.Blocks[i:]
+	for j := range tail {
+		tail[j] = nil
+	}
+	f.Blocks = f.Blocks[:i]
+}
+
 // deadcode removes dead code from f.
 func deadcode(f *Func) {
 	// deadcode after regalloc is forbidden for now. Regalloc
@@ -106,7 +164,7 @@ func deadcode(f *Func) {
 	}
 
 	// Find reachable blocks.
-	reachable := reachableBlocks(f)
+	reachable := ReachableBlocks(f)
 
 	// Get rid of edges from dead to live code.
 	for _, b := range f.Blocks {
@@ -116,7 +174,7 @@ func deadcode(f *Func) {
 		for i := 0; i < len(b.Succs); {
 			e := b.Succs[i]
 			if reachable[e.b.ID] {
-				b.removeEdge(i)
+				b.RemoveEdge(i)
 			} else {
 				i++
 			}
@@ -131,7 +189,7 @@ func deadcode(f *Func) {
 		if b.Kind != BlockFirst {
 			continue
 		}
-		b.removeEdge(1)
+		b.RemoveEdge(1)
 		b.Kind = BlockPlain
 		b.Likely = BranchUnknown
 	}
@@ -226,9 +284,9 @@ func deadcode(f *Func) {
 	f.Blocks = f.Blocks[:i]
 }
 
-// removeEdge removes the i'th outgoing edge from b (and
+// RemoveEdge removes the i'th outgoing edge from b (and
 // the corresponding incoming edge from b.Succs[i].b).
-func (b *Block) removeEdge(i int) {
+func (b *Block) RemoveEdge(i int) {
 	e := b.Succs[i]
 	c := e.b
 	j := e.i

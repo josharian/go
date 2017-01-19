@@ -171,6 +171,9 @@ func buildssa(fn *Node) *ssa.Func {
 		return nil
 	}
 
+	// Do a first, simple deadcode pass to speed up phi insertion.
+	ssa.PrePhiDeadcode(s.f)
+
 	s.insertPhis()
 
 	// Don't carry reference this around longer than necessary

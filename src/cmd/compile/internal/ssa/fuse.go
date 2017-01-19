@@ -78,16 +78,16 @@ func fuseBlockIf(b *Block) bool {
 		// We need to keep a slot for Phis corresponding to b.
 		b.Succs[0] = Edge{ss, i0}
 		ss.Preds[i0] = Edge{b, 0}
-		b.removeEdge(1)
-		s1.removeEdge(0)
+		b.RemoveEdge(1)
+		s1.RemoveEdge(0)
 	} else if s0 != b {
-		b.removeEdge(0)
-		s0.removeEdge(0)
+		b.RemoveEdge(0)
+		s0.RemoveEdge(0)
 	} else if s1 != b {
-		b.removeEdge(1)
-		s1.removeEdge(0)
+		b.RemoveEdge(1)
+		s1.RemoveEdge(0)
 	} else {
-		b.removeEdge(1)
+		b.RemoveEdge(1)
 	}
 	b.Kind = BlockPlain
 	b.SetControl(nil)
