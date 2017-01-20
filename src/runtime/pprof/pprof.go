@@ -463,7 +463,7 @@ func printStackRecord(w io.Writer, stk []uintptr, allFrames bool) {
 // WriteHeapProfile is shorthand for Lookup("heap").WriteTo(w, 0).
 // It is preserved for backwards compatibility.
 func WriteHeapProfile(w io.Writer) error {
-	return writeHeap(w, 0)
+	return writeHeap(w, 1)
 }
 
 // countHeap returns the number of records in the heap profile.
