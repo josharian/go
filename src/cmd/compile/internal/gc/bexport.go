@@ -1280,8 +1280,13 @@ func (p *exporter) expr(n *Node) {
 	// case OSTRUCTKEY:
 	//	unreachable - handled in case OSTRUCTLIT by elemList
 
-	// case OCALLPART:
-	//	unimplemented - handled by default case
+	case OCALLPART:
+		p.op(op)
+		p.expr(n.Left)
+		p.expr(n.Right)
+		p.typ(n.Type)
+		p.sym(n.Func.Nname)
+		p.typ(n.Func.Nname.Type)
 
 	case OXDOT, ODOT, ODOTPTR, ODOTINTER, ODOTMETH:
 		p.op(OXDOT)

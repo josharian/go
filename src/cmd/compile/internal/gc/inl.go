@@ -239,7 +239,6 @@ func ishairy(n *Node, budget *int32, reason *string) bool {
 		}
 
 	case OCLOSURE,
-		OCALLPART,
 		ORANGE,
 		OFOR,
 		OSELECT,

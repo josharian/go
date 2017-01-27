@@ -908,8 +908,14 @@ func (p *importer) node() *Node {
 	// case OSTRUCTKEY:
 	//	unreachable - handled in case OSTRUCTLIT by elemList
 
-	// case OCALLPART:
-	//	unimplemented
+	case OCALLPART:
+		n := nod(op, p.expr(), p.expr())
+		n.Type = p.typ()
+		n.Typecheck = 1
+		n.Func = new(Func)
+		n.Func.Nname = newname(p.sym())
+		n.Func.Nname.Type = p.typ()
+		return n
 
 	// case OXDOT, ODOT, ODOTPTR, ODOTINTER, ODOTMETH:
 	// 	unreachable - mapped to case OXDOT below by exporter
