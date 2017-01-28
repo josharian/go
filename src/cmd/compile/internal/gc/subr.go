@@ -353,6 +353,7 @@ func importdot(opkg *Pkg, pack *Node) {
 }
 
 func nod(op Op, nleft *Node, nright *Node) *Node {
+	whence()
 	n := new(Node)
 	n.Op = op
 	n.Left = nleft
