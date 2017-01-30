@@ -173,6 +173,17 @@ func buildssa(fn *Node) *ssa.Func {
 
 	s.insertPhis()
 
+	// Sanity check and then free varsyms.
+	// for _, sym := range s.varsyms {
+	// 	switch sym.(type) {
+	// 	default:
+	// 		s.Fatalf("sym %v is of unknown type %T", sym, sym)
+	// 	case *ssa.ExternSymbol, *ssa.ArgSymbol, *ssa.AutoSymbol:
+	// 		// these are the only valid types
+	// 	}
+	// }
+	s.varsyms = nil
+
 	// Don't carry reference this around longer than necessary
 	s.exitCode = Nodes{}
 
@@ -3060,19 +3071,11 @@ func etypesign(e EType) int8 {
 // This improves the effectiveness of cse by using the same Aux values for the
 // same symbols.
 func (s *state) lookupSymbol(n *Node, sym interface{}) interface{} {
-	switch sym.(type) {
-	default:
-		s.Fatalf("sym %v is of uknown type %T", sym, sym)
-	case *ssa.ExternSymbol, *ssa.ArgSymbol, *ssa.AutoSymbol:
-		// these are the only valid types
-	}
-
 	if lsym, ok := s.varsyms[n]; ok {
 		return lsym
-	} else {
-		s.varsyms[n] = sym
-		return sym
 	}
+	s.varsyms[n] = sym
+	return sym
 }
 
 // addr converts the address of the expression n to SSA, adds it to s and returns the SSA result.
