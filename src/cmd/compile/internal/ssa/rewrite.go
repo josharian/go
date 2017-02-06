@@ -517,6 +517,12 @@ func logRule(s string) {
 	}
 }
 
+func debugRule(loc string, msg string, args ...interface{}) {
+	// TODO: protect this with an envvar?
+	s := fmt.Sprintf(msg, args...)
+	fmt.Printf("%s: %s\n", loc, s)
+}
+
 var ruleFile *os.File
 
 func min(x, y int64) int64 {

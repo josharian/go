@@ -61,19 +61,23 @@ func (r Rule) String() string {
 }
 
 // parse returns the matching part of the rule, additional conditions, and the result.
-func (r Rule) parse() (match, cond, result string) {
+func (r Rule) parse() (match, cond, result string, debug bool) {
 	s := strings.Split(r.rule, "->")
 	if len(s) != 2 {
 		log.Fatalf("no arrow in %s", r)
 	}
 	match = strings.TrimSpace(s[0])
+	if strings.HasPrefix(match, "DEBUG ") {
+		match = match[len("DEBUG "):]
+		debug = true
+	}
 	result = strings.TrimSpace(s[1])
 	cond = ""
 	if i := strings.Index(match, "&&"); i >= 0 {
 		cond = strings.TrimSpace(match[i+2:])
 		match = strings.TrimSpace(match[:i])
 	}
-	return match, cond, result
+	return match, cond, result, debug
 }
 
 func genRules(arch arch) {
@@ -124,7 +128,7 @@ func genRules(arch arch) {
 			blockrules[rawop] = append(blockrules[rawop], r)
 		} else {
 			// Do fancier value op matching.
-			match, _, _ := r.parse()
+			match, _, _, _ := r.parse()
 			op, oparch, _, _, _, _ := parseValue(match, arch, loc)
 			opname := fmt.Sprintf("Op%s%s", oparch, op.name)
 			oprules[opname] = append(oprules[opname], r)
@@ -174,14 +178,17 @@ func genRules(arch arch) {
 		fmt.Fprintln(w, "_ = b")
 		var canFail bool
 		for i, rule := range oprules[op] {
-			match, cond, result := rule.parse()
+			match, cond, result, debug := rule.parse()
 			fmt.Fprintf(w, "// match: %s\n", match)
 			fmt.Fprintf(w, "// cond: %s\n", cond)
 			fmt.Fprintf(w, "// result: %s\n", result)
 
 			canFail = false
+			if debug {
+				fmt.Fprintf(w, "debugRule(\"%s\", \"match? %%s\", v.LongString())\n", rule.loc)
+			}
 			fmt.Fprintf(w, "for {\n")
-			if genMatch(w, arch, match, rule.loc) {
+			if genMatch(w, arch, match, rule.loc, debug) {
 				canFail = true
 			}
 
@@ -196,6 +203,9 @@ func genRules(arch arch) {
 			genResult(w, arch, result, rule.loc)
 			if *genLog {
 				fmt.Fprintf(w, "logRule(\"%s\")\n", rule.loc)
+			}
+			if debug {
+				fmt.Fprintf(w, "debugRule(\"%s\", \"matched\")\n", rule.loc)
 			}
 			fmt.Fprintf(w, "return true\n")
 
@@ -219,7 +229,7 @@ func genRules(arch arch) {
 	for _, op := range ops {
 		fmt.Fprintf(w, "case %s:\n", blockName(op, arch))
 		for _, rule := range blockrules[op] {
-			match, cond, result := rule.parse()
+			match, cond, result, debug := rule.parse()
 			fmt.Fprintf(w, "// match: %s\n", match)
 			fmt.Fprintf(w, "// cond: %s\n", cond)
 			fmt.Fprintf(w, "// result: %s\n", result)
@@ -232,7 +242,7 @@ func genRules(arch arch) {
 			if s[1] != "nil" {
 				fmt.Fprintf(w, "v := b.Control\n")
 				if strings.Contains(s[1], "(") {
-					genMatch0(w, arch, s[1], "v", map[string]struct{}{}, false, rule.loc)
+					genMatch0(w, arch, s[1], "v", map[string]struct{}{}, false, rule.loc, debug)
 				} else {
 					fmt.Fprintf(w, "_ = v\n") // in case we don't use v
 					fmt.Fprintf(w, "%s := b.Control\n", s[1])
@@ -327,11 +337,11 @@ func genRules(arch arch) {
 }
 
 // genMatch returns true if the match can fail.
-func genMatch(w io.Writer, arch arch, match string, loc string) bool {
-	return genMatch0(w, arch, match, "v", map[string]struct{}{}, true, loc)
+func genMatch(w io.Writer, arch arch, match string, loc string, debug bool) bool {
+	return genMatch0(w, arch, match, "v", map[string]struct{}{}, true, loc, debug)
 }
 
-func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, top bool, loc string) bool {
+func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, top bool, loc string, debug bool) bool {
 	if match[0] != '(' || match[len(match)-1] != ')' {
 		panic("non-compound expr in genMatch0: " + match)
 	}
@@ -341,7 +351,11 @@ func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, t
 
 	// check op
 	if !top {
-		fmt.Fprintf(w, "if %s.Op != Op%s%s {\nbreak\n}\n", v, oparch, op.name)
+		fmt.Fprintf(w, "if %s.Op != Op%s%s {\n", v, oparch, op.name)
+		if debug {
+			fmt.Fprintf(w, "debugRule(\"%s\", \"want Op%s%s have %%s\", %s.LongString())\n", loc, oparch, op.name, v)
+		}
+		fmt.Fprintf(w, "break\n}\n")
 		canFail = true
 	}
 
@@ -431,7 +445,7 @@ func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, t
 			argname = fmt.Sprintf("%s_%d", v, i)
 		}
 		fmt.Fprintf(w, "%s := %s.Args[%d]\n", argname, v, i)
-		if genMatch0(w, arch, arg, argname, m, false, loc) {
+		if genMatch0(w, arch, arg, argname, m, false, loc, debug) {
 			canFail = true
 		}
 	}
