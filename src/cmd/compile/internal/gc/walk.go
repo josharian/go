@@ -253,10 +253,10 @@ func walkstmt(n *Node) *Node {
 		switch n.Left.Op {
 		case OPRINT, OPRINTN:
 			n.Left = walkprintfunc(n.Left, &n.Ninit)
-
 		case OCOPY:
 			n.Left = copyany(n.Left, &n.Ninit, true)
-
+		case OPANIC:
+			n.Left = walkpanic(n.Left, &n.Ninit, true)
 		default:
 			n.Left = walkexpr(n.Left, &n.Ninit)
 		}
@@ -285,10 +285,10 @@ func walkstmt(n *Node) *Node {
 		switch n.Left.Op {
 		case OPRINT, OPRINTN:
 			n.Left = walkprintfunc(n.Left, &n.Ninit)
-
 		case OCOPY:
 			n.Left = copyany(n.Left, &n.Ninit, true)
-
+		case OPANIC:
+			n.Left = walkpanic(n.Left, &n.Ninit, true)
 		default:
 			n.Left = walkexpr(n.Left, &n.Ninit)
 		}
@@ -596,7 +596,7 @@ opswitch:
 		n = walkprint(n, init)
 
 	case OPANIC:
-		n = mkcall("gopanic", nil, init, n.Left)
+		n = walkpanic(n, init, instrumenting && !compiling_runtime)
 
 	case ORECOVER:
 		n = mkcall("gorecover", n.Type, init, nod(OADDR, nodfp, nil))
@@ -2974,6 +2974,28 @@ func walkappend(n *Node, init *Nodes, dst *Node) *Node {
 	walkstmtlist(l)
 	init.Append(l...)
 	return ns
+}
+
+// walkpanic prepares panic nodes for the SSA backend.
+// If runtimecall is set, walkpanic converts the OPANIC into an OCALLFUNC.
+// This is necessary for silly code like 'go panic(...)' and 'defer panic(...)'.
+// The result of walkpanic MUST be assigned back to n, e.g.
+// 	n.Left = walkpanic(n.Left, init, runtimecall)
+func walkpanic(n *Node, init *Nodes, runtimecall bool) *Node {
+	// Panic takes an interface{} arg. Convert if necessary.
+	if !n.Left.Type.IsEmptyInterface() {
+		tmp := temp(Types[TINTER])
+		e := nod(OCONVIFACE, n.Left, nil)
+		e.Type = Types[TINTER]
+		e.Typecheck = 1
+		e = walkexpr(e, init)
+		init.Append(nod(OAS, tmp, e))
+		n.Left = tmp
+	}
+	if runtimecall {
+		return mkcall("gopanic", nil, init, n.Left)
+	}
+	return n
 }
 
 // Lower copy(a, b) to a memmove call or a runtime call.

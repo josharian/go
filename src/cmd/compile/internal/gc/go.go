@@ -372,6 +372,7 @@ var (
 	Deferreturn,
 	Duffcopy,
 	Duffzero,
+	gopanic,
 	panicindex,
 	panicslice,
 	panicdivide,

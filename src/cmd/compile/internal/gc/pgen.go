@@ -302,6 +302,7 @@ func compile(fn *Node) {
 		Deferreturn = Sysfunc("deferreturn")
 		Duffcopy = Sysfunc("duffcopy")
 		Duffzero = Sysfunc("duffzero")
+		gopanic = Sysfunc("gopanic")
 		panicindex = Sysfunc("panicindex")
 		panicslice = Sysfunc("panicslice")
 		panicdivide = Sysfunc("panicdivide")

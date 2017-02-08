@@ -363,6 +363,13 @@ func ordercallargs(l *Nodes, order *Order) {
 	}
 }
 
+func orderpanic(n *Node, order *Order) {
+	n.Left = orderexpr(n.Left, order, nil)
+	if !n.Left.Type.IsInterface() {
+		n.Left = orderaddrtemp(n.Left, order)
+	}
+}
+
 // Ordercall orders the call expression n.
 // n->op is OCALLMETH/OCALLFUNC/OCALLINTER or a builtin like OCOPY.
 func ordercall(n *Node, order *Order) {
@@ -649,7 +656,8 @@ func orderstmt(n *Node, order *Order) {
 			np := n.Left.List.Addr(1) // map key
 			*np = ordercopyexpr(*np, (*np).Type, order, 0)
 			poptemp(t1, order)
-
+		case OPANIC:
+			orderpanic(n.Left, order)
 		default:
 			ordercall(n.Left, order)
 		}
@@ -700,11 +708,7 @@ func orderstmt(n *Node, order *Order) {
 	// so make sure it is an addressable temporary.
 	case OPANIC:
 		t := marktemp(order)
-
-		n.Left = orderexpr(n.Left, order, nil)
-		if !n.Left.Type.IsInterface() {
-			n.Left = orderaddrtemp(n.Left, order)
-		}
+		orderpanic(n, order)
 		order.out = append(order.out, n)
 		cleantemp(t, order)
 
