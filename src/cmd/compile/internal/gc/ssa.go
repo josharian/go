@@ -326,9 +326,11 @@ func (s *state) endBlock() *ssa.Block {
 	for len(s.defvars) <= int(b.ID) {
 		s.defvars = append(s.defvars, nil)
 	}
-	s.defvars[b.ID] = s.vars
+	if len(s.vars) > 0 {
+		s.defvars[b.ID] = s.vars
+		s.vars = nil
+	}
 	s.curBlock = nil
-	s.vars = nil
 	b.Pos = s.peekPos()
 	return b
 }

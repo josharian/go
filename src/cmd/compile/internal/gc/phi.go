@@ -446,7 +446,11 @@ func (s *simplePhiState) insertPhis() {
 			s.fwdrefs = append(s.fwdrefs, v)
 			var_ := v.Aux.(*Node)
 			if _, ok := s.defvars[b.ID][var_]; !ok {
-				s.defvars[b.ID][var_] = v // treat FwdDefs as definitions.
+				if s.defvars[b.ID] == nil {
+					s.defvars[b.ID] = map[*Node]*ssa.Value{var_: v}
+				} else {
+					s.defvars[b.ID][var_] = v // treat FwdDefs as definitions.
+				}
 			}
 		}
 	}
@@ -521,7 +525,11 @@ func (s *simplePhiState) lookupVarOutgoing(b *ssa.Block, t ssa.Type, var_ *Node,
 	}
 	// Generate a FwdRef for the variable and return that.
 	v := b.NewValue0A(line, ssa.OpFwdRef, t, var_)
-	s.defvars[b.ID][var_] = v
+	if s.defvars[b.ID] == nil {
+		s.defvars[b.ID] = map[*Node]*ssa.Value{var_: v}
+	} else {
+		s.defvars[b.ID][var_] = v
+	}
 	s.s.addNamedValue(var_, v)
 	s.fwdrefs = append(s.fwdrefs, v)
 	return v
