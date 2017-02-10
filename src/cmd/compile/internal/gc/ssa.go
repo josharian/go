@@ -220,8 +220,8 @@ type state struct {
 
 	nodenum map[*Node]int64
 
-	// all defined variables at the end of each block. Indexed by block ID.
-	defvars []map[int64]*ssa.Value
+	// all defined variables at the end of each block. Indexed by block ID then node num.
+	defvars [][]*ssa.Value
 
 	// addresses of PPARAM and PPARAMOUT variables.
 	decladdrs map[*Node]*ssa.Value
@@ -329,7 +329,13 @@ func (s *state) endBlock() *ssa.Block {
 	for len(s.defvars) <= int(b.ID) {
 		s.defvars = append(s.defvars, nil)
 	}
-	d := make(map[int64]*ssa.Value)
+	max := int64(0)
+	for n := range s.vars {
+		if x := s.number(n); x > max {
+			max = x
+		}
+	}
+	d := make([]*ssa.Value, max+1)
 	for n, v := range s.vars {
 		d[s.number(n)] = v
 	}

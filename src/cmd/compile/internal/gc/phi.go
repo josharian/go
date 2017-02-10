@@ -39,9 +39,9 @@ func (s *state) insertPhis() {
 }
 
 type phiState struct {
-	s       *state                 // SSA state
-	f       *ssa.Func              // function to work on
-	defvars []map[int64]*ssa.Value // defined variables at end of each block
+	s       *state         // SSA state
+	f       *ssa.Func      // function to work on
+	defvars [][]*ssa.Value // defined variables at end of each block
 
 	varnum map[int64]int32 // variable numbering
 
@@ -85,10 +85,10 @@ func (s *phiState) insertPhis() {
 			// Optimization: look back 1 block for the definition.
 			if len(b.Preds) == 1 {
 				c := b.Preds[0].Block()
-				if w := s.defvars[c.ID][num]; w != nil {
+				if dv := s.defvars[c.ID]; num < int64(len(dv)) && dv[num] != nil {
 					v.Op = ssa.OpCopy
 					v.Aux = nil
-					v.AddArg(w)
+					v.AddArg(dv[num])
 					continue
 				}
 			}
@@ -114,8 +114,8 @@ func (s *phiState) insertPhis() {
 	// defs[n] contains all the blocks in which variable number n is assigned.
 	defs := make([][]*ssa.Block, len(vartypes))
 	for _, b := range s.f.Blocks {
-		for num := range s.defvars[b.ID] { // TODO: encode defvars some other way (explicit ops)? make defvars[n] a slice instead of a map.
-			if n, ok := s.varnum[num]; ok {
+		for num := range s.defvars[b.ID] { // TODO: encode defvars some other way (explicit ops)?
+			if n, ok := s.varnum[int64(num)]; ok {
 				defs[n] = append(defs[n], b)
 			}
 		}
@@ -323,12 +323,18 @@ func (s *phiState) resolveFwdRefs() {
 			n := s.varnum[v.AuxInt]
 			v.Op = ssa.OpCopy
 			v.Aux = nil
+			if values[n] == nil {
+				Fatalf("N=%d VALUES=%v\n", n, values)
+			}
 			v.AddArg(values[n])
 		}
 
 		// Establish values for variables defined in b.
 		for var_, v := range s.defvars[b.ID] {
-			n, ok := s.varnum[var_]
+			if v == nil {
+				continue
+			}
+			n, ok := s.varnum[int64(var_)] // TODO?
 			if !ok {
 				// some variable not live across a basic block boundary.
 				continue
@@ -434,10 +440,10 @@ func (s *sparseSet) clear() {
 
 // Variant to use for small functions.
 type simplePhiState struct {
-	s       *state                 // SSA state
-	f       *ssa.Func              // function to work on
-	fwdrefs []*ssa.Value           // list of FwdRefs to be processed
-	defvars []map[int64]*ssa.Value // defined variables at end of each block
+	s       *state         // SSA state
+	f       *ssa.Func      // function to work on
+	fwdrefs []*ssa.Value   // list of FwdRefs to be processed
+	defvars [][]*ssa.Value // defined variables at end of each block
 }
 
 func (s *simplePhiState) insertPhis() {
@@ -449,7 +455,10 @@ func (s *simplePhiState) insertPhis() {
 			}
 			s.fwdrefs = append(s.fwdrefs, v)
 			num := v.AuxInt
-			if _, ok := s.defvars[b.ID][num]; !ok {
+			if dv := s.defvars[b.ID]; num >= int64(len(dv)) || dv[num] == nil {
+				for num >= int64(len(s.defvars[b.ID])) {
+					s.defvars[b.ID] = append(s.defvars[b.ID], nil)
+				}
 				s.defvars[b.ID][num] = v // treat FwdDefs as definitions.
 			}
 		}
@@ -513,8 +522,8 @@ loop:
 // lookupVarOutgoing finds the variable's value at the end of block b.
 func (s *simplePhiState) lookupVarOutgoing(b *ssa.Block, t ssa.Type, num int64, var_ *Node, line src.XPos) *ssa.Value {
 	for {
-		if v := s.defvars[b.ID][num]; v != nil {
-			return v
+		if dv := s.defvars[b.ID]; num < int64(len(dv)) && dv[num] != nil {
+			return dv[num]
 		}
 		// The variable is not defined by b and we haven't looked it up yet.
 		// If b has exactly one predecessor, loop to look it up there.
@@ -526,6 +535,9 @@ func (s *simplePhiState) lookupVarOutgoing(b *ssa.Block, t ssa.Type, num int64, 
 	}
 	// Generate a FwdRef for the variable and return that.
 	v := b.NewValue0IA(line, ssa.OpFwdRef, t, num, var_)
+	for num >= int64(len(s.defvars[b.ID])) {
+		s.defvars[b.ID] = append(s.defvars[b.ID], nil)
+	}
 	s.defvars[b.ID][num] = v
 	s.s.addNamedValue(var_, v)
 	s.fwdrefs = append(s.fwdrefs, v)
