@@ -336,7 +336,10 @@ func (s *state) endBlock() *ssa.Block {
 	// fmt.Printf("s.defvars[%d] = %v\n", b.ID, d)
 	s.defvars[b.ID] = d
 	s.curBlock = nil
-	s.vars = nil
+	for n := range s.vars {
+		delete(s.vars, n)
+	}
+	// s.vars = nil
 	b.Pos = s.peekPos()
 	return b
 }
