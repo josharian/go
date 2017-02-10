@@ -86,6 +86,7 @@ func buildssa(fn *Node) *ssa.Func {
 	s.labels = map[string]*ssaLabel{}
 	s.labeledNodes = map[*Node]*ssaLabel{}
 	s.fwdVars = map[*Node]*ssa.Value{}
+	s.nodenum = map[*Node]int64{}
 	s.startmem = s.entryNewValue0(ssa.OpInitMem, ssa.TypeMem)
 	s.sp = s.entryNewValue0(ssa.OpSP, Types[TUINTPTR]) // TODO: use generic pointer type (unsafe.Pointer?) instead
 	s.sb = s.entryNewValue0(ssa.OpSB, Types[TUINTPTR])
@@ -217,8 +218,10 @@ type state struct {
 	// *Node is the unique identifier (an ONAME Node) for the variable.
 	fwdVars map[*Node]*ssa.Value
 
+	nodenum map[*Node]int64
+
 	// all defined variables at the end of each block. Indexed by block ID.
-	defvars []map[*Node]*ssa.Value
+	defvars []map[int64]*ssa.Value
 
 	// addresses of PPARAM and PPARAMOUT variables.
 	decladdrs map[*Node]*ssa.Value
@@ -326,7 +329,12 @@ func (s *state) endBlock() *ssa.Block {
 	for len(s.defvars) <= int(b.ID) {
 		s.defvars = append(s.defvars, nil)
 	}
-	s.defvars[b.ID] = s.vars
+	d := make(map[int64]*ssa.Value)
+	for n, v := range s.vars {
+		d[s.number(n)] = v
+	}
+	// fmt.Printf("s.defvars[%d] = %v\n", b.ID, d)
+	s.defvars[b.ID] = d
 	s.curBlock = nil
 	s.vars = nil
 	b.Pos = s.peekPos()
@@ -368,6 +376,11 @@ func (s *state) newValue0(op ssa.Op, t ssa.Type) *ssa.Value {
 // newValue0A adds a new value with no arguments and an aux value to the current block.
 func (s *state) newValue0A(op ssa.Op, t ssa.Type, aux interface{}) *ssa.Value {
 	return s.curBlock.NewValue0A(s.peekPos(), op, t, aux)
+}
+
+// newValue0IA adds a new value with no arguments and an auxint and an aux value to the current block.
+func (s *state) newValue0IA(op ssa.Op, t ssa.Type, auxint int64, aux interface{}) *ssa.Value {
+	return s.curBlock.NewValue0IA(s.peekPos(), op, t, auxint, aux)
 }
 
 // newValue0I adds a new value with no arguments and an auxint value to the current block.
@@ -4305,6 +4318,16 @@ func (s *state) checkgoto(from *Node, to *Node) {
 	}
 }
 
+func (s *state) number(name *Node) int64 {
+	num, ok := s.nodenum[name]
+	if !ok {
+		num = int64(len(s.nodenum) + 1)
+		s.nodenum[name] = num
+		// fmt.Printf("SET s.nodenum[%v] = %d\n", name, num)
+	}
+	return num
+}
+
 // variable returns the value of a variable at the current location.
 func (s *state) variable(name *Node, t ssa.Type) *ssa.Value {
 	v := s.vars[name]
@@ -4322,7 +4345,7 @@ func (s *state) variable(name *Node, t ssa.Type) *ssa.Value {
 	}
 	// Make a FwdRef, which records a value that's live on block input.
 	// We'll find the matching definition as part of insertPhis.
-	v = s.newValue0A(ssa.OpFwdRef, t, name)
+	v = s.newValue0IA(ssa.OpFwdRef, t, s.number(name), name)
 	s.fwdVars[name] = v
 	s.addNamedValue(name, v)
 	return v
