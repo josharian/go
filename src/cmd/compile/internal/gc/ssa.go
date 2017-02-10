@@ -84,6 +84,7 @@ func buildssa(fn *Node) *ssa.Func {
 
 	// Allocate starting values
 	s.labels = map[string]*ssaLabel{}
+	s.varnum = map[*Node]int{}
 	s.labeledNodes = map[*Node]*ssaLabel{}
 	s.fwdVars = map[*Node]*ssa.Value{}
 	s.startmem = s.entryNewValue0(ssa.OpInitMem, ssa.TypeMem)
@@ -101,6 +102,7 @@ func buildssa(fn *Node) *ssa.Func {
 		switch n.Class {
 		case PPARAM, PPARAMOUT:
 			aux := s.lookupSymbol(n, &ssa.ArgSymbol{Typ: n.Type, Node: n})
+			s.number(n)
 			s.decladdrs[n] = s.entryNewValue1A(ssa.OpAddr, ptrto(n.Type), aux, s.sp)
 			if n.Class == PPARAMOUT && s.canSSA(n) {
 				// Save ssa-able PPARAMOUT variables so we can
@@ -177,6 +179,10 @@ func buildssa(fn *Node) *ssa.Func {
 	// Don't carry reference this around longer than necessary
 	s.exitCode = Nodes{}
 
+	if os.Getenv("J") != "" {
+		fmt.Println("OPT", len(s.varnum))
+	}
+
 	// Main call to ssa package to compile function
 	ssa.Compile(s.f)
 
@@ -206,6 +212,8 @@ type state struct {
 
 	// current location where we're interpreting the AST
 	curBlock *ssa.Block
+
+	varnum map[*Node]int
 
 	// variable assignments in the current block (map from variable symbol to ssa value)
 	// *Node is the unique identifier (an ONAME Node) for the variable.
@@ -311,6 +319,7 @@ func (s *state) startBlock(b *ssa.Block) {
 	s.curBlock = b
 	s.vars = map[*Node]*ssa.Value{}
 	for n := range s.fwdVars {
+		s.number(n)
 		delete(s.fwdVars, n)
 	}
 }
@@ -327,6 +336,9 @@ func (s *state) endBlock() *ssa.Block {
 		s.defvars = append(s.defvars, nil)
 	}
 	s.defvars[b.ID] = s.vars
+	for n := range s.vars {
+		s.number(n)
+	}
 	s.curBlock = nil
 	s.vars = nil
 	b.Pos = s.peekPos()
@@ -601,6 +613,7 @@ func (s *state) stmt(n *Node) {
 		if ctl := n.Name.Defn; ctl != nil {
 			switch ctl.Op {
 			case OFOR, OSWITCH, OSELECT:
+				s.number(ctl)
 				s.labeledNodes[ctl] = lab
 			}
 		}
@@ -3068,6 +3081,7 @@ func (s *state) lookupSymbol(n *Node, sym interface{}) interface{} {
 		// these are the only valid types
 	}
 
+	s.number(n)
 	if lsym, ok := s.varsyms[n]; ok {
 		return lsym
 	} else {
@@ -4302,6 +4316,12 @@ func (s *state) checkgoto(from *Node, to *Node) {
 		} else {
 			yyerrorl(lno, "goto %v jumps over declaration of %v at %v", from.Left.Sym, dcl, linestr(dcl.Lastlineno))
 		}
+	}
+}
+
+func (s *state) number(n *Node) {
+	if i := s.varnum[n]; i == 0 {
+		s.varnum[n] = len(s.varnum) + 1
 	}
 }
 
