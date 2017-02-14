@@ -17,8 +17,10 @@ import (
 	"go/token"
 	"go/types"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
+	"runtime/pprof"
 	"strconv"
 	"strings"
 )
@@ -194,6 +196,14 @@ type File struct {
 }
 
 func main() {
+	f, err := os.Create("vet.cpuprof")
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	if err := pprof.StartCPUProfile(f); err != nil {
+		log.Fatalf("%v", err)
+	}
+
 	flag.Usage = Usage
 	flag.Parse()
 
@@ -242,11 +252,13 @@ func main() {
 		for _, name := range flag.Args() {
 			walkDir(name)
 		}
+		pprof.StopCPUProfile()
 		os.Exit(exitCode)
 	}
 	if doPackage(".", flag.Args(), nil) == nil {
 		warnf("no files checked")
 	}
+	pprof.StopCPUProfile()
 	os.Exit(exitCode)
 }
 
