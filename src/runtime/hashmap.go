@@ -952,8 +952,11 @@ func growWork(t *maptype, h *hmap, bucket uintptr) {
 	// to the bucket we're about to use
 	evacuate(t, h, bucket&h.oldbucketmask())
 
-	// evacuate one more oldbucket to make progress on growing
-	if h.growing() {
+	// evacuate some oldbuckets to make progress on growing
+	for i := 0; i < 8; i++ {
+		if !h.growing() {
+			break
+		}
 		evacuate(t, h, h.nevacuate)
 	}
 }
