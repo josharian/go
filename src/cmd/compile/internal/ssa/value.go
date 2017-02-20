@@ -163,6 +163,7 @@ func (v *Value) auxString() string {
 	return ""
 }
 
+func (v *Value) LastArg() *Value { return v.Args[len(v.Args)-1] }
 func (v *Value) AddArg(w *Value) {
 	if v.Args == nil {
 		v.resetArgs() // use argstorage

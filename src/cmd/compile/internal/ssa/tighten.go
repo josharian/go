@@ -19,10 +19,30 @@ func tighten(f *Func) {
 				// GetClosurePtr & Arg must stay in the entry block.
 				// Tuple selectors must stay with the tuple generator.
 				continue
+			case OpGetG:
+				// Special: getg() can sometimes be moved. It cannot fault.
+				canMove[v.ID] = true
+				continue
+			case OpLoad:
+				p := v.Args[0]
+				if p.Op == OpOffPtr {
+					p = p.Args[0]
+				}
+				switch p.Op {
+				case OpSP, OpAddr:
+					// Special: Loads from the stack and variables can sometimes be moved,
+					// because they cannot fault.
+					canMove[v.ID] = true
+					continue
+				}
 			}
-			if len(v.Args) > 0 && v.Args[len(v.Args)-1].Type.IsMemory() {
-				// We can't move values which have a memory arg - it might
-				// make two memory values live across a block boundary.
+			if v.Type.IsMemory() {
+				// We can't move memory values;
+				// it might make two memory values live across a block boundary.
+				continue
+			}
+			if len(v.Args) > 0 && v.LastArg().Type.IsMemory() {
+				// We can't move arguments that might fault.
 				continue
 			}
 			// Count arguments which will need a register.
@@ -126,6 +146,24 @@ func tighten(f *Func) {
 				if t == nil || t == b {
 					// v is not moveable, or is already in correct place.
 					continue
+				}
+				if len(v.Args) > 0 && v.LastArg().Type.IsMemory() {
+					// To move a load from the stack,
+					// we must ensure that that memory arg is already
+					// live in the target block.
+					// For now, require that there be an existing value
+					// in the target block that has the same memory arg.
+					// TODO: Use a more precise analysis?
+					ok := false
+					for _, w := range t.Values {
+						if w.Op != OpPhi && len(w.Args) > 0 && w.LastArg() == v.LastArg() {
+							ok = true
+							break
+						}
+					}
+					if !ok {
+						continue
+					}
 				}
 				// Move v to the block which dominates its uses.
 				t.Values = append(t.Values, v)
