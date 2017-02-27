@@ -398,6 +398,9 @@ func inlnode(n *Node) *Node {
 		return n
 	}
 
+	// Is this node an if statement with constant expression?
+	var constif bool
+
 	switch n.Op {
 	// inhibit inlining of their argument
 	case ODEFER, OPROC:
@@ -411,6 +414,9 @@ func inlnode(n *Node) *Node {
 	// so escape analysis can avoid more heapmoves.
 	case OCLOSURE:
 		return n
+
+	case OIF:
+		constif = Isconst(n.Left, CTBOOL)
 	}
 
 	lno := setlineno(n)
@@ -463,29 +469,35 @@ func inlnode(n *Node) *Node {
 		}
 	}
 
-	inlnodelist(n.Rlist)
-	if n.Op == OAS2FUNC && n.Rlist.First().Op == OINLCALL {
-		n.Rlist.Set(inlconv2list(n.Rlist.First()))
-		n.Op = OAS2
-		n.Typecheck = 0
-		n = typecheck(n, Etop)
-	} else {
-		s := n.Rlist.Slice()
-		for i1, n1 := range s {
-			if n1.Op == OINLCALL {
-				if n.Op == OIF {
-					inlconv2stmt(n1)
-				} else {
-					s[i1] = inlconv2expr(s[i1])
+	skipRlist := constif && n.Left.Bool() // skip Rlist if we know its code is dead.
+	if !skipRlist {
+		inlnodelist(n.Rlist)
+		if n.Op == OAS2FUNC && n.Rlist.First().Op == OINLCALL {
+			n.Rlist.Set(inlconv2list(n.Rlist.First()))
+			n.Op = OAS2
+			n.Typecheck = 0
+			n = typecheck(n, Etop)
+		} else {
+			s := n.Rlist.Slice()
+			for i1, n1 := range s {
+				if n1.Op == OINLCALL {
+					if n.Op == OIF {
+						inlconv2stmt(n1)
+					} else {
+						s[i1] = inlconv2expr(s[i1])
+					}
 				}
 			}
 		}
 	}
 
-	inlnodelist(n.Nbody)
-	for _, n := range n.Nbody.Slice() {
-		if n.Op == OINLCALL {
-			inlconv2stmt(n)
+	skipNbody := constif && !n.Left.Bool() // skip Nbody if we know its code is dead
+	if !skipNbody {
+		inlnodelist(n.Nbody)
+		for _, n := range n.Nbody.Slice() {
+			if n.Op == OINLCALL {
+				inlconv2stmt(n)
+			}
 		}
 	}
 
