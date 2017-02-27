@@ -277,6 +277,12 @@ func ishairy(n *Node, budget *int32, reason *string) bool {
 		return true
 	}
 
+	if n.Op == OLITERAL {
+		// Don't recurse for literals.
+		// Any conversions etc. are free anyway.
+		return false
+	}
+
 	if n.Op == OIF && Isconst(n.Left, CTBOOL) {
 		var taken Nodes // statements for the branch that is always taken
 		if n.Left.Bool() {
