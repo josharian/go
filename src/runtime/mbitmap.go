@@ -563,49 +563,68 @@ func bulkBarrierPreWrite(dst, src, size uintptr) {
 	if !writeBarrier.needed {
 		return
 	}
-	if !inheap(dst) {
-		gp := getg().m.curg
-		if gp != nil && gp.stack.lo <= dst && dst < gp.stack.hi {
-			// Destination is our own stack. No need for barriers.
-			return
-		}
 
-		// If dst is a global, use the data or BSS bitmaps to
-		// execute write barriers.
-		for _, datap := range activeModules() {
-			if datap.data <= dst && dst < datap.edata {
-				bulkBarrierBitmap(dst, src, size, dst-datap.data, datap.gcdatamask.bytedata)
-				return
-			}
-		}
-		for _, datap := range activeModules() {
-			if datap.bss <= dst && dst < datap.ebss {
-				bulkBarrierBitmap(dst, src, size, dst-datap.bss, datap.gcbssmask.bytedata)
-				return
-			}
-		}
+	mp := acquirem()
+	if mp.inwb || mp.dying > 0 {
+		releasem(mp)
 		return
 	}
 
-	h := heapBitsForAddr(dst)
-	if src == 0 {
-		for i := uintptr(0); i < size; i += sys.PtrSize {
-			if h.isPointer() {
-				dstx := (*uintptr)(unsafe.Pointer(dst + i))
-				writebarrierptr_prewrite1(dstx, 0)
-			}
-			h = h.next()
+	systemstack(func() {
+		if mp.p == 0 && memstats.enablegc && !mp.inwb && inheap(src) {
+			throw("writebarrierptr_prewrite1 called with mp.p == nil")
 		}
-	} else {
-		for i := uintptr(0); i < size; i += sys.PtrSize {
-			if h.isPointer() {
-				dstx := (*uintptr)(unsafe.Pointer(dst + i))
-				srcx := (*uintptr)(unsafe.Pointer(src + i))
-				writebarrierptr_prewrite1(dstx, *srcx)
+		mp.inwb = true
+
+		if !inheap(dst) {
+			gp := getg().m.curg
+			if gp != nil && gp.stack.lo <= dst && dst < gp.stack.hi {
+				// Destination is our own stack. No need for barriers.
+				return
 			}
-			h = h.next()
+
+			// If dst is a global, use the data or BSS bitmaps to
+			// execute write barriers.
+			for _, datap := range activeModules() {
+				if datap.data <= dst && dst < datap.edata {
+					bulkBarrierBitmap(dst, src, size, dst-datap.data, datap.gcdatamask.bytedata, true)
+					return
+				}
+			}
+			for _, datap := range activeModules() {
+				if datap.bss <= dst && dst < datap.ebss {
+					bulkBarrierBitmap(dst, src, size, dst-datap.bss, datap.gcbssmask.bytedata, true)
+					return
+				}
+			}
+			return
 		}
-	}
+
+		h := heapBitsForAddr(dst)
+		if src == 0 {
+			for i := uintptr(0); i < size; i += sys.PtrSize {
+				if h.isPointer() {
+					dstx := (*uintptr)(unsafe.Pointer(dst + i))
+					gcmarkwb_m(dstx, 0)
+					// writebarrierptr_prewrite1(dstx, 0)
+				}
+				h = h.next()
+			}
+		} else {
+			for i := uintptr(0); i < size; i += sys.PtrSize {
+				if h.isPointer() {
+					dstx := (*uintptr)(unsafe.Pointer(dst + i))
+					srcx := (*uintptr)(unsafe.Pointer(src + i))
+					gcmarkwb_m(dstx, *srcx)
+					// writebarrierptr_prewrite1(dstx, *srcx)
+				}
+				h = h.next()
+			}
+		}
+
+	})
+	mp.inwb = false
+	releasem(mp)
 }
 
 // bulkBarrierBitmap executes write barriers for copying from [src,
@@ -616,7 +635,7 @@ func bulkBarrierPreWrite(dst, src, size uintptr) {
 // This is used by bulkBarrierPreWrite for writes to data and BSS.
 //
 //go:nosplit
-func bulkBarrierBitmap(dst, src, size, maskOffset uintptr, bits *uint8) {
+func bulkBarrierBitmap(dst, src, size, maskOffset uintptr, bits *uint8, onsystemstack bool) {
 	word := maskOffset / sys.PtrSize
 	bits = addb(bits, word/8)
 	mask := uint8(1) << (word % 8)
@@ -634,10 +653,18 @@ func bulkBarrierBitmap(dst, src, size, maskOffset uintptr, bits *uint8) {
 		if *bits&mask != 0 {
 			dstx := (*uintptr)(unsafe.Pointer(dst + i))
 			if src == 0 {
-				writebarrierptr_prewrite1(dstx, 0)
+				if onsystemstack {
+					gcmarkwb_m(dstx, 0)
+				} else {
+					writebarrierptr_prewrite1(dstx, 0)
+				}
 			} else {
 				srcx := (*uintptr)(unsafe.Pointer(src + i))
-				writebarrierptr_prewrite1(dstx, *srcx)
+				if onsystemstack {
+					gcmarkwb_m(dstx, *srcx)
+				} else {
+					writebarrierptr_prewrite1(dstx, *srcx)
+				}
 			}
 		}
 		mask <<= 1

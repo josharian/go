@@ -2910,7 +2910,7 @@ func newproc1(fn *funcval, argp *uint8, narg int32, nret int32, callerpc uintptr
 			stkmap := (*stackmap)(funcdata(f, _FUNCDATA_ArgsPointerMaps))
 			// We're in the prologue, so it's always stack map index 0.
 			bv := stackmapdata(stkmap, 0)
-			bulkBarrierBitmap(spArg, spArg, uintptr(narg), 0, bv.bytedata)
+			bulkBarrierBitmap(spArg, spArg, uintptr(narg), 0, bv.bytedata, false)
 		}
 	}
 
