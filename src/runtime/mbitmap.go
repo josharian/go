@@ -589,21 +589,63 @@ func bulkBarrierPreWrite(dst, src, size uintptr) {
 
 	h := heapBitsForAddr(dst)
 	if src == 0 {
-		for i := uintptr(0); i < size; i += sys.PtrSize {
+		i := uintptr(0)
+		if size%(2*sys.PtrSize) != 0 {
 			if h.isPointer() {
-				dstx := (*uintptr)(unsafe.Pointer(dst + i))
+				dstx := (*uintptr)(unsafe.Pointer(dst))
 				writebarrierptr_prewrite1(dstx, 0)
 			}
+			i += sys.PtrSize
 			h = h.next()
 		}
+		for ; i < size; i += sys.PtrSize * 2 {
+			p1 := h.isPointer()
+			h = h.next()
+			p2 := h.isPointer()
+			h = h.next()
+			// TODO: switch to nested ifs for fewer jumps
+			switch {
+			case p1 && p2:
+				dst1 := (*uintptr)(unsafe.Pointer(dst + i))
+				dst2 := (*uintptr)(unsafe.Pointer(dst + i + sys.PtrSize))
+				writebarrierptr_prewrite2(dst1, 0, dst2, 0)
+			case p1:
+				dstx := (*uintptr)(unsafe.Pointer(dst + i))
+				writebarrierptr_prewrite1(dstx, 0)
+			case p2:
+				dstx := (*uintptr)(unsafe.Pointer(dst + i + sys.PtrSize))
+				writebarrierptr_prewrite1(dstx, 0)
+			}
+		}
 	} else {
-		for i := uintptr(0); i < size; i += sys.PtrSize {
-			if h.isPointer() {
+		i := uintptr(0)
+		for ; i+sys.PtrSize < size; i += sys.PtrSize * 2 {
+			p1 := h.isPointer()
+			h = h.next()
+			p2 := h.isPointer()
+			h = h.next()
+			switch {
+			case p1 && p2:
+				dst1 := (*uintptr)(unsafe.Pointer(dst + i))
+				src1 := (*uintptr)(unsafe.Pointer(src + i))
+				dst2 := (*uintptr)(unsafe.Pointer(dst + i + sys.PtrSize))
+				src2 := (*uintptr)(unsafe.Pointer(src + i + sys.PtrSize))
+				writebarrierptr_prewrite2(dst1, *src1, dst2, *src2)
+			case p1:
 				dstx := (*uintptr)(unsafe.Pointer(dst + i))
 				srcx := (*uintptr)(unsafe.Pointer(src + i))
 				writebarrierptr_prewrite1(dstx, *srcx)
+			case p2:
+				dstx := (*uintptr)(unsafe.Pointer(dst + i + sys.PtrSize))
+				srcx := (*uintptr)(unsafe.Pointer(src + i + sys.PtrSize))
+				writebarrierptr_prewrite1(dstx, *srcx)
 			}
-			h = h.next()
+		}
+		// TODO: move to precheck, like above?
+		if i < size && h.isPointer() {
+			dstx := (*uintptr)(unsafe.Pointer(dst + i))
+			srcx := (*uintptr)(unsafe.Pointer(src + i))
+			writebarrierptr_prewrite1(dstx, *srcx)
 		}
 	}
 }
