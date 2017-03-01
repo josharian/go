@@ -196,6 +196,25 @@ func writebarrierptr_prewrite1(dst *uintptr, src uintptr) {
 	releasem(mp)
 }
 
+//go:nosplit
+func writebarrierptr_prewrite2(dst1 *uintptr, src1 uintptr, dst2 *uintptr, src2 uintptr) {
+	mp := acquirem()
+	if mp.inwb || mp.dying > 0 {
+		releasem(mp)
+		return
+	}
+	systemstack(func() {
+		if mp.p == 0 && memstats.enablegc && !mp.inwb && (inheap(src1) || inheap(src2)) {
+			throw("writebarrierptr_prewrite1 called with mp.p == nil")
+		}
+		mp.inwb = true
+		gcmarkwb_m(dst1, src1)
+		gcmarkwb_m(dst2, src2)
+	})
+	mp.inwb = false
+	releasem(mp)
+}
+
 // NOTE: Really dst *unsafe.Pointer, src unsafe.Pointer,
 // but if we do that, Go inserts a write barrier on *dst = src.
 //go:nosplit
