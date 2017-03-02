@@ -122,6 +122,7 @@ type Profile struct {
 	name  string
 	mu    sync.Mutex
 	m     map[interface{}][]uintptr
+	accum *profMap
 	count func() int
 	write func(io.Writer, int) error
 }
@@ -258,23 +259,12 @@ func (p *Profile) Count() int {
 // Passing skip=1 begins the stack trace at the call to NewClient inside mypkg.Run.
 //
 func (p *Profile) Add(value interface{}, skip int) {
-	if p.name == "" {
-		panic("pprof: use of uninitialized Profile")
-	}
-	if p.write != nil {
-		panic("pprof: Add called on built-in Profile " + p.name)
-	}
-
-	stk := make([]uintptr, 32)
-	n := runtime.Callers(skip+1, stk[:])
-	stk = stk[:n]
-	if len(stk) == 0 {
-		// The value for skip is too large, and there's no stack trace to record.
-		stk = []uintptr{funcPC(lostProfileEvent)}
-	}
-
+	stk := p.stk()
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	if p.accum != nil {
+		panic("pprof: Profile.Add on TODO TODO TODO")
+	}
 	if p.m[value] != nil {
 		panic("pprof: Profile.Add of duplicate value")
 	}
@@ -287,6 +277,40 @@ func (p *Profile) Remove(value interface{}) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	delete(p.m, value)
+}
+
+func (p *Profile) stk() []uintptr {
+	if p.name == "" {
+		panic("pprof: use of uninitialized Profile")
+	}
+	if p.write != nil {
+		panic("pprof: Add called on built-in Profile " + p.name)
+	}
+	stk := make([]uintptr, 32)
+	n := runtime.Callers(skip+1, stk[:])
+	stk = stk[:n]
+	if len(stk) == 0 {
+		// The value for skip is too large, and there's no stack trace to record.
+		stk = []uintptr{funcPC(lostProfileEvent)}
+	}
+	return stk
+}
+
+// TODO TODO TODO
+// Event records that 'weight' events happened.
+// For a simple event counter, weight should be 1.
+// If events have different expenses, weight can vary according to the expense.
+// A given Profile should be populated using Add/Remove or Event, but not both.
+func (p *Profile) Event(weight float64) {
+	// TODO: check sample rate (where?)
+	stk := p.stk()
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if p.m != nil {
+		panic("pprof: Profile.Event on TODO TODO TODO")
+	}
+	p.accum.lookup(stk, 0).count += weight
+	// TODO add stk to p.accum
 }
 
 // WriteTo writes a pprof-formatted snapshot of the profile to w.
