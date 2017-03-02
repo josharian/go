@@ -1174,15 +1174,7 @@ OpSwitch:
 			return n
 		}
 
-		if low != nil && !checksliceindex(l, low, tp) {
-			n.Type = nil
-			return n
-		}
-		if high != nil && !checksliceindex(l, high, tp) {
-			n.Type = nil
-			return n
-		}
-		if max != nil && !checksliceindex(l, max, tp) {
+		if !checksliceindex(l, low, tp) || !checksliceindex(l, high, tp) || !checksliceindex(l, max, tp) {
 			n.Type = nil
 			return n
 		}
@@ -2180,6 +2172,9 @@ OpSwitch:
 }
 
 func checksliceindex(l *Node, r *Node, tp *Type) bool {
+	if r == nil {
+		return true
+	}
 	t := r.Type
 	if t == nil {
 		return false
