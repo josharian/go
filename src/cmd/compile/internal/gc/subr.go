@@ -333,6 +333,7 @@ func importdot(opkg *Pkg, pack *Node) {
 }
 
 func nod(op Op, nleft *Node, nright *Node) *Node {
+	nodeprof.Event(1, 0)
 	var n *Node
 	switch op {
 	case OCLOSURE, ODCLFUNC:

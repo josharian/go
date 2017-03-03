@@ -19,7 +19,9 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
+	"runtime/pprof"
 	"strconv"
 	"strings"
 )
@@ -101,6 +103,8 @@ func supportsDynlink(arch *sys.Arch) bool {
 var timings Timings
 var benchfile string
 
+var nodeprof *pprof.Profile
+
 // Main parses flags and Go source files specified in the command-line
 // arguments, type-checks the parsed Go package, compiles functions to machine
 // code, and finally writes the compiled package definition to disk.
@@ -108,6 +112,8 @@ func Main() {
 	timings.Start("fe", "init")
 
 	defer hidePanic()
+
+	nodeprof = pprof.NewProfile("nodes")
 
 	Ctxt = obj.Linknew(Thearch.LinkArch)
 	Ctxt.DiagFunc = yyerror
@@ -523,6 +529,13 @@ func Main() {
 			log.Fatalf("cannot write benchmark data: %v", err)
 		}
 	}
+
+	f, err := os.Create(filepath.Join(runtime.GOROOT(), "src", "nodeprof"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	nodeprof.WriteTo(f, 0)
+	f.Close()
 }
 
 func writebench(filename string) error {

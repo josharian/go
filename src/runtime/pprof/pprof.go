@@ -119,13 +119,22 @@ import (
 // output to a writer during profiling.
 //
 type Profile struct {
-	name  string
-	mu    sync.Mutex
-	m     map[interface{}][]uintptr
-	accum *profMap
-	count func() int
-	write func(io.Writer, int) error
+	name   string
+	count  func() int
+	write  func(io.Writer, int) error
+	mu     sync.Mutex
+	live   map[interface{}][]uintptr
+	events map[[32]uintptr]runtime.BlockProfileRecord
+	kind   profileKind
 }
+
+type profileKind uint8
+
+const (
+	profileKindUnknown profileKind = iota
+	profileKindLive
+	profileKindEvents
+)
 
 // profiles records all registered profiles.
 var profiles struct {
@@ -197,8 +206,9 @@ func NewProfile(name string) *Profile {
 		panic("pprof: NewProfile name already in use: " + name)
 	}
 	p := &Profile{
-		name: name,
-		m:    map[interface{}][]uintptr{},
+		name:   name,
+		live:   map[interface{}][]uintptr{},
+		events: map[[32]uintptr]runtime.BlockProfileRecord{},
 	}
 	profiles.m[name] = p
 	return p
@@ -234,10 +244,13 @@ func (p *Profile) Name() string {
 func (p *Profile) Count() int {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	if p.kind == profileKindEvents {
+		panic("TODO TODO TODO")
+	}
 	if p.count != nil {
 		return p.count()
 	}
-	return len(p.m)
+	return len(p.live)
 }
 
 // Add adds the current execution stack to the profile, associated with value.
@@ -259,16 +272,18 @@ func (p *Profile) Count() int {
 // Passing skip=1 begins the stack trace at the call to NewClient inside mypkg.Run.
 //
 func (p *Profile) Add(value interface{}, skip int) {
-	stk := p.stk()
+	var stk [32]uintptr
+	n := p.stk(skip, &stk)
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	if p.accum != nil {
+	if p.kind == profileKindEvents {
 		panic("pprof: Profile.Add on TODO TODO TODO")
 	}
-	if p.m[value] != nil {
+	p.kind = profileKindLive
+	if p.live[value] != nil {
 		panic("pprof: Profile.Add of duplicate value")
 	}
-	p.m[value] = stk
+	p.live[value] = stk[:n]
 }
 
 // Remove removes the execution stack associated with value from the profile.
@@ -276,24 +291,23 @@ func (p *Profile) Add(value interface{}, skip int) {
 func (p *Profile) Remove(value interface{}) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	delete(p.m, value)
+	delete(p.live, value)
 }
 
-func (p *Profile) stk() []uintptr {
+func (p *Profile) stk(skip int, dst *[32]uintptr) int {
 	if p.name == "" {
 		panic("pprof: use of uninitialized Profile")
 	}
 	if p.write != nil {
 		panic("pprof: Add called on built-in Profile " + p.name)
 	}
-	stk := make([]uintptr, 32)
-	n := runtime.Callers(skip+1, stk[:])
-	stk = stk[:n]
-	if len(stk) == 0 {
+	n := runtime.Callers(skip+1, dst[:])
+	if n == 0 {
 		// The value for skip is too large, and there's no stack trace to record.
-		stk = []uintptr{funcPC(lostProfileEvent)}
+		dst[0] = funcPC(lostProfileEvent)
+		n = 1
 	}
-	return stk
+	return n
 }
 
 // TODO TODO TODO
@@ -301,15 +315,34 @@ func (p *Profile) stk() []uintptr {
 // For a simple event counter, weight should be 1.
 // If events have different expenses, weight can vary according to the expense.
 // A given Profile should be populated using Add/Remove or Event, but not both.
-func (p *Profile) Event(weight float64) {
+func (p *Profile) Event(weight int64, skip int) {
+	var stk [32]uintptr
+	p.stk(skip, &stk)
 	// TODO: check sample rate (where?)
-	stk := p.stk()
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	if p.m != nil {
+	if p.kind == profileKindLive {
 		panic("pprof: Profile.Event on TODO TODO TODO")
 	}
-	p.accum.lookup(stk, 0).count += weight
+	p.kind = profileKindEvents
+	r := p.events[stk]
+	r.Count++
+	r.Cycles += weight
+	r.Stack0 = stk
+	p.events[stk] = r
+	// adapted := make([]uint64, len(stk))
+	// for i := range stk {
+	// 	adapted[i] = uint64(stk[i])
+	// }
+	// h := uintptr(0)
+	// for _, x := range stk {
+	// 	h = h<<8 | (h >> (8 * (unsafe.Sizeof(h) - 1)))
+	// 	h += x * 41
+	// }
+	// h = h<<8 | (h >> (8 * (unsafe.Sizeof(h) - 1)))
+	// p.events[h] += weight
+	// _ = stk
+	// p.events.lookup(adapted, unsafe.Pointer(uintptr(0))).count++ //+= weight
 	// TODO add stk to p.accum
 }
 
@@ -335,17 +368,111 @@ func (p *Profile) WriteTo(w io.Writer, debug int) error {
 	}
 
 	// Obtain consistent snapshot under lock; then process without lock.
+	var all [][]uintptr
 	p.mu.Lock()
-	all := make([][]uintptr, 0, len(p.m))
-	for _, stk := range p.m {
-		all = append(all, stk)
+	switch p.kind {
+	case profileKindUnknown:
+		all = make([][]uintptr, 0)
+	case profileKindLive:
+		all = make([][]uintptr, 0, len(p.live))
+		for _, stk := range p.live {
+			all = append(all, stk)
+		}
+	case profileKindEvents:
+		fmt.Println("EVENTS", len(p.events))
+		a := make([]runtime.BlockProfileRecord, 0, len(p.events))
+		for _, r := range p.events {
+			a = append(a, r)
+		}
+		sort.Slice(a, func(i, j int) bool { return a[i].Cycles > a[j].Cycles })
+
+		b := bufio.NewWriter(w)
+		var tw *tabwriter.Writer
+		w = b
+		if debug > 0 {
+			tw = tabwriter.NewWriter(w, 1, 8, 1, '\t', 0)
+			w = tw
+		}
+
+		fmt.Fprintf(w, "--- %s:\n", p.name)
+		fmt.Fprintf(w, "cycles/second=%v\n", runtime_cyclesPerSecond())
+		writeBlockRecords(w, debug, a)
+
+		if tw != nil {
+			tw.Flush()
+		}
+		err := b.Flush() // TODO: return this error
+		if err != nil {
+			fmt.Println("WRITE FAILURE", err)
+		}
+
+		p.mu.Unlock()
+		return nil
+		// all = make([][]uintptr, 0, len(p.live))
+		// for _, stk := range p.events {
+		// 	all = append(all, stk)
+		// }
+
+		// TODO: don't hold lock
+
+		// pb := newProfileBuilder(w)
+		// pb.m = p.events
+		// pb.flush()
+
+		// b := newProfileBuilder(w)
+		// b.pbValueType(tagProfile_PeriodType, name, "count")
+		// b.pb.int64Opt(tagProfile_Period, 1)
+		// b.pbValueType(tagProfile_SampleType, name, "count")
+
+		// values := []int64{0}
+		// var locs []uint64
+		// for _, k := range keys {
+		// 	values[0] = int64(count[k])
+		// 	locs = locs[:0]
+		// 	for i, addr := range p.Stack(index[k]) {
+		// 		if false && i > 0 { // TODO: why disabled?
+		// 			addr--
+		// 		}
+		// 		locs = append(locs, b.locForPC(addr))
+		// 	}
+		// 	b.pbSample(values, locs, nil)
+		// }
+		// b.build()
+
+		//***
+		// b := newProfileBuilder(w)
+		// b.pbValueType(tagProfile_PeriodType, name, "count")
+		// b.pb.int64Opt(tagProfile_Period, 1)
+		// b.pbValueType(tagProfile_SampleType, name, "count")
+
+		// values := []int64{0}
+		// var locs []uint64
+		// for _, k := range keys {
+		// 	values[0] = int64(count[k])
+		// 	locs = locs[:0]
+		// 	for i, addr := range p.Stack(index[k]) {
+		// 		if false && i > 0 { // TODO: why disabled?
+		// 			addr--
+		// 		}
+		// 		locs = append(locs, b.locForPC(addr))
+		// 	}
+		// 	b.pbSample(values, locs, nil)
+		// }
+		// b.build()
+		//***
+
+		// fmt.Println("EVENTs", p.events)
+		// TODO
 	}
 	p.mu.Unlock()
 
-	// Map order is non-deterministic; make output deterministic.
-	sort.Sort(stackProfile(all))
+	if all != nil {
+		// Map order is non-deterministic; make output deterministic.
+		sort.Sort(stackProfile(all))
+		return printCountProfile(w, debug, p.name, stackProfile(all))
+	}
 
-	return printCountProfile(w, debug, p.name, stackProfile(all))
+	return nil
 }
 
 type stackProfile [][]uintptr
@@ -773,18 +900,7 @@ func countMutex() int {
 
 // writeBlock writes the current blocking profile to w.
 func writeBlock(w io.Writer, debug int) error {
-	var p []runtime.BlockProfileRecord
-	n, ok := runtime.BlockProfile(nil)
-	for {
-		p = make([]runtime.BlockProfileRecord, n+50)
-		n, ok = runtime.BlockProfile(p)
-		if ok {
-			p = p[:n]
-			break
-		}
-	}
-
-	sort.Slice(p, func(i, j int) bool { return p[i].Cycles > p[j].Cycles })
+	p := blockRecords(runtime.BlockProfile)
 
 	b := bufio.NewWriter(w)
 	var tw *tabwriter.Writer
@@ -796,6 +912,30 @@ func writeBlock(w io.Writer, debug int) error {
 
 	fmt.Fprintf(w, "--- contention:\n")
 	fmt.Fprintf(w, "cycles/second=%v\n", runtime_cyclesPerSecond())
+	writeBlockRecords(w, debug, p)
+
+	if tw != nil {
+		tw.Flush()
+	}
+	return b.Flush()
+}
+
+func blockRecords(fill func([]runtime.BlockProfileRecord) (int, bool)) []runtime.BlockProfileRecord {
+	var p []runtime.BlockProfileRecord
+	n, ok := runtime.BlockProfile(nil)
+	for {
+		p = make([]runtime.BlockProfileRecord, n+50)
+		n, ok = runtime.BlockProfile(p)
+		if ok {
+			p = p[:n]
+			break
+		}
+	}
+	sort.Slice(p, func(i, j int) bool { return p[i].Cycles > p[j].Cycles })
+	return p
+}
+
+func writeBlockRecords(w io.Writer, debug int, p []runtime.BlockProfileRecord) {
 	for i := range p {
 		r := &p[i]
 		fmt.Fprintf(w, "%v %v @", r.Cycles, r.Count)
@@ -807,28 +947,11 @@ func writeBlock(w io.Writer, debug int) error {
 			printStackRecord(w, r.Stack(), true)
 		}
 	}
-
-	if tw != nil {
-		tw.Flush()
-	}
-	return b.Flush()
 }
 
 // writeMutex writes the current mutex profile to w.
 func writeMutex(w io.Writer, debug int) error {
-	// TODO(pjw): too much common code with writeBlock. FIX!
-	var p []runtime.BlockProfileRecord
-	n, ok := runtime.MutexProfile(nil)
-	for {
-		p = make([]runtime.BlockProfileRecord, n+50)
-		n, ok = runtime.MutexProfile(p)
-		if ok {
-			p = p[:n]
-			break
-		}
-	}
-
-	sort.Slice(p, func(i, j int) bool { return p[i].Cycles > p[j].Cycles })
+	p := blockRecords(runtime.MutexProfile)
 
 	b := bufio.NewWriter(w)
 	var tw *tabwriter.Writer
@@ -841,17 +964,7 @@ func writeMutex(w io.Writer, debug int) error {
 	fmt.Fprintf(w, "--- mutex:\n")
 	fmt.Fprintf(w, "cycles/second=%v\n", runtime_cyclesPerSecond())
 	fmt.Fprintf(w, "sampling period=%d\n", runtime.SetMutexProfileFraction(-1))
-	for i := range p {
-		r := &p[i]
-		fmt.Fprintf(w, "%v %v @", r.Cycles, r.Count)
-		for _, pc := range r.Stack() {
-			fmt.Fprintf(w, " %#x", pc)
-		}
-		fmt.Fprint(w, "\n")
-		if debug > 0 {
-			printStackRecord(w, r.Stack(), true)
-		}
-	}
+	writeBlockRecords(w, debug, p)
 
 	if tw != nil {
 		tw.Flush()
