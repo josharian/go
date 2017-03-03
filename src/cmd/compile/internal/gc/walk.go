@@ -2078,33 +2078,27 @@ func convas(n *Node, init *Nodes) *Node {
 	if n.Op != OAS {
 		Fatalf("convas: not OAS %v", n.Op)
 	}
-
+	defer updateHasCall(n)
 	n.Typecheck = 1
-
-	var lt *Type
-	var rt *Type
 	if n.Left == nil || n.Right == nil {
-		goto out
+		return n
 	}
 
-	lt = n.Left.Type
-	rt = n.Right.Type
+	lt := n.Left.Type
+	rt := n.Right.Type
 	if lt == nil || rt == nil {
-		goto out
+		return n
 	}
 
 	if isblank(n.Left) {
 		n.Right = defaultlit(n.Right, nil)
-		goto out
+		return n
 	}
 
 	if !eqtype(lt, rt) {
 		n.Right = assignconv(n.Right, lt, "assignment")
 		n.Right = walkexpr(n.Right, init)
 	}
-
-out:
-	updateHasCall(n)
 	return n
 }
 
