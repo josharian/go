@@ -1142,55 +1142,45 @@ func printframenode(n *Node) {
 	}
 }
 
-// updateHasCall checks whether expression n contains any function
-// calls and sets the n.HasCall flag if so.
-func updateHasCall(n *Node) {
+// hasCall report whether expression n contains any function calls.
+func hasCall(n *Node) bool {
 	if n == nil {
-		return
+		return false
 	}
 
-	b := false
 	if n.Ninit.Len() != 0 {
 		// TODO(mdempsky): This seems overly conservative.
-		b = true
-		goto out
+		return true
 	}
 
 	switch n.Op {
 	case OLITERAL, ONAME:
 	case OAS:
 		if needwritebarrier(n.Left) {
-			b = true
-			goto out
+			return true
 		}
 	case OCALL, OCALLFUNC, OCALLMETH, OCALLINTER:
-		b = true
-		goto out
+		return true
 	case OANDAND, OOROR:
 		// hard with instrumented code
 		if instrumenting {
-			b = true
-			goto out
+			return true
 		}
 	case OINDEX, OSLICE, OSLICEARR, OSLICE3, OSLICE3ARR, OSLICESTR,
 		OIND, ODOTPTR, ODOTTYPE, ODIV, OMOD:
 		// These ops might panic, make sure they are done
 		// before we start marshaling args for a call. See issue 16760.
-		b = true
-		goto out
+		return true
 	}
 
 	if n.Left != nil && n.Left.HasCall() {
-		b = true
-		goto out
+		return true
 	}
 	if n.Right != nil && n.Right.HasCall() {
-		b = true
-		goto out
+		return true
 	}
 
-out:
-	n.SetHasCall(b)
+	return false
 }
 
 func badtype(op Op, tl *Type, tr *Type) {

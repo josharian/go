@@ -685,7 +685,7 @@ opswitch:
 		lr := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), 0, init)
 		ll = append(ll, lr...)
 		n.Left.Left = nil
-		updateHasCall(n.Left)
+		n.Left.SetHasCall(hasCall(n.Left))
 		n.List.Set(reorder1(ll))
 
 	case OAS:
@@ -1616,8 +1616,7 @@ opswitch:
 	if n.Op == OLITERAL {
 		n = typecheck(n, Erv)
 	}
-
-	updateHasCall(n)
+	n.SetHasCall(hasCall(n))
 
 	if Debug['w'] != 0 && n != nil {
 		Dump("walk", n)
@@ -1743,7 +1742,7 @@ func ascompatet(op Op, nl Nodes, nr *Type) []*Node {
 
 		a := nod(OAS, l, nodarg(r, 0))
 		a = convas(a, &nn)
-		updateHasCall(a)
+		a.SetHasCall(hasCall(a))
 		if a.HasCall() {
 			Dump("ascompatet ucount", a)
 			ullmanOverflow = true
@@ -2104,7 +2103,7 @@ func convas(n *Node, init *Nodes) *Node {
 	}
 
 out:
-	updateHasCall(n)
+	n.SetHasCall(hasCall(n))
 	return n
 }
 
@@ -2120,7 +2119,7 @@ func reorder1(all []*Node) []*Node {
 
 	for _, n := range all {
 		t++
-		updateHasCall(n)
+		n.SetHasCall(hasCall(n))
 		if n.HasCall() {
 			c++
 		}
