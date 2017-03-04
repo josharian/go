@@ -619,24 +619,9 @@ func (s *state) stmt(n *Node) {
 		s.startBlock(lab.target)
 
 	case OGOTO:
-		sym := n.Left.Sym
-
-		lab := s.label(sym)
-		if lab.target == nil {
-			lab.target = s.f.NewBlock(ssa.BlockPlain)
-		}
-		if !lab.used() {
-			lab.useNode = n
-		}
-
-		if lab.defined() {
-			s.checkgoto(n, lab.defNode)
-		} else {
-			s.fwdGotos = append(s.fwdGotos, n)
-		}
-
+		target := s.makeGotoTarget(n)
 		b := s.endBlock()
-		b.AddEdgeTo(lab.target)
+		b.AddEdgeTo(target)
 
 	case OAS:
 		if n.Left == n.Right && n.Left.Op == ONAME {
@@ -752,8 +737,24 @@ func (s *state) stmt(n *Node) {
 		s.assign(n.Left, r, needwb, deref, skip)
 
 	case OIF:
-		bThen := s.f.NewBlock(ssa.BlockPlain)
 		bEnd := s.f.NewBlock(ssa.BlockPlain)
+
+		if n.Rlist.Len() == 0 && // no else body
+			n.Nbody.Len() == 1 && n.Nbody.First().Op == OGOTO && // then body is single goto
+			n.Left.Op != OOROR && n.Left.Op != OANDAND && n.Left.Op != ONOT { // simple condition // TODO: elim ONOT?
+			target := s.makeGotoTarget(n.Nbody.First())
+			c := s.expr(n.Left)
+			b := s.endBlock()
+			b.Kind = ssa.BlockIf
+			b.SetControl(c)
+			b.Likely = ssa.BranchPrediction(n.Likely)
+			b.AddEdgeTo(target)
+			b.AddEdgeTo(bEnd)
+			s.startBlock(bEnd)
+			break
+		}
+
+		bThen := s.f.NewBlock(ssa.BlockPlain)
 		var bElse *ssa.Block
 		if n.Rlist.Len() != 0 {
 			bElse = s.f.NewBlock(ssa.BlockPlain)
@@ -953,6 +954,23 @@ func (s *state) stmt(n *Node) {
 	default:
 		s.Fatalf("unhandled stmt %v", n.Op)
 	}
+}
+
+func (s *state) makeGotoTarget(n *Node) *ssa.Block {
+	sym := n.Left.Sym
+	lab := s.label(sym)
+	if lab.target == nil {
+		lab.target = s.f.NewBlock(ssa.BlockPlain)
+	}
+	if !lab.used() {
+		lab.useNode = n
+	}
+	if lab.defined() {
+		s.checkgoto(n, lab.defNode)
+	} else {
+		s.fwdGotos = append(s.fwdGotos, n)
+	}
+	return lab.target
 }
 
 // exit processes any code that needs to be generated just before returning.
