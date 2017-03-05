@@ -220,7 +220,12 @@ func genSplit(s, sep []byte, sepSave, n int) [][]byte {
 	n--
 	i := 0
 	for i < n {
-		m := Index(s, sep)
+		var m int
+		if len(sep) == 1 {
+			m = IndexByte(s, sep[0])
+		} else {
+			m = Index(s, sep)
+		}
 		if m < 0 {
 			break
 		}
