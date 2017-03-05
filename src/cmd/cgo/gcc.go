@@ -194,37 +194,37 @@ func (p *Package) loadDefines(f *File) {
 	b.WriteString(f.Preamble)
 	b.WriteString(builtinProlog)
 	stdout := p.gccDefines(b.Bytes())
-
-	for _, line := range strings.Split(stdout, "\n") {
-		if len(line) < 9 || line[0:7] != "#define" {
+	define := []byte("#define")
+	for _, line := range bytes.Split(stdout, []byte{'\n'}) {
+		if len(line) < 9 || !bytes.HasPrefix(line, define) {
 			continue
 		}
 
-		line = strings.TrimSpace(line[8:])
+		line = bytes.TrimSpace(line[8:])
 
-		var key, val string
-		spaceIndex := strings.Index(line, " ")
-		tabIndex := strings.Index(line, "\t")
+		var key, val []byte
+		spaceIndex := bytes.IndexByte(line, ' ')
+		tabIndex := bytes.IndexByte(line, '\t')
 
 		if spaceIndex == -1 && tabIndex == -1 {
 			continue
 		} else if tabIndex == -1 || (spaceIndex != -1 && spaceIndex < tabIndex) {
 			key = line[0:spaceIndex]
-			val = strings.TrimSpace(line[spaceIndex:])
+			val = bytes.TrimSpace(line[spaceIndex:])
 		} else {
 			key = line[0:tabIndex]
-			val = strings.TrimSpace(line[tabIndex:])
+			val = bytes.TrimSpace(line[tabIndex:])
 		}
 
-		if key == "__clang__" {
+		if string(key) == "__clang__" {
 			p.GccIsClang = true
 		}
 
-		if n := f.Name[key]; n != nil {
+		if n := f.Name[string(key)]; n != nil {
 			if *debugDefine {
 				fmt.Fprintf(os.Stderr, "#define %s %s\n", key, val)
 			}
-			n.Define = val
+			n.Define = string(val)
 		}
 	}
 }
@@ -1349,7 +1349,7 @@ func (p *Package) gccDebug(stdin []byte) (*dwarf.Data, binary.ByteOrder, []byte)
 // and returns the corresponding standard output, which is the
 // #defines that gcc encountered while processing the input
 // and its included files.
-func (p *Package) gccDefines(stdin []byte) string {
+func (p *Package) gccDefines(stdin []byte) []byte {
 	base := append(p.gccBaseCmd(), "-E", "-dM", "-xc")
 	base = append(base, p.gccMachine()...)
 	stdout, _ := runGcc(stdin, append(append(base, p.GccOptions...), "-"))
@@ -1390,7 +1390,7 @@ func (p *Package) gccErrors(stdin []byte) string {
 // Otherwise runGcc returns the data written to standard output and standard error.
 // Note that for some of the uses we expect useful data back
 // on standard error, but for those uses gcc must still exit 0.
-func runGcc(stdin []byte, args []string) (string, string) {
+func runGcc(stdin []byte, args []string) ([]byte, []byte) {
 	if *debugGcc {
 		fmt.Fprintf(os.Stderr, "$ %s <<EOF\n", strings.Join(args, " "))
 		os.Stderr.Write(stdin)
@@ -1405,7 +1405,7 @@ func runGcc(stdin []byte, args []string) (string, string) {
 		os.Stderr.Write(stderr)
 		os.Exit(2)
 	}
-	return string(stdout), string(stderr)
+	return stdout, stderr
 }
 
 // A typeConv is a translator from dwarf types to Go types
