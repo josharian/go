@@ -52,6 +52,8 @@ type B struct {
 	N                int
 	previousN        int           // number of iterations in the previous run
 	previousDuration time.Duration // total duration of the previous run
+	allN             []int
+	allDur           []time.Duration
 	benchFunc        func(b *B)
 	benchTime        time.Duration
 	bytes            int64
@@ -146,6 +148,8 @@ func (b *B) runN(n int) {
 	b.StartTimer()
 	b.benchFunc(b)
 	b.StopTimer()
+	b.allN = append(b.allN, n)
+	b.allDur = append(b.allDur, b.duration)
 	b.previousN = n
 	b.previousDuration = b.duration
 	b.raceErrors += race.Errors()
@@ -465,6 +469,30 @@ func (ctx *benchContext) processBench(b *B) {
 			results += "\t" + r.MemString()
 		}
 		fmt.Fprintln(b.w, results)
+		fmt.Fprintln(b.w, b.allN, b.allDur)
+		if len(b.allN) > 3 {
+			b.allN = b.allN[len(b.allN)-3:]
+			b.allDur = b.allDur[len(b.allDur)-3:]
+		}
+		fmt.Fprintln(b.w, b.allN, b.allDur)
+		length := float64(len(b.allN))
+		// TODO: bail if length too short
+		sum_x := float64(0)
+		sum_x_squared := float64(0)
+		sum_of_products := float64(0)
+		for i, x := range b.allN {
+			sum_x += float64(x)
+			sum_x_squared += float64(x * x)
+			sum_of_products += float64(b.allDur[i]) * float64(x)
+		}
+		sum_y := float64(0)
+		for _, y := range b.allDur {
+			sum_y += float64(y)
+		}
+		aa := (sum_of_products - (sum_x*sum_y)/length) / (sum_x_squared - (sum_x * sum_x / length))
+		bb := (sum_y - aa*sum_x) / length
+		fmt.Fprintln(b.w, "aa=", aa, "bb=", time.Duration(bb))
+
 		// Unlike with tests, we ignore the -chatty flag and always print output for
 		// benchmarks since the output generation time will skew the results.
 		if len(b.output) > 0 {
