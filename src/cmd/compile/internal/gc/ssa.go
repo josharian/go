@@ -478,7 +478,7 @@ func (s *state) constInt(t ssa.Type, c int64) *ssa.Value {
 	return s.constInt32(t, int32(c))
 }
 func (s *state) constOffPtrSP(t ssa.Type, c int64) *ssa.Value {
-	return s.entryNewValue1I(ssa.OpOffPtr, t, c, s.sp)
+	return s.f.ConstOffPtrSP(s.peekPos(), t, c, s.sp)
 }
 
 // stmtList converts the statement list n to SSA and adds it to s.
