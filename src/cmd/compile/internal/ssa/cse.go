@@ -227,6 +227,17 @@ func cse(f *Func) {
 
 	rewrites := int64(0)
 
+	// for _, v := range rewrite {
+	// 	if v == nil {
+	// 		continue
+	// 	}
+	// 	fmt.Print("CSE\t", v.Op)
+	// 	for _, a := range v.Args {
+	// 		fmt.Print("\t", a.Op)
+	// 	}
+	// 	fmt.Println()
+	// }
+
 	// Apply substitutions
 	for _, b := range f.Blocks {
 		for _, v := range b.Values {

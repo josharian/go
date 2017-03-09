@@ -362,6 +362,7 @@ var passes = [...]pass{
 	{name: "late copyelim", fn: copyelim},
 	{name: "phi tighten", fn: phiTighten},
 	{name: "late deadcode", fn: deadcode},
+	{name: "dumpvalues", fn: dumpvalues},
 	{name: "critical", fn: critical, required: true}, // remove critical edges
 	{name: "likelyadjust", fn: likelyadjust},
 	{name: "layout", fn: layout, required: true},     // schedule blocks
@@ -371,6 +372,34 @@ var passes = [...]pass{
 	{name: "regalloc", fn: regalloc, required: true},   // allocate int & float registers + stack slots
 	{name: "stackframe", fn: stackframe, required: true},
 	{name: "trim", fn: trim}, // remove empty blocks
+}
+
+func dumpval(v *Value) {
+	if v == nil {
+		return
+	}
+	fmt.Print("VAL\t", v.Op)
+	var mem *Value
+	if v.Op != OpPhi {
+		mem = v.MemoryArg()
+	}
+	for _, a := range v.Args {
+		if a == mem {
+			fmt.Print("\t(mem)")
+		} else {
+			fmt.Print("\t", a.Op)
+		}
+	}
+	fmt.Println()
+}
+
+func dumpvalues(f *Func) {
+	for _, b := range f.Blocks {
+		for _, v := range b.Values {
+			dumpval(v)
+		}
+		dumpval(b.Control)
+	}
 }
 
 // Double-check phase ordering constraints.
