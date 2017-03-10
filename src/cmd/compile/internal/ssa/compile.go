@@ -368,6 +368,7 @@ var passes = [...]pass{
 	{name: "schedule", fn: schedule, required: true}, // schedule values
 	{name: "late nilcheck", fn: nilcheckelim2},
 	{name: "flagalloc", fn: flagalloc, required: true}, // allocate flags register
+	{name: "post-flag rewrites", fn: flagrewrite},      // rewrite rules that require flags to have been handled
 	{name: "regalloc", fn: regalloc, required: true},   // allocate int & float registers + stack slots
 	{name: "stackframe", fn: stackframe, required: true},
 	{name: "trim", fn: trim}, // remove empty blocks
@@ -425,6 +426,10 @@ var passOrder = [...]constraint{
 	{"schedule", "late nilcheck"},
 	// flagalloc needs instructions to be scheduled.
 	{"schedule", "flagalloc"},
+	// flagrewrite needs flag to be allocated first.
+	{"flagalloc", "post-flag rewrites"},
+	// flagalloc can't happen after register allocation.
+	{"post-flag rewrites", "regalloc"},
 	// regalloc needs flags to be allocated first.
 	{"flagalloc", "regalloc"},
 	// stackframe needs to know about spilled registers.

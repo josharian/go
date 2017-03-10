@@ -482,6 +482,20 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		p.From.Reg = v.Args[0].Reg()
 		p.To.Type = obj.TYPE_CONST
 		p.To.Offset = v.AuxInt
+	case ssa.OpAMD64CMPQconstmem:
+		p := gc.Prog(v.Op.Asm())
+		p.From.Type = obj.TYPE_MEM
+		p.From.Reg = v.Args[0].Args[0].Reg()
+
+		p.From.Type = obj.TYPE_REG
+		p.From.Reg = v.Args[0].Reg()
+		p.To.Type = obj.TYPE_CONST
+		p.To.Offset = v.AuxInt
+
+		gc.AddAux(&p.From, v)
+		p.To.Type = obj.TYPE_REG
+		p.To.Reg = v.Reg()
+
 	case ssa.OpAMD64TESTQconst, ssa.OpAMD64TESTLconst, ssa.OpAMD64TESTWconst, ssa.OpAMD64TESTBconst,
 		ssa.OpAMD64BTLconst, ssa.OpAMD64BTQconst:
 		p := gc.Prog(v.Op.Asm())
