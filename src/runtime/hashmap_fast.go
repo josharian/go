@@ -449,7 +449,7 @@ again:
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + bucket*uintptr(t.bucketsize)))
 	top := uint8(hash >> (sys.PtrSize*8 - 8))
 	if top < minTopHash {
-		top += minTopHash
+		top += minTopHash + uint8(key)&127
 	}
 
 	var inserti *uint8
@@ -538,7 +538,7 @@ again:
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + bucket*uintptr(t.bucketsize)))
 	top := uint8(hash >> (sys.PtrSize*8 - 8))
 	if top < minTopHash {
-		top += minTopHash
+		top += minTopHash + uint8(key)&127
 	}
 
 	var inserti *uint8
