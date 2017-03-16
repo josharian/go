@@ -16,6 +16,10 @@ func FormatUint(i uint64, base int) string {
 // for 2 <= base <= 36. The result uses the lower-case letters 'a' to 'z'
 // for digit values >= 10.
 func FormatInt(i int64, base int) string {
+	if int64(int32(i)) == i {
+		_, s := formatBits32(nil, uint32(i), base, i < 0, false)
+		return s
+	}
 	_, s := formatBits(nil, uint64(i), base, i < 0, false)
 	return s
 }
@@ -121,6 +125,99 @@ func formatBits(dst []byte, u uint64, base int, neg, append_ bool) (d []byte, s 
 	} else {
 		// general case
 		b := uint64(base)
+		for u >= b {
+			i--
+			// Avoid using r = a%b in addition to q = a/b
+			// since 64bit division and modulo operations
+			// are calculated by runtime functions on 32bit machines.
+			q := u / b
+			a[i] = digits[uint(u-q*b)]
+			u = q
+		}
+		// u < base
+		i--
+		a[i] = digits[uint(u)]
+	}
+
+	// add sign, if any
+	if neg {
+		i--
+		a[i] = '-'
+	}
+
+	if append_ {
+		d = append(dst, a[i:]...)
+		return
+	}
+	s = string(a[i:])
+	return
+}
+
+// formatBits32 is formatBits specialized for 32 bit ints.
+func formatBits32(dst []byte, u uint32, base int, neg, append_ bool) (d []byte, s string) {
+	if base < 2 || base > len(digits) {
+		panic("strconv: illegal AppendInt/FormatInt base")
+	}
+	// 2 <= base && base <= len(digits)
+
+	var a [32 + 1]byte // +1 for sign of 32bit value in base 2
+	i := len(a)
+
+	if neg {
+		u = -u
+	}
+
+	// convert bits
+	// We use uint values where we can because those will
+	// fit into a single register even on a 32bit machine.
+	if base == 10 {
+		// common case: use constants for / because
+		// the compiler can optimize it into a multiply+shift
+
+		if host32bit {
+			// convert the lower digits using 32bit operations
+			for u >= 1e9 {
+				// Avoid using r = a%b in addition to q = a/b
+				// since 64bit division and modulo operations
+				// are calculated by runtime functions on 32bit machines.
+				q := u / 1e9
+				us := uint(u - q*1e9) // u % 1e9 fits into a uint
+				for j := 9; j > 0; j-- {
+					i--
+					a[i] = byte(us%10 + '0')
+					us /= 10
+				}
+				u = q
+			}
+			// u < 1e9
+		}
+
+		// u guaranteed to fit into a uint
+		us := uint(u)
+		for us >= 10 {
+			i--
+			a[i] = byte(us%10 + '0')
+			us /= 10
+		}
+		// us < 10
+		i--
+		a[i] = byte(us + '0')
+
+	} else if s := shifts[base]; s > 0 {
+		// base is power of 2: use shifts and masks instead of / and %
+		b := uint32(base)
+		m := uint(base) - 1 // == 1<<s - 1
+		for u >= b {
+			i--
+			a[i] = digits[uint(u)&m]
+			u >>= s
+		}
+		// u < base
+		i--
+		a[i] = digits[uint(u)]
+	} else {
+		// general case
+		b := uint32(base)
 		for u >= b {
 			i--
 			// Avoid using r = a%b in addition to q = a/b

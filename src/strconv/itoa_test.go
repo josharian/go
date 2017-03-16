@@ -134,6 +134,14 @@ func BenchmarkFormatInt(b *testing.B) {
 	}
 }
 
+func BenchmarkFormatIntSmall(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for n := int64(1); n < 1<<20; n <<= 1 {
+			FormatInt(n, 10)
+		}
+	}
+}
+
 func BenchmarkAppendInt(b *testing.B) {
 	dst := make([]byte, 0, 30)
 	for i := 0; i < b.N; i++ {
