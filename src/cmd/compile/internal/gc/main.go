@@ -182,6 +182,7 @@ func Main(archInit func(*Arch)) {
 	obj.Flagcount("W", "debug parse tree after type checking", &Debug['W'])
 	flag.StringVar(&asmhdr, "asmhdr", "", "write assembly header to `file`")
 	flag.StringVar(&buildid, "buildid", "", "record `id` as the build id in the export metadata")
+	flag.IntVar(&ncpu, "c", 1, "number of concurrent backend compilations")
 	flag.BoolVar(&pure_go, "complete", false, "compiling complete package (no C or assembly)")
 	flag.StringVar(&debugstr, "d", "", "print debug information about items in `list`")
 	obj.Flagcount("e", "no limit on number of errors reported", &Debug['e'])
@@ -277,6 +278,12 @@ func Main(archInit func(*Arch)) {
 	}
 	if compiling_runtime && Debug['N'] != 0 {
 		log.Fatal("cannot disable optimizations while compiling runtime")
+	}
+	if ncpu < 1 {
+		log.Fatalf("-c must be at least 1, got %d", ncpu)
+	}
+	if ncpu > 1 && Debug_asm /* TODO: Lots more */ {
+		log.Fatalf("cannot use concurrent compilation with <TODO>")
 	}
 
 	// parse -d argument
@@ -547,6 +554,24 @@ func Main(archInit func(*Arch)) {
 			}
 		}
 		timings.AddEvent(fcount, "funcs")
+
+		if ncpu > 1 {
+			compilewg.Add(1)
+			for _, fn := range needscompile {
+				backendcompile(fn)
+			}
+			compilewg.Done()
+			compilewg.Wait()
+			close(compilec)
+			needscompile = nil
+		}
+		// We autogenerate and compile some small functions
+		// such as method wrappers and equality/hash routines
+		// while exporting code.
+		// Disable concurrent compilation from here on,
+		// at least until this convoluted structure is unwound
+		ncpu = 1
+		compilenow = true
 
 		if nsavederrors+nerrors == 0 {
 			fninit(xtop)

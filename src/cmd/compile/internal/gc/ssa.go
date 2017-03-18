@@ -19,8 +19,10 @@ import (
 	"cmd/internal/sys"
 )
 
-var ssaConfig *ssa.Config
-var ssaCache *ssa.Cache
+var (
+	ssaConfig *ssa.Config
+	ssaCaches []*ssa.Cache
+)
 
 func initssaconfig() {
 	types_ := ssa.Types{
@@ -66,7 +68,17 @@ func initssaconfig() {
 	if thearch.LinkArch.Name == "386" {
 		ssaConfig.Set387(thearch.Use387)
 	}
-	ssaCache = new(ssa.Cache)
+
+	ssaCaches = make([]*ssa.Cache, ncpu)
+	for i := range ssaCaches {
+		ssaCaches[i] = new(ssa.Cache)
+	}
+	if ncpu > 1 {
+		compilec = make(chan *Node)
+		for i := 0; i < ncpu; i++ {
+			go startbackend(i)
+		}
+	}
 
 	// Set up some runtime functions we'll need to call.
 	Newproc = Sysfunc("newproc")
@@ -88,7 +100,7 @@ func initssaconfig() {
 }
 
 // buildssa builds an SSA function.
-func buildssa(fn *Node) *ssa.Func {
+func buildssa(fn *Node, cache *ssa.Cache) *ssa.Func {
 	name := fn.Func.Nname.Sym.Name
 	printssa := name == os.Getenv("GOSSAFUNC")
 	if printssa {
@@ -116,8 +128,7 @@ func buildssa(fn *Node) *ssa.Func {
 	s.f = ssa.NewFunc(&fe)
 	s.config = ssaConfig
 	s.f.Config = ssaConfig
-	s.f.Cache = ssaCache
-	s.f.Cache.Reset()
+	s.f.Cache = cache
 	s.f.DebugTest = s.f.DebugHashMatch("GOSSAHASH", name)
 	s.f.Name = name
 	if fn.Func.Pragma&Nosplit != 0 {

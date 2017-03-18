@@ -13,9 +13,18 @@ import (
 	"cmd/internal/sys"
 	"fmt"
 	"sort"
+	"sync"
 )
 
 // "Portable" code generation.
+
+var (
+	ncpu         int            // the number of concurrent backend compiles, set by a compiler flag
+	needscompile []*Node        // slice of functions waiting to be compiled
+	compilenow   bool           // indicates whether to compile immediately or enqueue in needscompile
+	compilewg    sync.WaitGroup // wait for all backend compilers to complete
+	compilec     chan *Node     // channel of functions for backend compilers to drain
+)
 
 func makefuncdatasym(pp *Progs, nameprefix string, funcdatakind int64, curfn *Node) *types.Sym {
 	// This symbol requires a unique, reproducible name;
@@ -300,9 +309,36 @@ func compile(fn *Node) {
 	// Set up the function's LSym early to avoid data races with the assemblers.
 	fn.Func.initLSym()
 
+	if compilenow {
+		backendcompile(fn)
+	} else {
+		needscompile = append(needscompile, fn)
+	}
+}
+
+func startbackend(shard int) {
+	for fn := range compilec {
+		compileSSA(fn, shard)
+		compilewg.Done()
+	}
+}
+
+func backendcompile(fn *Node) {
 	// Build an SSA backend function.
-	ssafn := buildssa(fn)
-	pp := newProgs(fn)
+	compilewg.Add(1)
+	if ncpu == 1 {
+		compileSSA(fn, 0)
+		compilewg.Done()
+	} else {
+		compilec <- fn
+	}
+}
+
+// compileSSA builds an SSA backend function and uses it to generate a plist.
+func compileSSA(fn *Node, shard int) {
+	cache := ssaCaches[shard]
+	ssafn := buildssa(fn, cache)
+	pp := newProgs(fn, shard)
 	genssa(ssafn, pp)
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
 	if pp.Text.To.Offset < 1<<31 {
@@ -311,6 +347,7 @@ func compile(fn *Node) {
 		largeStackFrames = append(largeStackFrames, fn.Pos)
 	}
 	pp.Free()
+	cache.Reset()
 }
 
 func debuginfo(fnsym *obj.LSym, curfn interface{}) []*dwarf.Var {
