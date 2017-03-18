@@ -182,6 +182,7 @@ func Main(archInit func(*Arch)) {
 	obj.Flagcount("W", "debug parse tree after type checking", &Debug['W'])
 	flag.StringVar(&asmhdr, "asmhdr", "", "write assembly header to `file`")
 	flag.StringVar(&buildid, "buildid", "", "record `id` as the build id in the export metadata")
+	flag.IntVar(&ncpu, "c", 1, "number of concurrent backend compilations allowed")
 	flag.BoolVar(&pure_go, "complete", false, "compiling complete package (no C or assembly)")
 	flag.StringVar(&debugstr, "d", "", "print debug information about items in `list`")
 	obj.Flagcount("e", "no limit on number of errors reported", &Debug['e'])
@@ -278,6 +279,10 @@ func Main(archInit func(*Arch)) {
 	if compiling_runtime && Debug['N'] != 0 {
 		log.Fatal("cannot disable optimizations while compiling runtime")
 	}
+	if ncpu < 1 {
+		log.Fatalf("-c must be at least 1, got %d", ncpu)
+	}
+	cpugate = make(chan struct{}, ncpu)
 
 	// parse -d argument
 	if debugstr != "" {
@@ -532,8 +537,11 @@ func Main(archInit func(*Arch)) {
 		// Just before compilation, compile itabs found on
 		// the right side of OCONVIFACE so that methods
 		// can be de-virtualized during compilation.
+		// TODO: concurrent compilation here?
 		Curfn = nil
 		peekitabs()
+
+		ssaWaitGroup.Add(1)
 
 		// Phase 8: Compile top level functions.
 		// Don't use range--walk can add functions to xtop.
@@ -548,10 +556,22 @@ func Main(archInit func(*Arch)) {
 		}
 		timings.AddEvent(fcount, "funcs")
 
+		for _, fn := range needscompile {
+			backendcompile(fn)
+		}
+		needscompile = nil
+
+		ssaWaitGroup.Done()
+		ssaWaitGroup.Wait()
+		ncpu = 1
+
+		compilenow = true
+
 		if nsavederrors+nerrors == 0 {
 			fninit(xtop)
 		}
 
+		// xtop is now complete.
 		if compiling_runtime {
 			checknowritebarrierrec()
 		}

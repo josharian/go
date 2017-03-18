@@ -13,9 +13,17 @@ import (
 	"cmd/internal/sys"
 	"fmt"
 	"sort"
+	"sync"
 )
 
 // "Portable" code generation.
+
+var (
+	ssaWaitGroup sync.WaitGroup
+	ssaMu        sync.Mutex
+	ssaCaches    []*ssa.Cache
+	compilec     chan *Node
+)
 
 func makefuncdatasym(pp *Progs, nameprefix string, funcdatakind int64, curfn *Node) *types.Sym {
 	// This symbol requires a unique, reproducible name;
@@ -266,6 +274,10 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 	s.stkptrsize = Rnd(s.stkptrsize, int64(Widthreg))
 }
 
+var needscompile []*Node
+
+var compilenow bool
+
 func compile(fn *Node) {
 	Curfn = fn
 	dowidth(fn.Type)
@@ -294,12 +306,57 @@ func compile(fn *Node) {
 		instrument(fn)
 	}
 
+	if compilenow {
+		backendcompile(fn)
+	} else {
+		needscompile = append(needscompile, fn)
+	}
+}
+
+func startbackend(shard int) {
+	// TODO: use shard to help with this ssaCaches silliness?
+	for fn := range compilec {
+		ssaMu.Lock()
+		if len(ssaCaches) == 0 {
+			ssaCaches = append(ssaCaches, nil)
+			ssaCaches[0] = new(ssa.Cache)
+		}
+		last := len(ssaCaches) - 1
+		cache := ssaCaches[last]
+		ssaCaches = ssaCaches[:last]
+		ssaMu.Unlock()
+		compileSSA(fn, cache, shard)
+		ssaMu.Lock()
+		cache.Reset()
+		ssaCaches = append(ssaCaches, cache)
+		ssaMu.Unlock()
+		ssaWaitGroup.Done()
+	}
+}
+
+func backendcompile(fn *Node) {
 	// From this point, there should be no uses of Curfn. Enforce that.
 	Curfn = nil
 
 	// Build an SSA backend function.
-	ssafn := buildssa(fn)
-	pp := newProgs(fn)
+	ssaWaitGroup.Add(1)
+	if ncpu == 1 {
+		if len(ssaCaches) == 0 {
+			ssaCaches = append(ssaCaches, nil)
+			ssaCaches[0] = new(ssa.Cache)
+		}
+		compileSSA(fn, ssaCaches[0], 0)
+		ssaCaches[0].Reset()
+		ssaWaitGroup.Done()
+	} else {
+		compilec <- fn
+	}
+}
+
+// compileSSA builds an SSA backend function and uses it to generate a plist.
+func compileSSA(fn *Node, cache *ssa.Cache, shard int) {
+	ssafn := buildssa(fn, cache)
+	pp := newProgs(fn, shard)
 	genssa(ssafn, pp)
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
 	if pp.Text.To.Offset < 1<<31 {
