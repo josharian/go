@@ -181,6 +181,7 @@ func Main(archInit func(*Arch)) {
 	obj.Flagcount("W", "debug parse tree after type checking", &Debug['W'])
 	flag.StringVar(&asmhdr, "asmhdr", "", "write assembly header to `file`")
 	flag.StringVar(&buildid, "buildid", "", "record `id` as the build id in the export metadata")
+	flag.IntVar(&ncpu, "c", 1, "number of concurrent backend compilations allowed")
 	flag.BoolVar(&pure_go, "complete", false, "compiling complete package (no C or assembly)")
 	flag.StringVar(&debugstr, "d", "", "print debug information about items in `list`")
 	obj.Flagcount("e", "no limit on number of errors reported", &Debug['e'])
@@ -347,6 +348,11 @@ func Main(archInit func(*Arch)) {
 	Widthptr = thearch.LinkArch.PtrSize
 	Widthreg = thearch.LinkArch.RegSize
 
+	if ncpu < 1 {
+		log.Fatalf("-c must be at least 1, got %d", ncpu)
+	}
+	cpugate = make(chan struct{}, ncpu)
+
 	initUniverse()
 
 	blockgen = 1
@@ -502,6 +508,7 @@ func Main(archInit func(*Arch)) {
 		// Just before compilation, compile itabs found on
 		// the right side of OCONVIFACE so that methods
 		// can be de-virtualized during compilation.
+		// TODO: concurrent compilation here?
 		Curfn = nil
 		peekitabs()
 
@@ -522,6 +529,9 @@ func Main(archInit func(*Arch)) {
 			fninit(xtop)
 		}
 
+		ssaWaitGroup.Wait()
+
+		// xtop is now complete.
 		if compiling_runtime {
 			checknowritebarrierrec()
 		}

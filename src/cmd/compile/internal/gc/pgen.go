@@ -12,9 +12,16 @@ import (
 	"cmd/internal/sys"
 	"fmt"
 	"sort"
+	"sync"
 )
 
 // "Portable" code generation.
+
+var (
+	ssaWaitGroup sync.WaitGroup
+	ssaMu        sync.Mutex
+	ssaCaches    []*ssa.Cache
+)
 
 func makefuncdatasym(pp *Progs, nameprefix string, funcdatakind int64, curfn *Node) *Sym {
 	// This symbol requires a unique, reproducible name;
@@ -297,7 +304,41 @@ func compile(fn *Node) {
 	Curfn = nil
 
 	// Build an SSA backend function.
-	ssafn := buildssa(fn)
+	ssaWaitGroup.Add(1)
+	if ncpu == 1 {
+		if len(ssaCaches) == 0 {
+			ssaCaches = append(ssaCaches, nil)
+			ssaCaches[0] = new(ssa.Cache)
+		}
+		compileSSA(fn, ssaCaches[0])
+		ssaCaches[0].Reset()
+		ssaWaitGroup.Done()
+	} else {
+		go func(fn *Node) {
+			cpugate <- struct{}{}
+			ssaMu.Lock()
+			if len(ssaCaches) == 0 {
+				ssaCaches = append(ssaCaches, nil)
+				ssaCaches[0] = new(ssa.Cache)
+			}
+			last := len(ssaCaches) - 1
+			cache := ssaCaches[last]
+			ssaCaches = ssaCaches[:last]
+			ssaMu.Unlock()
+			compileSSA(fn, cache)
+			ssaMu.Lock()
+			cache.Reset()
+			ssaCaches = append(ssaCaches, cache)
+			ssaMu.Unlock()
+			<-cpugate
+			ssaWaitGroup.Done()
+		}(fn)
+	}
+}
+
+// compileSSA builds an SSA backend function and uses it to generate a plist.
+func compileSSA(fn *Node, cache *ssa.Cache) {
+	ssafn := buildssa(fn, cache)
 	pp := newProgs(fn)
 	genssa(ssafn, pp)
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
