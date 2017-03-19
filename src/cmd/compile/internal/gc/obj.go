@@ -217,6 +217,11 @@ func dumpglobls() {
 		ggloblnod(n)
 	}
 
+	funcsymsmu.Lock()
+	defer funcsymsmu.Unlock()
+	obj.SortSlice(funcsyms, func(i, j int) bool {
+		return linksymname(funcsyms[i]) < linksymname(funcsyms[j])
+	})
 	for _, s := range funcsyms {
 		sf := s.Pkg.Lookup(funcsymname(s))
 		dsymptr(sf, 0, s, 0)
@@ -241,6 +246,8 @@ func Linksym(s *types.Sym) *obj.LSym {
 	if s == nil {
 		return nil
 	}
+	s.Lsymmu.Lock()
+	defer s.Lsymmu.Unlock()
 	if s.Lsym == nil {
 		s.Lsym = Ctxt.Lookup(linksymname(s), 0)
 	}

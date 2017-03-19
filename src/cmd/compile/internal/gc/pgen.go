@@ -13,9 +13,18 @@ import (
 	"cmd/internal/sys"
 	"fmt"
 	"sort"
+	"sync"
 )
 
 // "Portable" code generation.
+
+var (
+	ncpu         int            // the number of concurrent backend compiles, set by a compiler flag
+	needscompile []*Node        // slice of functions waiting to be compiled
+	compilenow   bool           // indicates whether to compile immediately or enqueue in needscompile
+	compilewg    sync.WaitGroup // wait for all backend compilers to complete
+	compilec     chan *Node     // channel of functions for backend compilers to drain
+)
 
 func makefuncdatasym(pp *Progs, nameprefix string, funcdatakind int64, curfn *Node) *types.Sym {
 	// This symbol requires a unique, reproducible name;
@@ -300,9 +309,20 @@ func compile(fn *Node) {
 	// Set up the function's LSym early to avoid data races with the assemblers.
 	fn.Func.initLSym()
 
-	// Build an SSA backend function.
-	ssafn := buildssa(fn)
-	pp := newProgs(fn)
+	if compilenow {
+		compileSSA(fn, 0)
+	} else {
+		needscompile = append(needscompile, fn)
+	}
+}
+
+// compileSSA builds an SSA backend function,
+// uses it to generate a plist,
+// and flushes that plist to machine code.
+func compileSSA(fn *Node, shard int) {
+	cache := &ssaCaches[shard]
+	ssafn := buildssa(fn, cache)
+	pp := newProgs(fn, shard)
 	genssa(ssafn, pp)
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
 	if pp.Text.To.Offset < 1<<31 {

@@ -182,6 +182,7 @@ func Main(archInit func(*Arch)) {
 	obj.Flagcount("W", "debug parse tree after type checking", &Debug['W'])
 	flag.StringVar(&asmhdr, "asmhdr", "", "write assembly header to `file`")
 	flag.StringVar(&buildid, "buildid", "", "record `id` as the build id in the export metadata")
+	flag.IntVar(&ncpu, "c", 1, "number of concurrent backend compilations")
 	flag.BoolVar(&pure_go, "complete", false, "compiling complete package (no C or assembly)")
 	flag.StringVar(&debugstr, "d", "", "print debug information about items in `list`")
 	obj.Flagcount("e", "no limit on number of errors reported", &Debug['e'])
@@ -278,6 +279,13 @@ func Main(archInit func(*Arch)) {
 	if compiling_runtime && Debug['N'] != 0 {
 		log.Fatal("cannot disable optimizations while compiling runtime")
 	}
+	if ncpu < 1 {
+		log.Fatalf("-c must be at least 1, got %d", ncpu)
+	}
+	if ncpu > 1 && !concurrentBackendAllowed() {
+		log.Fatalf("cannot use concurrent backend compilation with provided flags")
+	}
+	compilenow = ncpu == 1
 
 	// parse -d argument
 	if debugstr != "" {
@@ -548,6 +556,22 @@ func Main(archInit func(*Arch)) {
 		}
 		timings.AddEvent(fcount, "funcs")
 
+		if ncpu > 1 {
+			for _, fn := range needscompile {
+				compilec <- fn
+			}
+			close(compilec)
+			needscompile = nil
+			compilewg.Wait()
+		}
+		// We autogenerate and compile some small functions
+		// such as method wrappers and equality/hash routines
+		// while exporting code.
+		// Disable concurrent compilation from here on,
+		// at least until this convoluted structure has been unwound.
+		ncpu = 1
+		compilenow = true
+
 		if nsavederrors+nerrors == 0 {
 			fninit(xtop)
 		}
@@ -555,9 +579,16 @@ func Main(archInit func(*Arch)) {
 		if compiling_runtime {
 			checknowritebarrierrec()
 		}
-		for _, largePos := range largeStackFrames {
-			yyerrorl(largePos, "stack frame too large (>2GB)")
+		largeStackFramesMu.Lock()
+		if len(largeStackFrames) > 0 {
+			obj.SortSlice(largeStackFrames, func(i, j int) bool {
+				return largeStackFrames[i].Before(largeStackFrames[j])
+			})
+			for _, largePos := range largeStackFrames {
+				yyerrorl(largePos, "stack frame too large (>2GB)")
+			}
 		}
+		largeStackFramesMu.Unlock()
 	}
 
 	// Phase 9: Check external declarations.
@@ -1026,4 +1057,30 @@ func clearImports() {
 
 func IsAlias(sym *types.Sym) bool {
 	return sym.Def != nil && asNode(sym.Def).Sym != sym
+}
+
+// By default, assume any debug flags are incompatible with concurrent compilation.
+// A few are safe and potentially in common use for normal compiles, though; mark them as such here.
+var concurrentFlagOK = [256]bool{
+	'B': true, // disabled bounds checking
+	'C': true, // disable printing of columns in error messages
+	'I': true, // add `directory` to import search path
+	'N': true, // disable optimizations
+	'l': true, // disable inlining
+}
+
+func concurrentBackendAllowed() bool {
+	for i, x := range Debug {
+		if x != 0 && !concurrentFlagOK[i] {
+			return false
+		}
+	}
+	if Debug_asm || Debug_vlog || debugstr != "" || debuglive > 0 {
+		return false
+	}
+	// TODO: fix races and enable the following flags
+	if Ctxt.Flag_shared || Ctxt.Flag_dynlink || flag_race {
+		return false
+	}
+	return true
 }
