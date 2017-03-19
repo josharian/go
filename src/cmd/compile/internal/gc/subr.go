@@ -257,6 +257,8 @@ func (pkg *Pkg) LookupOK(name string) (s *Sym, existed bool) {
 	if pkg == nil {
 		pkg = nopkg
 	}
+	pkg.Symsmu.Lock()
+	defer pkg.Symsmu.Unlock()
 	if s := pkg.Syms[name]; s != nil {
 		return s, true
 	}
@@ -276,9 +278,12 @@ func (pkg *Pkg) LookupBytes(name []byte) *Sym {
 	if pkg == nil {
 		pkg = nopkg
 	}
+	pkg.Symsmu.Lock()
 	if s := pkg.Syms[string(name)]; s != nil {
+		pkg.Symsmu.Unlock()
 		return s
 	}
+	pkg.Symsmu.Unlock()
 	str := internString(name)
 	return pkg.Lookup(str)
 }

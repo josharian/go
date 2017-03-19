@@ -9,6 +9,7 @@ import (
 	"cmd/internal/bio"
 	"cmd/internal/obj"
 	"cmd/internal/src"
+	"sync"
 )
 
 const (
@@ -23,6 +24,7 @@ type Pkg struct {
 	Prefix   string // escaped path for use in symbol table
 	Imported bool   // export data of this package was parsed
 	Direct   bool   // imported directly
+	Symsmu   sync.Mutex
 	Syms     map[string]*Sym
 }
 
@@ -57,6 +59,7 @@ type Sym struct {
 	flags   bitset8
 	Label   *Node // corresponding label (ephemeral)
 	Origpkg *Pkg  // original package for . import
+	Lsymmu  sync.Mutex
 	Lsym    *obj.LSym
 }
 

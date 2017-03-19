@@ -231,6 +231,8 @@ func Linksym(s *Sym) *obj.LSym {
 	if s == nil {
 		return nil
 	}
+	s.Lsymmu.Lock()
+	defer s.Lsymmu.Unlock()
 	if s.Lsym != nil {
 		return s.Lsym
 	}

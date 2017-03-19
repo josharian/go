@@ -67,6 +67,8 @@ func Linknew(arch *LinkArch) *Link {
 }
 
 func (ctxt *Link) Lookup(name string, v int) *LSym {
+	ctxt.Hashmu.Lock()
+	defer ctxt.Hashmu.Unlock()
 	s := ctxt.Hash[SymVer{name, v}]
 	if s != nil {
 		return s

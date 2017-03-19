@@ -10,6 +10,7 @@ import (
 	"cmd/internal/src"
 	"fmt"
 	"strings"
+	"sync"
 )
 
 // lineno is the source position at the start of the most recently lexed token.
@@ -105,8 +106,11 @@ func pragmaValue(verb string) syntax.Pragma {
 }
 
 var internedStrings = map[string]string{}
+var internedStringsmu sync.Mutex
 
 func internString(b []byte) string {
+	internedStringsmu.Lock()
+	defer internedStringsmu.Unlock()
 	s, ok := internedStrings[string(b)] // string(b) here doesn't allocate
 	if !ok {
 		s = string(b)
