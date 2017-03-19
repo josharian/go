@@ -9,6 +9,7 @@ import (
 	"cmd/internal/objabi"
 	"fmt"
 	"sort"
+	"sync"
 )
 
 // pkgMap maps a package path to a package.
@@ -108,9 +109,14 @@ func (pkg *Pkg) LookupBytes(name []byte) *Sym {
 	return pkg.Lookup(str)
 }
 
-var internedStrings = map[string]string{}
+var (
+	internedStringsmu sync.Mutex // protects internedStrings
+	internedStrings   = map[string]string{}
+)
 
 func InternString(b []byte) string {
+	internedStringsmu.Lock()
+	defer internedStringsmu.Unlock()
 	s, ok := internedStrings[string(b)] // string(b) here doesn't allocate
 	if !ok {
 		s = string(b)
