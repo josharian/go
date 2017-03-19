@@ -37,6 +37,7 @@ import (
 	"cmd/internal/src"
 	"cmd/internal/sys"
 	"fmt"
+	"sync"
 )
 
 // An Addr is an argument to an instruction.
@@ -480,7 +481,9 @@ type Link struct {
 	Flag_optimize bool
 	Bso           *bufio.Writer
 	Pathname      string
+	hashmu        sync.Mutex       // protects hash
 	hash          map[string]*LSym // name -> sym mapping for version == 0
+	vhashmu       sync.Mutex       // protects vhash
 	vhash         map[string]*LSym // name -> sym mapping for version == 1
 	PosTable      src.PosTable
 	InlTree       InlTree // global inlining tree used by gc/inl.go

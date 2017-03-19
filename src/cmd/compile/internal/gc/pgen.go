@@ -14,9 +14,15 @@ import (
 	"cmd/internal/sys"
 	"fmt"
 	"sort"
+	"sync"
 )
 
 // "Portable" code generation.
+
+var (
+	nBackendWorkers int     // the number of concurrent backend workers, set by a compiler flag
+	needscompile    []*Node // functions waiting to be compiled
+)
 
 func emitptrargsmap() {
 	if Curfn.Func.Nname.Sym.Name == "_" {
@@ -207,18 +213,72 @@ func compile(fn *Node) {
 	// Set up the function's LSym early to avoid data races with the assemblers.
 	fn.Func.initLSym()
 
-	// Build an SSA backend function.
-	ssafn := buildssa(fn)
-	pp := newProgs(fn)
+	if compilenow() {
+		compileSSA(fn, 0)
+	} else {
+		needscompile = append(needscompile, fn)
+	}
+}
+
+// compilenow reports whether to compile immediately.
+// If functions are not compiled immediately,
+// they are enqueued in needscompile,
+// which is drained by finishcompilation.
+func compilenow() bool {
+	return nBackendWorkers == 1
+}
+
+// compileSSA builds an SSA backend function,
+// uses it to generate a plist,
+// and flushes that plist to machine code.
+// worker indicates which of the backend workers is doing the processing.
+func compileSSA(fn *Node, worker int) {
+	ssafn := buildssa(fn, worker)
+	pp := newProgs(fn, worker)
 	genssa(ssafn, pp)
 	if pp.Text.To.Offset < 1<<31 {
 		pp.Flush()
 	} else {
+		largeStackFramesMu.Lock()
 		largeStackFrames = append(largeStackFrames, fn.Pos)
+		largeStackFramesMu.Unlock()
 	}
 	// fieldtrack must be called after pp.Flush. See issue 20014.
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
 	pp.Free()
+}
+
+// finishcompilation compiles all functions in needscompile.
+// It fans out nBackendWorkers to do the work
+// and waits for them to complete.
+func finishcompilation() {
+	if len(needscompile) != 0 {
+		var wg sync.WaitGroup
+		c := make(chan *Node)
+		for i := 0; i < nBackendWorkers; i++ {
+			wg.Add(1)
+			go func(worker int) {
+				for fn := range c {
+					compileSSA(fn, worker)
+				}
+				wg.Done()
+			}(i)
+		}
+		for _, fn := range needscompile {
+			c <- fn
+		}
+		close(c)
+		needscompile = nil
+		wg.Wait()
+	}
+	// Check whether any of the functions we have compiled have gigantic stack frames.
+	obj.SortSlice(largeStackFrames, func(i, j int) bool {
+		return largeStackFrames[i].Before(largeStackFrames[j])
+	})
+	for _, largePos := range largeStackFrames {
+		yyerrorl(largePos, "stack frame too large (>2GB)")
+	}
+	largeStackFrames = nil
 }
 
 func debuginfo(fnsym *obj.LSym, curfn interface{}) []*dwarf.Var {
