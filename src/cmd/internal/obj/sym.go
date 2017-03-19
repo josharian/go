@@ -74,18 +74,20 @@ func (ctxt *Link) Lookup(name string, v int) *LSym {
 }
 
 // LookupInit looks up the symbol with name name and version v.
-// If it does not exist, it creates it and passes it to initfn for one-time initialization.
+// If it does not exist, it creates it and passes it to init for one-time initialization.
 func (ctxt *Link) LookupInit(name string, v int, init func(s *LSym)) *LSym {
-	s := ctxt.hash[SymVer{name, v}]
-	if s != nil {
+	ctxt.hashmu.Lock()
+	if s := ctxt.hash[SymVer{name, v}]; s != nil {
+		ctxt.hashmu.Unlock()
 		return s
 	}
 
-	s = &LSym{Name: name, Version: int16(v)}
+	s := &LSym{Name: name, Version: int16(v)}
 	ctxt.hash[SymVer{name, v}] = s
 	if init != nil {
 		init(s)
 	}
+	ctxt.hashmu.Unlock()
 	return s
 }
 
