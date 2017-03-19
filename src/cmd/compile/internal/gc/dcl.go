@@ -1063,6 +1063,8 @@ func funcsymname(s *types.Sym) string {
 
 // funcsym returns s·f.
 func funcsym(s *types.Sym) *types.Sym {
+	// Lock funcsymsmu immediately, so that it can also guard the package lookup.
+	funcsymsmu.Lock()
 	sf, existed := s.Pkg.LookupOK(funcsymname(s))
 	// Don't export s·f when compiling for dynamic linking.
 	// When dynamically linking, the necessary function
@@ -1071,6 +1073,7 @@ func funcsym(s *types.Sym) *types.Sym {
 	if !Ctxt.Flag_dynlink && !existed {
 		funcsyms = append(funcsyms, s)
 	}
+	funcsymsmu.Unlock()
 	return sf
 }
 
@@ -1096,7 +1099,9 @@ func makefuncsym(s *types.Sym) {
 		return
 	}
 	if _, existed := s.Pkg.LookupOK(funcsymname(s)); !existed {
+		funcsymsmu.Lock()
 		funcsyms = append(funcsyms, s)
+		funcsymsmu.Unlock()
 	}
 }
 

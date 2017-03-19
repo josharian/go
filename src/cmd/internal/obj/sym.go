@@ -36,6 +36,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"sync"
 )
 
 func Linknew(arch *LinkArch) *Link {
@@ -62,18 +63,23 @@ func (ctxt *Link) Lookup(name string, v int) *LSym {
 }
 
 // LookupInit looks up the symbol with name name and version v.
-// If it does not exist, it creates it and passes it to initfn for one-time initialization.
+// If it does not exist, it creates it and passes it to init for one-time initialization.
 func (ctxt *Link) LookupInit(name string, v int, init func(s *LSym)) *LSym {
 	var m map[string]*LSym
+	var mu *sync.Mutex
 	switch v {
 	case 0:
 		m = ctxt.hash
+		mu = &ctxt.hashmu
 	case 1:
 		m = ctxt.vhash
+		mu = &ctxt.vhashmu
 	default:
 		ctxt.Diag("LookupInit: bad version %d", v)
 	}
+	mu.Lock()
 	if s := m[name]; s != nil {
+		mu.Unlock()
 		return s
 	}
 
@@ -82,6 +88,7 @@ func (ctxt *Link) LookupInit(name string, v int, init func(s *LSym)) *LSym {
 	if init != nil {
 		init(s)
 	}
+	mu.Unlock()
 	return s
 }
 

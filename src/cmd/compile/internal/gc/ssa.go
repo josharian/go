@@ -20,8 +20,10 @@ import (
 	"cmd/internal/sys"
 )
 
-var ssaConfig *ssa.Config
-var ssaCache *ssa.Cache
+var (
+	ssaConfig *ssa.Config
+	ssaCaches []ssa.Cache
+)
 
 func initssaconfig() {
 	types_ := ssa.Types{
@@ -67,7 +69,20 @@ func initssaconfig() {
 	if thearch.LinkArch.Name == "386" {
 		ssaConfig.Set387(thearch.Use387)
 	}
-	ssaCache = new(ssa.Cache)
+
+	ssaCaches = make([]ssa.Cache, nBackendWorkers)
+	if nBackendWorkers > 1 {
+		compilec = make(chan *Node)
+		for i := 0; i < nBackendWorkers; i++ {
+			compilewg.Add(1)
+			go func(worker int) {
+				for fn := range compilec {
+					compileSSA(fn, worker)
+				}
+				compilewg.Done()
+			}(i)
+		}
+	}
 
 	// Set up some runtime functions we'll need to call.
 	Newproc = Sysfunc("newproc")
@@ -94,8 +109,9 @@ func initssaconfig() {
 	Udiv = Sysfunc("udiv")
 }
 
-// buildssa builds an SSA function.
-func buildssa(fn *Node) *ssa.Func {
+// buildssa builds an SSA function for fn.
+// worker indicates which of the backend workers is doing the processing.
+func buildssa(fn *Node, worker int) *ssa.Func {
 	name := fn.Func.Nname.Sym.Name
 	printssa := name == os.Getenv("GOSSAFUNC")
 	if printssa {
@@ -123,7 +139,7 @@ func buildssa(fn *Node) *ssa.Func {
 	s.f = ssa.NewFunc(&fe)
 	s.config = ssaConfig
 	s.f.Config = ssaConfig
-	s.f.Cache = ssaCache
+	s.f.Cache = &ssaCaches[worker]
 	s.f.Cache.Reset()
 	s.f.DebugTest = s.f.DebugHashMatch("GOSSAHASH", name)
 	s.f.Name = name
