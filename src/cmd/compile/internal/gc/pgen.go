@@ -14,9 +14,17 @@ import (
 	"cmd/internal/sys"
 	"fmt"
 	"sort"
+	"sync"
 )
 
 // "Portable" code generation.
+
+var (
+	nBackendWorkers int            // the number of concurrent backend workers, set by a compiler flag
+	needscompile    []*Node        // slice of functions waiting to be compiled
+	compilewg       sync.WaitGroup // wait for all backend compilers to complete
+	compilec        chan *Node     // channel of functions for backend compilers to drain
+)
 
 func emitptrargsmap() {
 	if Curfn.Func.Nname.Sym.Name == "_" {
@@ -207,14 +215,32 @@ func compile(fn *Node) {
 	// Set up the function's LSym early to avoid data races with the assemblers.
 	fn.Func.initLSym()
 
-	// Build an SSA backend function.
-	ssafn := buildssa(fn)
-	pp := newProgs(fn)
+	if compilenow() {
+		compileSSA(fn, 0)
+	} else {
+		needscompile = append(needscompile, fn)
+	}
+}
+
+// compilenow reports whether to compile immediately or enqueue in needscompile.
+func compilenow() bool {
+	return nBackendWorkers == 1
+}
+
+// compileSSA builds an SSA backend function,
+// uses it to generate a plist,
+// and flushes that plist to machine code.
+// worker indicates which of the backend workers is doing the processing.
+func compileSSA(fn *Node, worker int) {
+	ssafn := buildssa(fn, worker)
+	pp := newProgs(fn, worker)
 	genssa(ssafn, pp)
 	if pp.Text.To.Offset < 1<<31 {
 		pp.Flush()
 	} else {
+		largeStackFramesMu.Lock()
 		largeStackFrames = append(largeStackFrames, fn.Pos)
+		largeStackFramesMu.Unlock()
 	}
 	// fieldtrack must be called after pp.Flush. See issue 20014.
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)

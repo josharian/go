@@ -14,6 +14,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 )
 
 type itabEntry struct {
@@ -36,9 +37,13 @@ type ptabEntry struct {
 }
 
 // runtime interface and reflection data structures
-var signatlist = make(map[*types.Type]bool)
-var itabs []itabEntry
-var ptabs []ptabEntry
+var (
+	signatlistmu sync.Mutex // protects signatlist
+	signatlist   = make(map[*types.Type]bool)
+
+	itabs []itabEntry
+	ptabs []ptabEntry
+)
 
 type Sig struct {
 	name   string
@@ -907,8 +912,18 @@ func typesymname(t *types.Type) string {
 	return name
 }
 
+// typepkgmu guards typepkg lookups.
+var typepkgmu sync.Mutex
+
+func typeLookup(name string) *types.Sym {
+	typepkgmu.Lock()
+	s := typepkg.Lookup(name)
+	typepkgmu.Unlock()
+	return s
+}
+
 func typesym(t *types.Type) *types.Sym {
-	return typepkg.Lookup(typesymname(t))
+	return typeLookup(typesymname(t))
 }
 
 // tracksym returns the symbol for tracking use of field/method f, assumed
@@ -919,7 +934,7 @@ func tracksym(t *types.Type, f *types.Field) *types.Sym {
 
 func typesymprefix(prefix string, t *types.Type) *types.Sym {
 	p := prefix + "." + t.ShortString()
-	s := typepkg.Lookup(p)
+	s := typeLookup(p)
 
 	//print("algsym: %s -> %+S\n", p, s);
 
@@ -931,7 +946,9 @@ func typenamesym(t *types.Type) *types.Sym {
 		Fatalf("typenamesym %v", t)
 	}
 	s := typesym(t)
+	signatlistmu.Lock()
 	addsignat(t)
+	signatlistmu.Unlock()
 	return s
 }
 
@@ -1421,14 +1438,17 @@ func addsignat(t *types.Type) {
 
 func dumptypestructs() {
 	// copy types from externdcl list to signatlist
+	signatlistmu.Lock()
 	for _, n := range externdcl {
 		if n.Op == OTYPE {
 			addsignat(n.Type)
 		}
 	}
+	signatlistmu.Unlock()
 
 	// Process signatlist. Use a loop, as dtypesym adds
 	// entries to signatlist while it is being processed.
+	signatlistmu.Lock()
 	signats := make([]typeAndStr, len(signatlist))
 	for len(signatlist) > 0 {
 		signats = signats[:0]
@@ -1437,6 +1457,9 @@ func dumptypestructs() {
 			signats = append(signats, typeAndStr{t: t, s: typesymname(t)})
 			delete(signatlist, t)
 		}
+		// Don't hold signatlistmu while processing signats,
+		// since signats can generate new entries for signatlist.
+		signatlistmu.Unlock()
 		sort.Sort(typesByString(signats))
 		for _, ts := range signats {
 			t := ts.t
@@ -1445,7 +1468,9 @@ func dumptypestructs() {
 				dtypesym(types.NewPtr(t))
 			}
 		}
+		signatlistmu.Lock()
 	}
+	signatlistmu.Unlock()
 
 	// process itabs
 	for _, i := range itabs {
@@ -1560,7 +1585,7 @@ func dalgsym(t *types.Type) *types.Sym {
 		// we use one algorithm table for all AMEM types of a given size
 		p := fmt.Sprintf(".alg%d", t.Width)
 
-		s = typepkg.Lookup(p)
+		s = typeLookup(p)
 
 		if s.AlgGen() {
 			return s
@@ -1570,7 +1595,7 @@ func dalgsym(t *types.Type) *types.Sym {
 		// make hash closure
 		p = fmt.Sprintf(".hashfunc%d", t.Width)
 
-		hashfunc = typepkg.Lookup(p)
+		hashfunc = typeLookup(p)
 
 		ot := 0
 		ot = dsymptr(hashfunc, ot, Runtimepkg.Lookup("memhash_varlen"), 0)
@@ -1580,7 +1605,7 @@ func dalgsym(t *types.Type) *types.Sym {
 		// make equality closure
 		p = fmt.Sprintf(".eqfunc%d", t.Width)
 
-		eqfunc = typepkg.Lookup(p)
+		eqfunc = typeLookup(p)
 
 		ot = 0
 		ot = dsymptr(eqfunc, ot, Runtimepkg.Lookup("memequal_varlen"), 0)
