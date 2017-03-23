@@ -342,7 +342,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 		TFLOAT64,
 		TCOMPLEX64,
 		TCOMPLEX128:
-		*xoffset += t.Width
+		*xoffset += t.Size()
 
 	case TPTR32,
 		TPTR64,
@@ -354,7 +354,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 			Fatalf("onebitwalktype1: invalid alignment, %v", t)
 		}
 		bv.Set(int32(*xoffset / int64(Widthptr))) // pointer
-		*xoffset += t.Width
+		*xoffset += t.Size()
 
 	case TSTRING:
 		// struct { byte *str; intgo len; }
@@ -362,7 +362,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 			Fatalf("onebitwalktype1: invalid alignment, %v", t)
 		}
 		bv.Set(int32(*xoffset / int64(Widthptr))) //pointer in first slot
-		*xoffset += t.Width
+		*xoffset += t.Size()
 
 	case TINTER:
 		// struct { Itab *tab;	void *data; }
@@ -373,7 +373,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 		}
 		bv.Set(int32(*xoffset / int64(Widthptr)))   // pointer in first slot
 		bv.Set(int32(*xoffset/int64(Widthptr) + 1)) // pointer in second slot
-		*xoffset += t.Width
+		*xoffset += t.Size()
 
 	case TSLICE:
 		// struct { byte *array; uintgo len; uintgo cap; }
@@ -381,7 +381,7 @@ func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 			Fatalf("onebitwalktype1: invalid TARRAY alignment, %v", t)
 		}
 		bv.Set(int32(*xoffset / int64(Widthptr))) // pointer in first slot (BitsPointer)
-		*xoffset += t.Width
+		*xoffset += t.Size()
 
 	case TARRAY:
 		for i := int64(0); i < t.NumElem(); i++ {
@@ -394,10 +394,10 @@ func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
 			fieldoffset := t1.Offset
 			*xoffset += fieldoffset - o
 			onebitwalktype1(t1.Type, xoffset, bv)
-			o = fieldoffset + t1.Type.Width
+			o = fieldoffset + t1.Type.Size()
 		}
 
-		*xoffset += t.Width - o
+		*xoffset += t.Size() - o
 
 	default:
 		Fatalf("onebitwalktype1: unexpected type, %v", t)

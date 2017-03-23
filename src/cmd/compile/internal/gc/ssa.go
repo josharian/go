@@ -1498,8 +1498,8 @@ func (s *state) expr(n *Node) *ssa.Value {
 
 		dowidth(from)
 		dowidth(to)
-		if from.Width != to.Width {
-			s.Fatalf("CONVNOP width mismatch %v (%d) -> %v (%d)\n", from, from.Width, to, to.Width)
+		if from.Size() != to.Size() {
+			s.Fatalf("CONVNOP width mismatch %v (%d) -> %v (%d)\n", from, from.Size(), to, to.Size())
 			return nil
 		}
 		if etypesign(from.Etype) != etypesign(to.Etype) {
@@ -3285,7 +3285,7 @@ func (s *state) canSSA(n *Node) bool {
 // canSSA reports whether variables of type t are SSA-able.
 func canSSAType(t *Type) bool {
 	dowidth(t)
-	if t.Width > int64(4*Widthptr) {
+	if t.Size() > int64(4*Widthptr) {
 		// 4*Widthptr is an arbitrary constant. We want it
 		// to be at least 3*Widthptr so slices can be registerized.
 		// Too big and we'll introduce too much register pressure.
@@ -3645,7 +3645,7 @@ func (s *state) slice(t *Type, v, i, j, k *ssa.Value) (p, l, c *ssa.Value) {
 		rptr = ptr
 	} else {
 		// delta = # of bytes to offset pointer by.
-		delta := s.newValue2(mulOp, Types[TINT], i, s.constInt(Types[TINT], elemtype.Width))
+		delta := s.newValue2(mulOp, Types[TINT], i, s.constInt(Types[TINT], elemtype.Size()))
 		// If we're slicing to the point where the capacity is zero,
 		// zero out the delta.
 		mask := s.newValue1(ssa.OpSlicemask, Types[TINT], rcap)
@@ -3848,7 +3848,7 @@ func (s *state) referenceTypeBuiltin(n *Node, x *ssa.Value) *ssa.Value {
 		s.vars[n] = s.newValue2(ssa.OpLoad, lenType, x, s.mem())
 	} else if n.Op == OCAP {
 		// capacity is stored in the second word for chan
-		sw := s.newValue1I(ssa.OpOffPtr, lenType.PtrTo(), lenType.Width, x)
+		sw := s.newValue1I(ssa.OpOffPtr, lenType.PtrTo(), lenType.Size(), x)
 		s.vars[n] = s.newValue2(ssa.OpLoad, lenType, sw, s.mem())
 	} else {
 		s.Fatalf("op must be OLEN or OCAP")

@@ -33,10 +33,10 @@ func defframe(pp *gc.Progs, fn *gc.Node, sz int64) {
 		if n.Class != gc.PAUTO {
 			gc.Fatalf("needzero class %d", n.Class)
 		}
-		if n.Type.Width%int64(gc.Widthptr) != 0 || n.Xoffset%int64(gc.Widthptr) != 0 || n.Type.Width == 0 {
-			gc.Fatalf("var %L has size %d offset %d", n, int(n.Type.Width), int(n.Xoffset))
+		if n.Type.Size()%int64(gc.Widthptr) != 0 || n.Xoffset%int64(gc.Widthptr) != 0 || n.Type.Size() == 0 {
+			gc.Fatalf("var %L has size %d offset %d", n, int(n.Type.Size()), int(n.Xoffset))
 		}
-		if lo != hi && n.Xoffset+n.Type.Width >= lo-int64(2*gc.Widthptr) {
+		if lo != hi && n.Xoffset+n.Type.Size() >= lo-int64(2*gc.Widthptr) {
 			// merge with range we already have
 			lo = n.Xoffset
 
@@ -47,7 +47,7 @@ func defframe(pp *gc.Progs, fn *gc.Node, sz int64) {
 		p = zerorange(pp, p, int64(frame), lo, hi, &ax)
 
 		// set new range
-		hi = n.Xoffset + n.Type.Width
+		hi = n.Xoffset + n.Type.Size()
 
 		lo = n.Xoffset
 	}

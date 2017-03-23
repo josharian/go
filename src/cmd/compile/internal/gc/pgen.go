@@ -157,8 +157,8 @@ func cmpstackvarlt(a, b *Node) bool {
 		return ap
 	}
 
-	if a.Type.Width != b.Type.Width {
-		return a.Type.Width > b.Type.Width
+	if a.Type.Size() != b.Type.Size() {
+		return a.Type.Size() > b.Type.Size()
 	}
 
 	return a.Sym.Name < b.Sym.Name
@@ -226,7 +226,7 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 		}
 
 		dowidth(n.Type)
-		w := n.Type.Width
+		w := n.Type.Size()
 		if w >= thearch.MAXWIDTH || w < 0 {
 			Fatalf("bad width")
 		}

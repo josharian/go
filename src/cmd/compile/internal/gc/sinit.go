@@ -304,13 +304,13 @@ func staticcopy(l *Node, r *Node, out *[]*Node) bool {
 		if iszero(r) {
 			return true
 		}
-		gdata(l, r, int(l.Type.Width))
+		gdata(l, r, int(l.Type.Size()))
 		return true
 
 	case OADDR:
 		switch r.Left.Op {
 		case ONAME:
-			gdata(l, r, int(l.Type.Width))
+			gdata(l, r, int(l.Type.Size()))
 			return true
 		}
 
@@ -318,7 +318,7 @@ func staticcopy(l *Node, r *Node, out *[]*Node) bool {
 		switch r.Left.Op {
 		case OARRAYLIT, OSLICELIT, OSTRUCTLIT, OMAPLIT:
 			// copy pointer
-			gdata(l, nod(OADDR, inittemps[r], nil), int(l.Type.Width))
+			gdata(l, nod(OADDR, inittemps[r], nil), int(l.Type.Size()))
 			return true
 		}
 
@@ -344,7 +344,7 @@ func staticcopy(l *Node, r *Node, out *[]*Node) bool {
 			n.Xoffset = l.Xoffset + e.Xoffset
 			n.Type = e.Expr.Type
 			if e.Expr.Op == OLITERAL {
-				gdata(&n, e.Expr, int(n.Type.Width))
+				gdata(&n, e.Expr, int(n.Type.Size()))
 			} else {
 				ll := nod(OXXX, nil, nil)
 				*ll = n
@@ -383,7 +383,7 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		if iszero(r) {
 			return true
 		}
-		gdata(l, r, int(l.Type.Width))
+		gdata(l, r, int(l.Type.Size()))
 		return true
 
 	case OADDR:
@@ -391,7 +391,7 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		if stataddr(&nam, r.Left) {
 			n := *r
 			n.Left = &nam
-			gdata(l, &n, int(l.Type.Width))
+			gdata(l, &n, int(l.Type.Size()))
 			return true
 		}
 		fallthrough
@@ -403,7 +403,7 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 			a := staticname(r.Left.Type)
 
 			inittemps[r] = a
-			gdata(l, nod(OADDR, a, nil), int(l.Type.Width))
+			gdata(l, nod(OADDR, a, nil), int(l.Type.Size()))
 
 			// Init underlying literal.
 			if !staticassign(a, r.Left, out) {
@@ -449,7 +449,7 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 			n.Xoffset = l.Xoffset + e.Xoffset
 			n.Type = e.Expr.Type
 			if e.Expr.Op == OLITERAL {
-				gdata(&n, e.Expr, int(n.Type.Width))
+				gdata(&n, e.Expr, int(n.Type.Size()))
 			} else {
 				setlineno(e.Expr)
 				a := nod(OXXX, nil, nil)
@@ -1228,10 +1228,10 @@ func stataddr(nam *Node, n *Node) bool {
 		}
 
 		// Check for overflow.
-		if n.Type.Width != 0 && thearch.MAXWIDTH/n.Type.Width <= int64(l) {
+		if n.Type.Size() != 0 && thearch.MAXWIDTH/n.Type.Size() <= int64(l) {
 			break
 		}
-		nam.Xoffset += int64(l) * n.Type.Width
+		nam.Xoffset += int64(l) * n.Type.Size()
 		nam.Type = n.Type
 		return true
 	}
@@ -1256,7 +1256,7 @@ func initplan(n *Node) {
 				k = nonnegintconst(a.Left)
 				a = a.Right
 			}
-			addvalue(p, k*n.Type.Elem().Width, a)
+			addvalue(p, k*n.Type.Elem().Size(), a)
 			k++
 		}
 
@@ -1358,5 +1358,5 @@ func genAsStatic(as *Node) {
 		Fatalf("genAsStatic: rhs %v", as.Right)
 	}
 
-	gdata(&nam, as.Right, int(as.Right.Type.Width))
+	gdata(&nam, as.Right, int(as.Right.Type.Size()))
 }

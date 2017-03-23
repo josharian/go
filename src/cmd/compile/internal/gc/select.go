@@ -259,7 +259,7 @@ func walkselect(sel *Node) {
 	r = typecheck(r, Etop)
 	init = append(init, r)
 	var_ = conv(conv(nod(OADDR, selv, nil), Types[TUNSAFEPTR]), typPtr(Types[TUINT8]))
-	r = mkcall("newselect", nil, nil, var_, nodintconst(selv.Type.Width), nodintconst(sel.Xoffset))
+	r = mkcall("newselect", nil, nil, var_, nodintconst(selv.Type.Size()), nodintconst(sel.Xoffset))
 	r = typecheck(r, Etop)
 	init = append(init, r)
 

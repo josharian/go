@@ -625,7 +625,7 @@ OpSwitch:
 					}
 
 					dowidth(l.Type)
-					if r.Type.IsInterface() == l.Type.IsInterface() || l.Type.Width >= 1<<16 {
+					if r.Type.IsInterface() == l.Type.IsInterface() || l.Type.Size() >= 1<<16 {
 						l = nod(aop, l, nil)
 						l.Type = r.Type
 						l.Typecheck = 1
@@ -647,7 +647,7 @@ OpSwitch:
 					}
 
 					dowidth(r.Type)
-					if r.Type.IsInterface() == l.Type.IsInterface() || r.Type.Width >= 1<<16 {
+					if r.Type.IsInterface() == l.Type.IsInterface() || r.Type.Size() >= 1<<16 {
 						r = nod(aop, r, nil)
 						r.Type = l.Type
 						r.Typecheck = 1

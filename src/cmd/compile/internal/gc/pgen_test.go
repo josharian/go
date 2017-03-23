@@ -80,42 +80,49 @@ func TestCmpstackvar(t *testing.T) {
 			true,
 		},
 		{
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{flags: nameNeedzero}},
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{}},
+			Node{Class: PAUTO, Name: &Name{flags: nameNeedzero}},
+			Node{Class: PAUTO, Name: &Name{}},
 			true,
 		},
 		{
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{}},
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{flags: nameNeedzero}},
+			Node{Class: PAUTO, Name: &Name{}},
+			Node{Class: PAUTO, Name: &Name{flags: nameNeedzero}},
 			false,
 		},
 		{
-			Node{Class: PAUTO, Type: &Type{Width: 1}, Name: &Name{}},
-			Node{Class: PAUTO, Type: &Type{Width: 2}, Name: &Name{}},
+			Node{Class: PAUTO, Type: Types[TINT8], Name: &Name{}},
+			Node{Class: PAUTO, Type: Types[TINT16], Name: &Name{}},
 			false,
 		},
 		{
-			Node{Class: PAUTO, Type: &Type{Width: 2}, Name: &Name{}},
-			Node{Class: PAUTO, Type: &Type{Width: 1}, Name: &Name{}},
+			Node{Class: PAUTO, Type: Types[TINT16], Name: &Name{}},
+			Node{Class: PAUTO, Type: Types[TINT8], Name: &Name{}},
 			true,
 		},
 		{
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "abc"}},
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "xyz"}},
+			Node{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "abc"}},
+			Node{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "xyz"}},
 			true,
 		},
 		{
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "abc"}},
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "abc"}},
+			Node{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "abc"}},
+			Node{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "abc"}},
 			false,
 		},
 		{
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "xyz"}},
-			Node{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "abc"}},
+			Node{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "xyz"}},
+			Node{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "abc"}},
 			false,
 		},
 	}
 	for _, d := range testdata {
+		if (d.a.Type == nil) != (d.b.Type == nil) {
+			t.Fatalf("Type==nil mismatch: %v vs %v", d.a.Type, d.b.Type)
+		}
+		if d.a.Type == nil {
+			d.a.Type = Types[TINT]
+			d.b.Type = Types[TINT]
+		}
 		got := cmpstackvarlt(&d.a, &d.b)
 		if got != d.lt {
 			t.Errorf("want %#v < %#v", d.a, d.b)
@@ -129,35 +136,50 @@ func TestCmpstackvar(t *testing.T) {
 
 func TestStackvarSort(t *testing.T) {
 	inp := []*Node{
-		{Class: PFUNC, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PFUNC, Xoffset: 0, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PFUNC, Xoffset: 10, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PFUNC, Xoffset: 20, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, flags: nodeUsed, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
+		{Class: PFUNC, Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Name: &Name{}, Sym: &Sym{}},
+		{Class: PFUNC, Xoffset: 0, Name: &Name{}, Sym: &Sym{}},
+		{Class: PFUNC, Xoffset: 10, Name: &Name{}, Sym: &Sym{}},
+		{Class: PFUNC, Xoffset: 20, Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, flags: nodeUsed, Name: &Name{}, Sym: &Sym{}},
 		{Class: PAUTO, Type: typeWithoutPointers(), Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{flags: nameNeedzero}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{Width: 1}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{Width: 2}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "abc"}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "xyz"}},
+		{Class: PAUTO, Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Name: &Name{flags: nameNeedzero}, Sym: &Sym{}},
+		{Class: PAUTO, Type: Types[TINT32], Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Type: Types[TINT64], Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "abc"}},
+		{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "xyz"}},
 	}
 	want := []*Node{
-		{Class: PFUNC, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PFUNC, Xoffset: 0, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PFUNC, Xoffset: 10, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PFUNC, Xoffset: 20, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, flags: nodeUsed, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{flags: nameNeedzero}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{Width: 2}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{Width: 1}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "abc"}},
-		{Class: PAUTO, Type: &Type{}, Name: &Name{}, Sym: &Sym{Name: "xyz"}},
+		{Class: PFUNC, Name: &Name{}, Sym: &Sym{}},
+		{Class: PFUNC, Xoffset: 0, Name: &Name{}, Sym: &Sym{}},
+		{Class: PFUNC, Xoffset: 10, Name: &Name{}, Sym: &Sym{}},
+		{Class: PFUNC, Xoffset: 20, Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, flags: nodeUsed, Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Name: &Name{flags: nameNeedzero}, Sym: &Sym{}},
+		{Class: PAUTO, Type: Types[TINT64], Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Type: Types[TINT32], Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Name: &Name{}, Sym: &Sym{}},
+		{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "abc"}},
+		{Class: PAUTO, Name: &Name{}, Sym: &Sym{Name: "xyz"}},
 		{Class: PAUTO, Type: typeWithoutPointers(), Name: &Name{}, Sym: &Sym{}},
 	}
+
+	for _, n := range inp {
+		if n.Type == nil {
+			n.Type = Types[TINT8]
+		}
+		_ = n.Type.Size()
+	}
+
+	for _, n := range want {
+		if n.Type == nil {
+			n.Type = Types[TINT8]
+		}
+		_ = n.Type.Size()
+	}
+
 	// haspointers updates Type.Haspointers as a side effect, so
 	// exercise this function on all inputs so that reflect.DeepEqual
 	// doesn't produce false positives.
@@ -174,7 +196,7 @@ func TestStackvarSort(t *testing.T) {
 			w := want[i]
 			eq := reflect.DeepEqual(w, g)
 			if !eq {
-				t.Log(i, w, g)
+				t.Logf("%d:\nwant=%+v\ngot=%+v", i, w, g)
 			}
 		}
 	}

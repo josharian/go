@@ -19,7 +19,7 @@ func evalunsafe(n *Node) int64 {
 		if n.Op == OALIGNOF {
 			return int64(tr.Align)
 		}
-		return tr.Width
+		return tr.Size()
 
 	case OOFFSETOF:
 		// must be a selector.

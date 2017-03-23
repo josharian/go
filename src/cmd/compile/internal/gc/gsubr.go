@@ -163,7 +163,7 @@ func ggloblnod(nam *Node) {
 	if nam.Type != nil && !haspointers(nam.Type) {
 		flags |= obj.NOPTR
 	}
-	Ctxt.Globl(s, nam.Type.Width, flags)
+	Ctxt.Globl(s, nam.Type.Size(), flags)
 }
 
 func ggloblsym(s *Sym, width int32, flags int16) {

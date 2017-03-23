@@ -274,7 +274,7 @@ func capturevars(xfunc *Node) {
 		outermost := v.Name.Defn
 
 		// out parameters will be assigned to implicitly upon return.
-		if outer.Class != PPARAMOUT && !outermost.Addrtaken() && !outermost.Assigned() && v.Type.Width <= 128 {
+		if outer.Class != PPARAMOUT && !outermost.Addrtaken() && !outermost.Assigned() && v.Type.Size() <= 128 {
 			v.Name.SetByval(true)
 		} else {
 			outermost.SetAddrtaken(true)
@@ -290,7 +290,7 @@ func capturevars(xfunc *Node) {
 			if v.Name.Byval() {
 				how = "value"
 			}
-			Warnl(v.Pos, "%v capturing by %s: %v (addr=%v assign=%v width=%d)", name, how, v.Sym, outermost.Addrtaken(), outermost.Assigned(), int32(v.Type.Width))
+			Warnl(v.Pos, "%v capturing by %s: %v (addr=%v assign=%v width=%d)", name, how, v.Sym, outermost.Addrtaken(), outermost.Assigned(), int32(v.Type.Size()))
 		}
 
 		outer = typecheck(outer, Erv)
@@ -384,9 +384,9 @@ func transformclosure(xfunc *Node) {
 			}
 			offset = Rnd(offset, int64(cv.Type.Align))
 			cv.Xoffset = offset
-			offset += cv.Type.Width
+			offset += cv.Type.Size()
 
-			if v.Name.Byval() && v.Type.Width <= int64(2*Widthptr) {
+			if v.Name.Byval() && v.Type.Size() <= int64(2*Widthptr) {
 				// If it is a small variable captured by value, downgrade it to PAUTO.
 				v.Class = PAUTO
 				xfunc.Func.Dcl = append(xfunc.Func.Dcl, v)

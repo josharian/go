@@ -495,7 +495,7 @@ func callinstr(np **Node, init *Nodes, wr int, skip int) bool {
 			}
 			// dowidth may not have been called for PEXTERN.
 			dowidth(t)
-			w := t.Width
+			w := t.Size()
 			if w == BADWIDTH {
 				Fatalf("instrument: %v badwidth", t)
 			}
@@ -507,7 +507,7 @@ func callinstr(np **Node, init *Nodes, wr int, skip int) bool {
 			}
 			// dowidth may not have been called for PEXTERN.
 			dowidth(t)
-			w := t.Width
+			w := t.Size()
 			if w == BADWIDTH {
 				Fatalf("instrument: %v badwidth", t)
 			}

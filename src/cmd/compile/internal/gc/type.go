@@ -348,7 +348,7 @@ func (f *Field) SetNointerface(b bool) { f.flags.set(fieldNointerface, b) }
 
 // End returns the offset of the first byte immediately after this field.
 func (f *Field) End() int64 {
-	return f.Offset + f.Type.Width
+	return f.Offset + f.Type.Size()
 }
 
 // Fields is a pointer to a slice of *Field.
@@ -912,6 +912,10 @@ func (t *Type) ArgWidth() int64 {
 }
 
 func (t *Type) Size() int64 {
+	switch t.Etype {
+	case TBLANK, TIDEAL, TNIL:
+		return BADWIDTH
+	}
 	dowidth(t)
 	return t.Width
 }

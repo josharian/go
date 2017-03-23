@@ -225,7 +225,7 @@ func walkrange(n *Node) *Node {
 			// Advancing during the increment ensures that the pointer p only points
 			// pass the end of the array during the final "p++; i++; if(i >= len(x)) break;",
 			// after which p is dead, so it cannot confuse the collector.
-			tmp := nod(OADD, hp, nodintconst(t.Elem().Width))
+			tmp := nod(OADD, hp, nodintconst(t.Elem().Size()))
 
 			tmp.Type = hp.Type
 			tmp.Typecheck = 1
@@ -430,7 +430,7 @@ func memclrrange(n, v1, v2, a *Node) bool {
 	if !samesafeexpr(stmt.Left.Left, a) || !samesafeexpr(stmt.Left.Right, v1) {
 		return false
 	}
-	elemsize := n.Type.Elem().Width
+	elemsize := n.Type.Elem().Size()
 	if elemsize <= 0 || !iszero(stmt.Right) {
 		return false
 	}

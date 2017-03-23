@@ -374,7 +374,7 @@ func isSmallMakeSlice(n *Node) bool {
 	}
 	t := n.Type
 
-	return smallintconst(l) && smallintconst(r) && (t.Elem().Width == 0 || r.Int64() < (1<<16)/t.Elem().Width)
+	return smallintconst(l) && smallintconst(r) && (t.Elem().Size() == 0 || r.Int64() < (1<<16)/t.Elem().Size())
 }
 
 // walk the whole tree of the body of an
@@ -523,7 +523,7 @@ opswitch:
 
 	case ODOTPTR:
 		usefield(n)
-		if n.Op == ODOTPTR && n.Left.Type.Elem().Width == 0 {
+		if n.Op == ODOTPTR && n.Left.Type.Elem().Size() == 0 {
 			// No actual copy will be generated, so emit an explicit nil check.
 			n.Left = cheapexpr(n.Left, init)
 
@@ -552,7 +552,7 @@ opswitch:
 		n.Left = walkexpr(n.Left, init)
 		n.Right = walkexpr(n.Right, init)
 		t := n.Left.Type
-		n.SetBounded(bounded(n.Right, 8*t.Width))
+		n.SetBounded(bounded(n.Right, 8*t.Size()))
 		if Debug['m'] != 0 && n.Etype != 0 && !Isconst(n.Right, CTINT) {
 			Warn("shift bounds check elided")
 		}
@@ -798,7 +798,7 @@ opswitch:
 		//   a = *var
 		a := n.List.First()
 
-		if w := t.Val().Width; w <= 1024 { // 1024 must match ../../../../runtime/hashmap.go:maxZero
+		if w := t.Val().Size(); w <= 1024 { // 1024 must match ../../../../runtime/hashmap.go:maxZero
 			fn := mapfn(mapaccess2[fast], t)
 			r = mkcall1(fn, fn.Type.Results(), init, typename(t), r.Left, key)
 		} else {
@@ -893,7 +893,7 @@ opswitch:
 		case n.Left.Class == PEXTERN && n.Left.Name != nil && n.Left.Name.Readonly():
 			// n.Left is a readonly global; use it directly.
 			value = n.Left
-		case !n.Left.Type.IsInterface() && n.Esc == EscNone && n.Left.Type.Width <= 1024:
+		case !n.Left.Type.IsInterface() && n.Esc == EscNone && n.Left.Type.Size() <= 1024:
 			// n.Left does not escape. Use a stack temporary initialized to n.Left.
 			value = temp(n.Left.Type)
 			init.Append(typecheck(nod(OAS, value, n.Left), Etop))
@@ -1173,7 +1173,7 @@ opswitch:
 				key = nod(OADDR, key, nil)
 			}
 
-			if w := t.Val().Width; w <= 1024 { // 1024 must match ../../../../runtime/hashmap.go:maxZero
+			if w := t.Val().Size(); w <= 1024 { // 1024 must match ../../../../runtime/hashmap.go:maxZero
 				n = mkcall1(mapfn(mapaccess1[fast], t), typPtr(t.Val()), init, typename(t), map_, key)
 			} else {
 				z := zeroaddr(w)
@@ -1216,7 +1216,7 @@ opswitch:
 
 	case ONEW:
 		if n.Esc == EscNone {
-			if n.Type.Elem().Width >= 1<<16 {
+			if n.Type.Elem().Size() >= 1<<16 {
 				Fatalf("large ONEW with EscNone: %v", n)
 			}
 			r := temp(n.Type.Elem())
@@ -2627,7 +2627,7 @@ var mapdelete mapnames = mkmapnames("mapdelete")
 
 func mapfast(t *Type) int {
 	// Check ../../runtime/hashmap.go:maxValueSize before changing.
-	if t.Val().Width > 128 {
+	if t.Val().Size() > 128 {
 		return mapslow
 	}
 	switch algtype(t.Key()) {
@@ -2794,7 +2794,7 @@ func appendslice(n *Node, init *Nodes) *Node {
 		fn = substArgTypes(fn, l1.Type, l2.Type)
 		var ln Nodes
 		ln.Set(l)
-		nt := mkcall1(fn, Types[TINT], &ln, nptr1, nptr2, nodintconst(s.Type.Elem().Width))
+		nt := mkcall1(fn, Types[TINT], &ln, nptr1, nptr2, nodintconst(s.Type.Elem().Size()))
 		l = append(ln.Slice(), nt)
 	} else {
 		// memmove(&s[len(l1)], &l2[0], len(l2)*sizeof(T))
@@ -2812,7 +2812,7 @@ func appendslice(n *Node, init *Nodes) *Node {
 		ln.Set(l)
 		nwid := cheapexpr(conv(nod(OLEN, l2, nil), Types[TUINTPTR]), &ln)
 
-		nwid = nod(OMUL, nwid, nodintconst(s.Type.Elem().Width))
+		nwid = nod(OMUL, nwid, nodintconst(s.Type.Elem().Size()))
 		nt := mkcall1(fn, nil, &ln, nptr1, nptr2, nwid)
 		l = append(ln.Slice(), nt)
 	}
@@ -2942,7 +2942,7 @@ func copyany(n *Node, init *Nodes, runtimecall bool) *Node {
 			fn = syslook("slicecopy")
 		}
 		fn = substArgTypes(fn, n.Left.Type, n.Right.Type)
-		return mkcall1(fn, n.Type, init, n.Left, n.Right, nodintconst(n.Left.Type.Elem().Width))
+		return mkcall1(fn, n.Type, init, n.Left, n.Right, nodintconst(n.Left.Type.Elem().Size()))
 	}
 
 	n.Left = walkexpr(n.Left, init)
@@ -2974,7 +2974,7 @@ func copyany(n *Node, init *Nodes, runtimecall bool) *Node {
 	fn = substArgTypes(fn, nl.Type.Elem(), nl.Type.Elem())
 	nwid := temp(Types[TUINTPTR])
 	l = append(l, nod(OAS, nwid, conv(nlen, Types[TUINTPTR])))
-	nwid = nod(OMUL, nwid, nodintconst(nl.Type.Elem().Width))
+	nwid = nod(OMUL, nwid, nodintconst(nl.Type.Elem().Size()))
 	l = append(l, mkcall1(fn, nil, init, nto, nfrm, nwid))
 
 	typecheckslice(l, Etop)
@@ -3119,7 +3119,7 @@ func walkcompare(n *Node, init *Nodes) *Node {
 		call.List.Append(pl)
 		call.List.Append(pr)
 		if needsize != 0 {
-			call.List.Append(nodintconst(t.Width))
+			call.List.Append(nodintconst(t.Size()))
 		}
 		res := call
 		if n.Op != OEQ {
@@ -3326,7 +3326,7 @@ func bounded(n *Node, max int64) bool {
 	}
 
 	sign := n.Type.IsSigned()
-	bits := int32(8 * n.Type.Width)
+	bits := int32(8 * n.Type.Size())
 
 	if smallintconst(n) {
 		v := n.Int64()
