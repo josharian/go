@@ -749,8 +749,9 @@ type Link struct {
 	Framepointer_enabled bool
 
 	// state for writing objects
-	Text []*LSym
-	Data []*LSym
+	Text   []*LSym
+	Datamu sync.Mutex
+	Data   []*LSym
 }
 
 func (ctxt *Link) Diag(format string, args ...interface{}) {

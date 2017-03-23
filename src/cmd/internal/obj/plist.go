@@ -146,6 +146,8 @@ func (ctxt *Link) Globl(s *LSym, size int64, flag int) {
 		log.Fatalf("symbol %s listed multiple times", s.Name)
 	}
 	s.Set(AttrOnList, true)
+	ctxt.Datamu.Lock()
+	defer ctxt.Datamu.Unlock()
 	ctxt.Data = append(ctxt.Data, s)
 	s.Size = size
 	if s.Type == 0 || s.Type == SXREF {

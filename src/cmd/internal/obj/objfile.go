@@ -569,5 +569,7 @@ func makeFuncDebugEntry(ctxt *Link, curfn interface{}, s *LSym) {
 		vars = ctxt.DebugInfo(s, curfn)
 	}
 	dwarf.PutFunc(dwCtxt{ctxt}, dsym, s.Name, s.Version == 0, s, s.Size, vars)
+	ctxt.Datamu.Lock()
+	defer ctxt.Datamu.Unlock()
 	ctxt.Data = append(ctxt.Data, dsym)
 }
