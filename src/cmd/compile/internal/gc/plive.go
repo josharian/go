@@ -321,7 +321,7 @@ func (lv *Liveness) blockEffects(b *ssa.Block) *BlockEffects {
 // the same type t. On https://rsc.googlecode.com/hg/testdata/slow.go, onebitwalktype1
 // accounts for 40% of the 6g execution time.
 func onebitwalktype1(t *Type, xoffset *int64, bv bvec) {
-	if t.Align > 0 && *xoffset&int64(t.Align-1) != 0 {
+	if t.Alignment() > 0 && *xoffset&(t.Alignment()-1) != 0 {
 		Fatalf("onebitwalktype1: invalid initial alignment, %v", t)
 	}
 

@@ -417,11 +417,11 @@ func convFuncName(from, to *Type) string {
 		switch tkind {
 		case 'E':
 			switch {
-			case from.Size() == 2 && from.Align == 2:
+			case from.Size() == 2 && from.Alignment() == 2:
 				return "convT2E16"
-			case from.Size() == 4 && from.Align == 4 && !haspointers(from):
+			case from.Size() == 4 && from.Alignment() == 4 && !haspointers(from):
 				return "convT2E32"
-			case from.Size() == 8 && from.Align == Types[TUINT64].Align && !haspointers(from):
+			case from.Size() == 8 && from.Alignment() == Types[TUINT64].Alignment() && !haspointers(from):
 				return "convT2E64"
 			case from.IsString():
 				return "convT2Estring"
@@ -433,11 +433,11 @@ func convFuncName(from, to *Type) string {
 			return "convT2E"
 		case 'I':
 			switch {
-			case from.Size() == 2 && from.Align == 2:
+			case from.Size() == 2 && from.Alignment() == 2:
 				return "convT2I16"
-			case from.Size() == 4 && from.Align == 4 && !haspointers(from):
+			case from.Size() == 4 && from.Alignment() == 4 && !haspointers(from):
 				return "convT2I32"
-			case from.Size() == 8 && from.Align == Types[TUINT64].Align && !haspointers(from):
+			case from.Size() == 8 && from.Alignment() == Types[TUINT64].Alignment() && !haspointers(from):
 				return "convT2I64"
 			case from.IsString():
 				return "convT2Istring"

@@ -17,7 +17,7 @@ func evalunsafe(n *Node) int64 {
 		}
 		dowidth(tr)
 		if n.Op == OALIGNOF {
-			return int64(tr.Align)
+			return tr.Alignment()
 		}
 		return tr.Size()
 

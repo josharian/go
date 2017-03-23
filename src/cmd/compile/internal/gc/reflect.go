@@ -148,7 +148,7 @@ func mapbucket(t *Type) *Type {
 	// so if the struct needs 64-bit padding (because a key or value does)
 	// then it would end with an extra 32-bit padding field.
 	// Preempt that by emitting the padding here.
-	if int(t.Val().Align) > Widthptr || int(t.Key().Align) > Widthptr {
+	if int(t.Val().Alignment()) > Widthptr || int(t.Key().Alignment()) > Widthptr {
 		field = append(field, makefield("pad", Types[TUINTPTR]))
 	}
 
@@ -904,16 +904,16 @@ func dcommontype(s *Sym, ot int, t *Type) int {
 	ot = duint8(s, ot, tflag)
 
 	// runtime (and common sense) expects alignment to be a power of two.
-	i := int(t.Align)
+	i := int(t.Alignment())
 
 	if i == 0 {
 		i = 1
 	}
 	if i&(i-1) != 0 {
-		Fatalf("invalid alignment %d for %v", t.Align, t)
+		Fatalf("invalid alignment %d for %v", t.Alignment(), t)
 	}
-	ot = duint8(s, ot, t.Align) // align
-	ot = duint8(s, ot, t.Align) // fieldAlign
+	ot = duint8(s, ot, uint8(t.Alignment())) // align
+	ot = duint8(s, ot, uint8(t.Alignment())) // fieldAlign
 
 	i = kinds[t.Etype]
 	if !haspointers(t) {

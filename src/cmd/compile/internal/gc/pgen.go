@@ -231,7 +231,7 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 			Fatalf("bad width")
 		}
 		s.stksize += w
-		s.stksize = Rnd(s.stksize, int64(n.Type.Align))
+		s.stksize = Rnd(s.stksize, n.Type.Alignment())
 		if haspointers(n.Type) {
 			s.stkptrsize = s.stksize
 		}
