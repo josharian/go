@@ -21,6 +21,8 @@ var (
 	ssaWaitGroup sync.WaitGroup
 	ssaMu        sync.Mutex
 	ssaCaches    []*ssa.Cache
+	progsc       chan *Progs
+	progscwg     sync.WaitGroup
 )
 
 func makefuncdatasym(pp *Progs, nameprefix string, funcdatakind int64, curfn *Node) *Sym {
@@ -343,11 +345,20 @@ func compileSSA(fn *Node, cache *ssa.Cache) {
 	genssa(ssafn, pp)
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
 	if pp.Text.To.Offset < 1<<31 {
-		pp.Flush()
+		if progsc != nil {
+			if concurrencySafeAssembler {
+				pp.Flush()
+				pp.Free()
+			}
+			progsc <- pp
+		} else {
+			pp.Flush()
+			pp.Free()
+		}
 	} else {
 		largeStackFrames = append(largeStackFrames, fn.Pos)
+		pp.Free()
 	}
-	pp.Free()
 }
 
 func debuginfo(fnsym *obj.LSym, curfn interface{}) []*dwarf.Var {

@@ -512,6 +512,22 @@ func Main(archInit func(*Arch)) {
 		Curfn = nil
 		peekitabs()
 
+		concurrencySafeAssembler = Ctxt.Arch.Family == sys.I386 || Ctxt.Arch.Family == sys.AMD64
+		if ncpu > 1 {
+			progsc = make(chan *Progs)
+			progscwg.Add(1)
+			go func() {
+				for pp := range progsc {
+					if !concurrencySafeAssembler {
+						pp.Flush()
+						pp.Free()
+					}
+				}
+				progscwg.Done()
+			}()
+		}
+		ssaWaitGroup.Add(1)
+
 		// Phase 8: Compile top level functions.
 		// Don't use range--walk can add functions to xtop.
 		timings.Start("be", "compilefuncs")
@@ -529,7 +545,14 @@ func Main(archInit func(*Arch)) {
 			fninit(xtop)
 		}
 
+		ssaWaitGroup.Done()
 		ssaWaitGroup.Wait()
+		if ncpu > 1 {
+			close(progsc)
+			progscwg.Wait()
+			progsc = nil
+			ncpu = 1
+		}
 
 		// xtop is now complete.
 		if compiling_runtime {
