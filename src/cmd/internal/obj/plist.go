@@ -148,7 +148,9 @@ func (ctxt *Link) Globl(s *LSym, size int64, flag int) {
 		ctxt.Diag("symbol %s listed multiple times", s.Name)
 	}
 	s.Set(AttrOnList, true)
+	ctxt.Datamu.Lock()
 	ctxt.Data = append(ctxt.Data, s)
+	ctxt.Datamu.Unlock()
 	s.Size = size
 	if s.Type == 0 || s.Type == SXREF {
 		s.Type = SBSS

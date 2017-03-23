@@ -772,6 +772,7 @@ type Link struct {
 	// state for writing objects
 	Textmu sync.Mutex // Textmu protects Text
 	Text   []*LSym
+	Datamu sync.Mutex // Datamu protects Data
 	Data   []*LSym
 }
 

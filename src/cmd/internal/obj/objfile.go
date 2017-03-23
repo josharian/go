@@ -205,10 +205,14 @@ func WriteObjFile(ctxt *Link, b *bufio.Writer) {
 	}
 	w.writeString("")
 
-	// Sort ctxt.Text before writing, for reproducible builds.
+	// Sort ctxt.Text and ctxt.Data before writing, for reproducible builds.
 	ctxt.Textmu.Lock()
 	defer ctxt.Textmu.Unlock()
 	sort.Sort(lsymsForStability(ctxt.Text))
+
+	ctxt.Datamu.Lock()
+	defer ctxt.Datamu.Unlock()
+	sort.Sort(lsymsForStability(ctxt.Data))
 
 	// Symbol references
 	for _, s := range ctxt.Text {
@@ -585,5 +589,7 @@ func makeFuncDebugEntry(ctxt *Link, curfn interface{}, s *LSym) {
 		vars = ctxt.DebugInfo(s, curfn)
 	}
 	dwarf.PutFunc(dwCtxt{ctxt}, dsym, s.Name, s.Version == 0, s, s.Size, vars)
+	ctxt.Datamu.Lock()
 	ctxt.Data = append(ctxt.Data, dsym)
+	ctxt.Datamu.Unlock()
 }
