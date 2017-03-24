@@ -341,10 +341,13 @@ type FuncInfo struct {
 }
 
 // Attribute is a set of symbol attributes.
-type Attribute int16
+type Attribute struct {
+	mu    sync.Mutex
+	flags int16
+}
 
 const (
-	AttrDuplicateOK Attribute = 1 << iota
+	AttrDuplicateOK = 1 << iota
 	AttrCFunc
 	AttrNoSplit
 	AttrLeaf
@@ -371,21 +374,59 @@ const (
 	AttrLocal
 )
 
-func (a Attribute) DuplicateOK() bool   { return a&AttrDuplicateOK != 0 }
-func (a Attribute) MakeTypelink() bool  { return a&AttrMakeTypelink != 0 }
-func (a Attribute) CFunc() bool         { return a&AttrCFunc != 0 }
-func (a Attribute) NoSplit() bool       { return a&AttrNoSplit != 0 }
-func (a Attribute) Leaf() bool          { return a&AttrLeaf != 0 }
-func (a Attribute) SeenGlobl() bool     { return a&AttrSeenGlobl != 0 }
-func (a Attribute) OnList() bool        { return a&AttrOnList != 0 }
-func (a Attribute) ReflectMethod() bool { return a&AttrReflectMethod != 0 }
-func (a Attribute) Local() bool         { return a&AttrLocal != 0 }
+func (a *Attribute) DuplicateOK() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrDuplicateOK != 0
+}
+func (a *Attribute) MakeTypelink() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrMakeTypelink != 0
+}
+func (a *Attribute) CFunc() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrCFunc != 0
+}
+func (a *Attribute) NoSplit() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrNoSplit != 0
+}
+func (a *Attribute) Leaf() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrLeaf != 0
+}
+func (a *Attribute) SeenGlobl() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrSeenGlobl != 0
+}
+func (a *Attribute) OnList() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrOnList != 0
+}
+func (a *Attribute) ReflectMethod() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrReflectMethod != 0
+}
+func (a *Attribute) Local() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.flags&AttrLocal != 0
+}
 
-func (a *Attribute) Set(flag Attribute, value bool) {
+func (a *Attribute) Set(flag int16, value bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if value {
-		*a |= flag
+		a.flags |= flag
 	} else {
-		*a &^= flag
+		a.flags &^= flag
 	}
 }
 
