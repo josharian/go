@@ -36,6 +36,7 @@ import (
 	"cmd/internal/src"
 	"cmd/internal/sys"
 	"fmt"
+	"sync"
 )
 
 // An Addr is an argument to an instruction.
@@ -769,8 +770,9 @@ type Link struct {
 	Framepointer_enabled bool
 
 	// state for writing objects
-	Text []*LSym
-	Data []*LSym
+	Textmu sync.Mutex // Textmu protects Text
+	Text   []*LSym
+	Data   []*LSym
 }
 
 func (ctxt *Link) Diag(format string, args ...interface{}) {
