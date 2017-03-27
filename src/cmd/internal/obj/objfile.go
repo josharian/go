@@ -205,6 +205,10 @@ func WriteObjFile(ctxt *Link, b *bufio.Writer) {
 	}
 	w.writeString("")
 
+	// TODO: unnecessary?
+	ctxt.Textmu.Lock()
+	defer ctxt.Textmu.Unlock()
+
 	// Symbol references
 	for _, s := range ctxt.Text {
 		w.writeRefs(s)

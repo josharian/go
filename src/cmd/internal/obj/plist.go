@@ -134,6 +134,9 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc) {
 	}
 
 	// Add to running list in ctxt.
+	// TODO: sort Texts?
+	ctxt.Textmu.Lock()
+	defer ctxt.Textmu.Unlock()
 	ctxt.Text = append(ctxt.Text, text...)
 }
 

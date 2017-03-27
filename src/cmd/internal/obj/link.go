@@ -749,6 +749,7 @@ type Link struct {
 	Framepointer_enabled bool
 
 	// state for writing objects
+	Textmu sync.Mutex
 	Text   []*LSym
 	Datamu sync.Mutex
 	Data   []*LSym
