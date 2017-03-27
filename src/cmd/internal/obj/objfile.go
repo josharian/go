@@ -205,6 +205,11 @@ func WriteObjFile(ctxt *Link, b *bufio.Writer) {
 	}
 	w.writeString("")
 
+	// Sort ctxt.Text before writing, for reproducible builds.
+	ctxt.Textmu.Lock()
+	defer ctxt.Textmu.Unlock()
+	sort.Sort(lsymsForStability(ctxt.Text))
+
 	// Symbol references
 	for _, s := range ctxt.Text {
 		w.writeRefs(s)
@@ -518,6 +523,17 @@ type relocByOff []Reloc
 func (x relocByOff) Len() int           { return len(x) }
 func (x relocByOff) Less(i, j int) bool { return x[i].Off < x[j].Off }
 func (x relocByOff) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
+
+type lsymsForStability []*LSym
+
+func (x lsymsForStability) Len() int { return len(x) }
+func (x lsymsForStability) Less(i, j int) bool {
+	if x[i].Name != x[j].Name {
+		return x[i].Name < x[j].Name
+	}
+	return x[i].Version < x[j].Version
+}
+func (x lsymsForStability) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 
 // implement dwarf.Context
 type dwCtxt struct{ *Link }

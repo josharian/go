@@ -109,7 +109,9 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc) {
 	}
 
 	// Add to running list in ctxt.
+	ctxt.Textmu.Lock()
 	ctxt.Text = append(ctxt.Text, text...)
+	ctxt.Textmu.Unlock()
 }
 
 func (ctxt *Link) InitTextSym(p *Prog) {
