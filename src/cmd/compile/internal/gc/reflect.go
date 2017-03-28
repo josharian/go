@@ -12,6 +12,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 )
 
 type itabEntry struct {
@@ -34,7 +35,11 @@ type ptabEntry struct {
 }
 
 // runtime interface and reflection data structures
-var signatlist []*Type
+var (
+	signatlistmu sync.Mutex
+	signatlist   []*Type
+)
+
 var itabs []itabEntry
 var ptabs []ptabEntry
 
@@ -942,8 +947,9 @@ func typenamesym(t *Type) *Sym {
 		n.Class = PEXTERN
 		n.Typecheck = 1
 		s.Def = n
-
+		signatlistmu.Lock()
 		signatlist = append(signatlist, t)
+		signatlistmu.Unlock()
 	}
 
 	return s.Def.Sym
@@ -1421,19 +1427,25 @@ func dumptypestructs() {
 	// copy types from externdcl list to signatlist
 	for _, n := range externdcl {
 		if n.Op == OTYPE {
+			signatlistmu.Lock()
 			signatlist = append(signatlist, n.Type)
+			signatlistmu.Unlock()
 		}
 	}
 
 	// Process signatlist.  This can't use range, as entries are
 	// added to the list while it is being processed.
+	signatlistmu.Lock()
 	for i := 0; i < len(signatlist); i++ {
 		t := signatlist[i]
+		signatlistmu.Unlock()
 		dtypesym(t)
 		if t.Sym != nil {
 			dtypesym(typPtr(t))
 		}
+		signatlistmu.Lock()
 	}
+	signatlistmu.Unlock()
 
 	// process itabs
 	for _, i := range itabs {
