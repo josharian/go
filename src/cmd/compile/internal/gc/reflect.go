@@ -13,6 +13,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 )
 
 type itabEntry struct {
@@ -35,9 +36,13 @@ type ptabEntry struct {
 }
 
 // runtime interface and reflection data structures
-var signatlist = make(map[*types.Type]bool)
-var itabs []itabEntry
-var ptabs []ptabEntry
+var (
+	signatlistmu sync.Mutex // protects signatlist
+	signatlist   = make(map[*types.Type]bool)
+
+	itabs []itabEntry
+	ptabs []ptabEntry
+)
 
 type Sig struct {
 	name   string
@@ -939,7 +944,9 @@ func typenamesym(t *types.Type) *types.Sym {
 		Fatalf("typenamesym %v", t)
 	}
 	s := typesym(t)
+	signatlistmu.Lock()
 	addsignat(t)
+	signatlistmu.Unlock()
 	return s
 }
 
@@ -1429,14 +1436,17 @@ func addsignat(t *types.Type) {
 
 func dumptypestructs() {
 	// copy types from externdcl list to signatlist
+	signatlistmu.Lock()
 	for _, n := range externdcl {
 		if n.Op == OTYPE {
 			addsignat(n.Type)
 		}
 	}
+	signatlistmu.Unlock()
 
 	// Process signatlist. Use a loop, as dtypesym adds
 	// entries to signatlist while it is being processed.
+	signatlistmu.Lock()
 	signats := make([]typeAndStr, len(signatlist))
 	for len(signatlist) > 0 {
 		signats = signats[:0]
@@ -1445,6 +1455,9 @@ func dumptypestructs() {
 			signats = append(signats, typeAndStr{t: t, s: typesymname(t)})
 			delete(signatlist, t)
 		}
+		// Don't hold signatlistmu while processing signats,
+		// since signats can generate new entries for signatlist.
+		signatlistmu.Unlock()
 		sort.Sort(typesByString(signats))
 		for _, ts := range signats {
 			t := ts.t
@@ -1453,7 +1466,9 @@ func dumptypestructs() {
 				dtypesym(types.NewPtr(t))
 			}
 		}
+		signatlistmu.Lock()
 	}
+	signatlistmu.Unlock()
 
 	// process itabs
 	for _, i := range itabs {
