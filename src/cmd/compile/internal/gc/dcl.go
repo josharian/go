@@ -34,7 +34,9 @@ var dclstack *Sym
 
 func dcopy(a, b *Sym) {
 	a.Pkg = b.Pkg
-	a.Name = b.Name
+	if a.Name == "" {
+		a.Name = b.Name
+	}
 	a.Def = b.Def
 	a.Block = b.Block
 	a.Lastlineno = b.Lastlineno
