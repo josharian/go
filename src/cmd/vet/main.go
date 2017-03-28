@@ -141,6 +141,7 @@ var (
 	rangeStmt     *ast.RangeStmt
 	returnStmt    *ast.ReturnStmt
 	structType    *ast.StructType
+	unaryExpr     *ast.UnaryExpr
 
 	// checkers is a two-level map.
 	// The outer level is keyed by a nil pointer, one of the AST vars above.
@@ -496,6 +497,8 @@ func (f *File) Visit(node ast.Node) ast.Visitor {
 		key = returnStmt
 	case *ast.StructType:
 		key = structType
+	case *ast.UnaryExpr:
+		key = unaryExpr
 	}
 	for _, fn := range f.checkers[key] {
 		fn(f, node)
