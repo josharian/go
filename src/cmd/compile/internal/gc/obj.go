@@ -11,6 +11,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"sort"
 	"strconv"
 	"sync"
 )
@@ -218,6 +219,9 @@ func dumpglobls() {
 		ggloblnod(n)
 	}
 
+	funcsymsmu.Lock()
+	defer funcsymsmu.Unlock()
+	sort.Sort(symsForStability(funcsyms))
 	for _, s := range funcsyms {
 		sf := s.Pkg.Lookup(funcsymname(s))
 		dsymptr(sf, 0, s, 0)
@@ -228,27 +232,32 @@ func dumpglobls() {
 	funcsyms = nil
 }
 
+type symsForStability []*types.Sym
+
+func (x symsForStability) Len() int           { return len(x) }
+func (x symsForStability) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
+func (x symsForStability) Less(i, j int) bool { return linksymname(x[i]) < linksymname(x[j]) }
+
+func linksymname(s *types.Sym) string {
+	if isblanksym(s) {
+		return "_"
+	}
+	if s.Linkname != "" {
+		return s.Linkname
+	}
+	return s.Pkg.Prefix + "." + s.Name
+}
+
 func Linksym(s *types.Sym) *obj.LSym {
 	if s == nil {
 		return nil
 	}
 	s.Lsymmu.Lock()
 	defer s.Lsymmu.Unlock()
-	if s.Lsym != nil {
-		return s.Lsym
+	if s.Lsym == nil {
+		s.Lsym = Ctxt.Lookup(linksymname(s), 0)
 	}
-	var name string
-	if isblanksym(s) {
-		name = "_"
-	} else if s.Linkname != "" {
-		name = s.Linkname
-	} else {
-		name = s.Pkg.Prefix + "." + s.Name
-	}
-
-	ls := Ctxt.Lookup(name, 0)
-	s.Lsym = ls
-	return ls
+	return s.Lsym
 }
 
 func duintxx(s *types.Sym, off int, v uint64, wid int) int {
