@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"sync"
 )
 
 // architecture-independent object file output
@@ -286,6 +287,11 @@ func dbvec(s *types.Sym, off int, bv bvec) int {
 	return off
 }
 
+// stringsym is called concurrently from the back end.
+// stringdatamu is responsible for ensuring that
+// we emit exactly one copy of the data for any given string.
+var stringdatamu sync.Mutex
+
 func stringsym(s string) (data *obj.LSym) {
 	var symname string
 	if len(s) > 100 {
@@ -305,11 +311,13 @@ func stringsym(s string) (data *obj.LSym) {
 
 	symdata := Ctxt.Lookup(symdataname, 0)
 
+	stringdatamu.Lock()
 	if !symdata.SeenGlobl() {
 		// string data
 		off := dsnameLSym(symdata, 0, s)
 		ggloblLSym(symdata, int32(off), obj.DUPOK|obj.RODATA|obj.LOCAL)
 	}
+	stringdatamu.Unlock()
 
 	return symdata
 }
