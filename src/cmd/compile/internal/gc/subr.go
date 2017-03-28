@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"unicode"
 	"unicode/utf8"
 )
@@ -1986,11 +1987,26 @@ func (l Nodes) asblock() *Node {
 	return n
 }
 
+var (
+	typenamesymsmu sync.Mutex
+	typenamesyms   = make(map[*Type]*Sym)
+)
+
 func ngotype(n *Node) *Sym {
-	if n.Type != nil {
-		return typenamesym(n.Type)
+	if n.Type == nil {
+		return nil
 	}
-	return nil
+	if n.Op != ONAME {
+		Fatalf("ngotype %v", n.Op)
+	}
+	typenamesymsmu.Lock()
+	defer typenamesymsmu.Unlock()
+	if s, ok := typenamesyms[n.Type]; ok {
+		return s
+	}
+	s := typenamesym(n.Type)
+	typenamesyms[n.Type] = s
+	return s
 }
 
 // Convert raw string to the prefix that will be used in the symbol
