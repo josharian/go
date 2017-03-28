@@ -1155,7 +1155,9 @@ func funcsym(s *Sym) *Sym {
 	// symbols will be created explicitly with makefuncsym.
 	// See the makefuncsym comment for details.
 	if !Ctxt.Flag_dynlink && !existed {
+		funcsymsmu.Lock()
 		funcsyms = append(funcsyms, s)
+		funcsymsmu.Unlock()
 	}
 	return sf
 }
@@ -1182,7 +1184,9 @@ func makefuncsym(s *Sym) {
 		return
 	}
 	if _, existed := s.Pkg.LookupOK(s.funcsymname()); !existed {
+		funcsymsmu.Lock()
 		funcsyms = append(funcsyms, s)
+		funcsymsmu.Unlock()
 	}
 }
 

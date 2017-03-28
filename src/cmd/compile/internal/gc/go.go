@@ -241,7 +241,10 @@ var exportlist []*Node
 
 var importlist []*Node // imported functions and methods with inlinable bodies
 
-var funcsyms []*Sym
+var (
+	funcsymsmu sync.Mutex
+	funcsyms   []*Sym
+)
 
 var dclcontext Class // PEXTERN/PAUTO
 

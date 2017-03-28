@@ -217,6 +217,9 @@ func dumpglobls() {
 		ggloblnod(n)
 	}
 
+	funcsymsmu.Lock()
+	defer funcsymsmu.Unlock()
+	// TODO: sort funcsymsmu for stability despite concurrency
 	for _, s := range funcsyms {
 		sf := s.Pkg.Lookup(s.funcsymname())
 		dsymptr(sf, 0, s, 0)
