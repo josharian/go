@@ -460,6 +460,14 @@ func walkexpr(n *Node, init *Nodes) *Node {
 		return n
 	}
 
+	if n.Type != nil {
+		switch n.Type.Etype {
+		case TBLANK, TNIL, TIDEAL:
+		default:
+			dowidth(n.Type)
+		}
+	}
+
 	if init == &n.Ninit {
 		// not okay to use n->ninit when walking n,
 		// because we might replace n with some other node
