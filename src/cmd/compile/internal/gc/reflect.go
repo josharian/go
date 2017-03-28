@@ -941,6 +941,8 @@ func typenamesym(t *Type) *Sym {
 		Fatalf("typename %v", t)
 	}
 	s := typesym(t)
+	s.Defmu.Lock()
+	defer s.Defmu.Unlock()
 	if s.Def == nil {
 		n := newnamel(src.NoXPos, s)
 		n.Type = Types[TUINT8]
