@@ -446,6 +446,16 @@ func ifacedcl(n *Node) {
 	}
 }
 
+func buildfunc(sym *Sym, tfn *Node) *Node {
+	fn := nod(ODCLFUNC, nil, nil)
+	fn.Func.Nname = newname(sym)
+	fn.Func.Nname.Name.Defn = fn
+	fn.Func.Nname.Name.Param.Ntype = tfn
+	declare(fn.Func.Nname, PFUNC)
+	funchdr(fn)
+	return fn
+}
+
 // declare the function proper
 // and declare the arguments.
 // called in extern-declaration context

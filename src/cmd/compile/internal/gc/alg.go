@@ -191,23 +191,16 @@ func genhash(sym *Sym, t *Type) {
 	markdcl()
 
 	// func sym(p *T, h uintptr) uintptr
-	fn := nod(ODCLFUNC, nil, nil)
-
-	fn.Func.Nname = newname(sym)
-	fn.Func.Nname.Class = PFUNC
 	tfn := nod(OTFUNC, nil, nil)
-	fn.Func.Nname.Name.Param.Ntype = tfn
-
 	n := namedfield("p", typPtr(t))
 	tfn.List.Append(n)
 	np := n.Left
 	n = namedfield("h", Types[TUINTPTR])
 	tfn.List.Append(n)
 	nh := n.Left
-	n = anonfield(Types[TUINTPTR]) // return value
-	tfn.Rlist.Append(n)
+	tfn.Rlist.Append(anonfield(Types[TUINTPTR])) // return value
 
-	funchdr(fn)
+	fn := buildfunc(sym, tfn)
 	fn.Func.Nname.Name.Param.Ntype = typecheck(fn.Func.Nname.Name.Param.Ntype, Etype)
 
 	// genhash is only called for types that have equality but
@@ -363,29 +356,25 @@ func geneq(sym *Sym, t *Type) {
 	if Debug['r'] != 0 {
 		fmt.Printf("geneq %v %v\n", sym, t)
 	}
+	if funcdepth != 0 {
+		Fatalf("WAT %v", funcstack)
+	}
 
 	lineno = makePos(nil, 1, 0) // less confusing than end of input
 	dclcontext = PEXTERN
 	markdcl()
 
 	// func sym(p, q *T) bool
-	fn := nod(ODCLFUNC, nil, nil)
-
-	fn.Func.Nname = newname(sym)
-	fn.Func.Nname.Class = PFUNC
 	tfn := nod(OTFUNC, nil, nil)
-	fn.Func.Nname.Name.Param.Ntype = tfn
-
 	n := namedfield("p", typPtr(t))
 	tfn.List.Append(n)
 	np := n.Left
 	n = namedfield("q", typPtr(t))
 	tfn.List.Append(n)
 	nq := n.Left
-	n = anonfield(Types[TBOOL])
-	tfn.Rlist.Append(n)
+	tfn.Rlist.Append(anonfield(Types[TBOOL])) // return value
 
-	funchdr(fn)
+	fn := buildfunc(sym, tfn)
 	fn.Func.Nname.Name.Param.Ntype = typecheck(fn.Func.Nname.Name.Param.Ntype, Etype)
 
 	// geneq is only called for types that have equality but

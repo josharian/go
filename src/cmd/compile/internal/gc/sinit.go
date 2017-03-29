@@ -1011,6 +1011,10 @@ func maplit(n *Node, m *Node, init *Nodes) {
 		init.Append(loop)
 	}
 
+	// if funcdepth != 0 {
+	// 	Fatalf("WAT %v", funcdepth, funcstack)
+	// }
+
 	// put in dynamic entries one-at-a-time
 	var key, val *Node
 	for _, r := range n.List.Slice() {
