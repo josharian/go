@@ -541,9 +541,10 @@ func Main(archInit func(*Arch)) {
 		}
 		timings.AddEvent(fcount, "funcs")
 
-		if nsavederrors+nerrors == 0 {
-			fninit(xtop)
+		for _, fn := range needscompile {
+			backendcompile(fn)
 		}
+		needscompile = nil
 
 		ssaWaitGroup.Done()
 		ssaWaitGroup.Wait()
@@ -552,6 +553,12 @@ func Main(archInit func(*Arch)) {
 			progscwg.Wait()
 			progsc = nil
 			ncpu = 1
+		}
+
+		compilenow = true
+
+		if nsavederrors+nerrors == 0 {
+			fninit(xtop)
 		}
 
 		// xtop is now complete.

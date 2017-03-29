@@ -274,6 +274,10 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 	s.stkptrsize = Rnd(s.stkptrsize, int64(Widthreg))
 }
 
+var needscompile []*Node
+
+var compilenow bool
+
 func compile(fn *Node) {
 	Curfn = fn
 	dowidth(fn.Type)
@@ -302,6 +306,14 @@ func compile(fn *Node) {
 		instrument(fn)
 	}
 
+	if compilenow {
+		backendcompile(fn)
+	} else {
+		needscompile = append(needscompile, fn)
+	}
+}
+
+func backendcompile(fn *Node) {
 	// From this point, there should be no uses of Curfn. Enforce that.
 	Curfn = nil
 
