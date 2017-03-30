@@ -1001,16 +1001,37 @@ func maplit(n *Node, m *Node, init *Nodes) {
 		init.Append(loop)
 	}
 
-	// Add dynamic entries.
-	addDynamicMapEntries(m, dyn, init)
-}
-
-func addDynamicMapEntries(m *Node, dyn []*Node, init *Nodes) {
 	if len(dyn) == 0 {
 		return
 	}
 
+	tfn := nod(OTFUNC, nil, nil)
+	tfn.List.Append(namedfield("m", m.Type))
+	closurehdr(tfn)
+	r := dynamicMapEntries(m, dyn)
+	fn := closurebody(r)
+	// fn.Func.Nname.Name.Param.Ntype = typecheck(fn.Func.Nname.Name.Param.Ntype, Etype)
+	// esc? capture?
+	// typecheckclosure(fn, Etop)
+	// escapes([]*Node{fn})
+	// transformclosure(fn)
+	// walkclosure(fn, init)
+
+	call := nod(OCALL, fn, nil)
+	call.List.Append(m)
+	call = typecheck(call, Etop)
+	call = walkstmt(call)
+	init.Append(call)
+}
+
+func dynamicMapEntries(m *Node, dyn []*Node) []*Node {
+	if len(dyn) == 0 {
+		return nil
+	}
+
 	nerr := nerrors
+
+	var body []*Node
 
 	// Build list of var[c] = expr.
 	// Use temporaries so that mapassign1 can have addressable key, val.
@@ -1025,19 +1046,19 @@ func addDynamicMapEntries(m *Node, dyn []*Node, init *Nodes) {
 		a := nod(OAS, key, index)
 		a = typecheck(a, Etop)
 		a = walkstmt(a)
-		init.Append(a)
+		body = append(body, a)
 
 		setlineno(value)
 		a = nod(OAS, val, value)
 		a = typecheck(a, Etop)
 		a = walkstmt(a)
-		init.Append(a)
+		body = append(body, a)
 
 		setlineno(val)
 		a = nod(OAS, nod(OINDEX, m, key), val)
 		a = typecheck(a, Etop)
 		a = walkstmt(a)
-		init.Append(a)
+		body = append(body, a)
 
 		if nerr != nerrors {
 			break
@@ -1046,10 +1067,12 @@ func addDynamicMapEntries(m *Node, dyn []*Node, init *Nodes) {
 
 	a := nod(OVARKILL, key, nil)
 	a = typecheck(a, Etop)
-	init.Append(a)
+	body = append(body, a)
 	a = nod(OVARKILL, val, nil)
 	a = typecheck(a, Etop)
-	init.Append(a)
+	body = append(body, a)
+
+	return body
 }
 
 func anylit(n *Node, var_ *Node, init *Nodes) {
