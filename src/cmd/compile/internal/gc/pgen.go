@@ -21,6 +21,7 @@ var (
 	ssaWaitGroup sync.WaitGroup
 	ssaMu        sync.Mutex
 	ssaCaches    []*ssa.Cache
+	compilec     chan *Node
 	progsc       chan *Progs
 	progscwg     sync.WaitGroup
 )
@@ -313,6 +314,26 @@ func compile(fn *Node) {
 	}
 }
 
+func startbackend() {
+	for fn := range compilec {
+		ssaMu.Lock()
+		if len(ssaCaches) == 0 {
+			ssaCaches = append(ssaCaches, nil)
+			ssaCaches[0] = new(ssa.Cache)
+		}
+		last := len(ssaCaches) - 1
+		cache := ssaCaches[last]
+		ssaCaches = ssaCaches[:last]
+		ssaMu.Unlock()
+		compileSSA(fn, cache)
+		ssaMu.Lock()
+		cache.Reset()
+		ssaCaches = append(ssaCaches, cache)
+		ssaMu.Unlock()
+		ssaWaitGroup.Done()
+	}
+}
+
 func backendcompile(fn *Node) {
 	// From this point, there should be no uses of Curfn. Enforce that.
 	Curfn = nil
@@ -328,25 +349,7 @@ func backendcompile(fn *Node) {
 		ssaCaches[0].Reset()
 		ssaWaitGroup.Done()
 	} else {
-		go func(fn *Node) {
-			cpugate <- struct{}{}
-			ssaMu.Lock()
-			if len(ssaCaches) == 0 {
-				ssaCaches = append(ssaCaches, nil)
-				ssaCaches[0] = new(ssa.Cache)
-			}
-			last := len(ssaCaches) - 1
-			cache := ssaCaches[last]
-			ssaCaches = ssaCaches[:last]
-			ssaMu.Unlock()
-			compileSSA(fn, cache)
-			ssaMu.Lock()
-			cache.Reset()
-			ssaCaches = append(ssaCaches, cache)
-			ssaMu.Unlock()
-			<-cpugate
-			ssaWaitGroup.Done()
-		}(fn)
+		compilec <- fn
 	}
 }
 

@@ -65,6 +65,13 @@ func initssaconfig() {
 		ssaConfig.Set387(thearch.Use387)
 	}
 
+	if ncpu > 1 {
+		compilec = make(chan *Node)
+		for i := 0; i < ncpu; i++ {
+			go startbackend()
+		}
+	}
+
 	// Set up some runtime functions we'll need to call.
 	Newproc = Sysfunc("newproc")
 	Deferproc = Sysfunc("deferproc")
