@@ -53,10 +53,11 @@ type Progs struct {
 }
 
 // newProgs returns a new Progs for fn.
-func newProgs(fn *Node) *Progs {
+func newProgs(fn *Node, shard int) *Progs {
 	pp := new(Progs)
 	if Ctxt.CanReuseProgs() {
-		pp.progcache = sharedProgArray[:]
+		sz := len(sharedProgArray) / ncpu
+		pp.progcache = sharedProgArray[sz*shard : sz*(shard+1)]
 	}
 	pp.curfn = fn
 

@@ -314,7 +314,8 @@ func compile(fn *Node) {
 	}
 }
 
-func startbackend() {
+func startbackend(shard int) {
+	// TODO: use shard to help with this ssaCaches silliness?
 	for fn := range compilec {
 		ssaMu.Lock()
 		if len(ssaCaches) == 0 {
@@ -325,7 +326,7 @@ func startbackend() {
 		cache := ssaCaches[last]
 		ssaCaches = ssaCaches[:last]
 		ssaMu.Unlock()
-		compileSSA(fn, cache)
+		compileSSA(fn, cache, shard)
 		ssaMu.Lock()
 		cache.Reset()
 		ssaCaches = append(ssaCaches, cache)
@@ -345,7 +346,7 @@ func backendcompile(fn *Node) {
 			ssaCaches = append(ssaCaches, nil)
 			ssaCaches[0] = new(ssa.Cache)
 		}
-		compileSSA(fn, ssaCaches[0])
+		compileSSA(fn, ssaCaches[0], 0)
 		ssaCaches[0].Reset()
 		ssaWaitGroup.Done()
 	} else {
@@ -354,9 +355,9 @@ func backendcompile(fn *Node) {
 }
 
 // compileSSA builds an SSA backend function and uses it to generate a plist.
-func compileSSA(fn *Node, cache *ssa.Cache) {
+func compileSSA(fn *Node, cache *ssa.Cache, shard int) {
 	ssafn := buildssa(fn, cache)
-	pp := newProgs(fn)
+	pp := newProgs(fn, shard)
 	genssa(ssafn, pp)
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
 	if pp.Text.To.Offset < 1<<31 {

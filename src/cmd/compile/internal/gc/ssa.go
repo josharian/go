@@ -68,7 +68,7 @@ func initssaconfig() {
 	if ncpu > 1 {
 		compilec = make(chan *Node)
 		for i := 0; i < ncpu; i++ {
-			go startbackend()
+			go startbackend(i)
 		}
 	}
 
