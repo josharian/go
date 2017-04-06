@@ -936,13 +936,30 @@ func typesymprefix(prefix string, t *Type) *Sym {
 	return s
 }
 
+func typenamesymsafe(t *Type) *Sym {
+	s := typesym(t)
+	signatlistmu.Lock()
+	onlist := false
+	for _, t2 := range signatlist {
+		if t2 == t {
+			onlist = true
+			break
+		}
+	}
+	if !onlist {
+		signatlist = append(signatlist, t)
+	}
+	signatlistmu.Unlock()
+	return s
+}
+
 func typenamesym(t *Type) *Sym {
 	if t == nil || (t.IsPtr() && t.Elem() == nil) || t.IsUntyped() {
 		Fatalf("typename %v", t)
 	}
 	s := typesym(t)
-	s.Defmu.Lock()
-	defer s.Defmu.Unlock()
+	// s.Defmu.Lock()
+	// defer s.Defmu.Unlock()
 	if s.Def == nil {
 		n := newnamel(src.NoXPos, s)
 		n.Type = Types[TUINT8]

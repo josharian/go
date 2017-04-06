@@ -1992,10 +1992,10 @@ func (l Nodes) asblock() *Node {
 }
 
 func ngotype(n *Node) *Sym {
-	if n.Type != nil {
-		return typenamesym(n.Type)
+	if n.Type == nil {
+		return nil
 	}
-	return nil
+	return typenamesymsafe(n.Type)
 }
 
 // Convert raw string to the prefix that will be used in the symbol

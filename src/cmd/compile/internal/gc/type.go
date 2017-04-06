@@ -1342,5 +1342,5 @@ func (t *Type) HasPointer() bool {
 }
 
 func (t *Type) Symbol() *obj.LSym {
-	return Linksym(typenamesym(t))
+	return Linksym(typenamesymsafe(t))
 }

@@ -50,9 +50,9 @@ type Sym struct {
 	Linkname  string // link name
 
 	// saved and restored by dcopy
-	Pkg        *Pkg
-	Name       string // object name
-	Defmu      sync.Mutex
+	Pkg  *Pkg
+	Name string // object name
+	// Defmu      sync.Mutex
 	Def        *Node    // definition: ONAME OTYPE OPACK or OLITERAL
 	Lastlineno src.XPos // last declaration for diagnostic
 	Block      int32    // blocknumber to catch redeclaration
