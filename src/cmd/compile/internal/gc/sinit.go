@@ -4,7 +4,9 @@
 
 package gc
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // static initialization
 const (
@@ -922,6 +924,58 @@ func slicelit(ctxt initContext, n *Node, var_ *Node, init *Nodes) {
 	init.Append(a)
 }
 
+var (
+	sinitcurfn *Node
+	sinitautos map[string][]*Node
+)
+
+func fnname(fn *Node) string {
+	if fn == nil {
+		return "<nil>"
+	}
+	return fn.Func.Nname.Sym.Name
+}
+
+func sinittemp(t *Type) *Node {
+	if sinitautos == nil {
+		sinitautos = make(map[string][]*Node)
+	}
+	if sinitcurfn != Curfn {
+		// if os.Getenv("J") != "" {
+		// fmt.Println("RESET", fnname(sinitcurfn), fnname(Curfn))
+		// }
+		for k := range sinitautos {
+			delete(sinitautos, k)
+		}
+		sinitcurfn = Curfn
+	}
+	key := t.LongString()
+	nn := sinitautos[key]
+	if len(nn) > 0 {
+		last := len(nn) - 1
+		sinitautos[key] = nn[:last]
+		// if os.Getenv("J") != "" {
+		// fmt.Println("OPT", key)
+		// }
+		return nn[last]
+	}
+	// if os.Getenv("J") != "" {
+	// fmt.Println("NOPT", key)
+	// }
+	return temp(t)
+}
+
+func returntemp(n *Node) {
+	if sinitcurfn != Curfn {
+		Fatalf("return with changed Curfn")
+	}
+	key := n.Type.LongString()
+	// if os.Getenv("J") != "" {
+	// fmt.Println("RET", key)
+	// }
+	sinitautos[key] = append(sinitautos[key], n)
+}
+
 func maplit(n *Node, m *Node, init *Nodes) {
 	// make the map var
 	a := nod(OMAKE, nil, nil)
@@ -1021,8 +1075,8 @@ func addMapEntries(m *Node, dyn []*Node, init *Nodes) {
 	// Build list of var[c] = expr.
 	// Use temporaries so that mapassign1 can have addressable key, val.
 	// TODO(josharian): avoid map key temporaries for mapfast_* assignments with literal keys.
-	key := temp(m.Type.Key())
-	val := temp(m.Type.Val())
+	key := sinittemp(m.Type.Key())
+	val := sinittemp(m.Type.Val())
 
 	for _, r := range dyn {
 		index, value := r.Left, r.Right
@@ -1053,9 +1107,11 @@ func addMapEntries(m *Node, dyn []*Node, init *Nodes) {
 	a := nod(OVARKILL, key, nil)
 	a = typecheck(a, Etop)
 	init.Append(a)
+	returntemp(key)
 	a = nod(OVARKILL, val, nil)
 	a = typecheck(a, Etop)
 	init.Append(a)
+	returntemp(val)
 }
 
 func anylit(n *Node, var_ *Node, init *Nodes) {
