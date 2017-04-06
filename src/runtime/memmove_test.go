@@ -299,6 +299,19 @@ func BenchmarkGoMemclr(b *testing.B) {
 	})
 }
 
+func BenchmarkLargeMemclrHasPointers(b *testing.B) {
+	// roughly modeled on obj.Prog
+	type prog struct {
+		pointers [8]*int64
+		scalars  [12]int64
+	}
+	type cache [65536]prog
+	for i := 0; i < b.N; i++ {
+		a := new(cache)
+		*a = cache{}
+	}
+}
+
 func BenchmarkClearFat8(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var x [8 / 4]uint32
