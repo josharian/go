@@ -4,7 +4,10 @@
 
 package types
 
-import "cmd/internal/obj"
+import (
+	"cmd/internal/obj"
+	"sync"
+)
 
 type Pkg struct {
 	Name     string // package name, e.g. "sys"
@@ -65,8 +68,11 @@ func (pkg *Pkg) LookupBytes(name []byte) *Sym {
 }
 
 var internedStrings = map[string]string{}
+var internedStringsmu sync.Mutex
 
 func InternString(b []byte) string {
+	internedStringsmu.Lock()
+	defer internedStringsmu.Unlock()
 	s, ok := internedStrings[string(b)] // string(b) here doesn't allocate
 	if !ok {
 		s = string(b)
