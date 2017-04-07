@@ -622,7 +622,7 @@ func dextratype(s *types.Sym, ot int, t *types.Type, dataAdd int) int {
 	}
 
 	for _, a := range m {
-		dtypesym(a.type_)
+		dtypesym(a.type_, "")
 	}
 
 	ot = dgopkgpathOffLSym(Linksym(s), ot, typePkg(t))
@@ -673,7 +673,7 @@ func dextratypeData(s *types.Sym, ot int, t *types.Type) int {
 		nsym := dname(a.name, "", pkg, exported)
 
 		ot = dsymptrOffLSym(lsym, ot, nsym, 0)
-		ot = dmethodptrOffLSym(lsym, ot, Linksym(dtypesym(a.mtype)))
+		ot = dmethodptrOffLSym(lsym, ot, Linksym(dtypesym(a.mtype, "")))
 		ot = dmethodptrOffLSym(lsym, ot, Linksym(a.isym))
 		ot = dmethodptrOffLSym(lsym, ot, Linksym(a.tsym))
 	}
@@ -808,7 +808,7 @@ func dcommontype(s *types.Sym, ot int, t *types.Type) int {
 		if t.Sym != nil || methods(tptr) != nil {
 			sptrWeak = false
 		}
-		sptr = dtypesym(tptr)
+		sptr = dtypesym(tptr, "")
 	}
 
 	gcsym, useGCProg, ptrdata := dgcsym(t)
@@ -1092,7 +1092,11 @@ func dtypesym(t *types.Type) *types.Sym {
 		Fatalf("dtypesym %v", t)
 	}
 
-	s := typesym(t)
+	if name == "" {
+		name = typesymname(t)
+	}
+	s := typepkg.Lookup(name)
+
 	if s.Siggen() {
 		return s
 	}
@@ -1132,9 +1136,9 @@ ok:
 
 	case TARRAY:
 		// ../../../../runtime/type.go:/arrayType
-		s1 := dtypesym(t.Elem())
+		s1 := dtypesym(t.Elem(), "")
 		t2 := types.NewSlice(t.Elem())
-		s2 := dtypesym(t2)
+		s2 := dtypesym(t2, "")
 		ot = dcommontype(s, ot, t)
 		ot = dsymptr(s, ot, s1, 0)
 		ot = dsymptr(s, ot, s2, 0)
@@ -1143,14 +1147,14 @@ ok:
 
 	case TSLICE:
 		// ../../../../runtime/type.go:/sliceType
-		s1 := dtypesym(t.Elem())
+		s1 := dtypesym(t.Elem(), "")
 		ot = dcommontype(s, ot, t)
 		ot = dsymptr(s, ot, s1, 0)
 		ot = dextratype(s, ot, t, 0)
 
 	case TCHAN:
 		// ../../../../runtime/type.go:/chanType
-		s1 := dtypesym(t.Elem())
+		s1 := dtypesym(t.Elem(), "")
 		ot = dcommontype(s, ot, t)
 		ot = dsymptr(s, ot, s1, 0)
 		ot = duintptr(s, ot, uint64(t.ChanDir()))
@@ -1158,15 +1162,15 @@ ok:
 
 	case TFUNC:
 		for _, t1 := range t.Recvs().Fields().Slice() {
-			dtypesym(t1.Type)
+			dtypesym(t1.Type, "")
 		}
 		isddd := false
 		for _, t1 := range t.Params().Fields().Slice() {
 			isddd = t1.Isddd()
-			dtypesym(t1.Type)
+			dtypesym(t1.Type, "")
 		}
 		for _, t1 := range t.Results().Fields().Slice() {
-			dtypesym(t1.Type)
+			dtypesym(t1.Type, "")
 		}
 
 		ot = dcommontype(s, ot, t)
@@ -1186,20 +1190,20 @@ ok:
 
 		// Array of rtype pointers follows funcType.
 		for _, t1 := range t.Recvs().Fields().Slice() {
-			ot = dsymptr(s, ot, dtypesym(t1.Type), 0)
+			ot = dsymptr(s, ot, dtypesym(t1.Type, ""), 0)
 		}
 		for _, t1 := range t.Params().Fields().Slice() {
-			ot = dsymptr(s, ot, dtypesym(t1.Type), 0)
+			ot = dsymptr(s, ot, dtypesym(t1.Type, ""), 0)
 		}
 		for _, t1 := range t.Results().Fields().Slice() {
-			ot = dsymptr(s, ot, dtypesym(t1.Type), 0)
+			ot = dsymptr(s, ot, dtypesym(t1.Type, ""), 0)
 		}
 
 	case TINTER:
 		m := imethods(t)
 		n := len(m)
 		for _, a := range m {
-			dtypesym(a.type_)
+			dtypesym(a.type_, "")
 		}
 
 		// ../../../../runtime/type.go:/interfaceType
@@ -1228,15 +1232,15 @@ ok:
 			nsym := dname(a.name, "", pkg, exported)
 
 			ot = dsymptrOffLSym(lsym, ot, nsym, 0)
-			ot = dsymptrOffLSym(lsym, ot, Linksym(dtypesym(a.type_)), 0)
+			ot = dsymptrOffLSym(lsym, ot, Linksym(dtypesym(a.type_, "")), 0)
 		}
 
 	// ../../../../runtime/type.go:/mapType
 	case TMAP:
-		s1 := dtypesym(t.Key())
-		s2 := dtypesym(t.Val())
-		s3 := dtypesym(mapbucket(t))
-		s4 := dtypesym(hmap(t))
+		s1 := dtypesym(t.Key(), "")
+		s2 := dtypesym(t.Val(), "")
+		s3 := dtypesym(mapbucket(t), "")
+		s4 := dtypesym(hmap(t), "")
 		ot = dcommontype(s, ot, t)
 		ot = dsymptr(s, ot, s1, 0)
 		ot = dsymptr(s, ot, s2, 0)
@@ -1273,7 +1277,7 @@ ok:
 		}
 
 		// ../../../../runtime/type.go:/ptrType
-		s1 := dtypesym(t.Elem())
+		s1 := dtypesym(t.Elem(), "")
 
 		ot = dcommontype(s, ot, t)
 		ot = dsymptr(s, ot, s1, 0)
@@ -1285,7 +1289,7 @@ ok:
 		n := 0
 
 		for _, t1 := range t.Fields().Slice() {
-			dtypesym(t1.Type)
+			dtypesym(t1.Type, "")
 			n++
 		}
 
@@ -1314,7 +1318,7 @@ ok:
 		for _, f := range t.Fields().Slice() {
 			// ../../../../runtime/type.go:/structField
 			ot = dnameField(s, ot, pkg, f)
-			ot = dsymptr(s, ot, dtypesym(f.Type), 0)
+			ot = dsymptr(s, ot, dtypesym(f.Type, ""), 0)
 			offsetAnon := uint64(f.Offset) << 1
 			if offsetAnon>>1 != uint64(f.Offset) {
 				Fatalf("%v: bad field offset for %s", t, f.Sym.Name)
@@ -1448,9 +1452,9 @@ func dumptypestructs() {
 		sort.Sort(typesByString(signats))
 		for _, ts := range signats {
 			t := ts.t
-			dtypesym(t)
+			dtypesym(t, ts.s)
 			if t.Sym != nil {
-				dtypesym(types.NewPtr(t))
+				dtypesym(types.NewPtr(t), "")
 			}
 		}
 	}
@@ -1468,8 +1472,8 @@ func dumptypestructs() {
 		//   unused [2]byte
 		//   fun    [1]uintptr // variable sized
 		// }
-		o := dsymptr(i.sym, 0, dtypesym(i.itype), 0)
-		o = dsymptr(i.sym, o, dtypesym(i.t), 0)
+		o := dsymptr(i.sym, 0, dtypesym(i.itype, ""), 0)
+		o = dsymptr(i.sym, o, dtypesym(i.t, ""), 0)
 		o += Widthptr                          // skip link field
 		o = duint32(i.sym, o, typehash(i.t))   // copy of type hash
 		o += 4                                 // skip bad/inhash/unused fields
@@ -1496,7 +1500,7 @@ func dumptypestructs() {
 			// }
 			nsym := dname(p.s.Name, "", nil, true)
 			ot = dsymptrOffLSym(s, ot, nsym, 0)
-			ot = dsymptrOffLSym(s, ot, Linksym(dtypesym(p.t)), 0)
+			ot = dsymptrOffLSym(s, ot, Linksym(dtypesym(p.t, "")), 0)
 		}
 		ggloblLSym(s, int32(ot), int16(obj.RODATA))
 
@@ -1523,16 +1527,16 @@ func dumptypestructs() {
 	// but using runtime means fewer copies in .6 files.
 	if myimportpath == "runtime" {
 		for i := types.EType(1); i <= TBOOL; i++ {
-			dtypesym(types.NewPtr(types.Types[i]))
+			dtypesym(types.NewPtr(types.Types[i]), "")
 		}
-		dtypesym(types.NewPtr(types.Types[TSTRING]))
-		dtypesym(types.NewPtr(types.Types[TUNSAFEPTR]))
+		dtypesym(types.NewPtr(types.Types[TSTRING]), "")
+		dtypesym(types.NewPtr(types.Types[TUNSAFEPTR]), "")
 
 		// emit type structs for error and func(error) string.
 		// The latter is the type of an auto-generated wrapper.
-		dtypesym(types.NewPtr(types.Errortype))
+		dtypesym(types.NewPtr(types.Errortype), "")
 
-		dtypesym(functype(nil, []*Node{anonfield(types.Errortype)}, []*Node{anonfield(types.Types[TSTRING])}))
+		dtypesym(functype(nil, []*Node{anonfield(types.Errortype)}, []*Node{anonfield(types.Types[TSTRING])}), "")
 
 		// add paths for runtime and main, which 6l imports implicitly.
 		dimportpath(Runtimepkg)
