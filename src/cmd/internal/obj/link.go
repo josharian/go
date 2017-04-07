@@ -759,6 +759,7 @@ type Link struct {
 	Flag_optimize bool
 	Bso           *bufio.Writer
 	Pathname      string
+	Hashmu        sync.Mutex // protects Hash
 	Hash          map[SymVer]*LSym
 	PosTable      src.PosTable
 	InlTree       InlTree // global inlining tree used by gc/inl.go
