@@ -10,9 +10,10 @@ type Pkg struct {
 	Name     string // package name, e.g. "sys"
 	Path     string // string literal used in import statement, e.g. "runtime/internal/sys"
 	Pathsym  *obj.LSym
-	Prefix   string // escaped path for use in symbol table
-	Imported bool   // export data of this package was parsed
-	Direct   bool   // imported directly
+	Prefix   string     // escaped path for use in symbol table
+	Imported bool       // export data of this package was parsed
+	Direct   bool       // imported directly
+	Symsmu   sync.Mutex // protects Syms
 	Syms     map[string]*Sym
 }
 
@@ -32,6 +33,8 @@ func (pkg *Pkg) LookupOK(name string) (s *Sym, existed bool) {
 	if pkg == nil {
 		pkg = Nopkg
 	}
+	pkg.Symsmu.Lock()
+	defer pkg.Symsmu.Unlock()
 	if s := pkg.Syms[name]; s != nil {
 		return s, true
 	}
@@ -51,9 +54,12 @@ func (pkg *Pkg) LookupBytes(name []byte) *Sym {
 	if pkg == nil {
 		pkg = Nopkg
 	}
+	pkg.Symsmu.Lock()
 	if s := pkg.Syms[string(name)]; s != nil {
+		pkg.Symsmu.Unlock()
 		return s
 	}
+	pkg.Symsmu.Unlock()
 	str := InternString(name)
 	return pkg.Lookup(str)
 }
