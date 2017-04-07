@@ -1056,6 +1056,8 @@ func finishgclocals(sym *types.Sym) {
 	ls.Name = fmt.Sprintf("gclocals·%x", md5.Sum(ls.P))
 	ls.Set(obj.AttrDuplicateOK, true)
 	sv := obj.SymVer{Name: ls.Name, Version: 0}
+	Ctxt.Hashmu.Lock()
+	defer Ctxt.Hashmu.Unlock()
 	ls2, ok := Ctxt.Hash[sv]
 	if ok {
 		sym.Lsym = ls2
