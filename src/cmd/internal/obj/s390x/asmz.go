@@ -536,14 +536,13 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 			}
 			goto consize
 
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			s := a.Sym
 			if s == nil {
 				break
 			}
 			ctxt.Instoffset = a.Offset
-			if s.Type == obj.SCONST {
+			if a.Name == obj.NAME_STATIC && s.Type == obj.SCONST {
 				goto consize
 			}
 

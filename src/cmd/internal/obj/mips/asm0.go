@@ -587,20 +587,19 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 
 			goto consize
 
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			s := a.Sym
 			if s == nil {
 				break
 			}
-			if s.Type == obj.SCONST {
-				ctxt.Instoffset = a.Offset
-				goto consize
-			}
-
 			ctxt.Instoffset = a.Offset
-			if s.Type == obj.STLSBSS {
-				return C_STCON // address of TLS variable
+			if a.Name == obj.NAME_STATIC {
+				if s.Type == obj.SCONST {
+					goto consize
+				}
+				if s.Type == obj.STLSBSS {
+					return C_STCON // address of TLS variable
+				}
 			}
 			return C_LECON
 

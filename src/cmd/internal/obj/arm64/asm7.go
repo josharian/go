@@ -1174,7 +1174,7 @@ func aclass(ctxt *obj.Link, a *obj.Addr) int {
 			if a.Sym == nil {
 				break
 			}
-			if a.Sym.Type == obj.STLSBSS {
+			if a.Name == obj.NAME_STATIC && a.Sym.Type == obj.STLSBSS {
 				ctxt.Diag("taking address of TLS variable is not supported")
 			}
 			ctxt.Instoffset = a.Offset
