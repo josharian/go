@@ -6,6 +6,7 @@ package gc
 
 import (
 	"cmd/compile/internal/types"
+	"cmd/internal/obj"
 	"sort"
 )
 
@@ -412,7 +413,11 @@ func casebody(sw *Node, typeswvar *Node) {
 					// Search for integer ranges in s[j:run].
 					// Typechecking is done, so all values are already in an appropriate range.
 					search := s[j:run]
-					sort.Sort(constIntNodesByVal(search))
+					obj.SortSlice(search, func(i, j int) bool {
+						ival := search[i].Val().U.(*Mpint)
+						jval := search[j].Val().U.(*Mpint)
+						return ival.Cmp(jval) < 0
+					})
 					for beg, end := 0, 1; end <= len(search); end++ {
 						if end < len(search) && search[end].Int64() == search[end-1].Int64()+1 {
 							continue

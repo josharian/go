@@ -372,13 +372,7 @@ func saveorignode(n *Node) {
 }
 
 // methcmp sorts by symbol, then by package path for unexported symbols.
-type methcmp []*types.Field
-
-func (x methcmp) Len() int      { return len(x) }
-func (x methcmp) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
-func (x methcmp) Less(i, j int) bool {
-	a := x[i]
-	b := x[j]
+func methcmp(a, b *types.Field) bool {
 	if a.Sym == nil && b.Sym == nil {
 		return false
 	}

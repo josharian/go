@@ -6,7 +6,7 @@ package gc
 
 import (
 	"cmd/compile/internal/types"
-	"sort"
+	"cmd/internal/obj"
 )
 
 // machine size and rounding alignment is dictated around
@@ -54,7 +54,7 @@ func expandiface(t *types.Type) {
 			fields = append(fields, f)
 		}
 	}
-	sort.Sort(methcmp(fields))
+	obj.SortSlice(fields, func(i, j int) bool { return methcmp(fields[i], fields[j]) })
 
 	// Access fields directly to avoid recursively calling dowidth
 	// within Type.Fields().

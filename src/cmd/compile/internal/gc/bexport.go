@@ -115,10 +115,10 @@ import (
 	"bufio"
 	"bytes"
 	"cmd/compile/internal/types"
+	"cmd/internal/obj"
 	"encoding/binary"
 	"fmt"
 	"math/big"
-	"sort"
 	"strings"
 )
 
@@ -659,7 +659,7 @@ func (p *exporter) typ(t *types.Type) {
 		for _, m := range t.Methods().Slice() {
 			methods = append(methods, m)
 		}
-		sort.Sort(methodbyname(methods))
+		obj.SortSlice(methods, func(i, j int) bool { return methods[i].Sym.Name < methods[j].Sym.Name })
 		p.int(len(methods))
 
 		if p.trace && len(methods) > 0 {

@@ -141,13 +141,6 @@ func reexportdep(n *Node) {
 	reexportdeplist(n.Nbody)
 }
 
-// methodbyname sorts types by symbol name.
-type methodbyname []*types.Field
-
-func (x methodbyname) Len() int           { return len(x) }
-func (x methodbyname) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
-func (x methodbyname) Less(i, j int) bool { return x[i].Sym.Name < x[j].Sym.Name }
-
 func dumpexport() {
 	if buildid != "" {
 		exportf("build id %q\n", buildid)

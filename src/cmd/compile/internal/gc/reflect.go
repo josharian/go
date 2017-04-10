@@ -11,7 +11,6 @@ import (
 	"cmd/internal/src"
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 )
 
@@ -1436,7 +1435,7 @@ func dumptypestructs() {
 			signats = append(signats, typeAndStr{t: t, s: typesymname(t)})
 			delete(signatlist, t)
 		}
-		sort.Sort(typesByString(signats))
+		obj.SortSlice(signats, func(i, j int) bool { return signats[i].s < signats[j].s })
 		for _, ts := range signats {
 			t := ts.t
 			dtypesym(t)
@@ -1542,12 +1541,6 @@ type typeAndStr struct {
 	t *types.Type
 	s string
 }
-
-type typesByString []typeAndStr
-
-func (a typesByString) Len() int           { return len(a) }
-func (a typesByString) Less(i, j int) bool { return a[i].s < a[j].s }
-func (a typesByString) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func dalgsym(t *types.Type) *types.Sym {
 	var s *types.Sym
