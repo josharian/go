@@ -6,7 +6,6 @@ package obj
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -50,10 +49,10 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc) {
 			}
 
 			if s.Text != nil {
-				log.Fatalf("duplicate TEXT for %s", s.Name)
+				ctxt.Diag("duplicate TEXT for %s", s.Name)
 			}
 			if s.OnList() {
-				log.Fatalf("symbol %s listed multiple times", s.Name)
+				ctxt.Diag("symbol %s listed multiple times", s.Name)
 			}
 			s.Set(AttrOnList, true)
 			text = append(text, s)
@@ -66,6 +65,9 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc) {
 			}
 			if flag&REFLECTMETHOD != 0 {
 				s.Set(AttrReflectMethod, true)
+			}
+			if flag&TLSBSS != 0 {
+				ctxt.Diag("TEXT symbol %s cannot be marked TLSBSS", s.Name)
 			}
 			s.Type = STEXT
 			s.Text = p
@@ -143,7 +145,7 @@ func (ctxt *Link) Globl(s *LSym, size int64, flag int) {
 	}
 	s.Set(AttrSeenGlobl, true)
 	if s.OnList() {
-		log.Fatalf("symbol %s listed multiple times", s.Name)
+		ctxt.Diag("symbol %s listed multiple times", s.Name)
 	}
 	s.Set(AttrOnList, true)
 	ctxt.Data = append(ctxt.Data, s)

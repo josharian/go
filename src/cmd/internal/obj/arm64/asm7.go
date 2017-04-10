@@ -1187,7 +1187,10 @@ func (c *ctxt7) aclass(a *obj.Addr) int {
 			if a.Sym == nil {
 				break
 			}
-			if a.Sym.Type == obj.STLSBSS {
+			// Only check a.Sym.Type for globals.
+			// It is not necessary for extern symbols,
+			// and this avoids data races with the setup of function Syms.
+			if a.Name == obj.NAME_STATIC && a.Sym.Type == obj.STLSBSS {
 				c.ctxt.Diag("taking address of TLS variable is not supported")
 			}
 			c.instoffset = a.Offset
