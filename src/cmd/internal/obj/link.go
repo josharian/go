@@ -173,11 +173,12 @@ type Addr struct {
 }
 
 func (a *Addr) IsStringConst() bool {
-	return a.Sym.Type == SCONST
+	_, ok := a.Val.(string)
+	return ok
 }
 
 func (a *Addr) IsTLSVariable() bool {
-	return a.Sym.Type == STLSBSS
+	return a.Name == NAME_EXTERN && a.Sym.Type == STLSBSS
 }
 
 type AddrName int8

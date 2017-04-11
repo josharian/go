@@ -144,6 +144,9 @@ func (ctxt *Link) InitTextSym(p *Prog) {
 	if flag&REFLECTMETHOD != 0 {
 		s.Set(AttrReflectMethod, true)
 	}
+	if flag&TLSBSS != 0 {
+		ctxt.Diag("TEXT symbol %s cannot be marked TLSBSS", s.Name)
+	}
 	s.Type = STEXT
 	s.Text = p
 }
