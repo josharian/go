@@ -306,6 +306,9 @@ func compile(fn *Node) {
 		instrument(fn)
 	}
 
+	// Must set up the function's LSym now to avoid races with the compilers.
+	fn.Func.setLSym()
+
 	if compilenow {
 		backendcompile(fn)
 	} else {

@@ -114,11 +114,7 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc) {
 	ctxt.Textmu.Unlock()
 }
 
-func (ctxt *Link) InitTextSym(p *Prog) {
-	if p.As != ATEXT {
-		ctxt.Diag("InitTextSym non-ATEXT: %v", p)
-	}
-	s := p.From.Sym
+func (ctxt *Link) InitTextSym(s *LSym, flag int) {
 	if s == nil {
 		// func _() { }
 		return
@@ -134,7 +130,6 @@ func (ctxt *Link) InitTextSym(p *Prog) {
 		ctxt.Diag("symbol %s listed multiple times", s.Name)
 	}
 	s.Set(AttrOnList, true)
-	flag := int(p.From3Offset())
 	if flag&DUPOK != 0 {
 		s.Set(AttrDuplicateOK, true)
 	}
@@ -144,8 +139,16 @@ func (ctxt *Link) InitTextSym(p *Prog) {
 	if flag&REFLECTMETHOD != 0 {
 		s.Set(AttrReflectMethod, true)
 	}
+	if flag&WRAPPER != 0 {
+		s.Set(AttrWrapper, true)
+	}
+	if flag&NEEDCTXT != 0 {
+		s.Set(AttrNeedCtxt, true)
+	}
+	if flag&NOFRAME != 0 {
+		s.Set(AttrNoFrame, true)
+	}
 	s.Type = STEXT
-	s.Text = p
 }
 
 func (ctxt *Link) Globl(s *LSym, size int64, flag int) {

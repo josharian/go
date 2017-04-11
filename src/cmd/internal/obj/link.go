@@ -262,14 +262,6 @@ func (p *Prog) From3Type() AddrType {
 	return p.From3.Type
 }
 
-// From3Offset returns From3.Offset, or 0 when From3 is nil.
-func (p *Prog) From3Offset() int64 {
-	if p.From3 == nil {
-		return 0
-	}
-	return p.From3.Offset
-}
-
 // An As denotes an assembler opcode.
 // There are some portable opcodes, declared here in package obj,
 // that are common to all architectures.
@@ -369,6 +361,11 @@ const (
 	// definition. (When not compiling to support Go shared libraries, all symbols are
 	// local in this sense unless there is a cgo_export_* directive).
 	AttrLocal
+
+	// TODO
+	AttrWrapper
+	AttrNeedCtxt
+	AttrNoFrame
 )
 
 func (a Attribute) DuplicateOK() bool   { return a&AttrDuplicateOK != 0 }
@@ -380,6 +377,9 @@ func (a Attribute) SeenGlobl() bool     { return a&AttrSeenGlobl != 0 }
 func (a Attribute) OnList() bool        { return a&AttrOnList != 0 }
 func (a Attribute) ReflectMethod() bool { return a&AttrReflectMethod != 0 }
 func (a Attribute) Local() bool         { return a&AttrLocal != 0 }
+func (a Attribute) Wrapper() bool       { return a&AttrWrapper != 0 }
+func (a Attribute) NeedCtxt() bool      { return a&AttrNeedCtxt != 0 }
+func (a Attribute) NoFrame() bool       { return a&AttrNoFrame != 0 }
 
 func (a *Attribute) Set(flag Attribute, value bool) {
 	if value {
