@@ -173,6 +173,10 @@ type Addr struct {
 }
 
 func (a *Addr) IsStringConst() bool {
+	// This could just be a.Sym.Type == SCONST.
+	// However, that creates a data race between
+	// reading a.Sym.Type here and writing a.Sym.Type
+	// in InitSymText when working with function Syms.
 	_, ok := a.Val.(string)
 	return ok
 }
