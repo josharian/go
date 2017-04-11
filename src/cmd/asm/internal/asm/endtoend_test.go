@@ -55,12 +55,17 @@ func testEndToEnd(t *testing.T, goarch, file string) {
 		return
 	}
 	lineno := 0
-	seq := 0
+	seq := 0 // accomodate
 	hexByLine := map[string]string{}
 	lines := strings.SplitAfter(string(data), "\n")
 Diff:
 	for _, line := range lines {
 		lineno++
+
+		// Ignore include of textflag.h.
+		if strings.HasPrefix(line, "#include ") {
+			continue
+		}
 
 		// The general form of a test input line is:
 		//	// comment
