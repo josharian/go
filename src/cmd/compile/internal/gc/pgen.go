@@ -55,6 +55,7 @@ func makefuncdatasym(pp *Progs, nameprefix string, funcdatakind int64, curfn *No
 	p.To.Type = obj.TYPE_MEM
 	p.To.Name = obj.NAME_EXTERN
 	p.To.Sym = Linksym(sym)
+	p.To.Sym.Type = obj.SRODATA
 	return sym
 }
 
