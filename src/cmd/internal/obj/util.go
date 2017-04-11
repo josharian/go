@@ -304,7 +304,7 @@ func Mconv(a *Addr) string {
 		}
 
 		// Note: a.Reg == REG_NONE encodes the default base register for the NAME_ type.
-	case NAME_EXTERN:
+	case NAME_EXTERN, NAME_TLSVAR:
 		reg := "SB"
 		if a.Reg != REG_NONE {
 			reg = Rconv(int(a.Reg))

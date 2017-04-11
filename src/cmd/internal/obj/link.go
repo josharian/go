@@ -181,8 +181,29 @@ func (a *Addr) IsStringConst() bool {
 	return ok
 }
 
+func (a *Addr) IsTLSVariable2() bool {
+	// This could just be a.Sym.Type == STLSBSS.
+	// However, that creates a data race between
+	// reading a.Sym.Type here and writing a.Sym.Type
+	// in InitSymText when working with function Syms.
+	// The extra checks here prevent that collision.
+	if a.Sym.Type == STEXT {
+		fmt.Printf("GOTCHA %+v\n", a)
+	}
+	// if a.Name == NAME_EXTERN /*&& a.Type == TYPE_MEM*/ && !strings.HasPrefix(a.Sym.Name, "gclocals") &&
+	// 	a.Sym.Name != "runtime.writeBarrier" {
+	// 	fmt.Printf("SYM %s type %v\n", a.Sym.Name, a.Sym.Type)
+	// }
+	return a.Name == NAME_EXTERN && a.Type == TYPE_MEM && a.Sym.Type == STLSBSS
+}
+
 func (a *Addr) IsTLSVariable() bool {
-	return a.Name == NAME_EXTERN && a.Sym.Type == STLSBSS
+	// This could just be a.Sym.Type == STLSBSS.
+	// However, that creates a data race between
+	// reading a.Sym.Type here and writing a.Sym.Type
+	// in InitSymText when working with function Syms.
+	// The extra checks here prevent that collision.
+	return a.Name == NAME_EXTERN && a.Type == TYPE_MEM && a.Sym.Type == STLSBSS
 }
 
 type AddrName int8
@@ -193,6 +214,7 @@ const (
 	NAME_STATIC
 	NAME_AUTO
 	NAME_PARAM
+	NAME_TLSVAR
 	// A reference to name@GOT(SB) is a reference to the entry in the global offset
 	// table for 'name'.
 	NAME_GOTREF

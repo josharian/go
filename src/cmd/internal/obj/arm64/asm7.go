@@ -1187,7 +1187,7 @@ func (c *ctxt7) aclass(a *obj.Addr) int {
 			if a.Sym == nil {
 				break
 			}
-			if a.IsTLSVariable() {
+			if a.IsTLSVariable2() {
 				c.ctxt.Diag("taking address of TLS variable is not supported")
 			}
 			c.instoffset = a.Offset

@@ -1010,7 +1010,7 @@ func (c *ctxt5) aclass(a *obj.Addr) int {
 
 	case obj.TYPE_MEM:
 		switch a.Name {
-		case obj.NAME_EXTERN, obj.NAME_GOTREF, obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_GOTREF, obj.NAME_STATIC, obj.NAME_TLSVAR:
 			if a.Sym == nil || a.Sym.Name == "" {
 				fmt.Printf("null sym external\n")
 				return C_GOK
@@ -1122,9 +1122,7 @@ func (c *ctxt5) aclass(a *obj.Addr) int {
 			}
 			return C_LCON
 
-		case obj.NAME_EXTERN,
-			obj.NAME_GOTREF,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_GOTREF, obj.NAME_STATIC, obj.NAME_TLSVAR:
 			s := a.Sym
 			if s == nil {
 				break

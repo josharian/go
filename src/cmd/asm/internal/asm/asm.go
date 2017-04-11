@@ -269,8 +269,11 @@ func (p *Parser) asmGlobl(word string, operands [][]lex.Token) {
 		return
 	}
 
-	if flag&obj.TLSBSS != 0 && nameAddr.Name != obj.NAME_EXTERN {
-		p.errorf("TLSBSS var must be extern")
+	if flag&obj.TLSBSS != 0 {
+		if nameAddr.Name != obj.NAME_EXTERN {
+			p.errorf("TLSBSS var must be extern")
+		}
+		nameAddr.Name = obj.NAME_TLSVAR
 	}
 
 	// log.Printf("GLOBL %s %d, $%d", name, flag, size)
