@@ -7,7 +7,6 @@ package gc
 import (
 	"cmd/compile/internal/types"
 	"reflect"
-	"sort"
 	"testing"
 )
 
@@ -173,7 +172,7 @@ func TestStackvarSort(t *testing.T) {
 		types.Haspointers(inp[i].Type)
 	}
 
-	sort.Sort(byStackVar(inp))
+	obj.SortSlice(inp, func(i, j int) bool { return cmpstackvarlt(inp[i], inp[j]) })
 	if !reflect.DeepEqual(want, inp) {
 		t.Error("sort failed")
 		for i := range inp {

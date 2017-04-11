@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"html"
 	"os"
-	"sort"
 
 	"cmd/compile/internal/ssa"
 	"cmd/compile/internal/types"
@@ -2975,13 +2974,6 @@ type callArg struct {
 	offset int64
 	v      *ssa.Value
 }
-type byOffset []callArg
-
-func (x byOffset) Len() int      { return len(x) }
-func (x byOffset) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
-func (x byOffset) Less(i, j int) bool {
-	return x[i].offset < x[j].offset
-}
 
 // intrinsicArgs extracts args from n, evaluates them to SSA values, and returns them.
 func (s *state) intrinsicArgs(n *Node) []*ssa.Value {
@@ -3018,7 +3010,7 @@ func (s *state) intrinsicArgs(n *Node) []*ssa.Value {
 			s.Fatalf("function argument assignment target not allowed: %s", opnames[l.Op])
 		}
 	}
-	sort.Sort(byOffset(args))
+	obj.SortSlice(args, func(i, j int) bool { return args[i].offset < args[j].offset })
 	res := make([]*ssa.Value, len(args))
 	for i, a := range args {
 		res[i] = a.v

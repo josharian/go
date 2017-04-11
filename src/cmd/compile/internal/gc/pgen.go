@@ -185,13 +185,6 @@ func cmpstackvarlt(a, b *Node) bool {
 	return a.Sym.Name < b.Sym.Name
 }
 
-// byStackvar implements sort.Interface for []*Node using cmpstackvarlt.
-type byStackVar []*Node
-
-func (s byStackVar) Len() int           { return len(s) }
-func (s byStackVar) Less(i, j int) bool { return cmpstackvarlt(s[i], s[j]) }
-func (s byStackVar) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
-
 func (s *ssafn) AllocFrame(f *ssa.Func) {
 	s.stksize = 0
 	s.stkptrsize = 0
@@ -234,7 +227,7 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 		s.scratchFpMem = tempAt(src.NoXPos, s.curfn, types.Types[TUINT64])
 	}
 
-	sort.Sort(byStackVar(fn.Dcl))
+	obj.SortSlice(fn.Dcl, func(i, j int) bool { return cmpstackvarlt(fn.Dcl[i], fn.Dcl[j]) })
 
 	// Reassign stack offsets of the locals that are used.
 	for i, n := range fn.Dcl {
@@ -392,16 +385,10 @@ func fieldtrack(fnsym *obj.LSym, tracked map[*types.Sym]struct{}) {
 	for sym := range tracked {
 		trackSyms = append(trackSyms, sym)
 	}
-	sort.Sort(symByName(trackSyms))
+	obj.SortSlice(trackSyms, func(i, j int) bool { return trackSyms[i].Name < trackSyms[j].Name })
 	for _, sym := range trackSyms {
 		r := obj.Addrel(fnsym)
 		r.Sym = Linksym(sym)
 		r.Type = obj.R_USEFIELD
 	}
 }
-
-type symByName []*types.Sym
-
-func (a symByName) Len() int           { return len(a) }
-func (a symByName) Less(i, j int) bool { return a[i].Name < a[j].Name }
-func (a symByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
