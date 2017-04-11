@@ -5,6 +5,7 @@
 package ssa
 
 import (
+	"cmd/internal/obj"
 	"fmt"
 	"sort"
 )
@@ -158,11 +159,8 @@ func cse(f *Func) {
 	// Compute substitutions we would like to do. We substitute v for w
 	// if v and w are in the same equivalence class and v dominates w.
 	rewrite := make([]*Value, f.NumValues())
-	byDom := new(partitionByDom) // reusable partitionByDom to reduce allocs
 	for _, e := range partition {
-		byDom.a = e
-		byDom.sdom = sdom
-		sort.Sort(byDom)
+		obj.SortSlice(e, func(i, j int) bool { return sdom.domorder(e[i].Block) < sdom.domorder(e[j].Block) })
 		for i := 0; i < len(e)-1; i++ {
 			// e is sorted by domorder, so a maximal dominant element is first in the slice
 			v := e[i]
@@ -273,7 +271,15 @@ type eqclass []*Value
 // backed by the same storage as the input slice.
 // Equivalence classes of size 1 are ignored.
 func partitionValues(a []*Value, auxIDs auxmap) []eqclass {
-	sort.Sort(sortvalues{a, auxIDs})
+	obj.SortSlice(a, func(i, j int) bool {
+		v := a[i]
+		w := a[j]
+		if cmp := cmpVal(v, w, auxIDs); cmp != CMPeq {
+			return cmp == CMPlt
+		}
+		// Sort by value ID last to keep the sort result deterministic.
+		return v.ID < w.ID
+	})
 
 	var partition []eqclass
 	for len(a) > 0 {
@@ -337,38 +343,6 @@ func cmpVal(v, w *Value, auxIDs auxmap) Cmp {
 	}
 
 	return CMPeq
-}
-
-// Sort values to make the initial partition.
-type sortvalues struct {
-	a      []*Value // array of values
-	auxIDs auxmap   // aux -> aux ID map
-}
-
-func (sv sortvalues) Len() int      { return len(sv.a) }
-func (sv sortvalues) Swap(i, j int) { sv.a[i], sv.a[j] = sv.a[j], sv.a[i] }
-func (sv sortvalues) Less(i, j int) bool {
-	v := sv.a[i]
-	w := sv.a[j]
-	if cmp := cmpVal(v, w, sv.auxIDs); cmp != CMPeq {
-		return cmp == CMPlt
-	}
-
-	// Sort by value ID last to keep the sort result deterministic.
-	return v.ID < w.ID
-}
-
-type partitionByDom struct {
-	a    []*Value // array of values
-	sdom SparseTree
-}
-
-func (sv partitionByDom) Len() int      { return len(sv.a) }
-func (sv partitionByDom) Swap(i, j int) { sv.a[i], sv.a[j] = sv.a[j], sv.a[i] }
-func (sv partitionByDom) Less(i, j int) bool {
-	v := sv.a[i]
-	w := sv.a[j]
-	return sv.sdom.domorder(v.Block) < sv.sdom.domorder(w.Block)
 }
 
 type partitionByArgClass struct {
