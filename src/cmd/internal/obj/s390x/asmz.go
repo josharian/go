@@ -478,14 +478,13 @@ func (c *ctxtz) aclass(a *obj.Addr) int {
 
 	case obj.TYPE_MEM:
 		switch a.Name {
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			if a.Sym == nil {
 				// must have a symbol
 				break
 			}
 			c.instoffset = a.Offset
-			if a.Sym.Type == obj.STLSBSS {
+			if a.IsTLSVariable() {
 				if c.ctxt.Flag_shared {
 					return C_TLS_IE // initial exec model
 				}
@@ -548,17 +547,14 @@ func (c *ctxtz) aclass(a *obj.Addr) int {
 			}
 			goto consize
 
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
-			s := a.Sym
-			if s == nil {
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
+			if a.Sym == nil {
 				break
 			}
 			c.instoffset = a.Offset
-			if s.Type == obj.SCONST {
+			if a.IsStringConst() {
 				goto consize
 			}
-
 			return C_SYMADDR
 
 		case obj.NAME_AUTO:

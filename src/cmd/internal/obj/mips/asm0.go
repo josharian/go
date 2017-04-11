@@ -538,14 +538,13 @@ func (c *ctxt0) aclass(a *obj.Addr) int {
 
 	case obj.TYPE_MEM:
 		switch a.Name {
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
 			if a.Sym == nil {
 				break
 			}
 			c.instoffset = a.Offset
 			if a.Sym != nil { // use relocation
-				if a.Sym.Type == obj.STLSBSS {
+				if a.IsTLSVariable() {
 					return C_TLS
 				}
 				return C_ADDR
@@ -599,19 +598,15 @@ func (c *ctxt0) aclass(a *obj.Addr) int {
 
 			goto consize
 
-		case obj.NAME_EXTERN,
-			obj.NAME_STATIC:
-			s := a.Sym
-			if s == nil {
+		case obj.NAME_EXTERN, obj.NAME_STATIC:
+			if a.Sym == nil {
 				break
 			}
-			if s.Type == obj.SCONST {
-				c.instoffset = a.Offset
+			c.instoffset = a.Offset
+			if a.IsStringConst() {
 				goto consize
 			}
-
-			c.instoffset = a.Offset
-			if s.Type == obj.STLSBSS {
+			if a.IsTLSVariable() {
 				return C_STCON // address of TLS variable
 			}
 			return C_LECON

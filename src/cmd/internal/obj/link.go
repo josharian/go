@@ -172,6 +172,14 @@ type Addr struct {
 	Val interface{}
 }
 
+func (a *Addr) IsStringConst() bool {
+	return a.Sym.Type == SCONST
+}
+
+func (a *Addr) IsTLSVariable() bool {
+	return a.Sym.Type == STLSBSS
+}
+
 type AddrName int8
 
 const (

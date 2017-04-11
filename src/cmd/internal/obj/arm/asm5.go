@@ -1010,16 +1010,14 @@ func (c *ctxt5) aclass(a *obj.Addr) int {
 
 	case obj.TYPE_MEM:
 		switch a.Name {
-		case obj.NAME_EXTERN,
-			obj.NAME_GOTREF,
-			obj.NAME_STATIC:
+		case obj.NAME_EXTERN, obj.NAME_GOTREF, obj.NAME_STATIC:
 			if a.Sym == nil || a.Sym.Name == "" {
 				fmt.Printf("null sym external\n")
 				return C_GOK
 			}
 
 			c.instoffset = 0 // s.b. unused but just in case
-			if a.Sym.Type == obj.STLSBSS {
+			if a.IsTLSVariable() {
 				if c.ctxt.Flag_shared {
 					return C_TLS_IE
 				} else {

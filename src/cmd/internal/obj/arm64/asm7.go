@@ -1100,7 +1100,7 @@ func (c *ctxt7) aclass(a *obj.Addr) int {
 			}
 			c.instoffset = a.Offset
 			if a.Sym != nil { // use relocation
-				if a.Sym.Type == obj.STLSBSS {
+				if a.IsTLSVariable() {
 					if c.ctxt.Flag_shared {
 						return C_TLS_IE
 					} else {
@@ -1187,7 +1187,7 @@ func (c *ctxt7) aclass(a *obj.Addr) int {
 			if a.Sym == nil {
 				break
 			}
-			if a.Sym.Type == obj.STLSBSS {
+			if a.IsTLSVariable() {
 				c.ctxt.Diag("taking address of TLS variable is not supported")
 			}
 			c.instoffset = a.Offset

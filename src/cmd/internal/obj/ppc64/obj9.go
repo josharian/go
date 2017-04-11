@@ -195,7 +195,7 @@ func (c *ctxt9) rewriteToUseGot(p *obj.Prog) {
 	if p.As == obj.ATEXT || p.As == obj.AFUNCDATA || p.As == obj.ACALL || p.As == obj.ARET || p.As == obj.AJMP {
 		return
 	}
-	if source.Sym.Type == obj.STLSBSS {
+	if source.IsTLSVariable() {
 		return
 	}
 	if source.Type != obj.TYPE_MEM {
