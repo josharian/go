@@ -555,6 +555,7 @@ func Main(archInit func(*Arch)) {
 		}
 		timings.AddEvent(fcount, "funcs")
 
+		compilenow = ncpu == 1
 		if ncpu > 1 {
 			for _, fn := range needscompile {
 				backendcompile(fn)
