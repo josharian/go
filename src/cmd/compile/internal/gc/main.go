@@ -556,14 +556,12 @@ func Main(archInit func(*Arch)) {
 		timings.AddEvent(fcount, "funcs")
 
 		if ncpu > 1 {
-			compilewg.Add(1)
 			for _, fn := range needscompile {
 				backendcompile(fn)
 			}
-			compilewg.Done()
-			compilewg.Wait()
-			close(compilec)
 			needscompile = nil
+			close(compilec)
+			compilewg.Wait()
 		}
 		// We autogenerate and compile some small functions
 		// such as method wrappers and equality/hash routines

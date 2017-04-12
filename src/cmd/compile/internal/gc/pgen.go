@@ -319,16 +319,14 @@ func compile(fn *Node) {
 func startbackend(shard int) {
 	for fn := range compilec {
 		compileSSA(fn, shard)
-		compilewg.Done()
 	}
+	compilewg.Done()
 }
 
 func backendcompile(fn *Node) {
 	// Build an SSA backend function.
-	compilewg.Add(1)
 	if ncpu == 1 {
 		compileSSA(fn, 0)
-		compilewg.Done()
 	} else {
 		compilec <- fn
 	}
