@@ -77,7 +77,12 @@ func initssaconfig() {
 		compilec = make(chan *Node)
 		for i := 0; i < ncpu; i++ {
 			compilewg.Add(1)
-			go startbackend(i)
+			go func(shard int) {
+				for fn := range compilec {
+					compileSSA(fn, shard)
+				}
+				compilewg.Done()
+			}(i)
 		}
 	}
 

@@ -310,25 +310,9 @@ func compile(fn *Node) {
 	fn.Func.initLSym()
 
 	if compilenow {
-		backendcompile(fn)
-	} else {
-		needscompile = append(needscompile, fn)
-	}
-}
-
-func startbackend(shard int) {
-	for fn := range compilec {
-		compileSSA(fn, shard)
-	}
-	compilewg.Done()
-}
-
-func backendcompile(fn *Node) {
-	// Build an SSA backend function.
-	if ncpu == 1 {
 		compileSSA(fn, 0)
 	} else {
-		compilec <- fn
+		needscompile = append(needscompile, fn)
 	}
 }
 

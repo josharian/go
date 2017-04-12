@@ -558,7 +558,7 @@ func Main(archInit func(*Arch)) {
 		compilenow = ncpu == 1
 		if ncpu > 1 {
 			for _, fn := range needscompile {
-				backendcompile(fn)
+				compilec <- fn
 			}
 			needscompile = nil
 			close(compilec)
