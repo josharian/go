@@ -116,6 +116,11 @@ type hmap struct {
 	oldbuckets unsafe.Pointer // previous bucket array of half the size, non-nil only when growing
 	nevacuate  uintptr        // progress counter for evacuation (buckets less than this have been evacuated)
 
+	extra *mapextra // optional fields
+}
+
+// mapextra holds fields that are not present on all maps.
+type mapextra struct {
 	// If both key and value do not contain pointers and are inline, then we mark bucket
 	// type as containing no pointers. This avoids scanning such maps.
 	// However, bmap.overflow is a pointer. In order to keep overflow buckets
@@ -123,9 +128,8 @@ type hmap struct {
 	// Overflow is used only if key and value do not contain pointers.
 	// overflow[0] contains overflow buckets for hmap.buckets.
 	// overflow[1] contains overflow buckets for hmap.oldbuckets.
-	// The first indirection allows us to reduce static size of hmap.
-	// The second indirection allows to store a pointer to the slice in hiter.
-	overflow *[2]*[]*bmap
+	// The indirection allows to store a pointer to the slice in hiter.
+	overflow [2]*[]*bmap
 }
 
 // A bucket for a Go map.
@@ -200,17 +204,17 @@ func (h *hmap) setoverflow(t *maptype, b, ovf *bmap) {
 	h.incrnoverflow()
 	if t.bucket.kind&kindNoPointers != 0 {
 		h.createOverflow()
-		*h.overflow[0] = append(*h.overflow[0], ovf)
+		*h.extra.overflow[0] = append(*h.extra.overflow[0], ovf)
 	}
 	*(**bmap)(add(unsafe.Pointer(b), uintptr(t.bucketsize)-sys.PtrSize)) = ovf
 }
 
 func (h *hmap) createOverflow() {
-	if h.overflow == nil {
-		h.overflow = new([2]*[]*bmap)
+	if h.extra == nil {
+		h.extra = new(mapextra)
 	}
-	if h.overflow[0] == nil {
-		h.overflow[0] = new([]*bmap)
+	if h.extra.overflow[0] == nil {
+		h.extra.overflow[0] = new([]*bmap)
 	}
 }
 
@@ -708,7 +712,7 @@ func mapiterinit(t *maptype, h *hmap, it *hiter) {
 		// the table grows and/or overflow buckets are added to the table
 		// while we are iterating.
 		h.createOverflow()
-		it.overflow = *h.overflow
+		it.overflow = h.extra.overflow
 	}
 
 	// decide where to start
@@ -896,13 +900,13 @@ func hashGrow(t *maptype, h *hmap) {
 	h.nevacuate = 0
 	h.noverflow = 0
 
-	if h.overflow != nil {
+	if h.extra != nil && h.extra.overflow[0] != nil {
 		// Promote current overflow buckets to the old generation.
-		if h.overflow[1] != nil {
+		if h.extra.overflow[1] != nil {
 			throw("overflow is not nil")
 		}
-		h.overflow[1] = h.overflow[0]
-		h.overflow[0] = nil
+		h.extra.overflow[1] = h.extra.overflow[0]
+		h.extra.overflow[0] = nil
 	}
 
 	// the actual copying of the hash table data is done incrementally
@@ -1124,8 +1128,8 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 			// Can discard old overflow buckets as well.
 			// If they are still referenced by an iterator,
 			// then the iterator holds a pointers to the slice.
-			if h.overflow != nil {
-				h.overflow[1] = nil
+			if h.extra != nil {
+				h.extra.overflow[1] = nil
 			}
 			h.flags &^= sameSizeGrow
 		}
