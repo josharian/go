@@ -1829,7 +1829,6 @@ func span6(ctxt *obj.Link, s *obj.LSym, newprog obj.ProgAlloc) {
 
 	n := 0
 	var c int32
-	errors := ctxt.Errors
 	var deferreturn *obj.LSym
 	if ctxt.Headtype == obj.Hnacl {
 		deferreturn = ctxt.Lookup("runtime.deferreturn", 0)
@@ -1932,9 +1931,6 @@ func span6(ctxt *obj.Link, s *obj.LSym, newprog obj.ProgAlloc) {
 		}
 		if loop == 0 {
 			break
-		}
-		if ctxt.Errors > errors {
-			return
 		}
 	}
 
