@@ -200,13 +200,15 @@ func (h *hmap) incrnoverflow() {
 	}
 }
 
-func (h *hmap) setoverflow(t *maptype, b, ovf *bmap) {
+func (h *hmap) newoverflow(t *maptype, b *bmap) (ovf *bmap) {
+	ovf = (*bmap)(newobject(t.bucket))
 	h.incrnoverflow()
 	if t.bucket.kind&kindNoPointers != 0 {
 		h.createOverflow()
 		*h.extra.overflow[0] = append(*h.extra.overflow[0], ovf)
 	}
 	*(**bmap)(add(unsafe.Pointer(b), uintptr(t.bucketsize)-sys.PtrSize)) = ovf
+	return ovf
 }
 
 func (h *hmap) createOverflow() {
@@ -569,8 +571,7 @@ again:
 
 	if inserti == nil {
 		// all current buckets are full, allocate a new one.
-		newb := (*bmap)(newobject(t.bucket))
-		h.setoverflow(t, b, newb)
+		newb := h.newoverflow(t, b)
 		inserti = &newb.tophash[0]
 		insertk = add(unsafe.Pointer(newb), dataOffset)
 		val = add(insertk, bucketCnt*uintptr(t.keysize))
@@ -1049,8 +1050,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				if useX {
 					b.tophash[i] = evacuatedX
 					if xi == bucketCnt {
-						newx := (*bmap)(newobject(t.bucket))
-						h.setoverflow(t, x, newx)
+						newx := h.newoverflow(t, x)
 						x = newx
 						xi = 0
 						xk = add(unsafe.Pointer(x), dataOffset)
@@ -1073,8 +1073,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				} else {
 					b.tophash[i] = evacuatedY
 					if yi == bucketCnt {
-						newy := (*bmap)(newobject(t.bucket))
-						h.setoverflow(t, y, newy)
+						newy := h.newoverflow(t, y)
 						y = newy
 						yi = 0
 						yk = add(unsafe.Pointer(y), dataOffset)
