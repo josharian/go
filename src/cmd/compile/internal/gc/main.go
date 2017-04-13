@@ -285,6 +285,7 @@ func Main(archInit func(*Arch)) {
 	if ncpu > 1 && !concurrentBackendAllowed() {
 		log.Fatalf("cannot use concurrent backend compilation with provided flags")
 	}
+	obj.LocksEnabled = ncpu != 1
 	compilenow = ncpu == 1
 
 	// parse -d argument
@@ -570,6 +571,7 @@ func Main(archInit func(*Arch)) {
 		// Disable concurrent compilation from here on,
 		// at least until this convoluted structure has been unwound.
 		ncpu = 1
+		obj.LocksEnabled = false
 		compilenow = true
 
 		if nsavederrors+nerrors == 0 {

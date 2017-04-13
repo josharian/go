@@ -7,7 +7,6 @@ package types
 import (
 	"cmd/internal/obj"
 	"cmd/internal/src"
-	"sync"
 )
 
 // Sym represents an object name. Most commonly, this is a Go identifier naming
@@ -33,7 +32,7 @@ type Sym struct {
 	flags   bitset8
 	Label   *Node // corresponding label (ephemeral)
 	Origpkg *Pkg  // original package for . import
-	Lsymmu  sync.Mutex
+	Lsymmu  obj.BackendMutex
 	Lsym    *obj.LSym
 }
 

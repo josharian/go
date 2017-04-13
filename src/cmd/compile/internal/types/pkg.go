@@ -6,17 +6,16 @@ package types
 
 import (
 	"cmd/internal/obj"
-	"sync"
 )
 
 type Pkg struct {
 	Name     string // package name, e.g. "sys"
 	Path     string // string literal used in import statement, e.g. "runtime/internal/sys"
 	Pathsym  *obj.LSym
-	Prefix   string     // escaped path for use in symbol table
-	Imported bool       // export data of this package was parsed
-	Direct   bool       // imported directly
-	Symsmu   sync.Mutex // protects Syms
+	Prefix   string           // escaped path for use in symbol table
+	Imported bool             // export data of this package was parsed
+	Direct   bool             // imported directly
+	Symsmu   obj.BackendMutex // protects Syms
 	Syms     map[string]*Sym
 }
 
@@ -68,7 +67,7 @@ func (pkg *Pkg) LookupBytes(name []byte) *Sym {
 }
 
 var (
-	internedStringsmu sync.Mutex // protects internedStrings
+	internedStringsmu obj.BackendMutex // protects internedStrings
 	internedStrings   = map[string]string{}
 )
 

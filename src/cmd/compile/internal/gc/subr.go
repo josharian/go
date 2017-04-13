@@ -17,7 +17,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"unicode"
 	"unicode/utf8"
 )
@@ -30,7 +29,7 @@ type Error struct {
 var errors []Error
 
 var (
-	largeStackFramesMu sync.Mutex
+	largeStackFramesMu obj.BackendMutex
 	largeStackFrames   []src.XPos // positions of functions whose stack frames are too large (rare)
 )
 

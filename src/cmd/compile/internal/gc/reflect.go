@@ -13,7 +13,6 @@ import (
 	"os"
 	"sort"
 	"strings"
-	"sync"
 )
 
 type itabEntry struct {
@@ -37,7 +36,7 @@ type ptabEntry struct {
 
 // runtime interface and reflection data structures
 var (
-	signatlistmu sync.Mutex // protects signatlist
+	signatlistmu obj.BackendMutex // protects signatlist
 	signatlist   = make(map[*types.Type]bool)
 
 	itabs []itabEntry

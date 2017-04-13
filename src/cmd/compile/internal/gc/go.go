@@ -10,7 +10,6 @@ import (
 	"cmd/internal/bio"
 	"cmd/internal/obj"
 	"cmd/internal/src"
-	"sync"
 )
 
 const (
@@ -173,7 +172,7 @@ var exportlist []*Node
 var importlist []*Node // imported functions and methods with inlinable bodies
 
 var (
-	funcsymsmu sync.Mutex
+	funcsymsmu obj.BackendMutex
 	funcsyms   []*types.Sym
 )
 

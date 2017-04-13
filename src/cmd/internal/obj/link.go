@@ -39,6 +39,24 @@ import (
 	"sync"
 )
 
+var LocksEnabled bool
+
+type BackendMutex struct {
+	mu sync.Mutex
+}
+
+func (m *BackendMutex) Lock() {
+	if LocksEnabled {
+		m.mu.Lock()
+	}
+}
+
+func (m *BackendMutex) Unlock() {
+	if LocksEnabled {
+		m.mu.Unlock()
+	}
+}
+
 // An Addr is an argument to an instruction.
 // The general forms and their encodings are:
 //
@@ -760,7 +778,7 @@ type Link struct {
 	Flag_optimize bool
 	Bso           *bufio.Writer
 	Pathname      string
-	Hashmu        sync.Mutex // protects Hash
+	Hashmu        BackendMutex // protects Hash
 	Hash          map[SymVer]*LSym
 	PosTable      src.PosTable
 	InlTree       InlTree // global inlining tree used by gc/inl.go
