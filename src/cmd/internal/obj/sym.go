@@ -77,17 +77,17 @@ func (ctxt *Link) Lookup(name string, v int) *LSym {
 // If it does not exist, it creates it and passes it to initfn for one-time initialization.
 func (ctxt *Link) LookupInit(name string, v int, init func(s *LSym)) *LSym {
 	ctxt.hashmu.Lock()
-	defer ctxt.hashmu.Unlock()
-	s := ctxt.hash[SymVer{name, v}]
-	if s != nil {
+	if s := ctxt.hash[SymVer{name, v}]; s != nil {
+		ctxt.hashmu.Unlock()
 		return s
 	}
 
-	s = &LSym{Name: name, Version: int16(v)}
+	s := &LSym{Name: name, Version: int16(v)}
 	ctxt.hash[SymVer{name, v}] = s
 	if init != nil {
 		init(s)
 	}
+	ctxt.hashmu.Unlock()
 	return s
 }
 

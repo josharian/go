@@ -247,10 +247,10 @@ func Linksym(s *types.Sym) *obj.LSym {
 		return nil
 	}
 	s.Lsymmu.Lock()
-	defer s.Lsymmu.Unlock()
 	if s.Lsym == nil {
 		s.Lsym = Ctxt.Lookup(linksymname(s), 0)
 	}
+	s.Lsymmu.Unlock()
 	return s.Lsym
 }
 
