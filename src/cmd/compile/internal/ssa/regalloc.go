@@ -2117,7 +2117,7 @@ func (e *edgeState) findRegFor(typ Type) Location {
 					// Allocate a temp location to spill a register to.
 					// The type of the slot is immaterial - it will not be live across
 					// any safepoint. Just use a type big enough to hold any register.
-					t := LocalSlot{e.s.f.fe.Auto(c.Pos, types.Int64), types.Int64, 0}
+					t := LocalSlot{N: e.s.f.fe.Auto(c.Pos, types.Int64), Type: types.Int64, Off: 0}
 					// TODO: reuse these slots.
 					e.set(t, vid, x, false, c.Pos)
 					if e.s.f.pass.debug > regDebug {

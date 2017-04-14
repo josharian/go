@@ -4633,22 +4633,31 @@ func CheckLoweredGetClosurePtr(v *ssa.Value) {
 	}
 }
 
-// AutoVar returns a *Node and int64 representing the auto variable and offset within it
-// where v should be spilled.
-func AutoVar(v *ssa.Value) (*Node, int64) {
+func AutoSlot(v *ssa.Value) ssa.LocalSlot {
 	loc := v.Block.Func.RegAlloc[v.ID].(ssa.LocalSlot)
 	if v.Type.Size() > loc.Type.Size() {
 		v.Fatalf("spill/restore type %s doesn't fit in slot type %s", v.Type, loc.Type)
 	}
-	return loc.N.(*Node), loc.Off
+	return loc
+}
+
+// AutoVar returns a *Node and int64 representing the auto variable and offset within it
+// where v should be spilled.
+func AutoVar(v *ssa.Value) *Node {
+	loc := AutoSlot(v)
+	return loc.N.(*Node)
 }
 
 func AddrAuto(a *obj.Addr, v *ssa.Value) {
-	n, off := AutoVar(v)
+	loc := AutoSlot(v)
+	n := loc.N.(*Node)
+	if loc.LSym == nil {
+		loc.LSym = Linksym(n.Sym)
+	}
 	a.Type = obj.TYPE_MEM
-	a.Sym = Linksym(n.Sym)
+	a.Sym = loc.LSym
 	a.Reg = int16(thearch.REGSP)
-	a.Offset = n.Xoffset + off
+	a.Offset = n.Xoffset + loc.Off
 	if n.Class == PPARAM || n.Class == PPARAMOUT {
 		a.Name = obj.NAME_PARAM
 	} else {

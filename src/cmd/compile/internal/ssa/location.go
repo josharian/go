@@ -4,7 +4,10 @@
 
 package ssa
 
-import "fmt"
+import (
+	"cmd/internal/obj"
+	"fmt"
+)
 
 // A place that an ssa variable can reside.
 type Location interface {
@@ -26,9 +29,10 @@ func (r *Register) Name() string {
 // A LocalSlot is a location in the stack frame.
 // It is (possibly a subpiece of) a PPARAM, PPARAMOUT, or PAUTO ONAME node.
 type LocalSlot struct {
-	N    GCNode // an ONAME *gc.Node representing a variable on the stack
-	Type Type   // type of slot
-	Off  int64  // offset of slot in N
+	N    GCNode    // an ONAME *gc.Node representing a variable on the stack
+	LSym *obj.LSym // the LSym for N, populated lazily
+	Type Type      // type of slot
+	Off  int64     // offset of slot in N
 }
 
 func (s LocalSlot) Name() string {

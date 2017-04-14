@@ -287,10 +287,10 @@ func affectedNode(v *ssa.Value) (*Node, ssa.SymEffect) {
 	// Special cases.
 	switch v.Op {
 	case ssa.OpLoadReg:
-		n, _ := AutoVar(v.Args[0])
+		n := AutoVar(v.Args[0])
 		return n, ssa.SymRead
 	case ssa.OpStoreReg:
-		n, _ := AutoVar(v)
+		n := AutoVar(v)
 		return n, ssa.SymWrite
 
 	case ssa.OpVarLive:
@@ -298,7 +298,7 @@ func affectedNode(v *ssa.Value) (*Node, ssa.SymEffect) {
 	case ssa.OpVarDef, ssa.OpVarKill:
 		return v.Aux.(*Node), ssa.SymWrite
 	case ssa.OpKeepAlive:
-		n, _ := AutoVar(v.Args[0])
+		n := AutoVar(v.Args[0])
 		return n, ssa.SymRead
 	}
 
