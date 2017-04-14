@@ -287,6 +287,10 @@ func duint8LSym(s *obj.LSym, off int, v uint8) int {
 	return duintxxLSym(s, off, uint64(v), 1)
 }
 
+func duint16LSym(s *obj.LSym, off int, v uint16) int {
+	return duintxxLSym(s, off, uint64(v), 2)
+}
+
 func duint32LSym(s *obj.LSym, off int, v uint32) int {
 	return duintxxLSym(s, off, uint64(v), 4)
 }
