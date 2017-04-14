@@ -109,7 +109,7 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc) {
 	}
 }
 
-func (ctxt *Link) InitTextSym(s *LSym, flag int) {
+func (ctxt *Link) InitTextSym(s *LSym, flag int, addgcsyms bool) {
 	if s == nil {
 		// func _() { }
 		return
@@ -139,6 +139,18 @@ func (ctxt *Link) InitTextSym(s *LSym, flag int) {
 	dsym.Type = SDWARFINFO
 	dsym.Set(AttrDuplicateOK, s.DuplicateOK())
 	ctxt.Data = append(ctxt.Data, dsym)
+
+	// Add the function's gcargs and gclocals to ctxt.Data.
+	// They will be filled in later.
+	if addgcsyms {
+		gcargs := &s.FuncInfo.GCArgs
+		gcargs.Set(AttrDuplicateOK, true)
+		gcargs.Type = SRODATA
+		gclocals := &s.FuncInfo.GCLocals
+		gclocals.Set(AttrDuplicateOK, true)
+		gclocals.Type = SRODATA
+		ctxt.Data = append(ctxt.Data, gcargs, gclocals)
+	}
 }
 
 func (ctxt *Link) Globl(s *LSym, size int64, flag int) {

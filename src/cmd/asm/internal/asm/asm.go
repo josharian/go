@@ -160,7 +160,7 @@ func (p *Parser) asmText(word string, operands [][]lex.Token) {
 		}
 		argSize = p.positiveAtoi(op[1].String())
 	}
-	p.ctxt.InitTextSym(nameAddr.Sym, int(flag))
+	p.ctxt.InitTextSym(nameAddr.Sym, int(flag), false)
 	prog := &obj.Prog{
 		Ctxt: p.ctxt,
 		As:   obj.ATEXT,

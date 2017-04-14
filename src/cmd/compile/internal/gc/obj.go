@@ -276,11 +276,19 @@ func duintptr(s *types.Sym, off int, v uint64) int {
 	return duintxx(s, off, v, Widthptr)
 }
 
-func dbvec(s *types.Sym, off int, bv bvec) int {
+func duint8LSym(s *obj.LSym, off int, v uint8) int {
+	return duintxxLSym(s, off, uint64(v), 1)
+}
+
+func duint32LSym(s *obj.LSym, off int, v uint32) int {
+	return duintxxLSym(s, off, uint64(v), 4)
+}
+
+func dbvecLSym(s *obj.LSym, off int, bv bvec) int {
 	// Runtime reads the bitmaps as byte arrays. Oblige.
 	for j := 0; int32(j) < bv.n; j += 8 {
 		word := bv.b[j/32]
-		off = duint8(s, off, uint8(word>>(uint(j)%32)))
+		off = duint8LSym(s, off, uint8(word>>(uint(j)%32)))
 	}
 	return off
 }
