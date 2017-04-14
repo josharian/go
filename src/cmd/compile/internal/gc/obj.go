@@ -11,6 +11,8 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"os"
+	"runtime"
 	"strconv"
 )
 
@@ -246,6 +248,20 @@ func Linksym(s *types.Sym) *obj.LSym {
 	if s == nil {
 		return nil
 	}
+
+	if os.Getenv("J") != "" {
+		pc := make([]uintptr, 5)
+		n := runtime.Callers(2, pc)
+		frames := runtime.CallersFrames(pc[:n])
+		var frame runtime.Frame
+		more := true
+		for more {
+			frame, more = frames.Next()
+			fmt.Printf("%s(%s:%d)\t", frame.Function, frame.File, frame.Line)
+		}
+		fmt.Println()
+	}
+
 	s.Lsymmu.Lock()
 	if s.Lsym == nil {
 		s.Lsym = Ctxt.Lookup(linksymname(s), 0)
