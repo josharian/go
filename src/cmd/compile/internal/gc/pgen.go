@@ -124,7 +124,7 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 	}
 
 	for _, l := range f.RegAlloc {
-		if ls, ok := l.(ssa.LocalSlot); ok {
+		if ls, ok := l.(*ssa.LocalSlot); ok {
 			ls.N.(*Node).SetUsed(true)
 		}
 	}

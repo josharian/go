@@ -4633,8 +4633,8 @@ func CheckLoweredGetClosurePtr(v *ssa.Value) {
 	}
 }
 
-func AutoSlot(v *ssa.Value) ssa.LocalSlot {
-	loc := v.Block.Func.RegAlloc[v.ID].(ssa.LocalSlot)
+func AutoSlot(v *ssa.Value) *ssa.LocalSlot {
+	loc := v.Block.Func.RegAlloc[v.ID].(*ssa.LocalSlot)
 	if v.Type.Size() > loc.Type.Size() {
 		v.Fatalf("spill/restore type %s doesn't fit in slot type %s", v.Type, loc.Type)
 	}

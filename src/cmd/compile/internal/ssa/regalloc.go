@@ -1959,7 +1959,7 @@ func (e *edgeState) processDest(loc Location, vid ID, splice **Value, pos src.XP
 			// Make sure we spill with the size of the slot, not the
 			// size of x (which might be wider due to our dropping
 			// of narrowing conversions).
-			x = e.p.NewValue1(pos, OpStoreReg, loc.(LocalSlot).Type, x)
+			x = e.p.NewValue1(pos, OpStoreReg, loc.(*LocalSlot).Type, x)
 		}
 	} else {
 		// Emit move from src to dst.
@@ -1968,7 +1968,7 @@ func (e *edgeState) processDest(loc Location, vid ID, splice **Value, pos src.XP
 			if dstReg {
 				x = e.p.NewValue1(pos, OpCopy, c.Type, c)
 			} else {
-				x = e.p.NewValue1(pos, OpStoreReg, loc.(LocalSlot).Type, c)
+				x = e.p.NewValue1(pos, OpStoreReg, loc.(*LocalSlot).Type, c)
 			}
 		} else {
 			if dstReg {
@@ -1991,7 +1991,7 @@ func (e *edgeState) processDest(loc Location, vid ID, splice **Value, pos src.XP
 				r := e.findRegFor(c.Type)
 				t := e.p.NewValue1(pos, OpLoadReg, c.Type, c)
 				e.set(r, vid, t, false, pos)
-				x = e.p.NewValue1(pos, OpStoreReg, loc.(LocalSlot).Type, t)
+				x = e.p.NewValue1(pos, OpStoreReg, loc.(*LocalSlot).Type, t)
 			}
 		}
 	}
@@ -2117,7 +2117,7 @@ func (e *edgeState) findRegFor(typ Type) Location {
 					// Allocate a temp location to spill a register to.
 					// The type of the slot is immaterial - it will not be live across
 					// any safepoint. Just use a type big enough to hold any register.
-					t := LocalSlot{N: e.s.f.fe.Auto(c.Pos, types.Int64), Type: types.Int64, Off: 0}
+					t := &LocalSlot{N: e.s.f.fe.Auto(c.Pos, types.Int64), Type: types.Int64, Off: 0}
 					// TODO: reuse these slots.
 					e.set(t, vid, x, false, c.Pos)
 					if e.s.f.pass.debug > regDebug {

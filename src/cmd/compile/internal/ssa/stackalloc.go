@@ -150,7 +150,7 @@ func (s *stackAllocState) stackalloc() {
 		if v.Op != OpArg {
 			continue
 		}
-		loc := LocalSlot{N: v.Aux.(GCNode), Type: v.Type, Off: v.AuxInt}
+		loc := &LocalSlot{N: v.Aux.(GCNode), Type: v.Type, Off: v.AuxInt}
 		if f.pass.debug > stackDebug {
 			fmt.Printf("stackalloc %s to %s\n", v, loc.Name())
 		}
@@ -207,7 +207,7 @@ func (s *stackAllocState) stackalloc() {
 			if name.N != nil && v.Type.Compare(name.Type) == CMPeq {
 				for _, id := range s.interfere[v.ID] {
 					h := f.getHome(id)
-					if h != nil && h.(LocalSlot).N == name.N && h.(LocalSlot).Off == name.Off {
+					if h != nil && h.(*LocalSlot).N == name.N && h.(*LocalSlot).Off == name.Off {
 						// A variable can interfere with itself.
 						// It is rare, but but it can happen.
 						s.nSelfInterfere++
@@ -218,7 +218,7 @@ func (s *stackAllocState) stackalloc() {
 					fmt.Printf("stackalloc %s to %s\n", v, name.Name())
 				}
 				s.nNamedSlot++
-				f.setHome(v, name)
+				f.setHome(v, &name)
 				continue
 			}
 
@@ -254,7 +254,7 @@ func (s *stackAllocState) stackalloc() {
 			if f.pass.debug > stackDebug {
 				fmt.Printf("stackalloc %s to %s\n", v, loc.Name())
 			}
-			f.setHome(v, loc)
+			f.setHome(v, &loc)
 			slots[v.ID] = i
 		}
 	}
