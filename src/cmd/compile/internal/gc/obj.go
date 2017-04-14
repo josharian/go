@@ -291,6 +291,10 @@ func duint32LSym(s *obj.LSym, off int, v uint32) int {
 	return duintxxLSym(s, off, uint64(v), 4)
 }
 
+func duintptrLSym(s *obj.LSym, off int, v uint64) int {
+	return duintxxLSym(s, off, v, Widthptr)
+}
+
 func dbvecLSym(s *obj.LSym, off int, bv bvec) int {
 	// Runtime reads the bitmaps as byte arrays. Oblige.
 	for j := 0; int32(j) < bv.n; j += 8 {

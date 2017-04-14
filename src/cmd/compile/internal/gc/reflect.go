@@ -778,23 +778,23 @@ const (
 	tflagNamed     = 1 << 2
 )
 
-var dcommontype_algarray *types.Sym
+var dcommontype_algarray *obj.LSym
 
 // dcommontype dumps the contents of a reflect.rtype (runtime._type).
-func dcommontype(s *types.Sym, ot int, t *types.Type) int {
+func dcommontype(ls *obj.LSym, ot int, t *types.Type) int {
 	if ot != 0 {
 		Fatalf("dcommontype %d", ot)
 	}
 
 	sizeofAlg := 2 * Widthptr
 	if dcommontype_algarray == nil {
-		dcommontype_algarray = Runtimepkg.Lookup("algarray")
+		dcommontype_algarray = Linksym(Runtimepkg.Lookup("algarray"))
 	}
 	dowidth(t)
 	alg := algtype(t)
-	var algsym *types.Sym
+	var algsym *obj.LSym
 	if alg == ASPECIAL || alg == AMEM {
-		algsym = dalgsym(t)
+		algsym = Linksym(dalgsym(t))
 	}
 
 	sptrWeak := true
@@ -824,10 +824,10 @@ func dcommontype(s *types.Sym, ot int, t *types.Type) int {
 	//		str           nameOff
 	//		ptrToThis     typeOff
 	//	}
-	ot = duintptr(s, ot, uint64(t.Width))
-	ot = duintptr(s, ot, uint64(ptrdata))
+	ot = duintptrLSym(ls, ot, uint64(t.Width))
+	ot = duintptrLSym(ls, ot, uint64(ptrdata))
 
-	ot = duint32(s, ot, typehash(t))
+	ot = duint32LSym(ls, ot, typehash(t))
 
 	var tflag uint8
 	if uncommonSize(t) != 0 {
@@ -856,7 +856,7 @@ func dcommontype(s *types.Sym, ot int, t *types.Type) int {
 		}
 	}
 
-	ot = duint8(s, ot, tflag)
+	ot = duint8LSym(ls, ot, tflag)
 
 	// runtime (and common sense) expects alignment to be a power of two.
 	i := int(t.Align)
@@ -867,8 +867,8 @@ func dcommontype(s *types.Sym, ot int, t *types.Type) int {
 	if i&(i-1) != 0 {
 		Fatalf("invalid alignment %d for %v", t.Align, t)
 	}
-	ot = duint8(s, ot, t.Align) // align
-	ot = duint8(s, ot, t.Align) // fieldAlign
+	ot = duint8LSym(ls, ot, t.Align) // align
+	ot = duint8LSym(ls, ot, t.Align) // fieldAlign
 
 	i = kinds[t.Etype]
 	if !types.Haspointers(t) {
@@ -880,23 +880,23 @@ func dcommontype(s *types.Sym, ot int, t *types.Type) int {
 	if useGCProg {
 		i |= obj.KindGCProg
 	}
-	ot = duint8(s, ot, uint8(i)) // kind
+	ot = duint8LSym(ls, ot, uint8(i)) // kind
 	if algsym == nil {
-		ot = dsymptr(s, ot, dcommontype_algarray, int(alg)*sizeofAlg)
+		ot = dsymptrLSym(ls, ot, dcommontype_algarray, int(alg)*sizeofAlg)
 	} else {
-		ot = dsymptr(s, ot, algsym, 0)
+		ot = dsymptrLSym(ls, ot, algsym, 0)
 	}
-	ot = dsymptr(s, ot, gcsym, 0) // gcdata
+	ot = dsymptrLSym(ls, ot, Linksym(gcsym), 0) // gcdata
 
 	nsym := dname(p, "", nil, exported)
-	ot = dsymptrOffLSym(Linksym(s), ot, nsym, 0) // str
+	ot = dsymptrOffLSym(ls, ot, nsym, 0) // str
 	// ptrToThis
 	if sptr == nil {
-		ot = duint32(s, ot, 0)
+		ot = duint32LSym(ls, ot, 0)
 	} else if sptrWeak {
-		ot = dsymptrWeakOffLSym(Linksym(s), ot, Linksym(sptr))
+		ot = dsymptrWeakOffLSym(ls, ot, Linksym(sptr))
 	} else {
-		ot = dsymptrOffLSym(Linksym(s), ot, Linksym(sptr), 0)
+		ot = dsymptrOffLSym(ls, ot, Linksym(sptr), 0)
 	}
 
 	return ot
@@ -1122,10 +1122,11 @@ func dtypesym(t *types.Type) *types.Sym {
 	}
 
 ok:
+	ls := Linksym(s)
 	ot := 0
 	switch t.Etype {
 	default:
-		ot = dcommontype(s, ot, t)
+		ot = dcommontype(ls, ot, t)
 		ot = dextratype(s, ot, t, 0)
 
 	case TARRAY:
@@ -1133,24 +1134,24 @@ ok:
 		s1 := dtypesym(t.Elem())
 		t2 := types.NewSlice(t.Elem())
 		s2 := dtypesym(t2)
-		ot = dcommontype(s, ot, t)
-		ot = dsymptr(s, ot, s1, 0)
-		ot = dsymptr(s, ot, s2, 0)
+		ot = dcommontype(ls, ot, t)
+		ot = dsymptrLSym(ls, ot, Linksym(s1), 0)
+		ot = dsymptrLSym(ls, ot, Linksym(s2), 0)
 		ot = duintptr(s, ot, uint64(t.NumElem()))
 		ot = dextratype(s, ot, t, 0)
 
 	case TSLICE:
 		// ../../../../runtime/type.go:/sliceType
 		s1 := dtypesym(t.Elem())
-		ot = dcommontype(s, ot, t)
-		ot = dsymptr(s, ot, s1, 0)
+		ot = dcommontype(ls, ot, t)
+		ot = dsymptrLSym(ls, ot, Linksym(s1), 0)
 		ot = dextratype(s, ot, t, 0)
 
 	case TCHAN:
 		// ../../../../runtime/type.go:/chanType
 		s1 := dtypesym(t.Elem())
-		ot = dcommontype(s, ot, t)
-		ot = dsymptr(s, ot, s1, 0)
+		ot = dcommontype(ls, ot, t)
+		ot = dsymptrLSym(ls, ot, Linksym(s1), 0)
 		ot = duintptr(s, ot, uint64(t.ChanDir()))
 		ot = dextratype(s, ot, t, 0)
 
@@ -1167,7 +1168,7 @@ ok:
 			dtypesym(t1.Type)
 		}
 
-		ot = dcommontype(s, ot, t)
+		ot = dcommontype(ls, ot, t)
 		inCount := t.Recvs().NumFields() + t.Params().NumFields()
 		outCount := t.Results().NumFields()
 		if isddd {
@@ -1184,13 +1185,13 @@ ok:
 
 		// Array of rtype pointers follows funcType.
 		for _, t1 := range t.Recvs().Fields().Slice() {
-			ot = dsymptr(s, ot, dtypesym(t1.Type), 0)
+			ot = dsymptrLSym(ls, ot, Linksym(dtypesym(t1.Type)), 0)
 		}
 		for _, t1 := range t.Params().Fields().Slice() {
-			ot = dsymptr(s, ot, dtypesym(t1.Type), 0)
+			ot = dsymptrLSym(ls, ot, Linksym(dtypesym(t1.Type)), 0)
 		}
 		for _, t1 := range t.Results().Fields().Slice() {
-			ot = dsymptr(s, ot, dtypesym(t1.Type), 0)
+			ot = dsymptrLSym(ls, ot, Linksym(dtypesym(t1.Type)), 0)
 		}
 
 	case TINTER:
@@ -1201,7 +1202,7 @@ ok:
 		}
 
 		// ../../../../runtime/type.go:/interfaceType
-		ot = dcommontype(s, ot, t)
+		ot = dcommontype(ls, ot, t)
 
 		var tpkg *types.Pkg
 		if t.Sym != nil && t != types.Types[t.Etype] && t != types.Errortype {
@@ -1209,13 +1210,12 @@ ok:
 		}
 		ot = dgopkgpath(s, ot, tpkg)
 
-		ot = dsymptr(s, ot, s, ot+Widthptr+2*Widthint+uncommonSize(t))
-		ot = duintxx(s, ot, uint64(n), Widthint)
-		ot = duintxx(s, ot, uint64(n), Widthint)
+		ot = dsymptrLSym(ls, ot, ls, ot+Widthptr+2*Widthint+uncommonSize(t))
+		ot = duintxxLSym(ls, ot, uint64(n), Widthint)
+		ot = duintxxLSym(ls, ot, uint64(n), Widthint)
 		dataAdd := imethodSize() * n
 		ot = dextratype(s, ot, t, dataAdd)
 
-		lsym := Linksym(s)
 		for _, a := range m {
 			// ../../../../runtime/type.go:/imethod
 			exported := exportname(a.name)
@@ -1225,8 +1225,8 @@ ok:
 			}
 			nsym := dname(a.name, "", pkg, exported)
 
-			ot = dsymptrOffLSym(lsym, ot, nsym, 0)
-			ot = dsymptrOffLSym(lsym, ot, Linksym(dtypesym(a.type_)), 0)
+			ot = dsymptrOffLSym(ls, ot, nsym, 0)
+			ot = dsymptrOffLSym(ls, ot, Linksym(dtypesym(a.type_)), 0)
 		}
 
 	// ../../../../runtime/type.go:/mapType
@@ -1235,11 +1235,11 @@ ok:
 		s2 := dtypesym(t.Val())
 		s3 := dtypesym(mapbucket(t))
 		s4 := dtypesym(hmap(t))
-		ot = dcommontype(s, ot, t)
-		ot = dsymptr(s, ot, s1, 0)
-		ot = dsymptr(s, ot, s2, 0)
-		ot = dsymptr(s, ot, s3, 0)
-		ot = dsymptr(s, ot, s4, 0)
+		ot = dcommontype(ls, ot, t)
+		ot = dsymptrLSym(ls, ot, Linksym(s1), 0)
+		ot = dsymptrLSym(ls, ot, Linksym(s2), 0)
+		ot = dsymptrLSym(ls, ot, Linksym(s3), 0)
+		ot = dsymptrLSym(ls, ot, Linksym(s4), 0)
 		if t.Key().Width > MAXKEYSIZE {
 			ot = duint8(s, ot, uint8(Widthptr))
 			ot = duint8(s, ot, 1) // indirect
@@ -1264,7 +1264,7 @@ ok:
 	case TPTR32, TPTR64:
 		if t.Elem().Etype == TANY {
 			// ../../../../runtime/type.go:/UnsafePointerType
-			ot = dcommontype(s, ot, t)
+			ot = dcommontype(ls, ot, t)
 			ot = dextratype(s, ot, t, 0)
 
 			break
@@ -1273,8 +1273,8 @@ ok:
 		// ../../../../runtime/type.go:/ptrType
 		s1 := dtypesym(t.Elem())
 
-		ot = dcommontype(s, ot, t)
-		ot = dsymptr(s, ot, s1, 0)
+		ot = dcommontype(ls, ot, t)
+		ot = dsymptrLSym(ls, ot, Linksym(s1), 0)
 		ot = dextratype(s, ot, t, 0)
 
 	// ../../../../runtime/type.go:/structType
@@ -1287,7 +1287,7 @@ ok:
 			n++
 		}
 
-		ot = dcommontype(s, ot, t)
+		ot = dcommontype(ls, ot, t)
 		pkg := localpkg
 		if t.Sym != nil {
 			pkg = t.Sym.Pkg
@@ -1302,7 +1302,7 @@ ok:
 			}
 		}
 		ot = dgopkgpath(s, ot, pkg)
-		ot = dsymptr(s, ot, s, ot+Widthptr+2*Widthint+uncommonSize(t))
+		ot = dsymptrLSym(ls, ot, ls, ot+Widthptr+2*Widthint+uncommonSize(t))
 		ot = duintxx(s, ot, uint64(n), Widthint)
 		ot = duintxx(s, ot, uint64(n), Widthint)
 
@@ -1312,7 +1312,7 @@ ok:
 		for _, f := range t.Fields().Slice() {
 			// ../../../../runtime/type.go:/structField
 			ot = dnameField(s, ot, pkg, f)
-			ot = dsymptr(s, ot, dtypesym(f.Type), 0)
+			ot = dsymptrLSym(ls, ot, Linksym(dtypesym(f.Type)), 0)
 			offsetAnon := uint64(f.Offset) << 1
 			if offsetAnon>>1 != uint64(f.Offset) {
 				Fatalf("%v: bad field offset for %s", t, f.Sym.Name)
@@ -1320,7 +1320,7 @@ ok:
 			if f.Embedded != 0 {
 				offsetAnon |= 1
 			}
-			ot = duintptr(s, ot, offsetAnon)
+			ot = duintptrLSym(ls, ot, offsetAnon)
 		}
 	}
 
