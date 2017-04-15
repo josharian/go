@@ -158,7 +158,7 @@ type Reloc struct {
 }
 
 type Auto struct {
-	Asym    *Symbol
+	Asym    string
 	Gotype  *Symbol
 	Aoffset int32
 	Name    int16

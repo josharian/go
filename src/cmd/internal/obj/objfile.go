@@ -291,7 +291,6 @@ func (w *objWriter) writeRefs(s *LSym) {
 
 	if s.Type == STEXT {
 		for _, a := range s.Autom {
-			w.writeRef(a.Asym, false)
 			w.writeRef(a.Gotype, false)
 		}
 		pc := &s.Pcln
@@ -439,7 +438,7 @@ func (w *objWriter) writeSym(s *LSym) {
 	w.writeInt(flags)
 	w.writeInt(int64(len(s.Autom)))
 	for _, a := range s.Autom {
-		w.writeRefIndex(a.Asym)
+		w.writeString(a.Asym)
 		w.writeInt(int64(a.Aoffset))
 		if a.Name == NAME_AUTO {
 			w.writeInt(A_AUTO)

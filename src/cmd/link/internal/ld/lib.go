@@ -2007,13 +2007,13 @@ func genasmsym(ctxt *Link, put func(*Link, *Symbol, string, SymbolType, int64, *
 
 			// FP
 			if off >= 0 {
-				put(ctxt, nil, a.Asym.Name, ParamSym, int64(off), a.Gotype)
+				put(ctxt, nil, a.Asym, ParamSym, int64(off), a.Gotype)
 				continue
 			}
 
 			// SP
 			if off <= int32(-SysArch.PtrSize) {
-				put(ctxt, nil, a.Asym.Name, AutoSym, -(int64(off) + int64(SysArch.PtrSize)), a.Gotype)
+				put(ctxt, nil, a.Asym, AutoSym, -(int64(off) + int64(SysArch.PtrSize)), a.Gotype)
 				continue
 			}
 			// Otherwise, off is addressing the saved program counter.

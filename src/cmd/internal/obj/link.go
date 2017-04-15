@@ -733,7 +733,7 @@ func (r RelocType) IsDirectJump() bool {
 }
 
 type Auto struct {
-	Asym    *LSym
+	Asym    string
 	Aoffset int32
 	Name    AddrName
 	Gotype  *LSym

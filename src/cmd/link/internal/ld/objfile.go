@@ -367,7 +367,7 @@ overwrite:
 
 		for i := 0; i < n; i++ {
 			pc.Autom[i] = Auto{
-				Asym:    r.readSymIndex(),
+				Asym:    r.readString(),
 				Aoffset: r.readInt32(),
 				Name:    r.readInt16(),
 				Gotype:  r.readSymIndex(),
