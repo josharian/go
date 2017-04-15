@@ -548,6 +548,12 @@ func Main(archInit func(*Arch)) {
 		timings.AddEvent(fcount, "funcs")
 
 		if nBackendWorkers > 1 {
+			// Compile the longest functions first,
+			// since they're most likely to be the slowest.
+			// This helps avoid stragglers.
+			obj.SortSlice(needscompile, func(i, j int) bool {
+				return needscompile[i].Nbody.Len() > needscompile[j].Nbody.Len()
+			})
 			for _, fn := range needscompile {
 				compilec <- fn
 			}
