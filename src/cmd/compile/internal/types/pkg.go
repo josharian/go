@@ -36,6 +36,7 @@ func (pkg *Pkg) LookupOK(name string) (s *Sym, existed bool) {
 	if pkg == nil {
 		pkg = Nopkg
 	}
+	obj.NoteMutex()
 	pkg.Symsmu.Lock()
 	defer pkg.Symsmu.Unlock()
 	if s := pkg.Syms[name]; s != nil {
@@ -57,6 +58,7 @@ func (pkg *Pkg) LookupBytes(name []byte) *Sym {
 	if pkg == nil {
 		pkg = Nopkg
 	}
+	obj.NoteMutex()
 	pkg.Symsmu.Lock()
 	if s := pkg.Syms[string(name)]; s != nil {
 		pkg.Symsmu.Unlock()
@@ -73,6 +75,7 @@ var (
 )
 
 func InternString(b []byte) string {
+	obj.NoteMutex()
 	internedStringsmu.Lock()
 	defer internedStringsmu.Unlock()
 	s, ok := internedStrings[string(b)] // string(b) here doesn't allocate

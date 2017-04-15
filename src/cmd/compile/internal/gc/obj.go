@@ -219,6 +219,7 @@ func dumpglobls() {
 		ggloblnod(n)
 	}
 
+	obj.NoteMutex()
 	funcsymsmu.Lock()
 	defer funcsymsmu.Unlock()
 	obj.SortSlice(funcsyms, func(i, j int) bool {
@@ -269,6 +270,7 @@ func Linksym(s *types.Sym) *obj.LSym {
 	if s == nil {
 		return nil
 	}
+	obj.NoteMutex()
 	s.Lsymmu.Lock()
 	defer s.Lsymmu.Unlock()
 	if s.Lsym == nil {

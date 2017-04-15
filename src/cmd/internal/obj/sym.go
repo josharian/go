@@ -37,6 +37,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 // WorkingDir returns the current working directory
@@ -73,9 +74,25 @@ func (ctxt *Link) Lookup(name string, v int) *LSym {
 	return ctxt.LookupInit(name, v, nil)
 }
 
+func NoteMutex() {
+	if os.Getenv("J") != "" {
+		pc := make([]uintptr, 5)
+		n := runtime.Callers(3, pc)
+		frames := runtime.CallersFrames(pc[:n])
+		var frame runtime.Frame
+		more := true
+		for more {
+			frame, more = frames.Next()
+			fmt.Printf("%s(%s:%d)\t", frame.Function, frame.File, frame.Line)
+		}
+		fmt.Println()
+	}
+}
+
 // LookupInit looks up the symbol with name name and version v.
 // If it does not exist, it creates it and passes it to initfn for one-time initialization.
 func (ctxt *Link) LookupInit(name string, v int, init func(s *LSym)) *LSym {
+	NoteMutex()
 	ctxt.hashmu.Lock()
 	defer ctxt.hashmu.Unlock()
 	s := ctxt.hash[SymVer{name, v}]

@@ -935,6 +935,7 @@ func typenamesym(t *types.Type) *types.Sym {
 		Fatalf("typenamesym %v", t)
 	}
 	s := typesym(t)
+	obj.NoteMutex()
 	signatlistmu.Lock()
 	addsignat(t)
 	signatlistmu.Unlock()
@@ -1427,6 +1428,7 @@ func addsignat(t *types.Type) {
 
 func dumptypestructs() {
 	// copy types from externdcl list to signatlist
+	obj.NoteMutex()
 	signatlistmu.Lock()
 	for _, n := range externdcl {
 		if n.Op == OTYPE {
@@ -1437,6 +1439,7 @@ func dumptypestructs() {
 
 	// Process signatlist. Use a loop, as dtypesym adds
 	// entries to signatlist while it is being processed.
+	obj.NoteMutex()
 	signatlistmu.Lock()
 	signats := make([]typeAndStr, len(signatlist))
 	for len(signatlist) > 0 {
@@ -1457,6 +1460,7 @@ func dumptypestructs() {
 				dtypesym(types.NewPtr(t))
 			}
 		}
+		obj.NoteMutex()
 		signatlistmu.Lock()
 	}
 	signatlistmu.Unlock()
