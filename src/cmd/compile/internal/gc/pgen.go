@@ -253,6 +253,13 @@ func compileSSA(fn *Node, worker int) {
 // and waits for them to complete.
 func finishcompilation() {
 	if len(needscompile) != 0 {
+		// Compile the longest functions first,
+		// since they're most likely to be the slowest.
+		// This helps avoid stragglers.
+		obj.SortSlice(needscompile, func(i, j int) bool {
+			return needscompile[i].Nbody.Len() > needscompile[j].Nbody.Len()
+		})
+
 		var wg sync.WaitGroup
 		c := make(chan *Node)
 		for i := 0; i < nBackendWorkers; i++ {
