@@ -17,6 +17,22 @@ const (
 	tmpstringbufsize = 32
 )
 
+// func countnodeslist(s []*Node) int {
+// 	tot := 0
+// 	for _, n := range s {
+// 		tot += countnodes(n)
+// 	}
+// 	return tot
+// }
+
+// func countnodes(n *Node) int {
+// 	if n == nil {
+// 		return 0
+// 	}
+// 	return countnodeslist(n.Ninit.Slice()) + countnodeslist(n.List.Slice()) + countnodeslist(n.Nbody.Slice()) +
+// 		countnodeslist(n.Rlist.Slice()) + countnodes(n.Left) + countnodes(n.Right) + 1
+// }
+
 func walk(fn *Node) {
 	Curfn = fn
 

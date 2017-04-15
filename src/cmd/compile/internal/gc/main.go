@@ -557,6 +557,16 @@ func Main(archInit func(*Arch)) {
 		timings.AddEvent(fcount, "funcs")
 
 		if ncpu > 1 {
+			// complexity := make(map[*Node]int)
+			// for _, n := range needscompile {
+			// 	complexity[n] = countnodes(n)
+			// }
+			obj.SortSlice(needscompile, func(i, j int) bool {
+				return needscompile[i].Nbody.Len() > needscompile[j].Nbody.Len()
+			})
+			// obj.SortSlice(needscompile, func(i, j int) bool {
+			// 	return complexity[needscompile[i]] > complexity[needscompile[j]]
+			// })
 			for _, fn := range needscompile {
 				compilec <- fn
 			}
