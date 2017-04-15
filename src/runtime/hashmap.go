@@ -130,6 +130,9 @@ type mapextra struct {
 	// overflow[1] contains overflow buckets for hmap.oldbuckets.
 	// The indirection allows to store a pointer to the slice in hiter.
 	overflow [2]*[]*bmap
+
+	// availOverflow stores an overflow bucket available for re-use.
+	availOverflow *bmap
 }
 
 // A bucket for a Go map.
@@ -201,7 +204,12 @@ func (h *hmap) incrnoverflow() {
 }
 
 func (h *hmap) newoverflow(t *maptype, b *bmap) (ovf *bmap) {
-	ovf = (*bmap)(newobject(t.bucket))
+	if h.extra != nil && h.extra.availOverflow != nil {
+		ovf = h.extra.availOverflow
+		h.extra.availOverflow = nil
+	} else {
+		ovf = (*bmap)(newobject(t.bucket))
+	}
 	h.incrnoverflow()
 	if t.bucket.kind&kindNoPointers != 0 {
 		h.createOverflow()
@@ -979,9 +987,6 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 	newbit := h.noldbuckets()
 	alg := t.key.alg
 	if !evacuated(b) {
-		// TODO: reuse overflow buckets instead of using new ones, if there
-		// is no iterator using the old buckets.  (If !oldIterator.)
-
 		var (
 			x, y   *bmap          // current low/high buckets in new map
 			xi, yi int            // key/val indices into x and y
@@ -1106,6 +1111,11 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 			} else {
 				memclrNoHeapPointers(add(unsafe.Pointer(b), dataOffset), uintptr(t.bucketsize)-dataOffset)
 			}
+			b.tophash = [bucketCnt]uint8{}
+			if h.extra == nil {
+				h.extra = new(mapextra)
+			}
+			h.extra.availOverflow = b
 		}
 	}
 
