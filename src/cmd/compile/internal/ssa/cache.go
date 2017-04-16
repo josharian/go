@@ -20,6 +20,8 @@ type Cache struct {
 
 	domblockstore []ID         // scratch space for computing dominators
 	scrSparse     []*sparseSet // scratch sparse sets to be re-used.
+
+	pad [128]byte // avoid false sharing
 }
 
 func (c *Cache) Reset() {
