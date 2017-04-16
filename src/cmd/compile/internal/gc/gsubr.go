@@ -36,11 +36,7 @@ import (
 	"cmd/internal/src"
 )
 
-var sharedProgArray *[10000]obj.Prog // *T instead of T to work around issue 19839
-
-func init() {
-	sharedProgArray = new([10000]obj.Prog)
-}
+type progCache [10000]obj.Prog
 
 // Progs accumulates Progs for a function and converts them into machine code.
 type Progs struct {
@@ -49,7 +45,7 @@ type Progs struct {
 	pc        int64      // virtual PC; count of Progs
 	pos       src.XPos   // position to use for new Progs
 	curfn     *Node      // fn these Progs are for
-	progcache []obj.Prog // local progcache
+	progcache *progCache // local progcache
 	cacheidx  int        // first free element of progcache
 }
 
@@ -57,8 +53,7 @@ type Progs struct {
 func newProgs(fn *Node, shard int) *Progs {
 	pp := new(Progs)
 	if Ctxt.CanReuseProgs() {
-		sz := len(sharedProgArray) / ncpu
-		pp.progcache = sharedProgArray[sz*shard : sz*(shard+1)]
+		pp.progcache = &backendCaches[shard].progCache
 	}
 	pp.curfn = fn
 

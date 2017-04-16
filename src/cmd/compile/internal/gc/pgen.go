@@ -230,7 +230,7 @@ func compile(fn *Node) {
 // uses it to generate a plist,
 // and flushes that plist to machine code.
 func compileSSA(fn *Node, shard int) {
-	cache := &ssaCaches[shard]
+	cache := &backendCaches[shard].ssaCache
 	ssafn := buildssa(fn, cache)
 	pp := newProgs(fn, shard)
 	genssa(ssafn, pp)
