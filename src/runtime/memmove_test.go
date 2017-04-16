@@ -307,6 +307,7 @@ func BenchmarkLargeMemclrHasPointers(b *testing.B) {
 	}
 	type cache [16384]prog
 	a := new(cache)
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		*a = cache{}
 	}

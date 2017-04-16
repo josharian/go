@@ -416,7 +416,9 @@ func reflect_typedslicecopy(elemType *_type, dst, src slice) int {
 //go:nosplit
 func typedmemclr(typ *_type, ptr unsafe.Pointer) {
 	if typ.kind&kindNoPointers == 0 {
-		bulkBarrierPreWrite(uintptr(ptr), 0, typ.size)
+		memclrHasPointers(ptr, typ.size)
+		return
+		// bulkBarrierPreWrite(uintptr(ptr), 0, typ.size)
 	}
 	memclrNoHeapPointers(ptr, typ.size)
 }
@@ -429,7 +431,7 @@ func memclrHasPointers(ptr unsafe.Pointer, n uintptr) {
 		return
 	}
 	for i := uintptr(0); i < n; i += chunksize {
-		size := chunksize
+		size := uintptr(chunksize)
 		if i+size > n {
 			size = n - i
 		}
@@ -443,6 +445,7 @@ func memclrHasPointers(ptr unsafe.Pointer, n uintptr) {
 // does not have to point to the start of the allocation.
 //
 //go:nosplit
+//go:noinline
 func memclrHasPointersChunk(ptr unsafe.Pointer, n uintptr) {
 	bulkBarrierPreWrite(uintptr(ptr), 0, n)
 	memclrNoHeapPointers(ptr, n)
