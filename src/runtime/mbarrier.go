@@ -421,13 +421,29 @@ func typedmemclr(typ *_type, ptr unsafe.Pointer) {
 	memclrNoHeapPointers(ptr, typ.size)
 }
 
+func memclrHasPointers(ptr unsafe.Pointer, n uintptr) {
+	const chunksize = 1024
+	// Fast path for small n.
+	if n <= chunksize {
+		memclrHasPointersChunk(ptr, n)
+		return
+	}
+	for i := uintptr(0); i < n; i += chunksize {
+		size := chunksize
+		if i+size > n {
+			size = n - i
+		}
+		memclrHasPointersChunk(add(ptr, i), size)
+	}
+}
+
 // memclrHasPointers clears n bytes of typed memory starting at ptr.
 // The caller must ensure that the type of the object at ptr has
 // pointers, usually by checking typ.kind&kindNoPointers. However, ptr
 // does not have to point to the start of the allocation.
 //
 //go:nosplit
-func memclrHasPointers(ptr unsafe.Pointer, n uintptr) {
+func memclrHasPointersChunk(ptr unsafe.Pointer, n uintptr) {
 	bulkBarrierPreWrite(uintptr(ptr), 0, n)
 	memclrNoHeapPointers(ptr, n)
 }
