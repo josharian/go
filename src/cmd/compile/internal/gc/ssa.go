@@ -19,9 +19,15 @@ import (
 	"cmd/internal/sys"
 )
 
+type backendCache struct {
+	ssaCache  ssa.Cache
+	progCache progCache
+	pad       [128]byte // avoid false sharing
+}
+
 var (
-	ssaConfig *ssa.Config
-	ssaCaches []ssa.Cache
+	ssaConfig     *ssa.Config
+	backendCaches []backendCache
 )
 
 func initssaconfig() {
@@ -69,7 +75,7 @@ func initssaconfig() {
 		ssaConfig.Set387(thearch.Use387)
 	}
 
-	ssaCaches = make([]ssa.Cache, ncpu)
+	backendCaches = make([]backendCache, ncpu)
 	if ncpu > 1 {
 		compilec = make(chan *Node)
 		for i := 0; i < ncpu; i++ {
