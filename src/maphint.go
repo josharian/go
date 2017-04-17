@@ -2,27 +2,28 @@ package main
 
 import (
 	"fmt"
+	"runtime"
+	"unsafe"
 )
 
 const loadFactor = 6.5
 
 var lowbuckets = [...]int{0, 8, 13, 26, 52, 104, 208, 416, 832, 1664, 3328, 6656, 13312, 26624, 53248, 106496}
 
+// func main() {
+// 	fmt.Println("START")
+// 	m := make(map[int]string)
+// 	for i := 0; i < 100000; i++ {
+// 		m[i] = "i"
+// 	}
+// }
+
 func main() {
-	fmt.Println("START")
-	m := make(map[int]string)
-	for i := 0; i < 100000; i++ {
-		m[i] = "i"
-	}
-}
-
-/*
-
-func main5() {
 	var tots [16]int
 	iters := 0
 	for {
-		for b, sz := range lowbuckets {
+		for b := 0; b < len(lowbuckets)-1; b++ {
+			sz := (lowbuckets[b] + lowbuckets[b+1]) / 2
 			m := make(map[int]struct{}, sz)
 			for j := 0; j < sz; j++ {
 				m[j] = struct{}{}
@@ -56,7 +57,7 @@ func main5() {
 	// B=14	sz=53248		novf=103.1
 	// B=15	sz=106496		novf=206.2
 
-}*/
+}
 
 // truncated
 var novf = [...]int{

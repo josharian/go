@@ -278,7 +278,7 @@ func makemap(t *maptype, hint int64, h *hmap, bucket unsafe.Pointer) *hmap {
 	// If hint is large zeroing this memory could take a while.
 	buckets := bucket
 	if B != 0 {
-		buckets = newarray2(t.bucket, 1<<B)
+		buckets = newarray(t.bucket, 1<<B)
 	}
 
 	// initialize Hmap
@@ -506,7 +506,7 @@ func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 	h.flags |= hashWriting
 
 	if h.buckets == nil {
-		h.buckets = newarray2(t.bucket, 1)
+		h.buckets = newarray(t.bucket, 1)
 	}
 
 again:
@@ -883,7 +883,7 @@ func hashGrow(t *maptype, h *hmap) {
 		h.flags |= sameSizeGrow
 	}
 	oldbuckets := h.buckets
-	newbuckets := newarray2(t.bucket, 1<<(h.B+bigger))
+	newbuckets := newarray(t.bucket, 1<<(h.B+bigger))
 	flags := h.flags &^ (iterator | oldIterator)
 	if h.flags&iterator != 0 {
 		flags |= oldIterator
@@ -962,6 +962,11 @@ func growWork(t *maptype, h *hmap, bucket uintptr) {
 	if h.growing() {
 		evacuate(t, h, h.nevacuate)
 	}
+}
+
+func MapNOverflow(p unsafe.Pointer) uint16 {
+	h := (*hmap)(p)
+	return h.noverflow
 }
 
 func bucketEvacuated(t *maptype, h *hmap, bucket uintptr) bool {
