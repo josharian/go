@@ -769,6 +769,252 @@ func mallocgc(size uintptr, typ *_type, needzero bool) unsafe.Pointer {
 	return x
 }
 
+func mallocgc2(size uintptr, typ *_type, needzero bool, nelem int) unsafe.Pointer {
+	println("MALLOCGC2", size, typ.name(), needzero)
+	if gcphase == _GCmarktermination {
+		throw("mallocgc called with gcphase == _GCmarktermination")
+	}
+
+	if size == 0 {
+		println("SIZE 0")
+		return unsafe.Pointer(&zerobase)
+	}
+
+	if debug.sbrk != 0 {
+		align := uintptr(16)
+		if typ != nil {
+			align = uintptr(typ.align)
+		}
+		return persistentalloc(size, align, &memstats.other_sys)
+	}
+
+	// assistG is the G to charge for this allocation, or nil if
+	// GC is not currently active.
+	var assistG *g
+	if gcBlackenEnabled != 0 {
+		// Charge the current user G for this allocation.
+		assistG = getg()
+		if assistG.m.curg != nil {
+			assistG = assistG.m.curg
+		}
+		// Charge the allocation against the G. We'll account
+		// for internal fragmentation at the end of mallocgc.
+		assistG.gcAssistBytes -= int64(size)
+
+		if assistG.gcAssistBytes < 0 {
+			// This G is in debt. Assist the GC to correct
+			// this before allocating. This must happen
+			// before disabling preemption.
+			gcAssistAlloc(assistG)
+		}
+	}
+
+	// Set mp.mallocing to keep from being preempted by GC.
+	mp := acquirem()
+	if mp.mallocing != 0 {
+		throw("malloc deadlock")
+	}
+	if mp.gsignal == getg() {
+		throw("malloc during signal")
+	}
+	mp.mallocing = 1
+
+	shouldhelpgc := false
+	dataSize := size
+	c := gomcache()
+	var x unsafe.Pointer
+	noscan := typ == nil || typ.kind&kindNoPointers != 0
+	if size <= maxSmallSize {
+		if noscan && size < maxTinySize {
+			// Tiny allocator.
+			//
+			// Tiny allocator combines several tiny allocation requests
+			// into a single memory block. The resulting memory block
+			// is freed when all subobjects are unreachable. The subobjects
+			// must be noscan (don't have pointers), this ensures that
+			// the amount of potentially wasted memory is bounded.
+			//
+			// Size of the memory block used for combining (maxTinySize) is tunable.
+			// Current setting is 16 bytes, which relates to 2x worst case memory
+			// wastage (when all but one subobjects are unreachable).
+			// 8 bytes would result in no wastage at all, but provides less
+			// opportunities for combining.
+			// 32 bytes provides more opportunities for combining,
+			// but can lead to 4x worst case wastage.
+			// The best case winning is 8x regardless of block size.
+			//
+			// Objects obtained from tiny allocator must not be freed explicitly.
+			// So when an object will be freed explicitly, we ensure that
+			// its size >= maxTinySize.
+			//
+			// SetFinalizer has a special case for objects potentially coming
+			// from tiny allocator, it such case it allows to set finalizers
+			// for an inner byte of a memory block.
+			//
+			// The main targets of tiny allocator are small strings and
+			// standalone escaping variables. On a json benchmark
+			// the allocator reduces number of allocations by ~12% and
+			// reduces heap size by ~20%.
+			off := c.tinyoffset
+			// Align tiny pointer for required (conservative) alignment.
+			if size&7 == 0 {
+				off = round(off, 8)
+			} else if size&3 == 0 {
+				off = round(off, 4)
+			} else if size&1 == 0 {
+				off = round(off, 2)
+			}
+			if off+size <= maxTinySize && c.tiny != 0 {
+				// The object fits into existing tiny block.
+				x = unsafe.Pointer(c.tiny + off)
+				c.tinyoffset = off + size
+				c.local_tinyallocs++
+				mp.mallocing = 0
+				releasem(mp)
+				println("TINY")
+				return x
+			}
+			// Allocate a new maxTinySize block.
+			span := c.alloc[tinySizeClass]
+			v := nextFreeFast(span)
+			if v == 0 {
+				v, _, shouldhelpgc = c.nextFree(tinySizeClass)
+			}
+			x = unsafe.Pointer(v)
+			(*[2]uint64)(x)[0] = 0
+			(*[2]uint64)(x)[1] = 0
+			// See if we need to replace the existing tiny block with the new one
+			// based on amount of remaining free space.
+			if size < c.tinyoffset || c.tiny == 0 {
+				c.tiny = uintptr(x)
+				c.tinyoffset = size
+			}
+			size = maxTinySize
+			println("NEW TINY")
+		} else {
+			var sizeclass uint8
+			if size <= smallSizeMax-8 {
+				sizeclass = size_to_class8[(size+smallSizeDiv-1)/smallSizeDiv]
+			} else {
+				sizeclass = size_to_class128[(size-smallSizeMax+largeSizeDiv-1)/largeSizeDiv]
+			}
+			size = uintptr(class_to_size[sizeclass])
+			span := c.alloc[sizeclass]
+			v := nextFreeFast(span)
+			if v == 0 {
+				v, span, shouldhelpgc = c.nextFree(sizeclass)
+			}
+			x = unsafe.Pointer(v)
+			if needzero && span.needzero != 0 {
+				memclrNoHeapPointers(unsafe.Pointer(v), size)
+			}
+			opt := ""
+			if size/typ.size != uintptr(nelem) {
+				opt = "OPT"
+			}
+			println("sizeclass", sizeclass, "sz=", size, "couldfit=", size/typ.size, "nelem=", nelem, opt)
+		}
+	} else {
+		var s *mspan
+		shouldhelpgc = true
+		systemstack(func() {
+			s = largeAlloc2(size, needzero)
+		})
+		println("largeAlloc", size) // TODO: instrument largealloc
+		s.freeindex = 1
+		s.allocCount = 1
+		x = unsafe.Pointer(s.base())
+		size = s.elemsize
+	}
+
+	var scanSize uintptr
+	if noscan {
+		println("is noscan")
+		heapBitsSetTypeNoScan(uintptr(x))
+	} else {
+		println("not noscan")
+		// If allocating a defer+arg block, now that we've picked a malloc size
+		// large enough to hold everything, cut the "asked for" size down to
+		// just the defer header, so that the GC bitmap will record the arg block
+		// as containing nothing at all (as if it were unused space at the end of
+		// a malloc block caused by size rounding).
+		// The defer arg areas are scanned as part of scanstack.
+		if typ == deferType {
+			dataSize = unsafe.Sizeof(_defer{})
+		}
+		heapBitsSetType(uintptr(x), size, dataSize, typ)
+		if dataSize > typ.size {
+			println("array", dataSize, typ.size)
+			// Array allocation. If there are any
+			// pointers, GC has to scan to the last
+			// element.
+			if typ.ptrdata != 0 {
+				scanSize = dataSize - typ.size + typ.ptrdata
+			}
+		} else {
+			scanSize = typ.ptrdata
+		}
+		c.local_scan += scanSize
+	}
+	println("scanSize", scanSize)
+
+	// Ensure that the stores above that initialize x to
+	// type-safe memory and set the heap bits occur before
+	// the caller can make x observable to the garbage
+	// collector. Otherwise, on weakly ordered machines,
+	// the garbage collector could follow a pointer to x,
+	// but see uninitialized memory or stale heap bits.
+	publicationBarrier()
+
+	// Allocate black during GC.
+	// All slots hold nil so no scanning is needed.
+	// This may be racing with GC so do it atomically if there can be
+	// a race marking the bit.
+	if gcphase != _GCoff {
+		gcmarknewobject(uintptr(x), size, scanSize)
+	}
+
+	if raceenabled {
+		racemalloc(x, size)
+	}
+
+	if msanenabled {
+		msanmalloc(x, size)
+	}
+
+	mp.mallocing = 0
+	releasem(mp)
+
+	if debug.allocfreetrace != 0 {
+		tracealloc(x, size, typ)
+	}
+
+	if rate := MemProfileRate; rate > 0 {
+		if size < uintptr(rate) && int32(size) < c.next_sample {
+			c.next_sample -= int32(size)
+		} else {
+			mp := acquirem()
+			profilealloc(mp, x, size)
+			releasem(mp)
+		}
+	}
+
+	if assistG != nil {
+		// Account for internal fragmentation in the assist
+		// debt now that we know it.
+		assistG.gcAssistBytes -= int64(size - dataSize)
+	}
+
+	if shouldhelpgc {
+		if t := (gcTrigger{kind: gcTriggerHeap}); t.test() {
+			gcStart(gcBackgroundMode, t)
+		}
+	}
+
+	println("done")
+	return x
+}
+
 func largeAlloc(size uintptr, needzero bool) *mspan {
 	// print("largeAlloc size=", size, "\n")
 
@@ -784,6 +1030,32 @@ func largeAlloc(size uintptr, needzero bool) *mspan {
 	// necessary. mHeap_Alloc will also sweep npages, so this only
 	// pays the debt down to npage pages.
 	deductSweepCredit(npages*_PageSize, npages)
+
+	s := mheap_.alloc(npages, 0, true, needzero)
+	if s == nil {
+		throw("out of memory")
+	}
+	s.limit = s.base() + size
+	heapBitsForSpan(s.base()).initSpan(s)
+	return s
+}
+
+func largeAlloc2(size uintptr, needzero bool) *mspan {
+	// print("largeAlloc size=", size, "\n")
+
+	if size+_PageSize < size {
+		throw("out of memory")
+	}
+	npages := size >> _PageShift
+	if size&_PageMask != 0 {
+		npages++
+	}
+
+	// Deduct credit for this span allocation and sweep if
+	// necessary. mHeap_Alloc will also sweep npages, so this only
+	// pays the debt down to npage pages.
+	deductSweepCredit(npages*_PageSize, npages)
+	println("largealloc npages=", npages, "size=", npages*_PageSize)
 
 	s := mheap_.alloc(npages, 0, true, needzero)
 	if s == nil {
@@ -812,6 +1084,16 @@ func newarray(typ *_type, n int) unsafe.Pointer {
 		panic(plainError("runtime: allocation size out of range"))
 	}
 	return mallocgc(typ.size*uintptr(n), typ, true)
+}
+
+// newarray2 allocates an array of n elements of type typ
+// and tells you how much space was wasted in the process.
+func newarray2(typ *_type, n int) unsafe.Pointer {
+	if n < 0 || uintptr(n) > maxSliceCap(typ.size) {
+		panic(plainError("runtime: allocation size out of range"))
+	}
+	println("array elem size", typ.size, "count", n)
+	return mallocgc2(typ.size*uintptr(n), typ, true, n)
 }
 
 //go:linkname reflect_unsafe_NewArray reflect.unsafe_NewArray
