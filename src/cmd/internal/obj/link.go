@@ -779,8 +779,9 @@ type Link struct {
 }
 
 type hash struct {
-	mu sync.Mutex
-	m  map[string]*LSym
+	mu  sync.Mutex
+	m   map[string]*LSym
+	pad [128]byte // avoid false sharing
 }
 
 func (ctxt *Link) Diag(format string, args ...interface{}) {
