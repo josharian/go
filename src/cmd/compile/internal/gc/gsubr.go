@@ -34,33 +34,34 @@ import (
 	"cmd/compile/internal/types"
 	"cmd/internal/obj"
 	"cmd/internal/src"
+	"sync"
 )
 
-var sharedProgArray *[10000]obj.Prog // *T instead of T to work around issue 19839
+type progCache [512]obj.Prog
 
-func init() {
-	sharedProgArray = new([10000]obj.Prog)
+var progCachePool = sync.Pool{
+	New: func() interface{} {
+		return new(progCache)
+	},
 }
 
 // Progs accumulates Progs for a function and converts them into machine code.
 type Progs struct {
-	Text      *obj.Prog  // ATEXT Prog for this function
-	next      *obj.Prog  // next Prog
-	pc        int64      // virtual PC; count of Progs
-	pos       src.XPos   // position to use for new Progs
-	curfn     *Node      // fn these Progs are for
-	progcache []obj.Prog // local progcache
-	cacheidx  int        // first free element of progcache
+	Text       *obj.Prog    // ATEXT Prog for this function
+	next       *obj.Prog    // next Prog
+	pc         int64        // virtual PC; count of Progs
+	pos        src.XPos     // position to use for new Progs
+	curfn      *Node        // fn these Progs are for
+	progcaches []*progCache // local progcaches to return
+	progcache  *progCache   // current progcache
+	cacheidx   int          // first free element of progcache
 }
 
 // newProgs returns a new Progs for fn.
 // shard indicates which of ncpu backend shards will use the Progs.
+// TODO: elim shard param
 func newProgs(fn *Node, shard int) *Progs {
 	pp := new(Progs)
-	if Ctxt.CanReuseProgs() {
-		sz := len(sharedProgArray) / ncpu
-		pp.progcache = sharedProgArray[sz*shard : sz*(shard+1)]
-	}
 	pp.curfn = fn
 
 	// prime the pump
@@ -73,14 +74,17 @@ func newProgs(fn *Node, shard int) *Progs {
 }
 
 func (pp *Progs) NewProg() *obj.Prog {
-	if pp.cacheidx < len(pp.progcache) {
-		p := &pp.progcache[pp.cacheidx]
-		p.Ctxt = Ctxt
-		pp.cacheidx++
-		return p
+	if pp.progcache == nil {
+		pp.progcache = progCachePool.Get().(*progCache)
+		pp.progcaches = append(pp.progcaches, pp.progcache)
 	}
-	p := new(obj.Prog)
+	p := &pp.progcache[pp.cacheidx]
 	p.Ctxt = Ctxt
+	pp.cacheidx++
+	if pp.cacheidx == len(pp.progcache) {
+		pp.progcache = nil
+		pp.cacheidx = 0
+	}
 	return p
 }
 
@@ -94,9 +98,16 @@ func (pp *Progs) Flush() {
 func (pp *Progs) Free() {
 	if Ctxt.CanReuseProgs() {
 		// Clear progs to enable GC and avoid abuse.
-		s := pp.progcache[:pp.cacheidx]
-		for i := range s {
-			s[i] = obj.Prog{}
+		for _, c := range pp.progcaches {
+			n := len(c)
+			if c == pp.progcache {
+				n = pp.cacheidx
+			}
+			s := c[:n]
+			for i := range s {
+				s[i] = obj.Prog{}
+			}
+			progCachePool.Put(c)
 		}
 	}
 	// Clear pp to avoid abuse.
