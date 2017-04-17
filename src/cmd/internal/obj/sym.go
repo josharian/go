@@ -53,7 +53,10 @@ func WorkingDir() string {
 
 func Linknew(arch *LinkArch) *Link {
 	ctxt := new(Link)
-	ctxt.hash = make(map[SymVer]*LSym)
+	for i := range ctxt.lenhashes {
+		ctxt.lenhashes[i].m = make(map[string]*LSym)
+	}
+	ctxt.v1hash.m = make(map[string]*LSym)
 	ctxt.Arch = arch
 	ctxt.Pathname = WorkingDir()
 
@@ -76,18 +79,27 @@ func (ctxt *Link) Lookup(name string, v int) *LSym {
 // LookupInit looks up the symbol with name name and version v.
 // If it does not exist, it creates it and passes it to init for one-time initialization.
 func (ctxt *Link) LookupInit(name string, v int, init func(s *LSym)) *LSym {
-	ctxt.hashmu.Lock()
-	if s := ctxt.hash[SymVer{name, v}]; s != nil {
-		ctxt.hashmu.Unlock()
+	var h *hash
+	switch v {
+	case 0:
+		h = &ctxt.lenhashes[len(name)%len(ctxt.lenhashes)]
+	case 1:
+		h = &ctxt.v1hash
+	default:
+		ctxt.Diag("LookupInit bad version %d", v)
+	}
+	h.mu.Lock()
+	if s := h.m[name]; s != nil {
+		h.mu.Unlock()
 		return s
 	}
 
 	s := &LSym{Name: name, Version: int16(v)}
-	ctxt.hash[SymVer{name, v}] = s
+	h.m[name] = s
 	if init != nil {
 		init(s)
 	}
-	ctxt.hashmu.Unlock()
+	h.mu.Unlock()
 	return s
 }
 

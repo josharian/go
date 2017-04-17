@@ -762,8 +762,8 @@ type Link struct {
 	Flag_optimize bool
 	Bso           *bufio.Writer
 	Pathname      string
-	hashmu        sync.Mutex // protects hash
-	hash          map[SymVer]*LSym
+	lenhashes     [16]hash
+	v1hash        hash
 	PosTable      src.PosTable
 	InlTree       InlTree // global inlining tree used by gc/inl.go
 	Imports       []string
@@ -776,6 +776,11 @@ type Link struct {
 	// state for writing objects
 	Text []*LSym
 	Data []*LSym
+}
+
+type hash struct {
+	mu sync.Mutex
+	m  map[string]*LSym
 }
 
 func (ctxt *Link) Diag(format string, args ...interface{}) {
