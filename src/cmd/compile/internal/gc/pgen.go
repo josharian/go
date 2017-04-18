@@ -290,7 +290,7 @@ func debuginfo(fnsym *obj.LSym, curfn interface{}) []*dwarf.Var {
 			continue
 		}
 
-		gotype := Linksym(ngotype(n))
+		gotype := ngotypeLSym(n)
 		fnsym.Autom = append(fnsym.Autom, &obj.Auto{
 			Asym:    Ctxt.Lookup(n.Sym.Name, 0),
 			Aoffset: int32(n.Xoffset),

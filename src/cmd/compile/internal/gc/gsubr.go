@@ -219,7 +219,7 @@ func (f *Func) initLSym() {
 
 func ggloblnod(nam *Node) {
 	s := Linksym(nam.Sym)
-	s.Gotype = Linksym(ngotype(nam))
+	s.Gotype = ngotypeLSym(nam)
 	flags := 0
 	if nam.Name.Readonly() {
 		flags = obj.RODATA

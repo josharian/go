@@ -1955,11 +1955,23 @@ func (l Nodes) asblock() *Node {
 	return n
 }
 
-func ngotype(n *Node) *types.Sym {
-	if n.Type != nil {
-		return typenamesym(n.Type)
+var (
+	gotypesmu sync.Mutex
+	gotypes   = make(map[*types.Type]*obj.LSym)
+)
+
+func ngotypeLSym(n *Node) *obj.LSym {
+	if n.Type == nil {
+		return nil
 	}
-	return nil
+	gotypesmu.Lock()
+	ls := gotypes[n.Type]
+	if ls == nil {
+		ls = Linksym(typenamesym(n.Type))
+		gotypes[n.Type] = ls
+	}
+	gotypesmu.Unlock()
+	return ls
 }
 
 // Convert raw string to the prefix that will be used in the symbol
