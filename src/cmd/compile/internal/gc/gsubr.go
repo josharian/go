@@ -79,7 +79,7 @@ func (pp *Progs) NewProg() *obj.Prog {
 		pp.progcaches = append(pp.progcaches, pp.progcache)
 	}
 	p := &pp.progcache[pp.cacheidx]
-	p.Ctxt = Ctxt
+	*p = obj.Prog{Ctxt: Ctxt}
 	pp.cacheidx++
 	if pp.cacheidx == len(pp.progcache) {
 		pp.progcache = nil
@@ -99,14 +99,14 @@ func (pp *Progs) Free() {
 	if Ctxt.CanReuseProgs() {
 		// Clear progs to enable GC and avoid abuse.
 		for _, c := range pp.progcaches {
-			n := len(c)
-			if c == pp.progcache {
-				n = pp.cacheidx
-			}
-			s := c[:n]
-			for i := range s {
-				s[i] = obj.Prog{}
-			}
+			// n := len(c)
+			// if c == pp.progcache {
+			// 	n = pp.cacheidx
+			// }
+			// s := c[:n]
+			// for i := range s {
+			// 	s[i] = obj.Prog{}
+			// }
 			progCachePool.Put(c)
 		}
 	}
