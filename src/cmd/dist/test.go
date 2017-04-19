@@ -153,6 +153,16 @@ func (t *tester) run() {
 		}()
 	}
 
+	if isRaceCompile() {
+		t.out("Installing race-enabled compiler.")
+		cmd := exec.Command("go", "install", "-race", "cmd/compile")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			log.Fatalf("building race-enabled compiler: %v", err)
+		}
+	}
+
 	t.timeoutScale = 1
 	switch t.goarch {
 	case "arm":
@@ -333,11 +343,23 @@ func (t *tester) registerRaceBenchTest(pkg string) {
 	})
 }
 
+func isRaceCompile() bool {
+	builder := os.Getenv("GO_BUILDER_NAME")
+	// This is a hack to get this to run on an existing builder.
+	// It is unclear whether long term we want a special builder name,
+	// like misc-racecompile (see below), which would give us sharding,
+	// or whether we want that builder to runs its own bash script,
+	// like misc-compile runs buildall.bash.
+	return builder == "linux-amd64"
+	// return strings.HasSuffix(builder, "-racecompile")
+}
+
 // stdOutErrAreTerminals is defined in test_linux.go, to report
 // whether stdout & stderr are terminals.
 var stdOutErrAreTerminals func() bool
 
 func (t *tester) registerTests() {
+	// Special builders
 	if strings.HasSuffix(os.Getenv("GO_BUILDER_NAME"), "-vetall") {
 		// Run vet over std and cmd and call it quits.
 		for k := range cgoEnabled {
@@ -350,6 +372,54 @@ func (t *tester) registerTests() {
 					return nil
 				},
 			})
+		}
+		return
+	}
+
+	if isRaceCompile() {
+		for osarch := range cgoEnabled {
+			osarch := osarch
+			flags := []string{""}
+			envvars := []string{""}
+			switch osarch {
+			case "darwin/arm", "darwin/arm64", "android/arm", "android/arm64", "android/amd64", "android/386":
+				// These platforms always build with -shared,
+				// which is not yet supported with concurrent compilation.
+				continue
+			case "linux/amd64":
+				flags = append(flags, "-N -l -B -C")
+			case "linux/arm":
+				envvars = append(envvars, "GOARM=5", "GOARM=6", "GOARM=7")
+			}
+			f := strings.Split(osarch, "/")
+			goos, goarch := f[0], f[1]
+			for _, flag := range flags {
+				for _, envvar := range envvars {
+					// Try a few values of c: 1 as a sanity check, 2 as most common usage, 128 to try to flush out bugs.
+					for _, c := range [...]string{"1", "2", "128"} {
+						t.tests = append(t.tests, distTest{
+							name:    fmt.Sprintf("racecompile -c=%s platform=%s flag=%q envvar=%q", c, osarch, flag, envvar),
+							heading: "run race-enabled compiler",
+							fn: func(dt *distTest) error {
+								args := []string{"build", "-a", "-gcflags", "-c=" + c + " " + flag}
+								const short = false
+								if short {
+									t.runPending(dt)
+									args = append(args, "errors")
+								} else {
+									args = append(args, "std", "cmd")
+								}
+								cmd := t.addCmd(dt, "src", "go", args...)
+								cmd.Env = append(os.Environ(), "GOOS="+goos, "GOARCH="+goarch, "CGO_ENABLED=0")
+								if envvar != "" {
+									cmd.Env = append(cmd.Env, envvar)
+								}
+								return nil
+							},
+						})
+					}
+				}
+			}
 		}
 		return
 	}
