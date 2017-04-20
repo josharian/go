@@ -545,6 +545,12 @@ func Main(archInit func(*Arch)) {
 				fcount++
 			}
 		}
+		timings.AddEvent(fcount, "funcs")
+
+		if nsavederrors+nerrors == 0 {
+			fninit(xtop)
+		}
+
 		finishcompilation()
 		// We autogenerate and compile some small functions
 		// such as method wrappers and equality/hash routines
@@ -552,11 +558,6 @@ func Main(archInit func(*Arch)) {
 		// Disable concurrent compilation from here on,
 		// at least until this convoluted structure has been unwound.
 		nBackendWorkers = 1
-		timings.AddEvent(fcount, "funcs")
-
-		if nsavederrors+nerrors == 0 {
-			fninit(xtop)
-		}
 
 		if compiling_runtime {
 			checknowritebarrierrec()
