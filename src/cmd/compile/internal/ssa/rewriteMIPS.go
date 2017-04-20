@@ -9228,771 +9228,793 @@ func rewriteValueMIPS_OpZeromask(v *Value) bool {
 	}
 }
 func rewriteBlockMIPS(b *Block) bool {
-	config := b.Func.Config
-	_ = config
-	fe := b.Func.fe
-	_ = fe
-	types := &config.Types
-	_ = types
 	switch b.Kind {
-	case BlockMIPSEQ:
-		// match: (EQ (FPFlagTrue cmp) yes no)
-		// cond:
-		// result: (FPF cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSFPFlagTrue {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSFPF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (FPFlagFalse cmp) yes no)
-		// cond:
-		// result: (FPT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSFPFlagFalse {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSFPT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (XORconst [1] cmp:(SGT _ _)) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (XORconst [1] cmp:(SGTU _ _)) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTU {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (XORconst [1] cmp:(SGTconst _)) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTconst {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (XORconst [1] cmp:(SGTUconst _)) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTUconst {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (XORconst [1] cmp:(SGTzero _)) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTzero {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (XORconst [1] cmp:(SGTUzero _)) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTUzero {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (SGTUconst [1] x) yes no)
-		// cond:
-		// result: (NE x yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSSGTUconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			x := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(x)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (SGTUzero x) yes no)
-		// cond:
-		// result: (EQ x yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSSGTUzero {
-				break
-			}
-			x := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSEQ
-			b.SetControl(x)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (SGTconst [0] x) yes no)
-		// cond:
-		// result: (GEZ x yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSSGTconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			x := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSGEZ
-			b.SetControl(x)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (SGTzero x) yes no)
-		// cond:
-		// result: (LEZ x yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSSGTzero {
-				break
-			}
-			x := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSLEZ
-			b.SetControl(x)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (MOVWconst [0]) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (MOVWconst [c]) yes no)
-		// cond: c != 0
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(c != 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockMIPSGEZ:
-		// match: (GEZ (MOVWconst [c]) yes no)
-		// cond: int32(c) >= 0
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(int32(c) >= 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GEZ (MOVWconst [c]) yes no)
-		// cond: int32(c) <  0
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(int32(c) < 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockMIPSGTZ:
-		// match: (GTZ (MOVWconst [c]) yes no)
-		// cond: int32(c) >  0
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(int32(c) > 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GTZ (MOVWconst [c]) yes no)
-		// cond: int32(c) <= 0
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(int32(c) <= 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
 	case BlockIf:
-		// match: (If cond yes no)
-		// cond:
-		// result: (NE cond yes no)
-		for {
-			v := b.Control
-			_ = v
-			cond := b.Control
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(cond)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockMIPSLEZ:
-		// match: (LEZ (MOVWconst [c]) yes no)
-		// cond: int32(c) <= 0
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(int32(c) <= 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LEZ (MOVWconst [c]) yes no)
-		// cond: int32(c) >  0
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(int32(c) > 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockMIPSLTZ:
-		// match: (LTZ (MOVWconst [c]) yes no)
-		// cond: int32(c) <  0
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(int32(c) < 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LTZ (MOVWconst [c]) yes no)
-		// cond: int32(c) >= 0
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(int32(c) >= 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
+		return rewriteBlockMIPS_If(b)
 	case BlockMIPSNE:
-		// match: (NE (FPFlagTrue cmp) yes no)
-		// cond:
-		// result: (FPT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSFPFlagTrue {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSFPT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		return rewriteBlockMIPS_NE(b)
+	case BlockMIPSEQ:
+		return rewriteBlockMIPS_EQ(b)
+	case BlockMIPSLTZ:
+		return rewriteBlockMIPS_LTZ(b)
+	case BlockMIPSLEZ:
+		return rewriteBlockMIPS_LEZ(b)
+	case BlockMIPSGTZ:
+		return rewriteBlockMIPS_GTZ(b)
+	case BlockMIPSGEZ:
+		return rewriteBlockMIPS_GEZ(b)
+	}
+	return false
+}
+func rewriteBlockMIPS_EQ(b *Block) bool {
+	// match: (EQ (FPFlagTrue cmp) yes no)
+	// cond:
+	// result: (FPF cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSFPFlagTrue {
+			break
 		}
-		// match: (NE (FPFlagFalse cmp) yes no)
-		// cond:
-		// result: (FPF cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSFPFlagFalse {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSFPF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSFPF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (FPFlagFalse cmp) yes no)
+	// cond:
+	// result: (FPT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSFPFlagFalse {
+			break
 		}
-		// match: (NE (XORconst [1] cmp:(SGT _ _)) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSFPT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (XORconst [1] cmp:(SGT _ _)) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
 		}
-		// match: (NE (XORconst [1] cmp:(SGTU _ _)) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTU {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		if v.AuxInt != 1 {
+			break
 		}
-		// match: (NE (XORconst [1] cmp:(SGTconst _)) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTconst {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGT {
+			break
 		}
-		// match: (NE (XORconst [1] cmp:(SGTUconst _)) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTUconst {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (XORconst [1] cmp:(SGTU _ _)) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
 		}
-		// match: (NE (XORconst [1] cmp:(SGTzero _)) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTzero {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		if v.AuxInt != 1 {
+			break
 		}
-		// match: (NE (XORconst [1] cmp:(SGTUzero _)) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSXORconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[0]
-			if cmp.Op != OpMIPSSGTUzero {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTU {
+			break
 		}
-		// match: (NE (SGTUconst [1] x) yes no)
-		// cond:
-		// result: (EQ x yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSSGTUconst {
-				break
-			}
-			if v.AuxInt != 1 {
-				break
-			}
-			x := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSEQ
-			b.SetControl(x)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (XORconst [1] cmp:(SGTconst _)) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
 		}
-		// match: (NE (SGTUzero x) yes no)
-		// cond:
-		// result: (NE x yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSSGTUzero {
-				break
-			}
-			x := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSNE
-			b.SetControl(x)
-			_ = yes
-			_ = no
-			return true
+		if v.AuxInt != 1 {
+			break
 		}
-		// match: (NE (SGTconst [0] x) yes no)
-		// cond:
-		// result: (LTZ x yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSSGTconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			x := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSLTZ
-			b.SetControl(x)
-			_ = yes
-			_ = no
-			return true
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTconst {
+			break
 		}
-		// match: (NE (SGTzero x) yes no)
-		// cond:
-		// result: (GTZ x yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSSGTzero {
-				break
-			}
-			x := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockMIPSGTZ
-			b.SetControl(x)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (XORconst [1] cmp:(SGTUconst _)) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
 		}
-		// match: (NE (MOVWconst [0]) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
+		if v.AuxInt != 1 {
+			break
 		}
-		// match: (NE (MOVWconst [c]) yes no)
-		// cond: c != 0
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpMIPSMOVWconst {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(c != 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTUconst {
+			break
 		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (XORconst [1] cmp:(SGTzero _)) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTzero {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (XORconst [1] cmp:(SGTUzero _)) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTUzero {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (SGTUconst [1] x) yes no)
+	// cond:
+	// result: (NE x yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSSGTUconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		x := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(x)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (SGTUzero x) yes no)
+	// cond:
+	// result: (EQ x yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSSGTUzero {
+			break
+		}
+		x := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSEQ
+		b.SetControl(x)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (SGTconst [0] x) yes no)
+	// cond:
+	// result: (GEZ x yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSSGTconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		x := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSGEZ
+		b.SetControl(x)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (SGTzero x) yes no)
+	// cond:
+	// result: (LEZ x yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSSGTzero {
+			break
+		}
+		x := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSLEZ
+		b.SetControl(x)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (MOVWconst [0]) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (MOVWconst [c]) yes no)
+	// cond: c != 0
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(c != 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockMIPS_GEZ(b *Block) bool {
+	// match: (GEZ (MOVWconst [c]) yes no)
+	// cond: int32(c) >= 0
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(int32(c) >= 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GEZ (MOVWconst [c]) yes no)
+	// cond: int32(c) <  0
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(int32(c) < 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockMIPS_GTZ(b *Block) bool {
+	// match: (GTZ (MOVWconst [c]) yes no)
+	// cond: int32(c) >  0
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(int32(c) > 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GTZ (MOVWconst [c]) yes no)
+	// cond: int32(c) <= 0
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(int32(c) <= 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockMIPS_If(b *Block) bool {
+	// match: (If cond yes no)
+	// cond:
+	// result: (NE cond yes no)
+	for {
+		v := b.Control
+		_ = v
+		cond := b.Control
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(cond)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockMIPS_LEZ(b *Block) bool {
+	// match: (LEZ (MOVWconst [c]) yes no)
+	// cond: int32(c) <= 0
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(int32(c) <= 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LEZ (MOVWconst [c]) yes no)
+	// cond: int32(c) >  0
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(int32(c) > 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockMIPS_LTZ(b *Block) bool {
+	// match: (LTZ (MOVWconst [c]) yes no)
+	// cond: int32(c) <  0
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(int32(c) < 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LTZ (MOVWconst [c]) yes no)
+	// cond: int32(c) >= 0
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(int32(c) >= 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockMIPS_NE(b *Block) bool {
+	// match: (NE (FPFlagTrue cmp) yes no)
+	// cond:
+	// result: (FPT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSFPFlagTrue {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSFPT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FPFlagFalse cmp) yes no)
+	// cond:
+	// result: (FPF cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSFPFlagFalse {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSFPF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (XORconst [1] cmp:(SGT _ _)) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (XORconst [1] cmp:(SGTU _ _)) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTU {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (XORconst [1] cmp:(SGTconst _)) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTconst {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (XORconst [1] cmp:(SGTUconst _)) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTUconst {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (XORconst [1] cmp:(SGTzero _)) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTzero {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (XORconst [1] cmp:(SGTUzero _)) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSXORconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[0]
+		if cmp.Op != OpMIPSSGTUzero {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (SGTUconst [1] x) yes no)
+	// cond:
+	// result: (EQ x yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSSGTUconst {
+			break
+		}
+		if v.AuxInt != 1 {
+			break
+		}
+		x := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSEQ
+		b.SetControl(x)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (SGTUzero x) yes no)
+	// cond:
+	// result: (NE x yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSSGTUzero {
+			break
+		}
+		x := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSNE
+		b.SetControl(x)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (SGTconst [0] x) yes no)
+	// cond:
+	// result: (LTZ x yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSSGTconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		x := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSLTZ
+		b.SetControl(x)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (SGTzero x) yes no)
+	// cond:
+	// result: (GTZ x yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSSGTzero {
+			break
+		}
+		x := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockMIPSGTZ
+		b.SetControl(x)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (MOVWconst [0]) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (NE (MOVWconst [c]) yes no)
+	// cond: c != 0
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpMIPSMOVWconst {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(c != 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
 	}
 	return false
 }

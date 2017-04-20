@@ -17339,1447 +17339,1485 @@ func rewriteValueARM_OpZeromask(v *Value) bool {
 	}
 }
 func rewriteBlockARM(b *Block) bool {
-	config := b.Func.Config
-	_ = config
-	fe := b.Func.fe
-	_ = fe
-	types := &config.Types
-	_ = types
 	switch b.Kind {
-	case BlockARMEQ:
-		// match: (EQ (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (EQ (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (EQ (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (EQ (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (EQ (InvertFlags cmp) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockARMGE:
-		// match: (GE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (LE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMLE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
 	case BlockARMGT:
-		// match: (GT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GT (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GT (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GT (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GT (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (LT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMLT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockIf:
-		// match: (If (Equal cc) yes no)
-		// cond:
-		// result: (EQ cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMEqual {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMEQ
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (NotEqual cc) yes no)
-		// cond:
-		// result: (NE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMNotEqual {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMNE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (LessThan cc) yes no)
-		// cond:
-		// result: (LT cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMLessThan {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMLT
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (LessThanU cc) yes no)
-		// cond:
-		// result: (ULT cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMLessThanU {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMULT
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (LessEqual cc) yes no)
-		// cond:
-		// result: (LE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMLessEqual {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMLE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (LessEqualU cc) yes no)
-		// cond:
-		// result: (ULE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMLessEqualU {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMULE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (GreaterThan cc) yes no)
-		// cond:
-		// result: (GT cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMGreaterThan {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMGT
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (GreaterThanU cc) yes no)
-		// cond:
-		// result: (UGT cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMGreaterThanU {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMUGT
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (GreaterEqual cc) yes no)
-		// cond:
-		// result: (GE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMGreaterEqual {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMGE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (GreaterEqualU cc) yes no)
-		// cond:
-		// result: (UGE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMGreaterEqualU {
-				break
-			}
-			cc := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMUGE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If cond yes no)
-		// cond:
-		// result: (NE (CMPconst [0] cond) yes no)
-		for {
-			v := b.Control
-			_ = v
-			cond := b.Control
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMNE
-			v0 := b.NewValue0(v.Pos, OpARMCMPconst, TypeFlags)
-			v0.AuxInt = 0
-			v0.AddArg(cond)
-			b.SetControl(v0)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockARMLE:
-		// match: (LE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (GE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockARMLT:
-		// match: (LT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LT (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LT (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LT (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LT (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (GT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockARMNE:
-		// match: (NE (CMPconst [0] (Equal cc)) yes no)
-		// cond:
-		// result: (EQ cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMEqual {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMEQ
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (NotEqual cc)) yes no)
-		// cond:
-		// result: (NE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMNotEqual {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMNE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (LessThan cc)) yes no)
-		// cond:
-		// result: (LT cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMLessThan {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMLT
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (LessThanU cc)) yes no)
-		// cond:
-		// result: (ULT cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMLessThanU {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMULT
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (LessEqual cc)) yes no)
-		// cond:
-		// result: (LE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMLessEqual {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMLE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (LessEqualU cc)) yes no)
-		// cond:
-		// result: (ULE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMLessEqualU {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMULE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (GreaterThan cc)) yes no)
-		// cond:
-		// result: (GT cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMGreaterThan {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMGT
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (GreaterThanU cc)) yes no)
-		// cond:
-		// result: (UGT cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMGreaterThanU {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMUGT
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (GreaterEqual cc)) yes no)
-		// cond:
-		// result: (GE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMGreaterEqual {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMGE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (CMPconst [0] (GreaterEqualU cc)) yes no)
-		// cond:
-		// result: (UGE cc yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpARMGreaterEqualU {
-				break
-			}
-			cc := v_0.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMUGE
-			b.SetControl(cc)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (NE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
+		return rewriteBlockARM_GT(b)
 	case BlockARMUGE:
-		// match: (UGE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (ULE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMULE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockARMUGT:
-		// match: (UGT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGT (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGT (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGT (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGT (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (ULT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMULT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockARMULE:
-		// match: (ULE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (ULE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (ULE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (UGE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMUGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
+		return rewriteBlockARM_UGE(b)
+	case BlockARMEQ:
+		return rewriteBlockARM_EQ(b)
+	case BlockARMLT:
+		return rewriteBlockARM_LT(b)
+	case BlockARMLE:
+		return rewriteBlockARM_LE(b)
+	case BlockARMGE:
+		return rewriteBlockARM_GE(b)
 	case BlockARMULT:
-		// match: (ULT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
+		return rewriteBlockARM_ULT(b)
+	case BlockARMULE:
+		return rewriteBlockARM_ULE(b)
+	case BlockARMUGT:
+		return rewriteBlockARM_UGT(b)
+	case BlockIf:
+		return rewriteBlockARM_If(b)
+	case BlockARMNE:
+		return rewriteBlockARM_NE(b)
+	}
+	return false
+}
+func rewriteBlockARM_EQ(b *Block) bool {
+	// match: (EQ (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
 		}
-		// match: (ULT (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
 		}
-		// match: (ULT (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (EQ (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
 		}
-		// match: (ULT (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (EQ (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
 		}
-		// match: (ULT (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpARMFlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (EQ (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
 		}
-		// match: (ULT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (UGT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpARMInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockARMUGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (EQ (InvertFlags cmp) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
 		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_GE(b *Block) bool {
+	// match: (GE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (LE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMLE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_GT(b *Block) bool {
+	// match: (GT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GT (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GT (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GT (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GT (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (LT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMLT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_If(b *Block) bool {
+	// match: (If (Equal cc) yes no)
+	// cond:
+	// result: (EQ cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMEqual {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMEQ
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (NotEqual cc) yes no)
+	// cond:
+	// result: (NE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMNotEqual {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMNE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (LessThan cc) yes no)
+	// cond:
+	// result: (LT cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMLessThan {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMLT
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (LessThanU cc) yes no)
+	// cond:
+	// result: (ULT cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMLessThanU {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMULT
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (LessEqual cc) yes no)
+	// cond:
+	// result: (LE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMLessEqual {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMLE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (LessEqualU cc) yes no)
+	// cond:
+	// result: (ULE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMLessEqualU {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMULE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (GreaterThan cc) yes no)
+	// cond:
+	// result: (GT cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMGreaterThan {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMGT
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (GreaterThanU cc) yes no)
+	// cond:
+	// result: (UGT cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMGreaterThanU {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMUGT
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (GreaterEqual cc) yes no)
+	// cond:
+	// result: (GE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMGreaterEqual {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMGE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (GreaterEqualU cc) yes no)
+	// cond:
+	// result: (UGE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMGreaterEqualU {
+			break
+		}
+		cc := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMUGE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If cond yes no)
+	// cond:
+	// result: (NE (CMPconst [0] cond) yes no)
+	for {
+		v := b.Control
+		_ = v
+		cond := b.Control
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMNE
+		v0 := b.NewValue0(v.Pos, OpARMCMPconst, TypeFlags)
+		v0.AuxInt = 0
+		v0.AddArg(cond)
+		b.SetControl(v0)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_LE(b *Block) bool {
+	// match: (LE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (GE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_LT(b *Block) bool {
+	// match: (LT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LT (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LT (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LT (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LT (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (GT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_NE(b *Block) bool {
+	// match: (NE (CMPconst [0] (Equal cc)) yes no)
+	// cond:
+	// result: (EQ cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMEqual {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMEQ
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (NotEqual cc)) yes no)
+	// cond:
+	// result: (NE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMNotEqual {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMNE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (LessThan cc)) yes no)
+	// cond:
+	// result: (LT cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMLessThan {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMLT
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (LessThanU cc)) yes no)
+	// cond:
+	// result: (ULT cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMLessThanU {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMULT
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (LessEqual cc)) yes no)
+	// cond:
+	// result: (LE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMLessEqual {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMLE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (LessEqualU cc)) yes no)
+	// cond:
+	// result: (ULE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMLessEqualU {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMULE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (GreaterThan cc)) yes no)
+	// cond:
+	// result: (GT cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMGreaterThan {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMGT
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (GreaterThanU cc)) yes no)
+	// cond:
+	// result: (UGT cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMGreaterThanU {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMUGT
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (GreaterEqual cc)) yes no)
+	// cond:
+	// result: (GE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMGreaterEqual {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMGE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPconst [0] (GreaterEqualU cc)) yes no)
+	// cond:
+	// result: (UGE cc yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMCMPconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpARMGreaterEqualU {
+			break
+		}
+		cc := v_0.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMUGE
+		b.SetControl(cc)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (NE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_UGE(b *Block) bool {
+	// match: (UGE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (ULE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMULE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_UGT(b *Block) bool {
+	// match: (UGT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGT (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGT (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGT (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGT (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (ULT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMULT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_ULE(b *Block) bool {
+	// match: (ULE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (ULE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (ULE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (UGE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMUGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockARM_ULT(b *Block) bool {
+	// match: (ULT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (ULT (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULT (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (ULT (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULT (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpARMFlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (ULT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (UGT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpARMInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockARMUGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
 	}
 	return false
 }

@@ -23688,73 +23688,71 @@ func rewriteValuegeneric_OpZeroExt8to64(v *Value) bool {
 	return false
 }
 func rewriteBlockgeneric(b *Block) bool {
-	config := b.Func.Config
-	_ = config
-	fe := b.Func.fe
-	_ = fe
-	types := &config.Types
-	_ = types
 	switch b.Kind {
 	case BlockIf:
-		// match: (If (Not cond) yes no)
-		// cond:
-		// result: (If cond no yes)
-		for {
-			v := b.Control
-			if v.Op != OpNot {
-				break
-			}
-			cond := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockIf
-			b.SetControl(cond)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
+		return rewriteBlockgeneric_If(b)
+	}
+	return false
+}
+func rewriteBlockgeneric_If(b *Block) bool {
+	// match: (If (Not cond) yes no)
+	// cond:
+	// result: (If cond no yes)
+	for {
+		v := b.Control
+		if v.Op != OpNot {
+			break
 		}
-		// match: (If (ConstBool [c]) yes no)
-		// cond: c == 1
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpConstBool {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(c == 1) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
+		cond := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockIf
+		b.SetControl(cond)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (If (ConstBool [c]) yes no)
+	// cond: c == 1
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpConstBool {
+			break
 		}
-		// match: (If (ConstBool [c]) yes no)
-		// cond: c == 0
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpConstBool {
-				break
-			}
-			c := v.AuxInt
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			if !(c == 0) {
-				break
-			}
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(c == 1) {
+			break
 		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (ConstBool [c]) yes no)
+	// cond: c == 0
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpConstBool {
+			break
+		}
+		c := v.AuxInt
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		if !(c == 0) {
+			break
+		}
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
 	}
 	return false
 }

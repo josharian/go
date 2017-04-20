@@ -40729,2483 +40729,2525 @@ func rewriteValueAMD64_OpZeroExt8to64(v *Value) bool {
 	}
 }
 func rewriteBlockAMD64(b *Block) bool {
+	switch b.Kind {
+	case BlockAMD64GT:
+		return rewriteBlockAMD64_GT(b)
+	case BlockAMD64GE:
+		return rewriteBlockAMD64_GE(b)
+	case BlockAMD64ULT:
+		return rewriteBlockAMD64_ULT(b)
+	case BlockAMD64UGT:
+		return rewriteBlockAMD64_UGT(b)
+	case BlockAMD64ULE:
+		return rewriteBlockAMD64_ULE(b)
+	case BlockAMD64UGE:
+		return rewriteBlockAMD64_UGE(b)
+	case BlockAMD64EQ:
+		return rewriteBlockAMD64_EQ(b)
+	case BlockAMD64NE:
+		return rewriteBlockAMD64_NE(b)
+	case BlockAMD64LT:
+		return rewriteBlockAMD64_LT(b)
+	case BlockAMD64LE:
+		return rewriteBlockAMD64_LE(b)
+	case BlockIf:
+		return rewriteBlockAMD64_If(b)
+	}
+	return false
+}
+func rewriteBlockAMD64_EQ(b *Block) bool {
 	config := b.Func.Config
 	_ = config
-	fe := b.Func.fe
-	_ = fe
-	types := &config.Types
-	_ = types
-	switch b.Kind {
-	case BlockAMD64EQ:
-		// match: (EQ (TESTL (SHLL (MOVLconst [1]) x) y))
-		// cond: !config.nacl
-		// result: (UGE (BTL x y))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTL {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SHLL {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpAMD64MOVLconst {
-				break
-			}
-			if v_0_0.AuxInt != 1 {
-				break
-			}
-			x := v_0.Args[1]
-			y := v.Args[1]
-			if !(!config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64UGE
-			v0 := b.NewValue0(v.Pos, OpAMD64BTL, TypeFlags)
-			v0.AddArg(x)
-			v0.AddArg(y)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (EQ (TESTL y (SHLL (MOVLconst [1]) x)))
-		// cond: !config.nacl
-		// result: (UGE (BTL x y))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTL {
-				break
-			}
-			y := v.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SHLL {
-				break
-			}
-			v_1_0 := v_1.Args[0]
-			if v_1_0.Op != OpAMD64MOVLconst {
-				break
-			}
-			if v_1_0.AuxInt != 1 {
-				break
-			}
-			x := v_1.Args[1]
-			if !(!config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64UGE
-			v0 := b.NewValue0(v.Pos, OpAMD64BTL, TypeFlags)
-			v0.AddArg(x)
-			v0.AddArg(y)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (EQ (TESTQ (SHLQ (MOVQconst [1]) x) y))
-		// cond: !config.nacl
-		// result: (UGE (BTQ x y))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQ {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SHLQ {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpAMD64MOVQconst {
-				break
-			}
-			if v_0_0.AuxInt != 1 {
-				break
-			}
-			x := v_0.Args[1]
-			y := v.Args[1]
-			if !(!config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64UGE
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQ, TypeFlags)
-			v0.AddArg(x)
-			v0.AddArg(y)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (EQ (TESTQ y (SHLQ (MOVQconst [1]) x)))
-		// cond: !config.nacl
-		// result: (UGE (BTQ x y))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQ {
-				break
-			}
-			y := v.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SHLQ {
-				break
-			}
-			v_1_0 := v_1.Args[0]
-			if v_1_0.Op != OpAMD64MOVQconst {
-				break
-			}
-			if v_1_0.AuxInt != 1 {
-				break
-			}
-			x := v_1.Args[1]
-			if !(!config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64UGE
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQ, TypeFlags)
-			v0.AddArg(x)
-			v0.AddArg(y)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (EQ (TESTLconst [c] x))
-		// cond: isPowerOfTwo(c) && log2(c) < 32 && !config.nacl
-		// result: (UGE (BTLconst [log2(c)] x))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTLconst {
-				break
-			}
-			c := v.AuxInt
-			x := v.Args[0]
-			if !(isPowerOfTwo(c) && log2(c) < 32 && !config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64UGE
-			v0 := b.NewValue0(v.Pos, OpAMD64BTLconst, TypeFlags)
-			v0.AuxInt = log2(c)
-			v0.AddArg(x)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (EQ (TESTQconst [c] x))
-		// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
-		// result: (UGE (BTQconst [log2(c)] x))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQconst {
-				break
-			}
-			c := v.AuxInt
-			x := v.Args[0]
-			if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64UGE
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
-			v0.AuxInt = log2(c)
-			v0.AddArg(x)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (EQ (TESTQ (MOVQconst [c]) x))
-		// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
-		// result: (UGE (BTQconst [log2(c)] x))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQ {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64MOVQconst {
-				break
-			}
-			c := v_0.AuxInt
-			x := v.Args[1]
-			if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64UGE
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
-			v0.AuxInt = log2(c)
-			v0.AddArg(x)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (EQ (TESTQ x (MOVQconst [c])))
-		// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
-		// result: (UGE (BTQconst [log2(c)] x))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQ {
-				break
-			}
-			x := v.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64MOVQconst {
-				break
-			}
-			c := v_1.AuxInt
-			if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64UGE
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
-			v0.AuxInt = log2(c)
-			v0.AddArg(x)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (EQ (InvertFlags cmp) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64EQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (EQ (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (EQ (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (EQ (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockAMD64GE:
-		// match: (GE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (LE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64LE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockAMD64GT:
-		// match: (GT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (LT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64LT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GT (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GT (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GT (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GT (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockIf:
-		// match: (If (SETL cmp) yes no)
-		// cond:
-		// result: (LT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETL {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64LT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETLE cmp) yes no)
-		// cond:
-		// result: (LE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETLE {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64LE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETG cmp) yes no)
-		// cond:
-		// result: (GT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETG {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64GT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETGE cmp) yes no)
-		// cond:
-		// result: (GE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETGE {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64GE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETEQ cmp) yes no)
-		// cond:
-		// result: (EQ  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETEQ {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64EQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETNE cmp) yes no)
-		// cond:
-		// result: (NE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETNE {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64NE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETB cmp) yes no)
-		// cond:
-		// result: (ULT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETB {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64ULT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETBE cmp) yes no)
-		// cond:
-		// result: (ULE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETBE {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64ULE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETA cmp) yes no)
-		// cond:
-		// result: (UGT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETA {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETAE cmp) yes no)
-		// cond:
-		// result: (UGE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETAE {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETGF cmp) yes no)
-		// cond:
-		// result: (UGT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETGF {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETGEF cmp) yes no)
-		// cond:
-		// result: (UGE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETGEF {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETEQF cmp) yes no)
-		// cond:
-		// result: (EQF  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETEQF {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64EQF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (SETNEF cmp) yes no)
-		// cond:
-		// result: (NEF  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64SETNEF {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64NEF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If cond yes no)
-		// cond:
-		// result: (NE (TESTB cond cond) yes no)
-		for {
-			v := b.Control
-			_ = v
-			cond := b.Control
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64NE
-			v0 := b.NewValue0(v.Pos, OpAMD64TESTB, TypeFlags)
-			v0.AddArg(cond)
-			v0.AddArg(cond)
-			b.SetControl(v0)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockAMD64LE:
-		// match: (LE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (GE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64GE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockAMD64LT:
-		// match: (LT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (GT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64GT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LT (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LT (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LT (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LT (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockAMD64NE:
-		// match: (NE (TESTB (SETL cmp) (SETL cmp)) yes no)
-		// cond:
-		// result: (LT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETL {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETL {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64LT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETL cmp) (SETL cmp)) yes no)
-		// cond:
-		// result: (LT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETL {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETL {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64LT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETLE cmp) (SETLE cmp)) yes no)
-		// cond:
-		// result: (LE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETLE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETLE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64LE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETLE cmp) (SETLE cmp)) yes no)
-		// cond:
-		// result: (LE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETLE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETLE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64LE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETG cmp) (SETG cmp)) yes no)
-		// cond:
-		// result: (GT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETG {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETG {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64GT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETG cmp) (SETG cmp)) yes no)
-		// cond:
-		// result: (GT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETG {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETG {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64GT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETGE cmp) (SETGE cmp)) yes no)
-		// cond:
-		// result: (GE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETGE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETGE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64GE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETGE cmp) (SETGE cmp)) yes no)
-		// cond:
-		// result: (GE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETGE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETGE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64GE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETEQ cmp) (SETEQ cmp)) yes no)
-		// cond:
-		// result: (EQ  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETEQ {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETEQ {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64EQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETEQ cmp) (SETEQ cmp)) yes no)
-		// cond:
-		// result: (EQ  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETEQ {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETEQ {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64EQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETNE cmp) (SETNE cmp)) yes no)
-		// cond:
-		// result: (NE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETNE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETNE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64NE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETNE cmp) (SETNE cmp)) yes no)
-		// cond:
-		// result: (NE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETNE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETNE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64NE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETB cmp) (SETB cmp)) yes no)
-		// cond:
-		// result: (ULT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETB {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETB {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64ULT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETB cmp) (SETB cmp)) yes no)
-		// cond:
-		// result: (ULT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETB {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETB {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64ULT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETBE cmp) (SETBE cmp)) yes no)
-		// cond:
-		// result: (ULE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETBE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETBE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64ULE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETBE cmp) (SETBE cmp)) yes no)
-		// cond:
-		// result: (ULE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETBE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETBE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64ULE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETA cmp) (SETA cmp)) yes no)
-		// cond:
-		// result: (UGT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETA {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETA {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETA cmp) (SETA cmp)) yes no)
-		// cond:
-		// result: (UGT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETA {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETA {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETAE cmp) (SETAE cmp)) yes no)
-		// cond:
-		// result: (UGE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETAE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETAE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETAE cmp) (SETAE cmp)) yes no)
-		// cond:
-		// result: (UGE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETAE {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETAE {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTL (SHLL (MOVLconst [1]) x) y))
-		// cond: !config.nacl
-		// result: (ULT (BTL x y))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTL {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SHLL {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpAMD64MOVLconst {
-				break
-			}
-			if v_0_0.AuxInt != 1 {
-				break
-			}
-			x := v_0.Args[1]
-			y := v.Args[1]
-			if !(!config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64ULT
-			v0 := b.NewValue0(v.Pos, OpAMD64BTL, TypeFlags)
-			v0.AddArg(x)
-			v0.AddArg(y)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (NE (TESTL y (SHLL (MOVLconst [1]) x)))
-		// cond: !config.nacl
-		// result: (ULT (BTL x y))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTL {
-				break
-			}
-			y := v.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SHLL {
-				break
-			}
-			v_1_0 := v_1.Args[0]
-			if v_1_0.Op != OpAMD64MOVLconst {
-				break
-			}
-			if v_1_0.AuxInt != 1 {
-				break
-			}
-			x := v_1.Args[1]
-			if !(!config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64ULT
-			v0 := b.NewValue0(v.Pos, OpAMD64BTL, TypeFlags)
-			v0.AddArg(x)
-			v0.AddArg(y)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (NE (TESTQ (SHLQ (MOVQconst [1]) x) y))
-		// cond: !config.nacl
-		// result: (ULT (BTQ x y))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQ {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SHLQ {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpAMD64MOVQconst {
-				break
-			}
-			if v_0_0.AuxInt != 1 {
-				break
-			}
-			x := v_0.Args[1]
-			y := v.Args[1]
-			if !(!config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64ULT
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQ, TypeFlags)
-			v0.AddArg(x)
-			v0.AddArg(y)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (NE (TESTQ y (SHLQ (MOVQconst [1]) x)))
-		// cond: !config.nacl
-		// result: (ULT (BTQ x y))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQ {
-				break
-			}
-			y := v.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SHLQ {
-				break
-			}
-			v_1_0 := v_1.Args[0]
-			if v_1_0.Op != OpAMD64MOVQconst {
-				break
-			}
-			if v_1_0.AuxInt != 1 {
-				break
-			}
-			x := v_1.Args[1]
-			if !(!config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64ULT
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQ, TypeFlags)
-			v0.AddArg(x)
-			v0.AddArg(y)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (NE (TESTLconst [c] x))
-		// cond: isPowerOfTwo(c) && log2(c) < 32 && !config.nacl
-		// result: (ULT (BTLconst [log2(c)] x))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTLconst {
-				break
-			}
-			c := v.AuxInt
-			x := v.Args[0]
-			if !(isPowerOfTwo(c) && log2(c) < 32 && !config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64ULT
-			v0 := b.NewValue0(v.Pos, OpAMD64BTLconst, TypeFlags)
-			v0.AuxInt = log2(c)
-			v0.AddArg(x)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (NE (TESTQconst [c] x))
-		// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
-		// result: (ULT (BTQconst [log2(c)] x))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQconst {
-				break
-			}
-			c := v.AuxInt
-			x := v.Args[0]
-			if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64ULT
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
-			v0.AuxInt = log2(c)
-			v0.AddArg(x)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (NE (TESTQ (MOVQconst [c]) x))
-		// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
-		// result: (ULT (BTQconst [log2(c)] x))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQ {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64MOVQconst {
-				break
-			}
-			c := v_0.AuxInt
-			x := v.Args[1]
-			if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64ULT
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
-			v0.AuxInt = log2(c)
-			v0.AddArg(x)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (NE (TESTQ x (MOVQconst [c])))
-		// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
-		// result: (ULT (BTQconst [log2(c)] x))
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTQ {
-				break
-			}
-			x := v.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64MOVQconst {
-				break
-			}
-			c := v_1.AuxInt
-			if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
-				break
-			}
-			b.Kind = BlockAMD64ULT
-			v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
-			v0.AuxInt = log2(c)
-			v0.AddArg(x)
-			b.SetControl(v0)
-			return true
-		}
-		// match: (NE (TESTB (SETGF cmp) (SETGF cmp)) yes no)
-		// cond:
-		// result: (UGT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETGF {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETGF {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETGF cmp) (SETGF cmp)) yes no)
-		// cond:
-		// result: (UGT  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETGF {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETGF {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETGEF cmp) (SETGEF cmp)) yes no)
-		// cond:
-		// result: (UGE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETGEF {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETGEF {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETGEF cmp) (SETGEF cmp)) yes no)
-		// cond:
-		// result: (UGE  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETGEF {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETGEF {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETEQF cmp) (SETEQF cmp)) yes no)
-		// cond:
-		// result: (EQF  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETEQF {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETEQF {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64EQF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETEQF cmp) (SETEQF cmp)) yes no)
-		// cond:
-		// result: (EQF  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETEQF {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETEQF {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64EQF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETNEF cmp) (SETNEF cmp)) yes no)
-		// cond:
-		// result: (NEF  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETNEF {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETNEF {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64NEF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (TESTB (SETNEF cmp) (SETNEF cmp)) yes no)
-		// cond:
-		// result: (NEF  cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64TESTB {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpAMD64SETNEF {
-				break
-			}
-			cmp := v_0.Args[0]
-			v_1 := v.Args[1]
-			if v_1.Op != OpAMD64SETNEF {
-				break
-			}
-			if cmp != v_1.Args[0] {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64NEF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64NE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (NE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (NE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockAMD64UGE:
-		// match: (UGE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (ULE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64ULE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockAMD64UGT:
-		// match: (UGT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (ULT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64ULT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGT (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGT (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (UGT (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (UGT (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockAMD64ULE:
-		// match: (ULE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (UGE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULE (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULE (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (ULE (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULE (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockAMD64ULT:
-		// match: (ULT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (UGT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64InvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockAMD64UGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (ULT (FlagLT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULT (FlagLT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagLT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (ULT (FlagGT_ULT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_ULT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (ULT (FlagGT_UGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpAMD64FlagGT_UGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
+	// match: (EQ (TESTL (SHLL (MOVLconst [1]) x) y))
+	// cond: !config.nacl
+	// result: (UGE (BTL x y))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTL {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SHLL {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAMD64MOVLconst {
+			break
+		}
+		if v_0_0.AuxInt != 1 {
+			break
+		}
+		x := v_0.Args[1]
+		y := v.Args[1]
+		if !(!config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64UGE
+		v0 := b.NewValue0(v.Pos, OpAMD64BTL, TypeFlags)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (EQ (TESTL y (SHLL (MOVLconst [1]) x)))
+	// cond: !config.nacl
+	// result: (UGE (BTL x y))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTL {
+			break
+		}
+		y := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SHLL {
+			break
+		}
+		v_1_0 := v_1.Args[0]
+		if v_1_0.Op != OpAMD64MOVLconst {
+			break
+		}
+		if v_1_0.AuxInt != 1 {
+			break
+		}
+		x := v_1.Args[1]
+		if !(!config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64UGE
+		v0 := b.NewValue0(v.Pos, OpAMD64BTL, TypeFlags)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (EQ (TESTQ (SHLQ (MOVQconst [1]) x) y))
+	// cond: !config.nacl
+	// result: (UGE (BTQ x y))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQ {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SHLQ {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		if v_0_0.AuxInt != 1 {
+			break
+		}
+		x := v_0.Args[1]
+		y := v.Args[1]
+		if !(!config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64UGE
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQ, TypeFlags)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (EQ (TESTQ y (SHLQ (MOVQconst [1]) x)))
+	// cond: !config.nacl
+	// result: (UGE (BTQ x y))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQ {
+			break
+		}
+		y := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SHLQ {
+			break
+		}
+		v_1_0 := v_1.Args[0]
+		if v_1_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		if v_1_0.AuxInt != 1 {
+			break
+		}
+		x := v_1.Args[1]
+		if !(!config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64UGE
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQ, TypeFlags)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (EQ (TESTLconst [c] x))
+	// cond: isPowerOfTwo(c) && log2(c) < 32 && !config.nacl
+	// result: (UGE (BTLconst [log2(c)] x))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTLconst {
+			break
+		}
+		c := v.AuxInt
+		x := v.Args[0]
+		if !(isPowerOfTwo(c) && log2(c) < 32 && !config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64UGE
+		v0 := b.NewValue0(v.Pos, OpAMD64BTLconst, TypeFlags)
+		v0.AuxInt = log2(c)
+		v0.AddArg(x)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (EQ (TESTQconst [c] x))
+	// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
+	// result: (UGE (BTQconst [log2(c)] x))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQconst {
+			break
+		}
+		c := v.AuxInt
+		x := v.Args[0]
+		if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64UGE
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
+		v0.AuxInt = log2(c)
+		v0.AddArg(x)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (EQ (TESTQ (MOVQconst [c]) x))
+	// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
+	// result: (UGE (BTQconst [log2(c)] x))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQ {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		c := v_0.AuxInt
+		x := v.Args[1]
+		if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64UGE
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
+		v0.AuxInt = log2(c)
+		v0.AddArg(x)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (EQ (TESTQ x (MOVQconst [c])))
+	// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
+	// result: (UGE (BTQconst [log2(c)] x))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQ {
+			break
+		}
+		x := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64MOVQconst {
+			break
+		}
+		c := v_1.AuxInt
+		if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64UGE
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
+		v0.AuxInt = log2(c)
+		v0.AddArg(x)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (EQ (InvertFlags cmp) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64EQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (EQ (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (EQ (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (EQ (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_GE(b *Block) bool {
+	// match: (GE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (LE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64LE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_GT(b *Block) bool {
+	// match: (GT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (LT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64LT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GT (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GT (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GT (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GT (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_If(b *Block) bool {
+	// match: (If (SETL cmp) yes no)
+	// cond:
+	// result: (LT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETL {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64LT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETLE cmp) yes no)
+	// cond:
+	// result: (LE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETLE {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64LE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETG cmp) yes no)
+	// cond:
+	// result: (GT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETG {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64GT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETGE cmp) yes no)
+	// cond:
+	// result: (GE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETGE {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64GE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETEQ cmp) yes no)
+	// cond:
+	// result: (EQ  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETEQ {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64EQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETNE cmp) yes no)
+	// cond:
+	// result: (NE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETNE {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64NE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETB cmp) yes no)
+	// cond:
+	// result: (ULT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETB {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64ULT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETBE cmp) yes no)
+	// cond:
+	// result: (ULE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETBE {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64ULE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETA cmp) yes no)
+	// cond:
+	// result: (UGT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETA {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETAE cmp) yes no)
+	// cond:
+	// result: (UGE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETAE {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETGF cmp) yes no)
+	// cond:
+	// result: (UGT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETGF {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETGEF cmp) yes no)
+	// cond:
+	// result: (UGE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETGEF {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETEQF cmp) yes no)
+	// cond:
+	// result: (EQF  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETEQF {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64EQF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (SETNEF cmp) yes no)
+	// cond:
+	// result: (NEF  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64SETNEF {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64NEF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If cond yes no)
+	// cond:
+	// result: (NE (TESTB cond cond) yes no)
+	for {
+		v := b.Control
+		_ = v
+		cond := b.Control
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64NE
+		v0 := b.NewValue0(v.Pos, OpAMD64TESTB, TypeFlags)
+		v0.AddArg(cond)
+		v0.AddArg(cond)
+		b.SetControl(v0)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_LE(b *Block) bool {
+	// match: (LE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (GE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64GE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_LT(b *Block) bool {
+	// match: (LT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (GT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64GT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LT (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LT (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LT (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LT (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_NE(b *Block) bool {
+	config := b.Func.Config
+	_ = config
+	// match: (NE (TESTB (SETL cmp) (SETL cmp)) yes no)
+	// cond:
+	// result: (LT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETL {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETL {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64LT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETL cmp) (SETL cmp)) yes no)
+	// cond:
+	// result: (LT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETL {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETL {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64LT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETLE cmp) (SETLE cmp)) yes no)
+	// cond:
+	// result: (LE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETLE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETLE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64LE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETLE cmp) (SETLE cmp)) yes no)
+	// cond:
+	// result: (LE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETLE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETLE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64LE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETG cmp) (SETG cmp)) yes no)
+	// cond:
+	// result: (GT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETG {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETG {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64GT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETG cmp) (SETG cmp)) yes no)
+	// cond:
+	// result: (GT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETG {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETG {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64GT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETGE cmp) (SETGE cmp)) yes no)
+	// cond:
+	// result: (GE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETGE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETGE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64GE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETGE cmp) (SETGE cmp)) yes no)
+	// cond:
+	// result: (GE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETGE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETGE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64GE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETEQ cmp) (SETEQ cmp)) yes no)
+	// cond:
+	// result: (EQ  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETEQ {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETEQ {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64EQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETEQ cmp) (SETEQ cmp)) yes no)
+	// cond:
+	// result: (EQ  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETEQ {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETEQ {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64EQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETNE cmp) (SETNE cmp)) yes no)
+	// cond:
+	// result: (NE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETNE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETNE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64NE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETNE cmp) (SETNE cmp)) yes no)
+	// cond:
+	// result: (NE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETNE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETNE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64NE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETB cmp) (SETB cmp)) yes no)
+	// cond:
+	// result: (ULT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETB {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETB {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64ULT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETB cmp) (SETB cmp)) yes no)
+	// cond:
+	// result: (ULT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETB {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETB {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64ULT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETBE cmp) (SETBE cmp)) yes no)
+	// cond:
+	// result: (ULE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETBE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETBE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64ULE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETBE cmp) (SETBE cmp)) yes no)
+	// cond:
+	// result: (ULE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETBE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETBE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64ULE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETA cmp) (SETA cmp)) yes no)
+	// cond:
+	// result: (UGT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETA {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETA {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETA cmp) (SETA cmp)) yes no)
+	// cond:
+	// result: (UGT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETA {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETA {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETAE cmp) (SETAE cmp)) yes no)
+	// cond:
+	// result: (UGE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETAE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETAE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETAE cmp) (SETAE cmp)) yes no)
+	// cond:
+	// result: (UGE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETAE {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETAE {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTL (SHLL (MOVLconst [1]) x) y))
+	// cond: !config.nacl
+	// result: (ULT (BTL x y))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTL {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SHLL {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAMD64MOVLconst {
+			break
+		}
+		if v_0_0.AuxInt != 1 {
+			break
+		}
+		x := v_0.Args[1]
+		y := v.Args[1]
+		if !(!config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64ULT
+		v0 := b.NewValue0(v.Pos, OpAMD64BTL, TypeFlags)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (NE (TESTL y (SHLL (MOVLconst [1]) x)))
+	// cond: !config.nacl
+	// result: (ULT (BTL x y))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTL {
+			break
+		}
+		y := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SHLL {
+			break
+		}
+		v_1_0 := v_1.Args[0]
+		if v_1_0.Op != OpAMD64MOVLconst {
+			break
+		}
+		if v_1_0.AuxInt != 1 {
+			break
+		}
+		x := v_1.Args[1]
+		if !(!config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64ULT
+		v0 := b.NewValue0(v.Pos, OpAMD64BTL, TypeFlags)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (NE (TESTQ (SHLQ (MOVQconst [1]) x) y))
+	// cond: !config.nacl
+	// result: (ULT (BTQ x y))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQ {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SHLQ {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		if v_0_0.AuxInt != 1 {
+			break
+		}
+		x := v_0.Args[1]
+		y := v.Args[1]
+		if !(!config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64ULT
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQ, TypeFlags)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (NE (TESTQ y (SHLQ (MOVQconst [1]) x)))
+	// cond: !config.nacl
+	// result: (ULT (BTQ x y))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQ {
+			break
+		}
+		y := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SHLQ {
+			break
+		}
+		v_1_0 := v_1.Args[0]
+		if v_1_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		if v_1_0.AuxInt != 1 {
+			break
+		}
+		x := v_1.Args[1]
+		if !(!config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64ULT
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQ, TypeFlags)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (NE (TESTLconst [c] x))
+	// cond: isPowerOfTwo(c) && log2(c) < 32 && !config.nacl
+	// result: (ULT (BTLconst [log2(c)] x))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTLconst {
+			break
+		}
+		c := v.AuxInt
+		x := v.Args[0]
+		if !(isPowerOfTwo(c) && log2(c) < 32 && !config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64ULT
+		v0 := b.NewValue0(v.Pos, OpAMD64BTLconst, TypeFlags)
+		v0.AuxInt = log2(c)
+		v0.AddArg(x)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (NE (TESTQconst [c] x))
+	// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
+	// result: (ULT (BTQconst [log2(c)] x))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQconst {
+			break
+		}
+		c := v.AuxInt
+		x := v.Args[0]
+		if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64ULT
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
+		v0.AuxInt = log2(c)
+		v0.AddArg(x)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (NE (TESTQ (MOVQconst [c]) x))
+	// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
+	// result: (ULT (BTQconst [log2(c)] x))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQ {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		c := v_0.AuxInt
+		x := v.Args[1]
+		if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64ULT
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
+		v0.AuxInt = log2(c)
+		v0.AddArg(x)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (NE (TESTQ x (MOVQconst [c])))
+	// cond: isPowerOfTwo(c) && log2(c) < 64 && !config.nacl
+	// result: (ULT (BTQconst [log2(c)] x))
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTQ {
+			break
+		}
+		x := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64MOVQconst {
+			break
+		}
+		c := v_1.AuxInt
+		if !(isPowerOfTwo(c) && log2(c) < 64 && !config.nacl) {
+			break
+		}
+		b.Kind = BlockAMD64ULT
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, TypeFlags)
+		v0.AuxInt = log2(c)
+		v0.AddArg(x)
+		b.SetControl(v0)
+		return true
+	}
+	// match: (NE (TESTB (SETGF cmp) (SETGF cmp)) yes no)
+	// cond:
+	// result: (UGT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETGF {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETGF {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETGF cmp) (SETGF cmp)) yes no)
+	// cond:
+	// result: (UGT  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETGF {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETGF {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETGEF cmp) (SETGEF cmp)) yes no)
+	// cond:
+	// result: (UGE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETGEF {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETGEF {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETGEF cmp) (SETGEF cmp)) yes no)
+	// cond:
+	// result: (UGE  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETGEF {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETGEF {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETEQF cmp) (SETEQF cmp)) yes no)
+	// cond:
+	// result: (EQF  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETEQF {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETEQF {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64EQF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETEQF cmp) (SETEQF cmp)) yes no)
+	// cond:
+	// result: (EQF  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETEQF {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETEQF {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64EQF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETNEF cmp) (SETNEF cmp)) yes no)
+	// cond:
+	// result: (NEF  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETNEF {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETNEF {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64NEF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (TESTB (SETNEF cmp) (SETNEF cmp)) yes no)
+	// cond:
+	// result: (NEF  cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64TESTB {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SETNEF {
+			break
+		}
+		cmp := v_0.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SETNEF {
+			break
+		}
+		if cmp != v_1.Args[0] {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64NEF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64NE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (NE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_UGE(b *Block) bool {
+	// match: (UGE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (ULE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64ULE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_UGT(b *Block) bool {
+	// match: (UGT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (ULT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64ULT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGT (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGT (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (UGT (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (UGT (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_ULE(b *Block) bool {
+	// match: (ULE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (UGE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULE (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULE (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (ULE (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULE (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockAMD64_ULT(b *Block) bool {
+	// match: (ULT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (UGT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64InvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockAMD64UGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (ULT (FlagLT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULT (FlagLT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagLT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (ULT (FlagGT_ULT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_ULT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (ULT (FlagGT_UGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpAMD64FlagGT_UGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
 	}
 	return false
 }

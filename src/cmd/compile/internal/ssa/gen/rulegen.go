@@ -239,41 +239,45 @@ func genRules(arch arch) {
 		fmt.Fprintf(w, "}\n")
 	}
 
-	// Generate block rewrite function. There are only a few block types
-	// so we can make this one function with a switch.
-	fmt.Fprintf(w, "func rewriteBlock%s(b *Block) bool {\n", arch.name)
-	fmt.Fprintln(w, "config := b.Func.Config")
-	fmt.Fprintln(w, "_ = config")
-	fmt.Fprintln(w, "fe := b.Func.fe")
-	fmt.Fprintln(w, "_ = fe")
-	fmt.Fprintln(w, "types := &config.Types")
-	fmt.Fprintln(w, "_ = types")
-	fmt.Fprintf(w, "switch b.Kind {\n")
+	// Generate block rewrite function.
+	// Again, generate a top-level dispatch routine that switches on block type.
+	// This speeds up compilation of the ssa package.
 	ops = nil
 	for op := range blockrules {
 		ops = append(ops, op)
 	}
-	sort.Strings(ops)
+
+	fmt.Fprintf(w, "func rewriteBlock%s(b *Block) bool {\n", arch.name)
+	fmt.Fprintf(w, "switch b.Kind {\n")
 	for _, op := range ops {
 		fmt.Fprintf(w, "case %s:\n", blockName(op, arch))
+		fmt.Fprintf(w, "return rewriteBlock%s_%s(b)\n", arch.name, op)
+	}
+	fmt.Fprintf(w, "}\n")
+	fmt.Fprintf(w, "return false\n")
+	fmt.Fprintf(w, "}\n")
+
+	sort.Strings(ops)
+	for _, op := range ops {
+		buf := new(bytes.Buffer)
 		for _, rule := range blockrules[op] {
 			match, cond, result := rule.parse()
-			fmt.Fprintf(w, "// match: %s\n", match)
-			fmt.Fprintf(w, "// cond: %s\n", cond)
-			fmt.Fprintf(w, "// result: %s\n", result)
+			fmt.Fprintf(buf, "// match: %s\n", match)
+			fmt.Fprintf(buf, "// cond: %s\n", cond)
+			fmt.Fprintf(buf, "// result: %s\n", result)
 
-			fmt.Fprintf(w, "for {\n")
+			fmt.Fprintf(buf, "for {\n")
 
 			s := split(match[1 : len(match)-1]) // remove parens, then split
 
 			// check match of control value
 			if s[1] != "nil" {
-				fmt.Fprintf(w, "v := b.Control\n")
+				fmt.Fprintf(buf, "v := b.Control\n")
 				if strings.Contains(s[1], "(") {
-					genMatch0(w, arch, s[1], "v", map[string]struct{}{}, false, rule.loc)
+					genMatch0(buf, arch, s[1], "v", map[string]struct{}{}, false, rule.loc)
 				} else {
-					fmt.Fprintf(w, "_ = v\n") // in case we don't use v
-					fmt.Fprintf(w, "%s := b.Control\n", s[1])
+					fmt.Fprintf(buf, "_ = v\n") // in case we don't use v
+					fmt.Fprintf(buf, "%s := b.Control\n", s[1])
 				}
 			}
 
@@ -281,12 +285,12 @@ func genRules(arch arch) {
 			succs := s[2:]
 			for i, a := range succs {
 				if a != "_" {
-					fmt.Fprintf(w, "%s := b.Succs[%d]\n", a, i)
+					fmt.Fprintf(buf, "%s := b.Succs[%d]\n", a, i)
 				}
 			}
 
 			if cond != "" {
-				fmt.Fprintf(w, "if !(%s) {\nbreak\n}\n", cond)
+				fmt.Fprintf(buf, "if !(%s) {\nbreak\n}\n", cond)
 			}
 
 			// Rule matches. Generate result.
@@ -311,11 +315,11 @@ func genRules(arch arch) {
 				log.Fatalf("unmatched successors %v in %s", m, rule)
 			}
 
-			fmt.Fprintf(w, "b.Kind = %s\n", blockName(t[0], arch))
+			fmt.Fprintf(buf, "b.Kind = %s\n", blockName(t[0], arch))
 			if t[1] == "nil" {
-				fmt.Fprintf(w, "b.SetControl(nil)\n")
+				fmt.Fprintf(buf, "b.SetControl(nil)\n")
 			} else {
-				fmt.Fprintf(w, "b.SetControl(%s)\n", genResult0(w, arch, t[1], new(int), false, false, rule.loc))
+				fmt.Fprintf(buf, "b.SetControl(%s)\n", genResult0(buf, arch, t[1], new(int), false, false, rule.loc))
 			}
 
 			succChanged := false
@@ -331,23 +335,45 @@ func genRules(arch arch) {
 				if succs[0] != newsuccs[1] || succs[1] != newsuccs[0] {
 					log.Fatalf("can only handle swapped successors in %s", rule)
 				}
-				fmt.Fprintln(w, "b.swapSuccessors()")
+				fmt.Fprintln(buf, "b.swapSuccessors()")
 			}
 			for i := 0; i < len(succs); i++ {
-				fmt.Fprintf(w, "_ = %s\n", newsuccs[i])
+				fmt.Fprintf(buf, "_ = %s\n", newsuccs[i])
 			}
 
 			if *genLog {
-				fmt.Fprintf(w, "logRule(\"%s\")\n", rule.loc)
+				fmt.Fprintf(buf, "logRule(\"%s\")\n", rule.loc)
 			}
-			fmt.Fprintf(w, "return true\n")
+			fmt.Fprintf(buf, "return true\n")
 
-			fmt.Fprintf(w, "}\n")
+			fmt.Fprintf(buf, "}\n")
 		}
+
+		fmt.Fprintf(buf, "return false\n")
+
+		body := buf.String()
+		// Do a rough match to predict whether we need config, fe, and/or types.
+		// It's not precise--thus the blank assignments--but it's good enough
+		// to avoid generating needless code and doing pointless nil checks.
+		hasconfig := strings.Contains(body, "config.") || strings.Contains(body, "config)")
+		hasfe := strings.Contains(body, "fe.")
+		hasts := strings.Contains(body, "types.")
+		fmt.Fprintf(w, "func rewriteBlock%s_%s(b *Block) bool {\n", arch.name, op)
+		if hasconfig {
+			fmt.Fprintln(w, "config := b.Func.Config")
+			fmt.Fprintln(w, "_ = config")
+		}
+		if hasfe {
+			fmt.Fprintln(w, "fe := b.Func.fe")
+			fmt.Fprintln(w, "_ = fe")
+		}
+		if hasts {
+			fmt.Fprintln(w, "types := &b.Func.Config.Types")
+			fmt.Fprintln(w, "_ = types")
+		}
+		fmt.Fprint(w, body)
+		fmt.Fprintf(w, "}\n")
 	}
-	fmt.Fprintf(w, "}\n")
-	fmt.Fprintf(w, "return false\n")
-	fmt.Fprintf(w, "}\n")
 
 	// gofmt result
 	b := w.Bytes()

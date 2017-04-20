@@ -2765,12 +2765,6 @@ func rewriteValuedec64_OpZeroExt8to64(v *Value) bool {
 	}
 }
 func rewriteBlockdec64(b *Block) bool {
-	config := b.Func.Config
-	_ = config
-	fe := b.Func.fe
-	_ = fe
-	types := &config.Types
-	_ = types
 	switch b.Kind {
 	}
 	return false

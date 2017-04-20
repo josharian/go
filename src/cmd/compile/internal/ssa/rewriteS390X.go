@@ -34675,991 +34675,1015 @@ func rewriteValueS390X_OpZeroExt8to64(v *Value) bool {
 	}
 }
 func rewriteBlockS390X(b *Block) bool {
-	config := b.Func.Config
-	_ = config
-	fe := b.Func.fe
-	_ = fe
-	types := &config.Types
-	_ = types
 	switch b.Kind {
 	case BlockS390XEQ:
-		// match: (EQ (InvertFlags cmp) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (EQ (FlagLT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagLT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (EQ (FlagGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockS390XGE:
-		// match: (GE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (LE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XLE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GE (FlagLT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagLT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GE (FlagGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockS390XGT:
-		// match: (GT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (LT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XLT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (GT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GT (FlagLT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagLT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (GT (FlagGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
+		return rewriteBlockS390X_EQ(b)
 	case BlockIf:
-		// match: (If (MOVDLT (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
-		// cond:
-		// result: (LT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XMOVDLT {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
-				break
-			}
-			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XLT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (MOVDLE (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
-		// cond:
-		// result: (LE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XMOVDLE {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
-				break
-			}
-			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XLE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (MOVDGT (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
-		// cond:
-		// result: (GT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XMOVDGT {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
-				break
-			}
-			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (MOVDGE (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
-		// cond:
-		// result: (GE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XMOVDGE {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
-				break
-			}
-			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (MOVDEQ (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XMOVDEQ {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
-				break
-			}
-			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (MOVDNE (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XMOVDNE {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
-				break
-			}
-			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (MOVDGTnoinv (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
-		// cond:
-		// result: (GTF cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XMOVDGTnoinv {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
-				break
-			}
-			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGTF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If (MOVDGEnoinv (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
-		// cond:
-		// result: (GEF cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XMOVDGEnoinv {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
-				break
-			}
-			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
-				break
-			}
-			cmp := v.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGEF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (If cond yes no)
-		// cond:
-		// result: (NE (CMPWconst [0] (MOVBZreg <types.Bool> cond)) yes no)
-		for {
-			v := b.Control
-			_ = v
-			cond := b.Control
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XNE
-			v0 := b.NewValue0(v.Pos, OpS390XCMPWconst, TypeFlags)
-			v0.AuxInt = 0
-			v1 := b.NewValue0(v.Pos, OpS390XMOVBZreg, types.Bool)
-			v1.AddArg(cond)
-			v0.AddArg(v1)
-			b.SetControl(v0)
-			_ = yes
-			_ = no
-			return true
-		}
-	case BlockS390XLE:
-		// match: (LE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (GE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagLT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagLT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LE (FlagGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-	case BlockS390XLT:
-		// match: (LT (InvertFlags cmp) yes no)
-		// cond:
-		// result: (GT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LT (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
-		// match: (LT (FlagLT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagLT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
-		}
-		// match: (LT (FlagGT) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
-		}
+		return rewriteBlockS390X_If(b)
 	case BlockS390XNE:
-		// match: (NE (CMPWconst [0] (MOVDLT (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
-		// cond:
-		// result: (LT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDLT {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
-				break
-			}
-			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
-				break
-			}
-			cmp := v_0.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XLT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		return rewriteBlockS390X_NE(b)
+	case BlockS390XLT:
+		return rewriteBlockS390X_LT(b)
+	case BlockS390XGT:
+		return rewriteBlockS390X_GT(b)
+	case BlockS390XLE:
+		return rewriteBlockS390X_LE(b)
+	case BlockS390XGE:
+		return rewriteBlockS390X_GE(b)
+	}
+	return false
+}
+func rewriteBlockS390X_EQ(b *Block) bool {
+	// match: (EQ (InvertFlags cmp) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XInvertFlags {
+			break
 		}
-		// match: (NE (CMPWconst [0] (MOVDLE (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
-		// cond:
-		// result: (LE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDLE {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
-				break
-			}
-			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
-				break
-			}
-			cmp := v_0.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XLE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagEQ {
+			break
 		}
-		// match: (NE (CMPWconst [0] (MOVDGT (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
-		// cond:
-		// result: (GT cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDGT {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
-				break
-			}
-			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
-				break
-			}
-			cmp := v_0.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGT
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (EQ (FlagLT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagLT {
+			break
 		}
-		// match: (NE (CMPWconst [0] (MOVDGE (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
-		// cond:
-		// result: (GE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDGE {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
-				break
-			}
-			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
-				break
-			}
-			cmp := v_0.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (EQ (FlagGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagGT {
+			break
 		}
-		// match: (NE (CMPWconst [0] (MOVDEQ (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
-		// cond:
-		// result: (EQ cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDEQ {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
-				break
-			}
-			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
-				break
-			}
-			cmp := v_0.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XEQ
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockS390X_GE(b *Block) bool {
+	// match: (GE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (LE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XInvertFlags {
+			break
 		}
-		// match: (NE (CMPWconst [0] (MOVDNE (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDNE {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
-				break
-			}
-			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
-				break
-			}
-			cmp := v_0.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XLE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagEQ {
+			break
 		}
-		// match: (NE (CMPWconst [0] (MOVDGTnoinv (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
-		// cond:
-		// result: (GTF cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDGTnoinv {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
-				break
-			}
-			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
-				break
-			}
-			cmp := v_0.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGTF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GE (FlagLT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagLT {
+			break
 		}
-		// match: (NE (CMPWconst [0] (MOVDGEnoinv (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
-		// cond:
-		// result: (GEF cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
-				break
-			}
-			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDGEnoinv {
-				break
-			}
-			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
-				break
-			}
-			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
-				break
-			}
-			cmp := v_0.Args[2]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XGEF
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GE (FlagGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagGT {
+			break
 		}
-		// match: (NE (InvertFlags cmp) yes no)
-		// cond:
-		// result: (NE cmp yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XInvertFlags {
-				break
-			}
-			cmp := v.Args[0]
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockS390XNE
-			b.SetControl(cmp)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockS390X_GT(b *Block) bool {
+	// match: (GT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (LT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XInvertFlags {
+			break
 		}
-		// match: (NE (FlagEQ) yes no)
-		// cond:
-		// result: (First nil no yes)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagEQ {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			b.swapSuccessors()
-			_ = no
-			_ = yes
-			return true
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XLT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (GT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagEQ {
+			break
 		}
-		// match: (NE (FlagLT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagLT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GT (FlagLT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagLT {
+			break
 		}
-		// match: (NE (FlagGT) yes no)
-		// cond:
-		// result: (First nil yes no)
-		for {
-			v := b.Control
-			if v.Op != OpS390XFlagGT {
-				break
-			}
-			yes := b.Succs[0]
-			no := b.Succs[1]
-			b.Kind = BlockFirst
-			b.SetControl(nil)
-			_ = yes
-			_ = no
-			return true
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (GT (FlagGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagGT {
+			break
 		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockS390X_If(b *Block) bool {
+	types := &b.Func.Config.Types
+	_ = types
+	// match: (If (MOVDLT (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
+	// cond:
+	// result: (LT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XMOVDLT {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_1.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XLT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (MOVDLE (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
+	// cond:
+	// result: (LE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XMOVDLE {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_1.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XLE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (MOVDGT (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
+	// cond:
+	// result: (GT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XMOVDGT {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_1.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (MOVDGE (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
+	// cond:
+	// result: (GE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XMOVDGE {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_1.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (MOVDEQ (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XMOVDEQ {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_1.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (MOVDNE (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XMOVDNE {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_1.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (MOVDGTnoinv (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
+	// cond:
+	// result: (GTF cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XMOVDGTnoinv {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_1.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGTF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If (MOVDGEnoinv (MOVDconst [0]) (MOVDconst [1]) cmp) yes no)
+	// cond:
+	// result: (GEF cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XMOVDGEnoinv {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_1.AuxInt != 1 {
+			break
+		}
+		cmp := v.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGEF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (If cond yes no)
+	// cond:
+	// result: (NE (CMPWconst [0] (MOVBZreg <types.Bool> cond)) yes no)
+	for {
+		v := b.Control
+		_ = v
+		cond := b.Control
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XNE
+		v0 := b.NewValue0(v.Pos, OpS390XCMPWconst, TypeFlags)
+		v0.AuxInt = 0
+		v1 := b.NewValue0(v.Pos, OpS390XMOVBZreg, types.Bool)
+		v1.AddArg(cond)
+		v0.AddArg(v1)
+		b.SetControl(v0)
+		_ = yes
+		_ = no
+		return true
+	}
+	return false
+}
+func rewriteBlockS390X_LE(b *Block) bool {
+	// match: (LE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (GE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagLT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagLT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LE (FlagGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockS390X_LT(b *Block) bool {
+	// match: (LT (InvertFlags cmp) yes no)
+	// cond:
+	// result: (GT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LT (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (LT (FlagLT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagLT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (LT (FlagGT) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	return false
+}
+func rewriteBlockS390X_NE(b *Block) bool {
+	// match: (NE (CMPWconst [0] (MOVDLT (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
+	// cond:
+	// result: (LT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XCMPWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDLT {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_0.AuxInt != 0 {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_1.AuxInt != 1 {
+			break
+		}
+		cmp := v_0.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XLT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPWconst [0] (MOVDLE (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
+	// cond:
+	// result: (LE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XCMPWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDLE {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_0.AuxInt != 0 {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_1.AuxInt != 1 {
+			break
+		}
+		cmp := v_0.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XLE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPWconst [0] (MOVDGT (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
+	// cond:
+	// result: (GT cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XCMPWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDGT {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_0.AuxInt != 0 {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_1.AuxInt != 1 {
+			break
+		}
+		cmp := v_0.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGT
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPWconst [0] (MOVDGE (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
+	// cond:
+	// result: (GE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XCMPWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDGE {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_0.AuxInt != 0 {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_1.AuxInt != 1 {
+			break
+		}
+		cmp := v_0.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPWconst [0] (MOVDEQ (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
+	// cond:
+	// result: (EQ cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XCMPWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDEQ {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_0.AuxInt != 0 {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_1.AuxInt != 1 {
+			break
+		}
+		cmp := v_0.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XEQ
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPWconst [0] (MOVDNE (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XCMPWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDNE {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_0.AuxInt != 0 {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_1.AuxInt != 1 {
+			break
+		}
+		cmp := v_0.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPWconst [0] (MOVDGTnoinv (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
+	// cond:
+	// result: (GTF cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XCMPWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDGTnoinv {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_0.AuxInt != 0 {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_1.AuxInt != 1 {
+			break
+		}
+		cmp := v_0.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGTF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (CMPWconst [0] (MOVDGEnoinv (MOVDconst [0]) (MOVDconst [1]) cmp)) yes no)
+	// cond:
+	// result: (GEF cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XCMPWconst {
+			break
+		}
+		if v.AuxInt != 0 {
+			break
+		}
+		v_0 := v.Args[0]
+		if v_0.Op != OpS390XMOVDGEnoinv {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_0.AuxInt != 0 {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpS390XMOVDconst {
+			break
+		}
+		if v_0_1.AuxInt != 1 {
+			break
+		}
+		cmp := v_0.Args[2]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XGEF
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (InvertFlags cmp) yes no)
+	// cond:
+	// result: (NE cmp yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XInvertFlags {
+			break
+		}
+		cmp := v.Args[0]
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockS390XNE
+		b.SetControl(cmp)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagEQ) yes no)
+	// cond:
+	// result: (First nil no yes)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagEQ {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		b.swapSuccessors()
+		_ = no
+		_ = yes
+		return true
+	}
+	// match: (NE (FlagLT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagLT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
+	}
+	// match: (NE (FlagGT) yes no)
+	// cond:
+	// result: (First nil yes no)
+	for {
+		v := b.Control
+		if v.Op != OpS390XFlagGT {
+			break
+		}
+		yes := b.Succs[0]
+		no := b.Succs[1]
+		b.Kind = BlockFirst
+		b.SetControl(nil)
+		_ = yes
+		_ = no
+		return true
 	}
 	return false
 }
