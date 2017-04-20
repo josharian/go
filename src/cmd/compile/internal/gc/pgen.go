@@ -20,10 +20,8 @@ import (
 // "Portable" code generation.
 
 var (
-	nBackendWorkers int            // the number of concurrent backend workers, set by a compiler flag
-	needscompile    []*Node        // slice of functions waiting to be compiled
-	compilewg       sync.WaitGroup // wait for all backend compilers to complete
-	compilec        chan *Node     // channel of functions for backend compilers to drain
+	nBackendWorkers int     // the number of concurrent backend workers, set by a compiler flag
+	needscompile    []*Node // slice of functions waiting to be compiled
 )
 
 func emitptrargsmap() {
@@ -245,6 +243,35 @@ func compileSSA(fn *Node, worker int) {
 	// fieldtrack must be called after pp.Flush. See issue 20014.
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
 	pp.Free()
+}
+
+func finishcompilation() {
+	if len(needscompile) != 0 {
+		var wg sync.WaitGroup
+		c := make(chan *Node)
+		for i := 0; i < nBackendWorkers; i++ {
+			wg.Add(1)
+			go func(worker int) {
+				for fn := range c {
+					compileSSA(fn, worker)
+				}
+				wg.Done()
+			}(i)
+		}
+		for _, fn := range needscompile {
+			c <- fn
+		}
+		close(c)
+		needscompile = nil
+		wg.Wait()
+	}
+	// Check whether any of the functions we have compiled have gigantic stack frames.
+	obj.SortSlice(largeStackFrames, func(i, j int) bool {
+		return largeStackFrames[i].Before(largeStackFrames[j])
+	})
+	for _, largePos := range largeStackFrames {
+		yyerrorl(largePos, "stack frame too large (>2GB)")
+	}
 }
 
 func debuginfo(fnsym *obj.LSym, curfn interface{}) []*dwarf.Var {

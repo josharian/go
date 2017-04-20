@@ -71,18 +71,6 @@ func initssaconfig() {
 	}
 
 	ssaCaches = make([]ssa.Cache, nBackendWorkers)
-	if nBackendWorkers > 1 {
-		compilec = make(chan *Node)
-		for i := 0; i < nBackendWorkers; i++ {
-			compilewg.Add(1)
-			go func(worker int) {
-				for fn := range compilec {
-					compileSSA(fn, worker)
-				}
-				compilewg.Done()
-			}(i)
-		}
-	}
 
 	// Set up some runtime functions we'll need to call.
 	Newproc = Sysfunc("newproc")
