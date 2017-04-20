@@ -281,14 +281,6 @@ func genRules(arch arch) {
 				}
 			}
 
-			// assign successor names
-			succs := s[2:]
-			for i, a := range succs {
-				if a != "_" {
-					fmt.Fprintf(buf, "%s := b.Succs[%d]\n", a, i)
-				}
-			}
-
 			if cond != "" {
 				fmt.Fprintf(buf, "if !(%s) {\nbreak\n}\n", cond)
 			}
@@ -298,6 +290,7 @@ func genRules(arch arch) {
 			newsuccs := t[2:]
 
 			// Check if newsuccs is the same set as succs.
+			succs := s[2:]
 			m := map[string]bool{}
 			for _, succ := range succs {
 				if m[succ] {
@@ -336,9 +329,6 @@ func genRules(arch arch) {
 					log.Fatalf("can only handle swapped successors in %s", rule)
 				}
 				fmt.Fprintln(buf, "b.swapSuccessors()")
-			}
-			for i := 0; i < len(succs); i++ {
-				fmt.Fprintf(buf, "_ = %s\n", newsuccs[i])
 			}
 
 			if *genLog {

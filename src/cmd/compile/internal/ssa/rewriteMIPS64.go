@@ -9804,6 +9804,8 @@ func rewriteValueMIPS64_OpZeroExt8to64(v *Value) bool {
 }
 func rewriteBlockMIPS64(b *Block) bool {
 	switch b.Kind {
+	case BlockMIPS64GEZ:
+		return rewriteBlockMIPS64_GEZ(b)
 	case BlockIf:
 		return rewriteBlockMIPS64_If(b)
 	case BlockMIPS64NE:
@@ -9816,8 +9818,6 @@ func rewriteBlockMIPS64(b *Block) bool {
 		return rewriteBlockMIPS64_LEZ(b)
 	case BlockMIPS64GTZ:
 		return rewriteBlockMIPS64_GTZ(b)
-	case BlockMIPS64GEZ:
-		return rewriteBlockMIPS64_GEZ(b)
 	}
 	return false
 }
@@ -9831,12 +9831,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 			break
 		}
 		cmp := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64FPF
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (FPFlagFalse cmp) yes no)
@@ -9848,12 +9844,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 			break
 		}
 		cmp := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64FPT
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (XORconst [1] cmp:(SGT _ _)) yes no)
@@ -9871,12 +9863,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 		if cmp.Op != OpMIPS64SGT {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64NE
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (XORconst [1] cmp:(SGTU _ _)) yes no)
@@ -9894,12 +9882,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 		if cmp.Op != OpMIPS64SGTU {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64NE
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (XORconst [1] cmp:(SGTconst _)) yes no)
@@ -9917,12 +9901,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 		if cmp.Op != OpMIPS64SGTconst {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64NE
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (XORconst [1] cmp:(SGTUconst _)) yes no)
@@ -9940,12 +9920,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 		if cmp.Op != OpMIPS64SGTUconst {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64NE
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (SGTUconst [1] x) yes no)
@@ -9960,12 +9936,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 			break
 		}
 		x := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64NE
 		b.SetControl(x)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (SGTU x (MOVVconst [0])) yes no)
@@ -9984,12 +9956,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 		if v_1.AuxInt != 0 {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64EQ
 		b.SetControl(x)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (SGTconst [0] x) yes no)
@@ -10004,12 +9972,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 			break
 		}
 		x := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64GEZ
 		b.SetControl(x)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (SGT x (MOVVconst [0])) yes no)
@@ -10028,12 +9992,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 		if v_1.AuxInt != 0 {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64LEZ
 		b.SetControl(x)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (MOVVconst [0]) yes no)
@@ -10047,12 +10007,8 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 		if v.AuxInt != 0 {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockFirst
 		b.SetControl(nil)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (EQ (MOVVconst [c]) yes no)
@@ -10064,16 +10020,12 @@ func rewriteBlockMIPS64_EQ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c != 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
 		b.swapSuccessors()
-		_ = no
-		_ = yes
 		return true
 	}
 	return false
@@ -10088,15 +10040,11 @@ func rewriteBlockMIPS64_GEZ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c >= 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (GEZ (MOVVconst [c]) yes no)
@@ -10108,16 +10056,12 @@ func rewriteBlockMIPS64_GEZ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c < 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
 		b.swapSuccessors()
-		_ = no
-		_ = yes
 		return true
 	}
 	return false
@@ -10132,15 +10076,11 @@ func rewriteBlockMIPS64_GTZ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c > 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (GTZ (MOVVconst [c]) yes no)
@@ -10152,16 +10092,12 @@ func rewriteBlockMIPS64_GTZ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c <= 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
 		b.swapSuccessors()
-		_ = no
-		_ = yes
 		return true
 	}
 	return false
@@ -10174,12 +10110,8 @@ func rewriteBlockMIPS64_If(b *Block) bool {
 		v := b.Control
 		_ = v
 		cond := b.Control
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64NE
 		b.SetControl(cond)
-		_ = yes
-		_ = no
 		return true
 	}
 	return false
@@ -10194,15 +10126,11 @@ func rewriteBlockMIPS64_LEZ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c <= 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (LEZ (MOVVconst [c]) yes no)
@@ -10214,16 +10142,12 @@ func rewriteBlockMIPS64_LEZ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c > 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
 		b.swapSuccessors()
-		_ = no
-		_ = yes
 		return true
 	}
 	return false
@@ -10238,15 +10162,11 @@ func rewriteBlockMIPS64_LTZ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c < 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (LTZ (MOVVconst [c]) yes no)
@@ -10258,16 +10178,12 @@ func rewriteBlockMIPS64_LTZ(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c >= 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
 		b.swapSuccessors()
-		_ = no
-		_ = yes
 		return true
 	}
 	return false
@@ -10282,12 +10198,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 			break
 		}
 		cmp := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64FPT
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (FPFlagFalse cmp) yes no)
@@ -10299,12 +10211,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 			break
 		}
 		cmp := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64FPF
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (XORconst [1] cmp:(SGT _ _)) yes no)
@@ -10322,12 +10230,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 		if cmp.Op != OpMIPS64SGT {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64EQ
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (XORconst [1] cmp:(SGTU _ _)) yes no)
@@ -10345,12 +10249,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 		if cmp.Op != OpMIPS64SGTU {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64EQ
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (XORconst [1] cmp:(SGTconst _)) yes no)
@@ -10368,12 +10268,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 		if cmp.Op != OpMIPS64SGTconst {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64EQ
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (XORconst [1] cmp:(SGTUconst _)) yes no)
@@ -10391,12 +10287,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 		if cmp.Op != OpMIPS64SGTUconst {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64EQ
 		b.SetControl(cmp)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (SGTUconst [1] x) yes no)
@@ -10411,12 +10303,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 			break
 		}
 		x := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64EQ
 		b.SetControl(x)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (SGTU x (MOVVconst [0])) yes no)
@@ -10435,12 +10323,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 		if v_1.AuxInt != 0 {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64NE
 		b.SetControl(x)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (SGTconst [0] x) yes no)
@@ -10455,12 +10339,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 			break
 		}
 		x := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64LTZ
 		b.SetControl(x)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (SGT x (MOVVconst [0])) yes no)
@@ -10479,12 +10359,8 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 		if v_1.AuxInt != 0 {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockMIPS64GTZ
 		b.SetControl(x)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (NE (MOVVconst [0]) yes no)
@@ -10498,13 +10374,9 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 		if v.AuxInt != 0 {
 			break
 		}
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockFirst
 		b.SetControl(nil)
 		b.swapSuccessors()
-		_ = no
-		_ = yes
 		return true
 	}
 	// match: (NE (MOVVconst [c]) yes no)
@@ -10516,15 +10388,11 @@ func rewriteBlockMIPS64_NE(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c != 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
-		_ = yes
-		_ = no
 		return true
 	}
 	return false

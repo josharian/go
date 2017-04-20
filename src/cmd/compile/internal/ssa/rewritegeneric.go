@@ -23704,13 +23704,9 @@ func rewriteBlockgeneric_If(b *Block) bool {
 			break
 		}
 		cond := v.Args[0]
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		b.Kind = BlockIf
 		b.SetControl(cond)
 		b.swapSuccessors()
-		_ = no
-		_ = yes
 		return true
 	}
 	// match: (If (ConstBool [c]) yes no)
@@ -23722,15 +23718,11 @@ func rewriteBlockgeneric_If(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c == 1) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
-		_ = yes
-		_ = no
 		return true
 	}
 	// match: (If (ConstBool [c]) yes no)
@@ -23742,16 +23734,12 @@ func rewriteBlockgeneric_If(b *Block) bool {
 			break
 		}
 		c := v.AuxInt
-		yes := b.Succs[0]
-		no := b.Succs[1]
 		if !(c == 0) {
 			break
 		}
 		b.Kind = BlockFirst
 		b.SetControl(nil)
 		b.swapSuccessors()
-		_ = no
-		_ = yes
 		return true
 	}
 	return false
