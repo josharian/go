@@ -138,6 +138,7 @@ func dumpobj1(outfile string, mode int) {
 	dumpglobls()
 	dumpptabs()
 	dumptypestructs()
+	drainNeedsCompile()
 
 	// Dump extra globals.
 	tmp := externdcl

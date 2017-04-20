@@ -11,6 +11,7 @@ import (
 	"html"
 	"os"
 	"sort"
+	"sync"
 
 	"cmd/compile/internal/ssa"
 	"cmd/compile/internal/types"
@@ -24,6 +25,40 @@ var (
 	ssaConfig *ssa.Config
 	ssaCaches []ssa.Cache
 )
+
+func drainNeedsCompile() {
+	if len(needscompile) > 0 {
+		c := make(chan *Node)
+		var wg sync.WaitGroup
+		for i := 0; i < nBackendWorkers; i++ {
+			wg.Add(1)
+			go func(worker int) {
+				for fn := range c {
+					compileSSA(fn, worker)
+				}
+				wg.Done()
+			}(i)
+		}
+		// Compile the longest functions first,
+		// since they're most likely to be the slowest.
+		// This helps avoid stragglers.
+		obj.SortSlice(needscompile, func(i, j int) bool {
+			return needscompile[i].Nbody.Len() > needscompile[j].Nbody.Len()
+		})
+		for _, fn := range needscompile {
+			c <- fn
+		}
+		close(c)
+		needscompile = nil
+		wg.Wait()
+	}
+	obj.SortSlice(largeStackFrames, func(i, j int) bool {
+		return largeStackFrames[i].Before(largeStackFrames[j])
+	})
+	for _, largePos := range largeStackFrames {
+		yyerrorl(largePos, "stack frame too large (>2GB)")
+	}
+}
 
 func initssaconfig() {
 	types_ := ssa.Types{
@@ -71,18 +106,6 @@ func initssaconfig() {
 	}
 
 	ssaCaches = make([]ssa.Cache, nBackendWorkers)
-	if nBackendWorkers > 1 {
-		compilec = make(chan *Node)
-		for i := 0; i < nBackendWorkers; i++ {
-			compilewg.Add(1)
-			go func(worker int) {
-				for fn := range compilec {
-					compileSSA(fn, worker)
-				}
-				compilewg.Done()
-			}(i)
-		}
-	}
 
 	// Set up some runtime functions we'll need to call.
 	Newproc = Sysfunc("newproc")

@@ -14,16 +14,13 @@ import (
 	"cmd/internal/sys"
 	"fmt"
 	"sort"
-	"sync"
 )
 
 // "Portable" code generation.
 
 var (
-	nBackendWorkers int            // the number of concurrent backend workers, set by a compiler flag
-	needscompile    []*Node        // slice of functions waiting to be compiled
-	compilewg       sync.WaitGroup // wait for all backend compilers to complete
-	compilec        chan *Node     // channel of functions for backend compilers to drain
+	nBackendWorkers int     // the number of concurrent backend workers, set by a compiler flag
+	needscompile    []*Node // slice of functions waiting to be compiled
 )
 
 func emitptrargsmap() {

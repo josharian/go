@@ -547,26 +547,7 @@ func Main(archInit func(*Arch)) {
 		}
 		timings.AddEvent(fcount, "funcs")
 
-		if nBackendWorkers > 1 {
-			// Compile the longest functions first,
-			// since they're most likely to be the slowest.
-			// This helps avoid stragglers.
-			obj.SortSlice(needscompile, func(i, j int) bool {
-				return needscompile[i].Nbody.Len() > needscompile[j].Nbody.Len()
-			})
-			for _, fn := range needscompile {
-				compilec <- fn
-			}
-			close(compilec)
-			needscompile = nil
-			compilewg.Wait()
-		}
-		// We autogenerate and compile some small functions
-		// such as method wrappers and equality/hash routines
-		// while exporting code.
-		// Disable concurrent compilation from here on,
-		// at least until this convoluted structure has been unwound.
-		nBackendWorkers = 1
+		drainNeedsCompile()
 
 		if nsavederrors+nerrors == 0 {
 			fninit(xtop)
@@ -574,12 +555,6 @@ func Main(archInit func(*Arch)) {
 
 		if compiling_runtime {
 			checknowritebarrierrec()
-		}
-		obj.SortSlice(largeStackFrames, func(i, j int) bool {
-			return largeStackFrames[i].Before(largeStackFrames[j])
-		})
-		for _, largePos := range largeStackFrames {
-			yyerrorl(largePos, "stack frame too large (>2GB)")
 		}
 	}
 
@@ -600,6 +575,10 @@ func Main(archInit func(*Arch)) {
 	dumpobj()
 	if asmhdr != "" {
 		dumpasmhdr()
+	}
+
+	if len(needscompile) > 0 {
+		Fatalf("uncompiled functions: %v", needscompile)
 	}
 
 	if nerrors+nsavederrors != 0 {
