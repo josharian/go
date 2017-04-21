@@ -84,6 +84,7 @@ var pragcgobuf string
 var outfile string
 var linkobj string
 var dolinkobj bool
+var docompileobj bool
 
 var bout *bio.Writer
 
