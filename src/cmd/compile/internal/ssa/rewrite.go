@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
+func applyRewrite(f *Func, rb BlockRewriter, rv ValueRewriter) {
 	// repeat rewrites until we find no more rewrites
 	for {
 		change := false
@@ -43,7 +43,7 @@ func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
 					change = true
 					for a.Uses == 0 {
 						b := a.Args[0]
-						a.reset(OpInvalid)
+						a.Reset(OpInvalid)
 						a = b
 					}
 				}
@@ -83,45 +83,45 @@ func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
 
 // Common functions called from rewriting rules
 
-func is64BitFloat(t Type) bool {
+func Is64BitFloat(t Type) bool {
 	return t.Size() == 8 && t.IsFloat()
 }
 
-func is32BitFloat(t Type) bool {
+func Is32BitFloat(t Type) bool {
 	return t.Size() == 4 && t.IsFloat()
 }
 
-func is64BitInt(t Type) bool {
+func Is64BitInt(t Type) bool {
 	return t.Size() == 8 && t.IsInteger()
 }
 
-func is32BitInt(t Type) bool {
+func Is32BitInt(t Type) bool {
 	return t.Size() == 4 && t.IsInteger()
 }
 
-func is16BitInt(t Type) bool {
+func Is16BitInt(t Type) bool {
 	return t.Size() == 2 && t.IsInteger()
 }
 
-func is8BitInt(t Type) bool {
+func Is8BitInt(t Type) bool {
 	return t.Size() == 1 && t.IsInteger()
 }
 
-func isPtr(t Type) bool {
+func IsPtr(t Type) bool {
 	return t.IsPtrShaped()
 }
 
-func isSigned(t Type) bool {
+func IsSigned(t Type) bool {
 	return t.IsSigned()
 }
 
-func typeSize(t Type) int64 {
+func TypeSize(t Type) int64 {
 	return t.Size()
 }
 
-// mergeSym merges two symbolic offsets. There is no real merging of
+// MergeSym merges two symbolic offsets. There is no real merging of
 // offsets, we just pick the non-nil one.
-func mergeSym(x, y interface{}) interface{} {
+func MergeSym(x, y interface{}) interface{} {
 	if x == nil {
 		return y
 	}
@@ -130,16 +130,16 @@ func mergeSym(x, y interface{}) interface{} {
 	}
 	panic(fmt.Sprintf("mergeSym with two non-nil syms %s %s", x, y))
 }
-func canMergeSym(x, y interface{}) bool {
+func CanMergeSym(x, y interface{}) bool {
 	return x == nil || y == nil
 }
 
-// canMergeLoad reports whether the load can be merged into target without
+// CanMergeLoad reports whether the load can be merged into target without
 // invalidating the schedule.
 // It also checks that the other non-load argument x is something we
 // are ok with clobbering (all our current load+op instructions clobber
 // their input register).
-func canMergeLoad(target, load, x *Value) bool {
+func CanMergeLoad(target, load, x *Value) bool {
 	if target.Block.ID != load.Block.ID {
 		// If the load is in a different block do not merge it.
 		return false
@@ -287,7 +287,7 @@ func fitsARM64Offset(off, align int64, sym interface{}) bool {
 	// can be encoded in the instructions
 	// since this rewriting takes place before stack allocation, the offset to SP is unknown,
 	// so don't do it for args and locals with unaligned offset
-	if !is32Bit(off) {
+	if !Is32Bit(off) {
 		return false
 	}
 	if align == 1 {
@@ -297,7 +297,7 @@ func fitsARM64Offset(off, align int64, sym interface{}) bool {
 }
 
 // isSameSym returns whether sym is the same as the given named symbol
-func isSameSym(sym interface{}, name string) bool {
+func IsSameSym(sym interface{}, name string) bool {
 	s, ok := sym.(fmt.Stringer)
 	return ok && s.String() == name
 }
@@ -354,8 +354,8 @@ func isPowerOfTwo(n int64) bool {
 	return n > 0 && n&(n-1) == 0
 }
 
-// is32Bit reports whether n can be represented as a signed 32 bit integer.
-func is32Bit(n int64) bool {
+// Is32Bit reports whether n can be represented as a signed 32 bit integer.
+func Is32Bit(n int64) bool {
 	return n == int64(int32(n))
 }
 
@@ -426,8 +426,8 @@ func devirt(v *Value, sym interface{}, offset int64) *obj.LSym {
 	return lsym
 }
 
-// isSamePtr reports whether p1 and p2 point to the same address.
-func isSamePtr(p1, p2 *Value) bool {
+// IsSamePtr reports whether p1 and p2 point to the same address.
+func IsSamePtr(p1, p2 *Value) bool {
 	if p1 == p2 {
 		return true
 	}
@@ -510,12 +510,12 @@ found:
 	return nil // too far away
 }
 
-// clobber invalidates v.  Returns true.
-// clobber is used by rewrite rules to:
+// Clobber invalidates v.  Returns true.
+// Clobber is used by rewrite rules to:
 //   A) make sure v is really dead and never used again.
 //   B) decrement use counts of v's args.
-func clobber(v *Value) bool {
-	v.reset(OpInvalid)
+func Clobber(v *Value) bool {
+	v.Reset(OpInvalid)
 	// Note: leave v.Block intact.  The Block field is used after clobber.
 	return true
 }

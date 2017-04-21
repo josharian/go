@@ -67,6 +67,8 @@ func initssaconfig() {
 	if thearch.LinkArch.Name == "386" {
 		ssaConfig.Set387(thearch.Use387)
 	}
+	ssaConfig.LowerBlock = thearch.SSALowerBlock
+	ssaConfig.LowerValue = thearch.SSALowerValue
 	ssaCache = new(ssa.Cache)
 
 	// Set up some runtime functions we'll need to call.

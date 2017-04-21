@@ -113,7 +113,7 @@ func nilcheckelim(f *Func) {
 					ptr := v.Args[0]
 					if nonNilValues[ptr.ID] {
 						// This is a redundant explicit nil check.
-						v.reset(OpConstBool)
+						v.Reset(OpConstBool)
 						v.AuxInt = 1 // true
 					}
 				case OpNilCheck:
@@ -125,7 +125,7 @@ func nilcheckelim(f *Func) {
 						if f.fe.Debug_checknil() && v.Pos.Line() > 1 {
 							f.Warnl(v.Pos, "removed nil check")
 						}
-						v.reset(OpUnknown)
+						v.Reset(OpUnknown)
 						// TODO: f.freeValue(v)
 						i--
 						continue
@@ -174,7 +174,7 @@ func nilcheckelim2(f *Func) {
 				if f.fe.Debug_checknil() && v.Pos.Line() > 1 {
 					f.Warnl(v.Pos, "removed nil check")
 				}
-				v.reset(OpUnknown)
+				v.Reset(OpUnknown)
 				continue
 			}
 			if v.Type.IsMemory() || v.Type.IsTuple() && v.Type.FieldType(1).IsMemory() {

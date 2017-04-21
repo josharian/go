@@ -202,7 +202,7 @@ func (v *Value) resetArgs() {
 	v.Args = v.argstorage[:0]
 }
 
-func (v *Value) reset(op Op) {
+func (v *Value) Reset(op Op) {
 	v.Op = op
 	v.resetArgs()
 	v.AuxInt = 0

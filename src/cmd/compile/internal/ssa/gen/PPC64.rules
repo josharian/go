@@ -474,23 +474,23 @@
 (GreaterEqual (InvertFlags x)) -> (LessEqual x)
 
 // Lowering loads
-(Load <t> ptr mem) && (is64BitInt(t) || isPtr(t)) -> (MOVDload ptr mem)
-(Load <t> ptr mem) && is32BitInt(t) && isSigned(t) -> (MOVWload ptr mem)
-(Load <t> ptr mem) && is32BitInt(t) && !isSigned(t) -> (MOVWZload ptr mem)
+(Load <t> ptr mem) && (Is64BitInt(t) || IsPtr(t)) -> (MOVDload ptr mem)
+(Load <t> ptr mem) && Is32BitInt(t) && isSigned(t) -> (MOVWload ptr mem)
+(Load <t> ptr mem) && Is32BitInt(t) && !isSigned(t) -> (MOVWZload ptr mem)
 (Load <t> ptr mem) && is16BitInt(t) && isSigned(t) -> (MOVHload ptr mem)
 (Load <t> ptr mem) && is16BitInt(t) && !isSigned(t) -> (MOVHZload ptr mem)
 (Load <t> ptr mem) && t.IsBoolean() -> (MOVBZload ptr mem)
 (Load <t> ptr mem) && is8BitInt(t) && isSigned(t) -> (MOVBreg (MOVBZload ptr mem)) // PPC has no signed-byte load.
 (Load <t> ptr mem) && is8BitInt(t) && !isSigned(t) -> (MOVBZload ptr mem)
 
-(Load <t> ptr mem) && is32BitFloat(t) -> (FMOVSload ptr mem)
+(Load <t> ptr mem) && Is32BitFloat(t) -> (FMOVSload ptr mem)
 (Load <t> ptr mem) && is64BitFloat(t) -> (FMOVDload ptr mem)
 
 (Store {t} ptr val mem) && t.(Type).Size() == 8 && is64BitFloat(val.Type) -> (FMOVDstore ptr val mem)
-(Store {t} ptr val mem) && t.(Type).Size() == 8 && is32BitFloat(val.Type) -> (FMOVDstore ptr val mem) // glitch from (Cvt32Fto64F x) -> x -- type is wrong
-(Store {t} ptr val mem) && t.(Type).Size() == 4 && is32BitFloat(val.Type) -> (FMOVSstore ptr val mem)
-(Store {t} ptr val mem) && t.(Type).Size() == 8 && (is64BitInt(val.Type) || isPtr(val.Type)) -> (MOVDstore ptr val mem)
-(Store {t} ptr val mem) && t.(Type).Size() == 4 && is32BitInt(val.Type) -> (MOVWstore ptr val mem)
+(Store {t} ptr val mem) && t.(Type).Size() == 8 && Is32BitFloat(val.Type) -> (FMOVDstore ptr val mem) // glitch from (Cvt32Fto64F x) -> x -- type is wrong
+(Store {t} ptr val mem) && t.(Type).Size() == 4 && Is32BitFloat(val.Type) -> (FMOVSstore ptr val mem)
+(Store {t} ptr val mem) && t.(Type).Size() == 8 && (Is64BitInt(val.Type) || IsPtr(val.Type)) -> (MOVDstore ptr val mem)
+(Store {t} ptr val mem) && t.(Type).Size() == 4 && Is32BitInt(val.Type) -> (MOVWstore ptr val mem)
 (Store {t} ptr val mem) && t.(Type).Size() == 2 -> (MOVHstore ptr val mem)
 (Store {t} ptr val mem) && t.(Type).Size() == 1 -> (MOVBstore ptr val mem)
 
@@ -689,10 +689,10 @@
 
 // Arithmetic constant ops
 
-(ADD x (MOVDconst [c])) && is32Bit(c) -> (ADDconst [c] x)
-(ADDconst [c] (ADDconst [d] x)) && is32Bit(c+d) -> (ADDconst [c+d] x)
+(ADD x (MOVDconst [c])) && Is32Bit(c) -> (ADDconst [c] x)
+(ADDconst [c] (ADDconst [d] x)) && Is32Bit(c+d) -> (ADDconst [c+d] x)
 (ADDconst [0] x) -> x
-(SUB x (MOVDconst [c])) && is32Bit(-c) -> (ADDconst [-c] x)
+(SUB x (MOVDconst [c])) && Is32Bit(-c) -> (ADDconst [-c] x)
 // TODO deal with subtract-from-const
 
 (ADDconst [c] (MOVDaddr [d] {sym} x)) -> (MOVDaddr [c+d] {sym} x)
@@ -706,36 +706,36 @@
 (FMOVSstore [off1] {sym} (ADDconst [off2] ptr) val mem) && is16Bit(off1+off2) -> (FMOVSstore [off1+off2] {sym} ptr val mem)
 (FMOVDstore [off1] {sym} (ADDconst [off2] ptr) val mem) && is16Bit(off1+off2) -> (FMOVDstore [off1+off2] {sym} ptr val mem)
 
-(MOVBstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-        (MOVBstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
-(MOVHstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-        (MOVHstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
-(MOVWstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-        (MOVWstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
-(MOVDstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-        (MOVDstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+(MOVBstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+        (MOVBstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
+(MOVHstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+        (MOVHstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
+(MOVWstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+        (MOVWstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
+(MOVDstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+        (MOVDstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 
-(FMOVSstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-        (FMOVSstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
-(FMOVDstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-        (FMOVDstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+(FMOVSstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+        (FMOVSstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
+(FMOVDstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+        (FMOVDstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 
-(MOVBZload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-        (MOVBZload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVHload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-        (MOVHload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVHZload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-        (MOVHZload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVWload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-        (MOVWload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVWZload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-        (MOVWZload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVDload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-        (MOVDload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(FMOVSload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-        (FMOVSload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(FMOVDload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-        (FMOVDload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+(MOVBZload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+        (MOVBZload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVHload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+        (MOVHload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVHZload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+        (MOVHZload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVWload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+        (MOVWload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVWZload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+        (MOVWZload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVDload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+        (MOVDload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(FMOVSload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+        (FMOVSload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(FMOVDload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+        (FMOVDload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 
 // Fold offsets for loads.
 (FMOVSload [off1] {sym} (ADDconst [off2] ptr) mem) && is16Bit(off1+off2) -> (FMOVSload [off1+off2] {sym} ptr mem)
@@ -765,14 +765,14 @@
     (MOVBstorezero [off1+off2] {sym} x mem)
 
 // Fold symbols into storezero
-(MOVDstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} x) mem) && canMergeSym(sym1,sym2) ->
-    (MOVDstorezero [off1+off2] {mergeSym(sym1,sym2)} x mem)
-(MOVWstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} x) mem) && canMergeSym(sym1,sym2) ->
-    (MOVWstorezero [off1+off2] {mergeSym(sym1,sym2)} x mem)
-(MOVHstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} x) mem) && canMergeSym(sym1,sym2) ->
-    (MOVHstorezero [off1+off2] {mergeSym(sym1,sym2)} x mem)
-(MOVBstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} x) mem) && canMergeSym(sym1,sym2) ->
-    (MOVBstorezero [off1+off2] {mergeSym(sym1,sym2)} x mem)
+(MOVDstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} x) mem) && CanMergeSym(sym1,sym2) ->
+    (MOVDstorezero [off1+off2] {MergeSym(sym1,sym2)} x mem)
+(MOVWstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} x) mem) && CanMergeSym(sym1,sym2) ->
+    (MOVWstorezero [off1+off2] {MergeSym(sym1,sym2)} x mem)
+(MOVHstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} x) mem) && CanMergeSym(sym1,sym2) ->
+    (MOVHstorezero [off1+off2] {MergeSym(sym1,sym2)} x mem)
+(MOVBstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} x) mem) && CanMergeSym(sym1,sym2) ->
+    (MOVBstorezero [off1+off2] {MergeSym(sym1,sym2)} x mem)
 
 // atomic intrinsics
 (AtomicLoad32  ptr mem) -> (LoweredAtomicLoad32 ptr mem)

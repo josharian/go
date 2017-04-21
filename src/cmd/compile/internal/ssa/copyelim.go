@@ -51,7 +51,7 @@ func copySource(v *Value) *Value {
 	for w.Op == OpCopy {
 		w = w.Args[0]
 		if w == slow {
-			w.reset(OpUnknown)
+			w.Reset(OpUnknown)
 			break
 		}
 		if advance {

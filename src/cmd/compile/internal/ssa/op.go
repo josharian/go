@@ -143,13 +143,13 @@ func makeValAndOff(val, off int64) int64 {
 	return ValAndOff(val<<32 + int64(uint32(off))).Int64()
 }
 
-func (x ValAndOff) canAdd(off int64) bool {
+func (x ValAndOff) CanAdd(off int64) bool {
 	newoff := x.Off() + off
 	return newoff == int64(int32(newoff))
 }
 
-func (x ValAndOff) add(off int64) int64 {
-	if !x.canAdd(off) {
+func (x ValAndOff) Add(off int64) int64 {
+	if !x.CanAdd(off) {
 		panic("invalid ValAndOff.add")
 	}
 	return makeValAndOff(x.Val(), x.Off()+off)

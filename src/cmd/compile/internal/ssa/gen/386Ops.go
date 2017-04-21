@@ -495,6 +495,7 @@ func init() {
 
 	archs = append(archs, arch{
 		name:            "386",
+		ssapkg:          "x86",
 		pkg:             "cmd/internal/obj/x86",
 		genfile:         "../../x86/ssa.go",
 		ops:             _386ops,

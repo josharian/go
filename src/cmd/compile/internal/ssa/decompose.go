@@ -135,7 +135,7 @@ func decomposeStringPhi(v *Value) {
 		ptr.AddArg(a.Block.NewValue1(v.Pos, OpStringPtr, ptrType, a))
 		len.AddArg(a.Block.NewValue1(v.Pos, OpStringLen, lenType, a))
 	}
-	v.reset(OpStringMake)
+	v.Reset(OpStringMake)
 	v.AddArg(ptr)
 	v.AddArg(len)
 }
@@ -153,7 +153,7 @@ func decomposeSlicePhi(v *Value) {
 		len.AddArg(a.Block.NewValue1(v.Pos, OpSliceLen, lenType, a))
 		cap.AddArg(a.Block.NewValue1(v.Pos, OpSliceCap, lenType, a))
 	}
-	v.reset(OpSliceMake)
+	v.Reset(OpSliceMake)
 	v.AddArg(ptr)
 	v.AddArg(len)
 	v.AddArg(cap)
@@ -174,7 +174,7 @@ func decomposeInt64Phi(v *Value) {
 		hi.AddArg(a.Block.NewValue1(v.Pos, OpInt64Hi, partType, a))
 		lo.AddArg(a.Block.NewValue1(v.Pos, OpInt64Lo, types.UInt32, a))
 	}
-	v.reset(OpInt64Make)
+	v.Reset(OpInt64Make)
 	v.AddArg(hi)
 	v.AddArg(lo)
 }
@@ -197,7 +197,7 @@ func decomposeComplexPhi(v *Value) {
 		real.AddArg(a.Block.NewValue1(v.Pos, OpComplexReal, partType, a))
 		imag.AddArg(a.Block.NewValue1(v.Pos, OpComplexImag, partType, a))
 	}
-	v.reset(OpComplexMake)
+	v.Reset(OpComplexMake)
 	v.AddArg(real)
 	v.AddArg(imag)
 }
@@ -211,7 +211,7 @@ func decomposeInterfacePhi(v *Value) {
 		itab.AddArg(a.Block.NewValue1(v.Pos, OpITab, ptrType, a))
 		data.AddArg(a.Block.NewValue1(v.Pos, OpIData, ptrType, a))
 	}
-	v.reset(OpIMake)
+	v.Reset(OpIMake)
 	v.AddArg(itab)
 	v.AddArg(data)
 }
@@ -296,7 +296,7 @@ func decomposeStructPhi(v *Value) {
 			fields[i].AddArg(a.Block.NewValue1I(v.Pos, OpStructSelect, t.FieldType(i), int64(i), a))
 		}
 	}
-	v.reset(StructMakeOp(n))
+	v.Reset(StructMakeOp(n))
 	v.AddArgs(fields[:n]...)
 
 	// Recursively decompose phis for each field.
@@ -310,7 +310,7 @@ func decomposeStructPhi(v *Value) {
 func decomposeArrayPhi(v *Value) {
 	t := v.Type
 	if t.NumElem() == 0 {
-		v.reset(OpArrayMake0)
+		v.Reset(OpArrayMake0)
 		return
 	}
 	if t.NumElem() != 1 {
@@ -320,7 +320,7 @@ func decomposeArrayPhi(v *Value) {
 	for _, a := range v.Args {
 		elem.AddArg(a.Block.NewValue1I(v.Pos, OpArraySelect, t.ElemType(), 0, a))
 	}
-	v.reset(OpArrayMake1)
+	v.Reset(OpArrayMake1)
 	v.AddArg(elem)
 
 	// Recursively decompose elem phi.

@@ -23,6 +23,7 @@ import (
 
 type arch struct {
 	name            string
+	ssapkg          string
 	pkg             string // obj package to import for this arch.
 	genfile         string // source file containing opcode code generation.
 	ops             []opData
@@ -362,6 +363,13 @@ func (a arch) Name() string {
 		s = ""
 	}
 	return s
+}
+
+func (a arch) ssadot() string {
+	if a.ssapkg == "" {
+		return ""
+	}
+	return "ssa."
 }
 
 func genLower() {

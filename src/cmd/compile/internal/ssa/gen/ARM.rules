@@ -294,15 +294,15 @@
 (Load <t> ptr mem) && (is8BitInt(t) && !isSigned(t)) -> (MOVBUload ptr mem)
 (Load <t> ptr mem) && (is16BitInt(t) && isSigned(t)) -> (MOVHload ptr mem)
 (Load <t> ptr mem) && (is16BitInt(t) && !isSigned(t)) -> (MOVHUload ptr mem)
-(Load <t> ptr mem) && (is32BitInt(t) || isPtr(t)) -> (MOVWload ptr mem)
-(Load <t> ptr mem) && is32BitFloat(t) -> (MOVFload ptr mem)
+(Load <t> ptr mem) && (Is32BitInt(t) || IsPtr(t)) -> (MOVWload ptr mem)
+(Load <t> ptr mem) && Is32BitFloat(t) -> (MOVFload ptr mem)
 (Load <t> ptr mem) && is64BitFloat(t) -> (MOVDload ptr mem)
 
 // stores
 (Store {t} ptr val mem) && t.(Type).Size() == 1 -> (MOVBstore ptr val mem)
 (Store {t} ptr val mem) && t.(Type).Size() == 2 -> (MOVHstore ptr val mem)
-(Store {t} ptr val mem) && t.(Type).Size() == 4 && !is32BitFloat(val.Type) -> (MOVWstore ptr val mem)
-(Store {t} ptr val mem) && t.(Type).Size() == 4 && is32BitFloat(val.Type) -> (MOVFstore ptr val mem)
+(Store {t} ptr val mem) && t.(Type).Size() == 4 && !Is32BitFloat(val.Type) -> (MOVWstore ptr val mem)
+(Store {t} ptr val mem) && t.(Type).Size() == 4 && Is32BitFloat(val.Type) -> (MOVFstore ptr val mem)
 (Store {t} ptr val mem) && t.(Type).Size() == 8 && is64BitFloat(val.Type) -> (MOVDstore ptr val mem)
 
 // zero instructions
@@ -446,31 +446,31 @@
 (MOVFstore [off1] {sym} (ADDconst [off2] ptr) val mem) -> (MOVFstore [off1+off2] {sym} ptr val mem)
 (MOVDstore [off1] {sym} (ADDconst [off2] ptr) val mem) -> (MOVDstore [off1+off2] {sym} ptr val mem)
 
-(MOVBload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-	(MOVBload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVBUload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-	(MOVBUload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVHload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-	(MOVHload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVHUload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-	(MOVHUload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVWload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-	(MOVWload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVFload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-	(MOVFload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
-(MOVDload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && canMergeSym(sym1,sym2) ->
-	(MOVDload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+(MOVBload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+	(MOVBload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVBUload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+	(MOVBUload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVHload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+	(MOVHload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVHUload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+	(MOVHUload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVWload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+	(MOVWload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVFload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+	(MOVFload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
+(MOVDload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
+	(MOVDload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 
-(MOVBstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-	(MOVBstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
-(MOVHstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-	(MOVHstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
-(MOVWstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-	(MOVWstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
-(MOVFstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-	(MOVFstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
-(MOVDstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && canMergeSym(sym1,sym2) ->
-	(MOVDstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+(MOVBstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+	(MOVBstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
+(MOVHstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+	(MOVHstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
+(MOVWstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+	(MOVWstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
+(MOVFstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+	(MOVFstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
+(MOVDstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem) && CanMergeSym(sym1,sym2) ->
+	(MOVDstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 
 // replace load from same location as preceding store with copy
 (MOVBload [off] {sym} ptr (MOVBstore [off2] {sym2} ptr2 x _)) && sym == sym2 && off == off2 && isSamePtr(ptr, ptr2) && isSigned(x.Type) -> x
@@ -557,10 +557,10 @@
 (MUL x (MOVWconst [c])) && isPowerOfTwo(c) -> (SLLconst [log2(c)] x)
 (MUL x (MOVWconst [c])) && isPowerOfTwo(c-1) && int32(c) >= 3 -> (ADDshiftLL x x [log2(c-1)])
 (MUL x (MOVWconst [c])) && isPowerOfTwo(c+1) && int32(c) >= 7 -> (RSBshiftLL x x [log2(c+1)])
-(MUL x (MOVWconst [c])) && c%3 == 0 && isPowerOfTwo(c/3) && is32Bit(c) -> (SLLconst [log2(c/3)] (ADDshiftLL <x.Type> x x [1]))
-(MUL x (MOVWconst [c])) && c%5 == 0 && isPowerOfTwo(c/5) && is32Bit(c) -> (SLLconst [log2(c/5)] (ADDshiftLL <x.Type> x x [2]))
-(MUL x (MOVWconst [c])) && c%7 == 0 && isPowerOfTwo(c/7) && is32Bit(c) -> (SLLconst [log2(c/7)] (RSBshiftLL <x.Type> x x [3]))
-(MUL x (MOVWconst [c])) && c%9 == 0 && isPowerOfTwo(c/9) && is32Bit(c) -> (SLLconst [log2(c/9)] (ADDshiftLL <x.Type> x x [3]))
+(MUL x (MOVWconst [c])) && c%3 == 0 && isPowerOfTwo(c/3) && Is32Bit(c) -> (SLLconst [log2(c/3)] (ADDshiftLL <x.Type> x x [1]))
+(MUL x (MOVWconst [c])) && c%5 == 0 && isPowerOfTwo(c/5) && Is32Bit(c) -> (SLLconst [log2(c/5)] (ADDshiftLL <x.Type> x x [2]))
+(MUL x (MOVWconst [c])) && c%7 == 0 && isPowerOfTwo(c/7) && Is32Bit(c) -> (SLLconst [log2(c/7)] (RSBshiftLL <x.Type> x x [3]))
+(MUL x (MOVWconst [c])) && c%9 == 0 && isPowerOfTwo(c/9) && Is32Bit(c) -> (SLLconst [log2(c/9)] (ADDshiftLL <x.Type> x x [3]))
 
 (MULA x (MOVWconst [c]) a) && int32(c) == -1 -> (SUB a x)
 (MULA _ (MOVWconst [0]) a) -> a
@@ -568,10 +568,10 @@
 (MULA x (MOVWconst [c]) a) && isPowerOfTwo(c) -> (ADD (SLLconst <x.Type> [log2(c)] x) a)
 (MULA x (MOVWconst [c]) a) && isPowerOfTwo(c-1) && int32(c) >= 3 -> (ADD (ADDshiftLL <x.Type> x x [log2(c-1)]) a)
 (MULA x (MOVWconst [c]) a) && isPowerOfTwo(c+1) && int32(c) >= 7 -> (ADD (RSBshiftLL <x.Type> x x [log2(c+1)]) a)
-(MULA x (MOVWconst [c]) a) && c%3 == 0 && isPowerOfTwo(c/3) && is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
-(MULA x (MOVWconst [c]) a) && c%5 == 0 && isPowerOfTwo(c/5) && is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
-(MULA x (MOVWconst [c]) a) && c%7 == 0 && isPowerOfTwo(c/7) && is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
-(MULA x (MOVWconst [c]) a) && c%9 == 0 && isPowerOfTwo(c/9) && is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
+(MULA x (MOVWconst [c]) a) && c%3 == 0 && isPowerOfTwo(c/3) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
+(MULA x (MOVWconst [c]) a) && c%5 == 0 && isPowerOfTwo(c/5) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
+(MULA x (MOVWconst [c]) a) && c%7 == 0 && isPowerOfTwo(c/7) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
+(MULA x (MOVWconst [c]) a) && c%9 == 0 && isPowerOfTwo(c/9) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
 
 (MULA (MOVWconst [c]) x a) && int32(c) == -1 -> (SUB a x)
 (MULA (MOVWconst [0]) _ a) -> a
@@ -579,10 +579,10 @@
 (MULA (MOVWconst [c]) x a) && isPowerOfTwo(c) -> (ADD (SLLconst <x.Type> [log2(c)] x) a)
 (MULA (MOVWconst [c]) x a) && isPowerOfTwo(c-1) && int32(c) >= 3 -> (ADD (ADDshiftLL <x.Type> x x [log2(c-1)]) a)
 (MULA (MOVWconst [c]) x a) && isPowerOfTwo(c+1) && int32(c) >= 7 -> (ADD (RSBshiftLL <x.Type> x x [log2(c+1)]) a)
-(MULA (MOVWconst [c]) x a) && c%3 == 0 && isPowerOfTwo(c/3) && is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
-(MULA (MOVWconst [c]) x a) && c%5 == 0 && isPowerOfTwo(c/5) && is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
-(MULA (MOVWconst [c]) x a) && c%7 == 0 && isPowerOfTwo(c/7) && is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
-(MULA (MOVWconst [c]) x a) && c%9 == 0 && isPowerOfTwo(c/9) && is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
+(MULA (MOVWconst [c]) x a) && c%3 == 0 && isPowerOfTwo(c/3) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
+(MULA (MOVWconst [c]) x a) && c%5 == 0 && isPowerOfTwo(c/5) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
+(MULA (MOVWconst [c]) x a) && c%7 == 0 && isPowerOfTwo(c/7) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
+(MULA (MOVWconst [c]) x a) && c%9 == 0 && isPowerOfTwo(c/9) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
 
 // div by constant
 (Select0 (CALLudiv x (MOVWconst [1]))) -> x

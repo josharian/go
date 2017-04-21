@@ -244,6 +244,9 @@ type Arch struct {
 	// ZeroAuto must not use any non-temporary registers.
 	// ZeroAuto will only be called for variables which contain a pointer.
 	ZeroAuto func(*Progs, *Node)
+
+	SSALowerBlock ssa.BlockRewriter // lowering function
+	SSALowerValue ssa.ValueRewriter // lowering function
 }
 
 var thearch Arch

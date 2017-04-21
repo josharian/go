@@ -331,18 +331,18 @@
 (Load <t> ptr mem) && (is8BitInt(t) && !isSigned(t)) -> (MOVBUload ptr mem)
 (Load <t> ptr mem) && (is16BitInt(t) && isSigned(t)) -> (MOVHload ptr mem)
 (Load <t> ptr mem) && (is16BitInt(t) && !isSigned(t)) -> (MOVHUload ptr mem)
-(Load <t> ptr mem) && (is32BitInt(t) && isSigned(t)) -> (MOVWload ptr mem)
-(Load <t> ptr mem) && (is32BitInt(t) && !isSigned(t)) -> (MOVWUload ptr mem)
-(Load <t> ptr mem) && (is64BitInt(t) || isPtr(t)) -> (MOVDload ptr mem)
-(Load <t> ptr mem) && is32BitFloat(t) -> (FMOVSload ptr mem)
+(Load <t> ptr mem) && (Is32BitInt(t) && isSigned(t)) -> (MOVWload ptr mem)
+(Load <t> ptr mem) && (Is32BitInt(t) && !isSigned(t)) -> (MOVWUload ptr mem)
+(Load <t> ptr mem) && (Is64BitInt(t) || IsPtr(t)) -> (MOVDload ptr mem)
+(Load <t> ptr mem) && Is32BitFloat(t) -> (FMOVSload ptr mem)
 (Load <t> ptr mem) && is64BitFloat(t) -> (FMOVDload ptr mem)
 
 // stores
 (Store {t} ptr val mem) && t.(Type).Size() == 1 -> (MOVBstore ptr val mem)
 (Store {t} ptr val mem) && t.(Type).Size() == 2 -> (MOVHstore ptr val mem)
-(Store {t} ptr val mem) && t.(Type).Size() == 4 && !is32BitFloat(val.Type) -> (MOVWstore ptr val mem)
+(Store {t} ptr val mem) && t.(Type).Size() == 4 && !Is32BitFloat(val.Type) -> (MOVWstore ptr val mem)
 (Store {t} ptr val mem) && t.(Type).Size() == 8 && !is64BitFloat(val.Type) -> (MOVDstore ptr val mem)
-(Store {t} ptr val mem) && t.(Type).Size() == 4 && is32BitFloat(val.Type) -> (FMOVSstore ptr val mem)
+(Store {t} ptr val mem) && t.(Type).Size() == 4 && Is32BitFloat(val.Type) -> (FMOVSstore ptr val mem)
 (Store {t} ptr val mem) && t.(Type).Size() == 8 && is64BitFloat(val.Type) -> (FMOVDstore ptr val mem)
 
 // zeroing
@@ -566,63 +566,63 @@
 	(MOVDstorezero [off1+off2] {sym} ptr mem)
 
 (MOVBload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 1, mergeSym(sym1, sym2)) ->
-	(MOVBload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 1, MergeSym(sym1, sym2)) ->
+	(MOVBload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVBUload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 1, mergeSym(sym1, sym2)) ->
-	(MOVBUload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 1, MergeSym(sym1, sym2)) ->
+	(MOVBUload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVHload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 2, mergeSym(sym1, sym2)) ->
-	(MOVHload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 2, MergeSym(sym1, sym2)) ->
+	(MOVHload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVHUload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 2, mergeSym(sym1, sym2)) ->
-	(MOVHUload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 2, MergeSym(sym1, sym2)) ->
+	(MOVHUload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVWload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, mergeSym(sym1, sym2)) ->
-	(MOVWload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, MergeSym(sym1, sym2)) ->
+	(MOVWload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVWUload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, mergeSym(sym1, sym2)) ->
-	(MOVWUload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, MergeSym(sym1, sym2)) ->
+	(MOVWUload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVDload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, mergeSym(sym1, sym2)) ->
-	(MOVDload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, MergeSym(sym1, sym2)) ->
+	(MOVDload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (FMOVSload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, mergeSym(sym1, sym2)) ->
-	(FMOVSload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, MergeSym(sym1, sym2)) ->
+	(FMOVSload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (FMOVDload [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, mergeSym(sym1, sym2)) ->
-	(FMOVDload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, MergeSym(sym1, sym2)) ->
+	(FMOVDload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 
 (MOVBstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 1, mergeSym(sym1, sym2)) ->
-	(MOVBstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 1, MergeSym(sym1, sym2)) ->
+	(MOVBstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 (MOVHstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 2, mergeSym(sym1, sym2)) ->
-	(MOVHstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 2, MergeSym(sym1, sym2)) ->
+	(MOVHstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 (MOVWstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, mergeSym(sym1, sym2)) ->
-	(MOVWstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, MergeSym(sym1, sym2)) ->
+	(MOVWstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 (MOVDstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, mergeSym(sym1, sym2)) ->
-	(MOVDstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, MergeSym(sym1, sym2)) ->
+	(MOVDstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 (FMOVSstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, mergeSym(sym1, sym2)) ->
-	(FMOVSstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, MergeSym(sym1, sym2)) ->
+	(FMOVSstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 (FMOVDstore [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) val mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, mergeSym(sym1, sym2)) ->
-	(FMOVDstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, MergeSym(sym1, sym2)) ->
+	(FMOVDstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 (MOVBstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 1, mergeSym(sym1, sym2)) ->
-	(MOVBstorezero [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 1, MergeSym(sym1, sym2)) ->
+	(MOVBstorezero [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVHstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 2, mergeSym(sym1, sym2)) ->
-	(MOVHstorezero [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 2, MergeSym(sym1, sym2)) ->
+	(MOVHstorezero [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVWstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, mergeSym(sym1, sym2)) ->
-	(MOVWstorezero [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 4, MergeSym(sym1, sym2)) ->
+	(MOVWstorezero [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 (MOVDstorezero [off1] {sym1} (MOVDaddr [off2] {sym2} ptr) mem)
-	&& canMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, mergeSym(sym1, sym2)) ->
-	(MOVDstorezero [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	&& CanMergeSym(sym1,sym2) && fitsARM64Offset(off1+off2, 8, MergeSym(sym1, sym2)) ->
+	(MOVDstorezero [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 
 // store zero
 (MOVBstore [off] {sym} ptr (MOVDconst [0]) mem) -> (MOVBstorezero [off] {sym} ptr mem)
@@ -737,20 +737,20 @@
 (MULW x (MOVDconst [c])) && isPowerOfTwo(c) -> (SLLconst [log2(c)] x)
 (MULW x (MOVDconst [c])) && isPowerOfTwo(c-1) && int32(c) >= 3 -> (ADDshiftLL x x [log2(c-1)])
 (MULW x (MOVDconst [c])) && isPowerOfTwo(c+1) && int32(c) >= 7 -> (ADDshiftLL (NEG <x.Type> x) x [log2(c+1)])
-(MULW x (MOVDconst [c])) && c%3 == 0 && isPowerOfTwo(c/3) && is32Bit(c) -> (SLLconst [log2(c/3)] (ADDshiftLL <x.Type> x x [1]))
-(MULW x (MOVDconst [c])) && c%5 == 0 && isPowerOfTwo(c/5) && is32Bit(c) -> (SLLconst [log2(c/5)] (ADDshiftLL <x.Type> x x [2]))
-(MULW x (MOVDconst [c])) && c%7 == 0 && isPowerOfTwo(c/7) && is32Bit(c) -> (SLLconst [log2(c/7)] (ADDshiftLL <x.Type> (NEG <x.Type> x) x [3]))
-(MULW x (MOVDconst [c])) && c%9 == 0 && isPowerOfTwo(c/9) && is32Bit(c) -> (SLLconst [log2(c/9)] (ADDshiftLL <x.Type> x x [3]))
+(MULW x (MOVDconst [c])) && c%3 == 0 && isPowerOfTwo(c/3) && Is32Bit(c) -> (SLLconst [log2(c/3)] (ADDshiftLL <x.Type> x x [1]))
+(MULW x (MOVDconst [c])) && c%5 == 0 && isPowerOfTwo(c/5) && Is32Bit(c) -> (SLLconst [log2(c/5)] (ADDshiftLL <x.Type> x x [2]))
+(MULW x (MOVDconst [c])) && c%7 == 0 && isPowerOfTwo(c/7) && Is32Bit(c) -> (SLLconst [log2(c/7)] (ADDshiftLL <x.Type> (NEG <x.Type> x) x [3]))
+(MULW x (MOVDconst [c])) && c%9 == 0 && isPowerOfTwo(c/9) && Is32Bit(c) -> (SLLconst [log2(c/9)] (ADDshiftLL <x.Type> x x [3]))
 
 // div by constant
 (UDIV x (MOVDconst [1])) -> x
 (UDIV x (MOVDconst [c])) && isPowerOfTwo(c) -> (SRLconst [log2(c)] x)
 (UDIVW x (MOVDconst [c])) && uint32(c)==1 -> x
-(UDIVW x (MOVDconst [c])) && isPowerOfTwo(c) && is32Bit(c) -> (SRLconst [log2(c)] x)
+(UDIVW x (MOVDconst [c])) && isPowerOfTwo(c) && Is32Bit(c) -> (SRLconst [log2(c)] x)
 (UMOD _ (MOVDconst [1])) -> (MOVDconst [0])
 (UMOD x (MOVDconst [c])) && isPowerOfTwo(c) -> (ANDconst [c-1] x)
 (UMODW _ (MOVDconst [c])) && uint32(c)==1 -> (MOVDconst [0])
-(UMODW x (MOVDconst [c])) && isPowerOfTwo(c) && is32Bit(c) -> (ANDconst [c-1] x)
+(UMODW x (MOVDconst [c])) && isPowerOfTwo(c) && Is32Bit(c) -> (ANDconst [c-1] x)
 
 // generic simplifications
 (ADD x (NEG y)) -> (SUB x y)
@@ -1115,8 +1115,8 @@
 	&& x0.Uses == 1 && x1.Uses == 1
 	&& y0.Uses == 1 && y1.Uses == 1
 	&& mergePoint(b,x0,x1) != nil
-	&& clobber(x0) && clobber(x1)
-	&& clobber(y0) && clobber(y1)
+	&& Clobber(x0) && Clobber(x1)
+	&& Clobber(y0) && Clobber(y1)
 	-> @mergePoint(b,x0,x1) (MOVHUload <t> {s} (OffPtr <p.Type> [i0] p) mem)
 
 // b[0] | b[1]<<8 | b[2]<<16 | b[3]<<24 -> load 32-bit
@@ -1130,9 +1130,9 @@
 	&& y1.Uses == 1 && y2.Uses == 1
 	&& o0.Uses == 1
 	&& mergePoint(b,x0,x1,x2) != nil
-	&& clobber(x0) && clobber(x1) && clobber(x2)
-	&& clobber(y1) && clobber(y2)
-	&& clobber(o0)
+	&& Clobber(x0) && Clobber(x1) && Clobber(x2)
+	&& Clobber(y1) && Clobber(y2)
+	&& Clobber(o0)
 	-> @mergePoint(b,x0,x1,x2) (MOVWUload <t> {s} (OffPtr <p.Type> [i0] p) mem)
 
 // b[0] | b[1]<<8 | b[2]<<16 | b[3]<<24 | b[4]<<32 | b[5]<<40 | b[6]<<48 | b[7]<<56 -> load 64-bit
@@ -1150,9 +1150,9 @@
 	&& y1.Uses == 1 && y2.Uses == 1 && y3.Uses == 1 && y4.Uses == 1
 	&& o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1
 	&& mergePoint(b,x0,x1,x2,x3,x4) != nil
-	&& clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4)
-	&& clobber(y1) && clobber(y2) && clobber(y3) && clobber(y4)
-	&& clobber(o0) && clobber(o1) && clobber(o2)
+	&& Clobber(x0) && Clobber(x1) && Clobber(x2) && Clobber(x3) && Clobber(x4)
+	&& Clobber(y1) && Clobber(y2) && Clobber(y3) && Clobber(y4)
+	&& Clobber(o0) && Clobber(o1) && Clobber(o2)
 	-> @mergePoint(b,x0,x1,x2,x3,x4) (MOVDload <t> {s} (OffPtr <p.Type> [i0] p) mem)
 
 // b[3]<<24 | b[2]<<16 | b[1]<<8 | b[0] -> load 32-bit
@@ -1168,9 +1168,9 @@
 	&& y0.Uses == 1 && y1.Uses == 1 && y2.Uses == 1 && y3.Uses == 1
 	&& o0.Uses == 1 && o1.Uses == 1 && s0.Uses == 1
 	&& mergePoint(b,x0,x1,x2,x3) != nil
-	&& clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3)
-	&& clobber(y0) && clobber(y1) && clobber(y2) && clobber(y3)
-	&& clobber(o0) && clobber(o1) && clobber(s0)
+	&& Clobber(x0) && Clobber(x1) && Clobber(x2) && Clobber(x3)
+	&& Clobber(y0) && Clobber(y1) && Clobber(y2) && Clobber(y3)
+	&& Clobber(o0) && Clobber(o1) && Clobber(s0)
 	-> @mergePoint(b,x0,x1,x2,x3) (MOVWUload <t> {s} (OffPtr <p.Type> [i0] p) mem)
 
 // b[7]<<56 | b[6]<<48 | b[5]<<40 | b[4]<<32 | b[3]<<24 | b[2]<<16 | b[1]<<8 | b[0] -> load 64-bit, reverse
@@ -1197,12 +1197,12 @@
 	&& o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && o3.Uses == 1
 	&& o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1
 	&& mergePoint(b,x0,x1,x2,x3,x4,x5,x6,x7) != nil
-	&& clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3)
-	&& clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7)
-	&& clobber(y0) && clobber(y1) && clobber(y2) && clobber(y3)
-	&& clobber(y4) && clobber(y5) && clobber(y6) && clobber(y7)
-	&& clobber(o0) && clobber(o1) && clobber(o2) && clobber(o3)
-	&& clobber(o4) && clobber(o5) && clobber(s0)
+	&& Clobber(x0) && Clobber(x1) && Clobber(x2) && Clobber(x3)
+	&& Clobber(x4) && Clobber(x5) && Clobber(x6) && Clobber(x7)
+	&& Clobber(y0) && Clobber(y1) && Clobber(y2) && Clobber(y3)
+	&& Clobber(y4) && Clobber(y5) && Clobber(y6) && Clobber(y7)
+	&& Clobber(o0) && Clobber(o1) && Clobber(o2) && Clobber(o3)
+	&& Clobber(o4) && Clobber(o5) && Clobber(s0)
 	-> @mergePoint(b,x0,x1,x2,x3,x4,x5,x6,x7) (REV <t> (MOVDload <t> {s} (OffPtr <p.Type> [i0] p) mem))
 
 // big endian loads
@@ -1215,8 +1215,8 @@
 	&& x0.Uses == 1 && x1.Uses == 1
 	&& y0.Uses == 1 && y1.Uses == 1
 	&& mergePoint(b,x0,x1) != nil
-	&& clobber(x0) && clobber(x1)
-	&& clobber(y0) && clobber(y1)
+	&& Clobber(x0) && Clobber(x1)
+	&& Clobber(y0) && Clobber(y1)
 	-> @mergePoint(b,x0,x1) (REV16W <t> (MOVHUload <t> [i0] {s} p mem))
 
 // b[3] | b[2]<<8 | b[1]<<16 | b[0]<<24 -> load 32-bit, reverse
@@ -1230,9 +1230,9 @@
 	&& y0.Uses == 1 && y1.Uses == 1 && y2.Uses == 1
 	&& o0.Uses == 1
 	&& mergePoint(b,x0,x1,x2) != nil
-	&& clobber(x0) && clobber(x1) && clobber(x2)
-	&& clobber(y0) && clobber(y1) && clobber(y2)
-	&& clobber(o0)
+	&& Clobber(x0) && Clobber(x1) && Clobber(x2)
+	&& Clobber(y0) && Clobber(y1) && Clobber(y2)
+	&& Clobber(o0)
 	-> @mergePoint(b,x0,x1,x2) (REVW <t> (MOVWUload <t> {s} (OffPtr <p.Type> [i0] p) mem))
 
 // b[7] | b[6]<<8 | b[5]<<16 | b[4]<<24 | b[3]<<32 | b[2]<<40 | b[1]<<48 | b[0]<<56 -> load 64-bit, reverse
@@ -1250,9 +1250,9 @@
 	&& y0.Uses == 1 && y1.Uses == 1 && y2.Uses == 1 && y3.Uses == 1 && y4.Uses == 1
 	&& o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1
 	&& mergePoint(b,x0,x1,x2,x3,x4) != nil
-	&& clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4)
-	&& clobber(y0) && clobber(y1) && clobber(y2) && clobber(y3) && clobber(y4)
-	&& clobber(o0) && clobber(o1) && clobber(o2)
+	&& Clobber(x0) && Clobber(x1) && Clobber(x2) && Clobber(x3) && Clobber(x4)
+	&& Clobber(y0) && Clobber(y1) && Clobber(y2) && Clobber(y3) && Clobber(y4)
+	&& Clobber(o0) && Clobber(o1) && Clobber(o2)
 	-> @mergePoint(b,x0,x1,x2,x3,x4) (REV <t> (MOVDload <t> {s} (OffPtr <p.Type> [i0] p) mem))
 
 // b[0]<<24 | b[1]<<16 | b[2]<<8 | b[3] -> load 32-bit, reverse
@@ -1268,9 +1268,9 @@
 	&& y0.Uses == 1 && y1.Uses == 1 && y2.Uses == 1 && y3.Uses == 1
 	&& o0.Uses == 1 && o1.Uses == 1 && s0.Uses == 1
 	&& mergePoint(b,x0,x1,x2,x3) != nil
-	&& clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3)
-	&& clobber(y0) && clobber(y1) && clobber(y2) && clobber(y3)
-	&& clobber(o0) && clobber(o1) && clobber(s0)
+	&& Clobber(x0) && Clobber(x1) && Clobber(x2) && Clobber(x3)
+	&& Clobber(y0) && Clobber(y1) && Clobber(y2) && Clobber(y3)
+	&& Clobber(o0) && Clobber(o1) && Clobber(s0)
 	-> @mergePoint(b,x0,x1,x2,x3) (REVW <t> (MOVWUload <t> {s} (OffPtr <p.Type> [i0] p) mem))
 
 // b[0]<<56 | b[1]<<48 | b[2]<<40 | b[3]<<32 | b[4]<<24 | b[5]<<16 | b[6]<<8 | b[7] -> load 64-bit, reverse
@@ -1297,10 +1297,10 @@
 	&& o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && o3.Uses == 1
 	&& o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1
 	&& mergePoint(b,x0,x1,x2,x3,x4,x5,x6,x7) != nil
-	&& clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3)
-	&& clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7)
-	&& clobber(y0) && clobber(y1) && clobber(y2) && clobber(y3)
-	&& clobber(y4) && clobber(y5) && clobber(y6) && clobber(y7)
-	&& clobber(o0) && clobber(o1) && clobber(o2) && clobber(o3)
-	&& clobber(o4) && clobber(o5) && clobber(s0)
+	&& Clobber(x0) && Clobber(x1) && Clobber(x2) && Clobber(x3)
+	&& Clobber(x4) && Clobber(x5) && Clobber(x6) && Clobber(x7)
+	&& Clobber(y0) && Clobber(y1) && Clobber(y2) && Clobber(y3)
+	&& Clobber(y4) && Clobber(y5) && Clobber(y6) && Clobber(y7)
+	&& Clobber(o0) && Clobber(o1) && Clobber(o2) && Clobber(o3)
+	&& Clobber(o4) && Clobber(o5) && Clobber(s0)
 	-> @mergePoint(b,x0,x1,x2,x3,x4,x5,x6,x7) (REV <t> (MOVDload <t> {s} (OffPtr <p.Type> [i0] p) mem))

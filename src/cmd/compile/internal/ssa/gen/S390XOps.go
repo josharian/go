@@ -652,6 +652,7 @@ func init() {
 
 	archs = append(archs, arch{
 		name:            "S390X",
+		ssapkg:          "s390x",
 		pkg:             "cmd/internal/obj/s390x",
 		genfile:         "../../s390x/ssa.go",
 		ops:             S390Xops,

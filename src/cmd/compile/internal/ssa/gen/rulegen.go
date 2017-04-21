@@ -5,7 +5,7 @@
 // +build gen
 
 // This program generates Go code that applies rewrite rules to a Value.
-// The generated code implements a function of type func (v *Value) bool
+// The generated code implements a function of type func (v *ssa.Value) bool
 // which returns true iff if did something.
 // Ideas stolen from Swift: http://www.hpl.hp.com/techreports/Compaq-DEC/WRL-2000-2.html
 
@@ -148,15 +148,25 @@ func genRules(arch arch) {
 	}
 	sort.Strings(ops)
 
+	ssapkg := arch.ssapkg
+	importssa := true
+	if ssapkg == "" {
+		ssapkg = "ssa"
+		importssa = false
+	}
+
 	// Start output buffer, write header.
 	w := new(bytes.Buffer)
 	fmt.Fprintf(w, "// Code generated from gen/%s.rules; DO NOT EDIT.\n", arch.name)
-	fmt.Fprintln(w, "// generated with: cd gen; go run *.go")
+	fmt.Fprintln(w, "// generated with: cd cmd/compile/internal/ssa/gen; go run *.go")
 	fmt.Fprintln(w)
-	fmt.Fprintln(w, "package ssa")
+	fmt.Fprintf(w, "package %s\n", ssapkg)
 	fmt.Fprintln(w, "import \"math\"")
 	fmt.Fprintln(w, "import \"cmd/internal/obj\"")
 	fmt.Fprintln(w, "import \"cmd/internal/objabi\"")
+	if importssa {
+		fmt.Fprintln(w, "import . \"cmd/compile/internal/ssa\"")
+	}
 	fmt.Fprintln(w, "var _ = math.MinInt8  // in case not otherwise used")
 	fmt.Fprintln(w, "var _ = obj.ANOP      // in case not otherwise used")
 	fmt.Fprintln(w, "var _ = objabi.GOROOT // in case not otherwise used")
@@ -362,7 +372,13 @@ func genRules(arch arch) {
 	}
 
 	// Write to file
-	err = ioutil.WriteFile("../rewrite"+arch.name+".go", src, 0666)
+	var dir string
+	if arch.ssapkg != "" {
+		dir = "../../" + arch.ssapkg
+	} else {
+		dir = ".."
+	}
+	err = ioutil.WriteFile(dir+"/rewrite"+arch.name+".go", src, 0666)
 	if err != nil {
 		log.Fatalf("can't write output: %v\n", err)
 	}
@@ -505,7 +521,7 @@ func genResult0(w io.Writer, arch arch, result string, alloc *int, top, move boo
 			// It in not safe in general to move a variable between blocks
 			// (and particularly not a phi node).
 			// Introduce a copy.
-			fmt.Fprintf(w, "v.reset(OpCopy)\n")
+			fmt.Fprintf(w, "v.Reset(OpCopy)\n")
 			fmt.Fprintf(w, "v.Type = %s.Type\n", result)
 			fmt.Fprintf(w, "v.AddArg(%s)\n", result)
 		}
@@ -523,7 +539,7 @@ func genResult0(w io.Writer, arch arch, result string, alloc *int, top, move boo
 	var v string
 	if top && !move {
 		v = "v"
-		fmt.Fprintf(w, "v.reset(Op%s%s)\n", oparch, op.name)
+		fmt.Fprintf(w, "v.Reset(Op%s%s)\n", oparch, op.name)
 		if typeOverride {
 			fmt.Fprintf(w, "v.Type = %s\n", typ)
 		}
@@ -536,7 +552,7 @@ func genResult0(w io.Writer, arch arch, result string, alloc *int, top, move boo
 		fmt.Fprintf(w, "%s := b.NewValue0(v.Pos, Op%s%s, %s)\n", v, oparch, op.name, typ)
 		if move && top {
 			// Rewrite original into a copy
-			fmt.Fprintf(w, "v.reset(OpCopy)\n")
+			fmt.Fprintf(w, "v.Reset(OpCopy)\n")
 			fmt.Fprintf(w, "v.AddArg(%s)\n", v)
 		}
 	}

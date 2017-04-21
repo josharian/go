@@ -28,4 +28,6 @@ func Init(arch *gc.Arch) {
 	arch.SSAMarkMoves = ssaMarkMoves
 	arch.SSAGenValue = ssaGenValue
 	arch.SSAGenBlock = ssaGenBlock
+	arch.SSALowerValue = rewriteValueAMD64
+	arch.SSALowerBlock = rewriteBlockAMD64
 }

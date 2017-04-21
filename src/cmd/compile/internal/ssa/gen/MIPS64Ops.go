@@ -365,6 +365,7 @@ func init() {
 
 	archs = append(archs, arch{
 		name:            "MIPS64",
+		ssapkg:          "mips64",
 		pkg:             "cmd/internal/obj/mips",
 		genfile:         "../../mips64/ssa.go",
 		ops:             ops,

@@ -519,6 +519,7 @@ func init() {
 
 	archs = append(archs, arch{
 		name:            "ARM",
+		ssapkg:          "arm",
 		pkg:             "cmd/internal/obj/arm",
 		genfile:         "../../arm/ssa.go",
 		ops:             ops,

@@ -652,9 +652,9 @@ func simplifyBlock(ft *factsTable, b *Block) branch {
 		}
 		if lim.umin > uint64(-y.AuxInt) {
 			if v.Args[0].Op == OpAdd64 {
-				v.reset(OpConst64)
+				v.Reset(OpConst64)
 			} else {
-				v.reset(OpConst32)
+				v.Reset(OpConst32)
 			}
 			if b.Func.pass.debug > 0 {
 				b.Func.Warnl(v.Pos, "Proved slicemask not needed")
