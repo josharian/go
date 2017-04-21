@@ -35,7 +35,6 @@ import (
 	"cmd/internal/obj"
 	"cmd/internal/objabi"
 	"cmd/internal/src"
-	"fmt"
 )
 
 var sharedProgArray *[10000]obj.Prog // *T instead of T to work around issue 19839
@@ -73,9 +72,9 @@ func newProgs(fn *Node) *Progs {
 }
 
 func (pp *Progs) NewProg() *obj.Prog {
-	if pp != nil && pp.Text != nil && pp.Text.From.Sym != nil {
-		fmt.Println(pp.Text.From.Sym.Name)
-	}
+	// if pp != nil && pp.Text != nil && pp.Text.From.Sym != nil {
+	// 	fmt.Println(pp.Text.From.Sym.Name)
+	// }
 	if pp.cacheidx < len(pp.progcache) {
 		p := &pp.progcache[pp.cacheidx]
 		p.Ctxt = Ctxt

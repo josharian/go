@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 )
 
 // bootstrapDirs is a list of directories holding code that must be
@@ -97,6 +98,8 @@ func bootstrapBuildTools() {
 	}
 	xprintf("##### Building Go toolchain using %s.\n", goroot_bootstrap)
 
+	start := time.Now()
+	fmt.Println("BEFORE")
 	mkzbootstrap(pathf("%s/src/cmd/internal/objabi/zbootstrap.go", goroot))
 
 	// Use $GOROOT/pkg/bootstrap as the bootstrap workspace root.
@@ -130,6 +133,8 @@ func bootstrapBuildTools() {
 			dstFile := pathf("%s/%s", dst, name)
 			text := readfile(srcFile)
 			text = bootstrapRewriteFile(text, srcFile)
+			text = bootstrapSSAGenValue(text, srcFile)
+			text = bootstrapFixImports(text, srcFile)
 			writefile(text, dstFile, 0)
 		}
 	}
@@ -187,6 +192,8 @@ func bootstrapBuildTools() {
 		}
 	}
 
+	fmt.Println("AFTER", time.Since(start))
+
 	xprintf("\n")
 }
 
@@ -234,7 +241,57 @@ func rewriteBlock%s(b *Block) bool { panic("unused during bootstrap") }
 `, archCaps, archCaps)
 	}
 
-	return bootstrapFixImports(text, srcFile)
+	return text
+}
+
+// isUnneededSSAGenValueFile reports whether srcFile is a
+// src/cmd/compile/internal/ARCH/ssa.go file for an
+// architecture that isn't for the current runtime.GOARCH.
+//
+// When unneeded is true arch is the arch package name.
+func isUnneededSSAGenValueFile(srcFile string) (arch string, unneeded bool) {
+	path, base := filepath.Split(srcFile)
+	if base != "ssa.go" {
+		return "", false
+	}
+	path = filepath.ToSlash(path)
+	if !strings.Contains(path, "src/cmd/compile/internal/") {
+		return "", false
+	}
+	comp := strings.Split(path, "/")
+	arch = comp[len(comp)-2] // final element is empty string
+	if arch == "gc" {
+		return "", false
+	}
+	if arch == strings.TrimSuffix(runtime.GOARCH, "le") {
+		return "", false
+	}
+	if arch == strings.TrimSuffix(os.Getenv("GOARCH"), "le") {
+		return "", false
+	}
+	return arch, true
+}
+
+func bootstrapSSAGenValue(text, srcFile string) string {
+	return text
+	// During bootstrap, generate dummy rewrite files for
+	// irrelevant architectures. We only need to build a bootstrap
+	// binary that works for the current runtime.GOARCH.
+	if arch, ok := isUnneededSSAGenValueFile(srcFile); ok {
+		return fmt.Sprintf(`package %s
+
+import (
+	"cmd/compile/internal/gc"
+	"cmd/compile/internal/ssa"
+)
+
+func ssaGenValue(s *gc.SSAGenState, v *ssa.Value)       { panic("unused during bootstrap") }
+func ssaGenBlock(s *gc.SSAGenState, b, next *ssa.Block) { panic("unused during bootstrap") }
+func ssaMarkMoves(s *gc.SSAGenState, b *ssa.Block)      { panic("unused during bootstrap") }
+`, arch)
+	}
+
+	return text
 }
 
 func bootstrapFixImports(text, srcFile string) string {
