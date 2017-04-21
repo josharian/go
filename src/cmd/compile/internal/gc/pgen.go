@@ -262,19 +262,21 @@ func debuginfo(fnsym *obj.LSym, curfn interface{}) []*dwarf.Var {
 			continue
 		}
 
-		gotype := ngotype(n).Linksym()
-		fnsym.Func.Autom = append(fnsym.Func.Autom, &obj.Auto{
-			Asym:    Ctxt.Lookup(n.Sym.Name),
-			Aoffset: int32(n.Xoffset),
-			Name:    name,
-			Gotype:  gotype,
-		})
+		if false {
+			gotype := ngotype(n).Linksym()
+			fnsym.Func.Autom = append(fnsym.Func.Autom, &obj.Auto{
+				Asym:    Ctxt.Lookup(n.Sym.Name),
+				Aoffset: int32(n.Xoffset),
+				Name:    name,
+				Gotype:  gotype,
+			})
+		}
 
 		if n.IsAutoTmp() {
 			continue
 		}
 
-		typename := dwarf.InfoPrefix + gotype.Name[len("type."):]
+		typename := dwarf.InfoPrefix + typenamesym(n.Type).Name
 		vars = append(vars, &dwarf.Var{
 			Name:   n.Sym.Name,
 			Abbrev: abbrev,
