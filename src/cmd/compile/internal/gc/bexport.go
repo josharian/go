@@ -204,6 +204,8 @@ func export(out *bufio.Writer, trace bool) int {
 	p.bool(trackAllTypes)
 	p.bool(p.posInfoFormat)
 
+	header := p.written
+
 	// --- generic export data ---
 
 	// populate type map with predeclared "known" types
@@ -223,6 +225,8 @@ func export(out *bufio.Writer, trace bool) int {
 	if p.trace {
 		p.tracef("\n")
 	}
+
+	generic := p.written
 
 	// export objects
 	//
@@ -283,6 +287,8 @@ func export(out *bufio.Writer, trace bool) int {
 
 	// for self-verification only (redundant)
 	p.int(objcount)
+
+	globs := p.written
 
 	// --- compiler-specific export data ---
 
@@ -351,6 +357,8 @@ func export(out *bufio.Writer, trace bool) int {
 	// for self-verification only (redundant)
 	p.int(objcount)
 
+	phaseb := p.written
+
 	// --- inlined function bodies ---
 
 	if p.trace {
@@ -387,11 +395,23 @@ func export(out *bufio.Writer, trace bool) int {
 	// for self-verification only (redundant)
 	p.int(objcount)
 
+	funcbod := p.written
+
 	if p.trace {
 		p.tracef("\n--- end ---\n")
 	}
 
 	// --- end of export data ---
+
+	names := [...]string{"header", "generic", "globs", "phaseb", "funcbod"}
+	prev := 0
+	fmt.Printf("%s (%d):\t", myimportpath, p.written)
+	for s, i := range [...]int{header, generic, globs, phaseb, funcbod} {
+		n := i - prev
+		prev = i
+		fmt.Printf("%s: %d (%.0f%%),\t", names[s], n, 100.0*float64(n)/float64(p.written))
+	}
+	fmt.Println()
 
 	return p.written
 }
