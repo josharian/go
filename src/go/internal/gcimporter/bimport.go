@@ -254,6 +254,20 @@ func (p *importer) obj(tag int) {
 		val := p.value()
 		p.declare(types.NewConst(pos, pkg, name, typ, val))
 
+	// case iotaTag:
+	// 	niota := p.int()
+	// 	// TODO: sanity check niota, must be >= 2
+	// 	pos := p.pos()
+	// 	position := p.fset.Position(pos)
+	// 	file := p.files[position.Filename]
+	// 	line := position.Line
+	// 	typ := p.typ(nil)
+	// 	val := p.value()
+	// 	for i := 0; i < niota; i++ {
+	// 		pkg, name := p.qualifiedName()
+	// 		p.declare(types.NewConst(file.Pos(line+i), pkg, name, typ, val+i))
+	// 	}
+
 	case aliasTag:
 		// TODO(gri) verify type alias hookup is correct
 		pos := p.pos()
