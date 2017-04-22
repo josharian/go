@@ -250,6 +250,54 @@ func export(out *bufio.Writer, trace bool) int {
 	// Use range since we want to ignore objects added to exportlist during
 	// this phase.
 	objcount := 0
+
+	sorted := sort.SliceIsSorted(exportlist, func(i, j int) bool {
+		ei, ej := exportlist[i], exportlist[j]
+		filei, linei := fileLine(ei)
+		filej, linej := fileLine(ej)
+		if filei != filej {
+			return filei < filej
+		}
+		return linei < linej
+	})
+	if !sorted {
+		fmt.Println("NOT SORTED", myimportpath)
+		sort.Slice(exportlist, func(i, j int) bool {
+			ei, ej := exportlist[i], exportlist[j]
+			filei, linei := fileLine(ei)
+			filej, linej := fileLine(ej)
+			if filei != filej {
+				return filei < filej
+			}
+			return linei < linej
+		})
+	}
+
+	// if file == p.prevFile {
+	// 	// common case: write line delta
+	// 	// delta == 0 means different file or no line change
+	// 	delta := line - p.prevLine
+	// 	p.int(delta)
+	// 	if delta == 0 {
+	// 		p.int(-1) // -1 means no file change
+	// 	}
+	// } else {
+	// 	// different file
+	// 	p.int(0)
+	// 	// Encode filename as length of common prefix with previous
+	// 	// filename, followed by (possibly empty) suffix. Filenames
+	// 	// frequently share path prefixes, so this can save a lot
+	// 	// of space and make export data size less dependent on file
+	// 	// path length. The suffix is unlikely to be empty because
+	// 	// file names tend to end in ".go".
+	// 	n := commonPrefixLen(p.prevFile, file)
+	// 	p.int(n)           // n >= 0
+	// 	p.string(file[n:]) // write suffix only
+	// 	p.prevFile = file
+	// 	p.int(line)
+	// }
+	// p.prevLine = line
+
 	for _, n := range exportlist {
 		sym := n.Sym
 
@@ -257,6 +305,10 @@ func export(out *bufio.Writer, trace bool) int {
 			continue
 		}
 		sym.SetExported(true)
+
+		// if myimportpath == "cmd/compile/internal/ssa" {
+		// 	fmt.Println("GLOB", sym.Name)
+		// }
 
 		// TODO(gri) Closures have dots in their names;
 		// e.g., TestFloatZeroValue.func1 in math/big tests.
@@ -456,7 +508,7 @@ func (p *exporter) obj(sym *types.Sym) {
 	//
 	// (This can only happen for aliased objects or during phase 2
 	// (exportInlined enabled) of object export. Unaliased Objects
-	// exported in phase 1 (compiler-indendepent objects) are by
+	// exported in phase 1 (compiler-independent objects) are by
 	// definition only the objects from the current package and not
 	// pulled in via inlined function bodies. In that case the package
 	// qualifier is not needed. Possible space optimization.)
@@ -464,6 +516,9 @@ func (p *exporter) obj(sym *types.Sym) {
 	n := asNode(sym.Def)
 	switch n.Op {
 	case OLITERAL:
+		if myimportpath == "cmd/compile/internal/ssa" {
+			fmt.Println("LIT", sym.Name, sym.Pkg.Path, sym.Pkg.Name, linestr(n.Pos))
+		}
 		// constant
 		// TODO(gri) determine if we need the typecheck call here
 		n = typecheck(n, Erv)
@@ -471,18 +526,21 @@ func (p *exporter) obj(sym *types.Sym) {
 			Fatalf("exporter: dumpexportconst: oconst nil: %v", sym)
 		}
 
-		p.tag(constTag)
-		p.pos(n)
+		p.tag(constTag) // 1 byte to indicate literal
+		p.pos(n)        // 1 byte for pos offset
 		// TODO(gri) In inlined functions, constants are used directly
 		// so they should never occur as re-exported objects. We may
 		// not need the qualified name here. See also comment above.
 		// Possible space optimization.
-		p.qualifiedName(sym)
-		p.typ(unidealType(n.Type, n.Val()))
-		p.value(n.Val())
+		p.qualifiedName(sym)                // length of name + 1 byte for pkg idx
+		p.typ(unidealType(n.Type, n.Val())) // 1 byte for type index
+		p.value(n.Val())                    // 2+ bytes, int tag then zigzag int val
 
 	case OTYPE:
 		// named type
+		// if myimportpath == "cmd/compile/internal/ssa" {
+		// 	fmt.Println("TYP", sym.Name)
+		// }
 		t := n.Type
 		if t.Etype == TFORW {
 			Fatalf("exporter: export of incomplete type %v", sym)
@@ -498,6 +556,9 @@ func (p *exporter) obj(sym *types.Sym) {
 		p.typ(t)
 
 	case ONAME:
+		// if myimportpath == "cmd/compile/internal/ssa" {
+		// 	fmt.Println("NAME", sym.Name)
+		// }
 		// variable or function
 		n = typecheck(n, Erv|Ecall)
 		if n == nil || n.Type == nil {
