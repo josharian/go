@@ -251,27 +251,27 @@ func export(out *bufio.Writer, trace bool) int {
 	// this phase.
 	objcount := 0
 
-	sorted := sort.SliceIsSorted(exportlist, func(i, j int) bool {
-		ei, ej := exportlist[i], exportlist[j]
-		filei, linei := fileLine(ei)
-		filej, linej := fileLine(ej)
-		if filei != filej {
-			return filei < filej
-		}
-		return linei < linej
-	})
-	if !sorted {
-		fmt.Println("NOT SORTED", myimportpath)
-		sort.Slice(exportlist, func(i, j int) bool {
-			ei, ej := exportlist[i], exportlist[j]
-			filei, linei := fileLine(ei)
-			filej, linej := fileLine(ej)
-			if filei != filej {
-				return filei < filej
-			}
-			return linei < linej
-		})
-	}
+	// sorted := sort.SliceIsSorted(exportlist, func(i, j int) bool {
+	// 	ei, ej := exportlist[i], exportlist[j]
+	// 	filei, linei := fileLine(ei)
+	// 	filej, linej := fileLine(ej)
+	// 	if filei != filej {
+	// 		return filei < filej
+	// 	}
+	// 	return linei < linej
+	// })
+	// if !sorted {
+	// 	fmt.Println("NOT SORTED", myimportpath)
+	// 	sort.Slice(exportlist, func(i, j int) bool {
+	// 		ei, ej := exportlist[i], exportlist[j]
+	// 		filei, linei := fileLine(ei)
+	// 		filej, linej := fileLine(ej)
+	// 		if filei != filej {
+	// 			return filei < filej
+	// 		}
+	// 		return linei < linej
+	// 	})
+	// }
 
 	// if file == p.prevFile {
 	// 	// common case: write line delta
@@ -455,15 +455,15 @@ func export(out *bufio.Writer, trace bool) int {
 
 	// --- end of export data ---
 
-	names := [...]string{"header", "generic", "globs", "phaseb", "funcbod"}
-	prev := 0
-	fmt.Printf("%s (%d):\t", myimportpath, p.written)
-	for s, i := range [...]int{header, generic, globs, phaseb, funcbod} {
-		n := i - prev
-		prev = i
-		fmt.Printf("%s: %d (%.0f%%),\t", names[s], n, 100.0*float64(n)/float64(p.written))
-	}
-	fmt.Println()
+	// names := [...]string{"header", "generic", "globs", "phaseb", "funcbod"}
+	// prev := 0
+	// fmt.Printf("%s (%d):\t", myimportpath, p.written)
+	// for s, i := range [...]int{header, generic, globs, phaseb, funcbod} {
+	// 	n := i - prev
+	// 	prev = i
+	// 	fmt.Printf("%s: %d (%.0f%%),\t", names[s], n, 100.0*float64(n)/float64(p.written))
+	// }
+	// fmt.Println()
 
 	return p.written
 }
@@ -517,7 +517,7 @@ func (p *exporter) obj(sym *types.Sym) {
 	switch n.Op {
 	case OLITERAL:
 		if myimportpath == "cmd/compile/internal/ssa" {
-			fmt.Println("LIT", sym.Name, sym.Pkg.Path, sym.Pkg.Name, linestr(n.Pos))
+			// fmt.Println("LIT", sym.Name, sym.Pkg.Path, sym.Pkg.Name, linestr(n.Pos))
 		}
 		// constant
 		// TODO(gri) determine if we need the typecheck call here
@@ -596,6 +596,11 @@ func (p *exporter) obj(sym *types.Sym) {
 	}
 }
 
+// 0 means different file
+// leading 1
+
+// 63 means different file
+
 func (p *exporter) pos(n *Node) {
 	if !p.posInfoFormat {
 		return
@@ -606,13 +611,14 @@ func (p *exporter) pos(n *Node) {
 		// common case: write line delta
 		// delta == 0 means different file or no line change
 		delta := line - p.prevLine
+		// fmt.Println("DELTA", delta)
 		p.int(delta)
-		if delta == 0 {
+		if delta == -64 {
 			p.int(-1) // -1 means no file change
 		}
 	} else {
 		// different file
-		p.int(0)
+		p.int(-64)
 		// Encode filename as length of common prefix with previous
 		// filename, followed by (possibly empty) suffix. Filenames
 		// frequently share path prefixes, so this can save a lot

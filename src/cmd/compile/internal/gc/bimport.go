@@ -382,7 +382,7 @@ func (p *importer) pos() src.XPos {
 
 	file := p.prevFile
 	line := p.prevLine
-	if delta := p.int(); delta != 0 {
+	if delta := p.int(); delta != -64 {
 		// line changed
 		line += delta
 	} else if n := p.int(); n >= 0 {
