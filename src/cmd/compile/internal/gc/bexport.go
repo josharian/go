@@ -455,7 +455,8 @@ func export(out *bufio.Writer, trace bool) int {
 
 	// --- end of export data ---
 
-	// names := [...]string{"header", "generic", "globs", "phaseb", "funcbod"}
+	names := [...]string{"header", "generic", "globs", "phaseb", "funcbod"}
+	_ = names
 	// prev := 0
 	// fmt.Printf("%s (%d):\t", myimportpath, p.written)
 	// for s, i := range [...]int{header, generic, globs, phaseb, funcbod} {
