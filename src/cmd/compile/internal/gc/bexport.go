@@ -180,6 +180,61 @@ type exporter struct {
 	trace   bool
 }
 
+func isNextIota(prev, n *Node) bool {
+	// fmt.Println("ISNEXTIOTA", prev, n)
+	if n.Sym.Exported() || prev.Sym.Exported() {
+		return false
+	}
+	if !Isconst(prev, CTINT) || !Isconst(n, CTINT) {
+		return false
+	}
+	if prev.Type != n.Type {
+		return false
+	}
+	x := prev.Val().U.(*Mpint)
+	if minintval[TINT64].Cmp(x) > 0 || x.Cmp(maxintval[TINT64]) > 0 {
+		return false
+	}
+	y := n.Val().U.(*Mpint)
+	if minintval[TINT64].Cmp(y) > 0 || y.Cmp(maxintval[TINT64]) > 0 {
+		return false
+	}
+	if y.Int64()-x.Int64() != 1 {
+		return false
+	}
+	pfile, pline := fileLine(prev)
+	file, line := fileLine(n)
+	if pfile != file {
+		return false
+	}
+	if pline+1 != line {
+		return false
+	}
+	// fmt.Println("YES")
+	return true
+}
+
+func iotaLength(e []*Node) int {
+	// fmt.Println("IOTALEN", e)
+	i := 1
+	for i < len(e) {
+		// Find a run of constants.
+		var run int
+		for run = i; run < len(e) && isNextIota(e[run-1], e[run]); run++ {
+		}
+		if run-i > 1 {
+			// fmt.Println("RET", run)
+			return run
+		}
+		// TODO: simplify, remove outer loop
+		if run-i == 0 {
+			return 0
+		}
+		i = run
+	}
+	return 0
+}
+
 // export writes the exportlist for localpkg to out and returns the number of bytes written.
 func export(out *bufio.Writer, trace bool) int {
 	p := exporter{
@@ -298,10 +353,22 @@ func export(out *bufio.Writer, trace bool) int {
 	// }
 	// p.prevLine = line
 
-	for _, n := range exportlist {
+	// detectIotas(exportlist)
+	// fmt.Println("EXPORT", myimportpath, exportlist)
+	for i := 0; i < len(exportlist); {
+		ilen := iotaLength(exportlist[i:])
+		if ilen != 0 {
+			// fmt.Println("RUN of length", ilen, exportlist[i:i+ilen])
+			p.iotas(exportlist[i : i+ilen])
+			objcount += ilen
+			i += ilen
+			continue
+		}
+		n := exportlist[i]
 		sym := n.Sym
 
 		if sym.Exported() {
+			i++
 			continue
 		}
 		sym.SetExported(true)
@@ -329,6 +396,7 @@ func export(out *bufio.Writer, trace bool) int {
 		}
 		p.obj(sym)
 		objcount++
+		i++
 	}
 
 	// indicate end of list
@@ -500,6 +568,24 @@ func unidealType(typ *types.Type, val Val) *types.Type {
 		typ = untype(val.Ctype())
 	}
 	return typ
+}
+
+func (p *exporter) iotas(e []*Node) {
+	// fmt.Println("IOTAS", e)
+	// TODO: typecheck??
+	p.tag(iotaTag) // 1 byte to indicate literal
+	p.int(len(e))
+	n := e[0]
+	p.pos(n)                            // 1 byte for pos offset
+	p.typ(unidealType(n.Type, n.Val())) // 1 byte for type index
+	p.value(n.Val())                    // 2+ bytes, int tag then zigzag int val
+	// TODO(gri) In inlined functions, constants are used directly
+	// so they should never occur as re-exported objects. We may
+	// not need the qualified name here. See also comment above.
+	// Possible space optimization.
+	for _, n := range e {
+		p.qualifiedName(n.Sym) // length of name + 1 byte for pkg idx
+	}
 }
 
 func (p *exporter) obj(sym *types.Sym) {
@@ -1861,6 +1947,7 @@ const (
 	// Objects
 	packageTag = -(iota + 1)
 	constTag
+	iotaTag
 	typeTag
 	varTag
 	funcTag
@@ -1899,6 +1986,7 @@ var tagString = [...]string{
 	// Objects
 	-packageTag: "package",
 	-constTag:   "const",
+	-iotaTag:    "iota",
 	-typeTag:    "type",
 	-varTag:     "var",
 	-funcTag:    "func",

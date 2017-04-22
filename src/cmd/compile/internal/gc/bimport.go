@@ -129,8 +129,7 @@ func Import(imp *types.Pkg, in *bufio.Reader) {
 		if tag == endTag {
 			break
 		}
-		p.obj(tag)
-		objcount++
+		objcount += p.obj(tag)
 	}
 
 	// self-verification
@@ -149,8 +148,7 @@ func Import(imp *types.Pkg, in *bufio.Reader) {
 		if tag == endTag {
 			break
 		}
-		p.obj(tag)
-		objcount++
+		objcount += p.obj(tag)
 	}
 
 	// self-verification
@@ -316,7 +314,7 @@ func idealType(typ *types.Type) *types.Type {
 	return typ
 }
 
-func (p *importer) obj(tag int) {
+func (p *importer) obj(tag int) int {
 	switch tag {
 	case constTag:
 		p.pos()
@@ -324,21 +322,41 @@ func (p *importer) obj(tag int) {
 		typ := p.typ()
 		val := p.value(typ)
 		importconst(p.imp, sym, idealType(typ), nodlit(val))
+		return 1
+
+	case iotaTag:
+		niota := p.int()
+		// TODO: sanity check niota, must be >= 2
+		/*pos :=*/
+		p.pos() //TODO
+		// position := p.fset.Position(pos)
+		// file := p.files[position.Filename]
+		// line := position.Line
+		typ := p.typ()
+		val := p.value(typ)
+		for i := 0; i < niota; i++ {
+			sym := p.qualifiedName()
+			importconst(p.imp, sym, idealType(typ), nodintconst(val.Interface().(int64)+int64(i)))
+		}
+		return niota
 
 	case aliasTag:
 		p.pos()
 		sym := p.qualifiedName()
 		typ := p.typ()
 		importalias(p.imp, sym, typ)
+		return 1
 
 	case typeTag:
 		p.typ()
+		return 1
 
 	case varTag:
 		p.pos()
 		sym := p.qualifiedName()
 		typ := p.typ()
 		importvar(p.imp, sym, typ)
+		return 1
 
 	case funcTag:
 		p.pos()
@@ -369,10 +387,13 @@ func (p *importer) obj(tag int) {
 				fmt.Printf("inl body: %v\n", n.Func.Inl)
 			}
 		}
+		return 1
 
 	default:
 		p.formatErrorf("unexpected object (tag = %d)", tag)
 	}
+
+	return 1
 }
 
 func (p *importer) pos() src.XPos {
