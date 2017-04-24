@@ -407,6 +407,17 @@ func uaddOvf(a, b int64) bool {
 	return uint64(a)+uint64(b) < uint64(a)
 }
 
+func offptr(v *Value, t Type, n int64) *Value {
+	for v.Op == OpOffPtr {
+		n += v.AuxInt
+		v = v.Args[0]
+	}
+	if v.Op == OpSP {
+		return v.Block.Func.ConstOffPtrSP(v.Pos, t, n, v)
+	}
+	return v.Block.NewValue1I(v.Pos, OpOffPtr, t, n, v)
+}
+
 // de-virtualize an InterCall
 // 'sym' is the symbol for the itab
 func devirt(v *Value, sym interface{}, offset int64) *obj.LSym {

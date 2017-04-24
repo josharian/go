@@ -862,9 +862,7 @@ func rewriteValuedec64_OpLoad_0(v *Value) bool {
 		}
 		v.reset(OpInt64Make)
 		v0 := b.NewValue0(v.Pos, OpLoad, types.Int32)
-		v1 := b.NewValue0(v.Pos, OpOffPtr, types.Int32Ptr)
-		v1.AuxInt = 4
-		v1.AddArg(ptr)
+		v1 := offptr(ptr, types.Int32Ptr, 4)
 		v0.AddArg(v1)
 		v0.AddArg(mem)
 		v.AddArg(v0)
@@ -886,9 +884,7 @@ func rewriteValuedec64_OpLoad_0(v *Value) bool {
 		}
 		v.reset(OpInt64Make)
 		v0 := b.NewValue0(v.Pos, OpLoad, types.UInt32)
-		v1 := b.NewValue0(v.Pos, OpOffPtr, types.UInt32Ptr)
-		v1.AuxInt = 4
-		v1.AddArg(ptr)
+		v1 := offptr(ptr, types.UInt32Ptr, 4)
 		v0.AddArg(v1)
 		v0.AddArg(mem)
 		v.AddArg(v0)
@@ -914,9 +910,7 @@ func rewriteValuedec64_OpLoad_0(v *Value) bool {
 		v0.AddArg(mem)
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpLoad, types.UInt32)
-		v2 := b.NewValue0(v.Pos, OpOffPtr, types.UInt32Ptr)
-		v2.AuxInt = 4
-		v2.AddArg(ptr)
+		v2 := offptr(ptr, types.UInt32Ptr, 4)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v.AddArg(v1)
@@ -938,9 +932,7 @@ func rewriteValuedec64_OpLoad_0(v *Value) bool {
 		v0.AddArg(mem)
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpLoad, types.UInt32)
-		v2 := b.NewValue0(v.Pos, OpOffPtr, types.UInt32Ptr)
-		v2.AuxInt = 4
-		v2.AddArg(ptr)
+		v2 := offptr(ptr, types.UInt32Ptr, 4)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v.AddArg(v1)
@@ -2543,9 +2535,7 @@ func rewriteValuedec64_OpStore_0(v *Value) bool {
 		}
 		v.reset(OpStore)
 		v.Aux = hi.Type
-		v0 := b.NewValue0(v.Pos, OpOffPtr, hi.Type.PtrTo())
-		v0.AuxInt = 4
-		v0.AddArg(dst)
+		v0 := offptr(dst, hi.Type.PtrTo(), 4)
 		v.AddArg(v0)
 		v.AddArg(hi)
 		v1 := b.NewValue0(v.Pos, OpStore, TypeMem)
@@ -2574,9 +2564,7 @@ func rewriteValuedec64_OpStore_0(v *Value) bool {
 		}
 		v.reset(OpStore)
 		v.Aux = lo.Type
-		v0 := b.NewValue0(v.Pos, OpOffPtr, lo.Type.PtrTo())
-		v0.AuxInt = 4
-		v0.AddArg(dst)
+		v0 := offptr(dst, lo.Type.PtrTo(), 4)
 		v.AddArg(v0)
 		v.AddArg(lo)
 		v1 := b.NewValue0(v.Pos, OpStore, TypeMem)

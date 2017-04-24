@@ -38591,13 +38591,9 @@ func rewriteValueAMD64_OpMove_10(v *Value) bool {
 		}
 		v.reset(OpMove)
 		v.AuxInt = s - s%16
-		v0 := b.NewValue0(v.Pos, OpOffPtr, dst.Type)
-		v0.AuxInt = s % 16
-		v0.AddArg(dst)
+		v0 := offptr(dst, dst.Type, s%16)
 		v.AddArg(v0)
-		v1 := b.NewValue0(v.Pos, OpOffPtr, src.Type)
-		v1.AuxInt = s % 16
-		v1.AddArg(src)
+		v1 := offptr(src, src.Type, s%16)
 		v.AddArg(v1)
 		v2 := b.NewValue0(v.Pos, OpAMD64MOVQstore, TypeMem)
 		v2.AddArg(dst)
@@ -38622,13 +38618,9 @@ func rewriteValueAMD64_OpMove_10(v *Value) bool {
 		}
 		v.reset(OpMove)
 		v.AuxInt = s - s%16
-		v0 := b.NewValue0(v.Pos, OpOffPtr, dst.Type)
-		v0.AuxInt = s % 16
-		v0.AddArg(dst)
+		v0 := offptr(dst, dst.Type, s%16)
 		v.AddArg(v0)
-		v1 := b.NewValue0(v.Pos, OpOffPtr, src.Type)
-		v1.AuxInt = s % 16
-		v1.AddArg(src)
+		v1 := offptr(src, src.Type, s%16)
 		v.AddArg(v1)
 		v2 := b.NewValue0(v.Pos, OpAMD64MOVOstore, TypeMem)
 		v2.AddArg(dst)
@@ -40733,9 +40725,7 @@ func rewriteValueAMD64_OpZero_0(v *Value) bool {
 		}
 		v.reset(OpZero)
 		v.AuxInt = s - s%8
-		v0 := b.NewValue0(v.Pos, OpOffPtr, destptr.Type)
-		v0.AuxInt = s % 8
-		v0.AddArg(destptr)
+		v0 := offptr(destptr, destptr.Type, s%8)
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpAMD64MOVQstoreconst, TypeMem)
 		v1.AuxInt = 0
@@ -40834,9 +40824,7 @@ func rewriteValueAMD64_OpZero_10(v *Value) bool {
 		}
 		v.reset(OpZero)
 		v.AuxInt = s - 8
-		v0 := b.NewValue0(v.Pos, OpOffPtr, destptr.Type)
-		v0.AuxInt = 8
-		v0.AddArg(destptr)
+		v0 := offptr(destptr, destptr.Type, 8)
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpAMD64MOVQstore, TypeMem)
 		v1.AddArg(destptr)

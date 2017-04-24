@@ -514,12 +514,16 @@ func genResult0(w io.Writer, arch arch, result string, alloc *int, top, move boo
 
 	op, oparch, typ, auxint, aux, args := parseValue(result, arch, loc)
 
+	// TODO: move this somewhere else in this routine?
+	fullopname := oparch + op.name
+
 	// Find the type of the variable.
 	typeOverride := typ != ""
 	if typ == "" && op.typ != "" {
 		typ = typeName(op.typ)
 	}
 
+	needsinit := true
 	var v string
 	if top && !move {
 		v = "v"
@@ -529,27 +533,35 @@ func genResult0(w io.Writer, arch arch, result string, alloc *int, top, move boo
 		}
 	} else {
 		if typ == "" {
-			log.Fatalf("sub-expression %s (op=Op%s%s) must have a type", result, oparch, op.name)
+			log.Fatalf("sub-expression %s (op=Op%s) must have a type", result, fullopname)
 		}
 		v = fmt.Sprintf("v%d", *alloc)
 		*alloc++
-		fmt.Fprintf(w, "%s := b.NewValue0(v.Pos, Op%s%s, %s)\n", v, oparch, op.name, typ)
-		if move && top {
-			// Rewrite original into a copy
-			fmt.Fprintf(w, "v.reset(OpCopy)\n")
-			fmt.Fprintf(w, "v.AddArg(%s)\n", v)
+
+		if fullopname == "OffPtr" {
+			fmt.Fprintf(w, "%s := offptr(%s, %s, %s)\n", v, args[0], typ, auxint)
+			needsinit = false
+		} else {
+			fmt.Fprintf(w, "%s := b.NewValue0(v.Pos, Op%s, %s)\n", v, fullopname, typ)
+			if move && top {
+				// Rewrite original into a copy
+				fmt.Fprintf(w, "v.reset(OpCopy)\n")
+				fmt.Fprintf(w, "v.AddArg(%s)\n", v)
+			}
 		}
 	}
 
-	if auxint != "" {
-		fmt.Fprintf(w, "%s.AuxInt = %s\n", v, auxint)
-	}
-	if aux != "" {
-		fmt.Fprintf(w, "%s.Aux = %s\n", v, aux)
-	}
-	for _, arg := range args {
-		x := genResult0(w, arch, arg, alloc, false, move, loc)
-		fmt.Fprintf(w, "%s.AddArg(%s)\n", v, x)
+	if needsinit {
+		if auxint != "" {
+			fmt.Fprintf(w, "%s.AuxInt = %s\n", v, auxint)
+		}
+		if aux != "" {
+			fmt.Fprintf(w, "%s.Aux = %s\n", v, aux)
+		}
+		for _, arg := range args {
+			x := genResult0(w, arch, arg, alloc, false, move, loc)
+			fmt.Fprintf(w, "%s.AddArg(%s)\n", v, x)
+		}
 	}
 
 	return v

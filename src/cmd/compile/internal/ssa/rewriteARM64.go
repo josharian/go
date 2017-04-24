@@ -6544,9 +6544,7 @@ func rewriteValueARM64_OpARM64OR_0(v *Value) bool {
 		v.reset(OpCopy)
 		v.AddArg(v0)
 		v0.Aux = s
-		v1 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v1.AuxInt = i0
-		v1.AddArg(p)
+		v1 := offptr(p, p.Type, i0)
 		v0.AddArg(v1)
 		v0.AddArg(mem)
 		return true
@@ -6656,9 +6654,7 @@ func rewriteValueARM64_OpARM64OR_10(v *Value) bool {
 		v.reset(OpCopy)
 		v.AddArg(v0)
 		v0.Aux = s
-		v1 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v1.AuxInt = i0
-		v1.AddArg(p)
+		v1 := offptr(p, p.Type, i0)
 		v0.AddArg(v1)
 		v0.AddArg(mem)
 		return true
@@ -6864,9 +6860,7 @@ func rewriteValueARM64_OpARM64OR_10(v *Value) bool {
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpARM64MOVDload, t)
 		v1.Aux = s
-		v2 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v2.AuxInt = i0
-		v2.AddArg(p)
+		v2 := offptr(p, p.Type, i0)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v0.AddArg(v1)
@@ -7073,9 +7067,7 @@ func rewriteValueARM64_OpARM64OR_10(v *Value) bool {
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpARM64MOVDload, t)
 		v1.Aux = s
-		v2 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v2.AuxInt = i0
-		v2.AddArg(p)
+		v2 := offptr(p, p.Type, i0)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v0.AddArg(v1)
@@ -7182,9 +7174,7 @@ func rewriteValueARM64_OpARM64OR_10(v *Value) bool {
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpARM64MOVWUload, t)
 		v1.Aux = s
-		v2 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v2.AuxInt = i0
-		v2.AddArg(p)
+		v2 := offptr(p, p.Type, i0)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v0.AddArg(v1)
@@ -7291,9 +7281,7 @@ func rewriteValueARM64_OpARM64OR_10(v *Value) bool {
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpARM64MOVWUload, t)
 		v1.Aux = s
-		v2 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v2.AuxInt = i0
-		v2.AddArg(p)
+		v2 := offptr(p, p.Type, i0)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v0.AddArg(v1)
@@ -7500,9 +7488,7 @@ func rewriteValueARM64_OpARM64OR_10(v *Value) bool {
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpARM64MOVDload, t)
 		v1.Aux = s
-		v2 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v2.AuxInt = i0
-		v2.AddArg(p)
+		v2 := offptr(p, p.Type, i0)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v0.AddArg(v1)
@@ -7709,9 +7695,7 @@ func rewriteValueARM64_OpARM64OR_10(v *Value) bool {
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpARM64MOVDload, t)
 		v1.Aux = s
-		v2 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v2.AuxInt = i0
-		v2.AddArg(p)
+		v2 := offptr(p, p.Type, i0)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v0.AddArg(v1)
@@ -7932,9 +7916,7 @@ func rewriteValueARM64_OpARM64ORshiftLL_0(v *Value) bool {
 		v.reset(OpCopy)
 		v.AddArg(v0)
 		v0.Aux = s
-		v1 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v1.AuxInt = i0
-		v1.AddArg(p)
+		v1 := offptr(p, p.Type, i0)
 		v0.AddArg(v1)
 		v0.AddArg(mem)
 		return true
@@ -8006,9 +7988,7 @@ func rewriteValueARM64_OpARM64ORshiftLL_0(v *Value) bool {
 		v.reset(OpCopy)
 		v.AddArg(v0)
 		v0.Aux = s
-		v1 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v1.AuxInt = i0
-		v1.AddArg(p)
+		v1 := offptr(p, p.Type, i0)
 		v0.AddArg(v1)
 		v0.AddArg(mem)
 		return true
@@ -8130,9 +8110,7 @@ func rewriteValueARM64_OpARM64ORshiftLL_0(v *Value) bool {
 		v.reset(OpCopy)
 		v.AddArg(v0)
 		v0.Aux = s
-		v1 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v1.AuxInt = i0
-		v1.AddArg(p)
+		v1 := offptr(p, p.Type, i0)
 		v0.AddArg(v1)
 		v0.AddArg(mem)
 		return true
@@ -8262,9 +8240,7 @@ func rewriteValueARM64_OpARM64ORshiftLL_0(v *Value) bool {
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpARM64MOVWUload, t)
 		v1.Aux = s
-		v2 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v2.AuxInt = i0
-		v2.AddArg(p)
+		v2 := offptr(p, p.Type, i0)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v0.AddArg(v1)
@@ -8397,9 +8373,7 @@ func rewriteValueARM64_OpARM64ORshiftLL_10(v *Value) bool {
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpARM64MOVDload, t)
 		v1.Aux = s
-		v2 := b.NewValue0(v.Pos, OpOffPtr, p.Type)
-		v2.AuxInt = i0
-		v2.AddArg(p)
+		v2 := offptr(p, p.Type, i0)
 		v1.AddArg(v2)
 		v1.AddArg(mem)
 		v0.AddArg(v1)
@@ -13089,13 +13063,9 @@ func rewriteValueARM64_OpMove_10(v *Value) bool {
 		}
 		v.reset(OpMove)
 		v.AuxInt = s % 8
-		v0 := b.NewValue0(v.Pos, OpOffPtr, dst.Type)
-		v0.AuxInt = s - s%8
-		v0.AddArg(dst)
+		v0 := offptr(dst, dst.Type, s-s%8)
 		v.AddArg(v0)
-		v1 := b.NewValue0(v.Pos, OpOffPtr, src.Type)
-		v1.AuxInt = s - s%8
-		v1.AddArg(src)
+		v1 := offptr(src, src.Type, s-s%8)
 		v.AddArg(v1)
 		v2 := b.NewValue0(v.Pos, OpMove, TypeMem)
 		v2.AuxInt = s - s%8
@@ -15585,9 +15555,7 @@ func rewriteValueARM64_OpZero_10(v *Value) bool {
 		}
 		v.reset(OpZero)
 		v.AuxInt = s % 8
-		v0 := b.NewValue0(v.Pos, OpOffPtr, ptr.Type)
-		v0.AuxInt = s - s%8
-		v0.AddArg(ptr)
+		v0 := offptr(ptr, ptr.Type, s-s%8)
 		v.AddArg(v0)
 		v1 := b.NewValue0(v.Pos, OpZero, TypeMem)
 		v1.AuxInt = s - s%8
