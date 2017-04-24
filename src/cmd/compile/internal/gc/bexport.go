@@ -588,6 +588,28 @@ func (p *exporter) typisrooted(t *types.Type, depth int) bool {
 	if t.IsPtr() || t.IsSlice() {
 		return p.typisrooted(t.Elem(), depth+1)
 	}
+	if t.IsArray() || t.IsChan() {
+		return p.typisrooted(t.Elem(), depth+1)
+	}
+	if t.IsMap() {
+		return p.typisrooted(t.Key(), depth+1) && p.typisrooted(t.Val(), depth+1)
+	}
+	if t.IsStruct() {
+		s := t.FieldSlice()
+		for _, f := range s {
+			if !p.typisrooted(f.Type, depth+1) {
+				return false
+			}
+		}
+		return true
+	}
+	if t.Etype == TFUNC {
+		ft := t.FuncType()
+		return p.typisrooted(ft.Receiver, depth+1) && p.typisrooted(ft.Results, depth+1) && p.typisrooted(ft.Params, depth+1)
+	}
+	if t.Etype == TDDDFIELD {
+		return p.typisrooted(t.DDDField(), depth+1)
+	}
 	return false
 }
 
