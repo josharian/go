@@ -570,19 +570,31 @@ func isInlineable(n *Node) bool {
 
 var errorInterface *types.Type // lazily initialized
 
+// typisrooted reports whether all types that t depends on
+// have already been recorded.
+// If so, it is safe to record t as well.
+func (p *exporter) typisrooted(t *types.Type, depth int) bool {
+	if _, ok := p.typIndex[t]; ok {
+		return true
+	}
+	if t.Sym != nil {
+		// Don't peek inside named types.
+		return false
+	}
+	if depth > 10 {
+		// Avoid infinite recursion.
+		return false
+	}
+	if t.IsPtr() || t.IsSlice() {
+		return p.typisrooted(t.Elem(), depth+1)
+	}
+	return false
+}
+
 func (p *exporter) typ(t *types.Type) {
 	if t == nil {
 		Fatalf("exporter: nil type")
 	}
-
-	// Possible optimization: Anonymous pointer types *T where
-	// T is a named type are common. We could canonicalize all
-	// such types *T to a single type PT = *T. This would lead
-	// to at most one *T entry in typIndex, and all future *T's
-	// would be encoded as the respective index directly. Would
-	// save 1 byte (pointerTag) per *T and reduce the typIndex
-	// size (at the cost of a canonicalization map). We can do
-	// this later, without encoding format change.
 
 	// if we saw the type before, write its index (>= 0)
 	if i, ok := p.typIndex[t]; ok {
@@ -599,7 +611,7 @@ func (p *exporter) typ(t *types.Type) {
 	// some corner-case type declarations (but those were not handled correctly
 	// with the former textual export format either).
 	// TODO(gri) enable and remove once issues caused by it are fixed
-	record := t.Sym != nil
+	record := t.Sym != nil || p.typisrooted(t, 0)
 
 	// if so, write the type tag (< 0) and type data
 	if record {
