@@ -149,17 +149,6 @@ const exportVersion = 4
 // Leave for debugging.
 const exportInlined = true // default: true
 
-// trackAllTypes enables cycle tracking for all types, not just named
-// types. The existing compiler invariants assume that unnamed types
-// that are not completely set up are not used, or else there are spurious
-// errors.
-// If disabled, only named types are tracked, possibly leading to slightly
-// less efficient encoding in rare cases. It also prevents the export of
-// some corner-case type declarations (but those were not handled correctly
-// with the former textual export format either).
-// TODO(gri) enable and remove once issues caused by it are fixed
-const trackAllTypes = false
-
 type exporter struct {
 	out *bufio.Writer
 
@@ -201,7 +190,6 @@ func export(out *bufio.Writer, trace bool) int {
 		debug = "debug"
 	}
 	p.rawStringln(debug) // cannot use p.bool since it's affected by debugFormat; also want to see this clearly
-	p.bool(trackAllTypes)
 	p.bool(p.posInfoFormat)
 
 	// --- generic export data ---
@@ -602,8 +590,19 @@ func (p *exporter) typ(t *types.Type) {
 		return
 	}
 
-	// otherwise, remember the type, write the type tag (< 0) and type data
-	if trackAllTypes {
+	// Decide whether to record this type.
+	// It'd be nice to set this to true always.
+	// However, the existing compiler invariants assume that unnamed types
+	// that are not completely set up are not used, or else there are spurious errors.
+	// Currently, only named types are tracked, possibly leading to slightly
+	// less efficient encoding in rare cases. It also prevents the export of
+	// some corner-case type declarations (but those were not handled correctly
+	// with the former textual export format either).
+	// TODO(gri) enable and remove once issues caused by it are fixed
+	record := t.Sym != nil
+
+	// if so, write the type tag (< 0) and type data
+	if record {
 		if p.trace {
 			p.tracef("T%d = {>\n", len(p.typIndex))
 			defer p.tracef("<\n} ")
@@ -613,11 +612,6 @@ func (p *exporter) typ(t *types.Type) {
 
 	// pick off named types
 	if tsym := t.Sym; tsym != nil {
-		if !trackAllTypes {
-			// if we don't track all types, track named types now
-			p.typIndex[t] = len(p.typIndex)
-		}
-
 		// Predeclared types should have been found in the type map.
 		if t.Orig == t {
 			Fatalf("exporter: predeclared type missing from type map?")
@@ -628,7 +622,7 @@ func (p *exporter) typ(t *types.Type) {
 			Fatalf("exporter: named type definition incorrectly set up")
 		}
 
-		p.tag(namedTag)
+		p.typtag(namedTag, record)
 		p.pos(n)
 		p.qualifiedName(tsym)
 
@@ -707,43 +701,43 @@ func (p *exporter) typ(t *types.Type) {
 		if t.IsDDDArray() {
 			Fatalf("array bounds should be known at export time: %v", t)
 		}
-		p.tag(arrayTag)
+		p.typtag(arrayTag, record)
 		p.int64(t.NumElem())
 		p.typ(t.Elem())
 
 	case TSLICE:
-		p.tag(sliceTag)
+		p.typtag(sliceTag, record)
 		p.typ(t.Elem())
 
 	case TDDDFIELD:
 		// see p.param use of TDDDFIELD
-		p.tag(dddTag)
+		p.typtag(dddTag, record)
 		p.typ(t.DDDField())
 
 	case TSTRUCT:
-		p.tag(structTag)
+		p.typtag(structTag, record)
 		p.fieldList(t)
 
 	case TPTR32, TPTR64: // could use Tptr but these are constants
-		p.tag(pointerTag)
+		p.typtag(pointerTag, record)
 		p.typ(t.Elem())
 
 	case TFUNC:
-		p.tag(signatureTag)
+		p.typtag(signatureTag, record)
 		p.paramList(t.Params(), false)
 		p.paramList(t.Results(), false)
 
 	case TINTER:
-		p.tag(interfaceTag)
+		p.typtag(interfaceTag, record)
 		p.methodList(t)
 
 	case TMAP:
-		p.tag(mapTag)
+		p.typtag(mapTag, record)
 		p.typ(t.Key())
 		p.typ(t.Val())
 
 	case TCHAN:
-		p.tag(chanTag)
+		p.typtag(chanTag, record)
 		p.int(int(t.ChanDir()))
 		p.typ(t.Elem())
 
@@ -1633,6 +1627,13 @@ func (p *exporter) index(marker byte, index int) {
 	p.rawInt64(int64(index))
 }
 
+func (p *exporter) typtag(tag int, record bool) {
+	if record {
+		tag = recordedTypeTagFor[-tag]
+	}
+	p.tag(tag)
+}
+
 func (p *exporter) tag(tag int) {
 	if tag >= 0 {
 		Fatalf("exporter: invalid tag >= 0")
@@ -1802,7 +1803,52 @@ const (
 
 	// Type aliases
 	aliasTag
+
+	// Recorded types
+	namedRecordedTag
+	arrayRecordedTag
+	sliceRecordedTag
+	dddRecordedTag
+	structRecordedTag
+	pointerRecordedTag
+	signatureRecordedTag
+	interfaceRecordedTag
+	mapRecordedTag
+	chanRecordedTag
 )
+
+func readTypeTag(tag int) (int, bool) {
+	if -tag >= len(unrecordedTypeTagFor) || unrecordedTypeTagFor[-tag] == 0 {
+		return tag, false
+	}
+	return unrecordedTypeTagFor[-tag], true
+}
+
+var recordedTypeTagFor = [...]int{
+	-namedTag:     namedRecordedTag,
+	-arrayTag:     arrayRecordedTag,
+	-sliceTag:     sliceRecordedTag,
+	-dddTag:       dddRecordedTag,
+	-structTag:    structRecordedTag,
+	-pointerTag:   pointerRecordedTag,
+	-signatureTag: signatureRecordedTag,
+	-interfaceTag: interfaceRecordedTag,
+	-mapTag:       mapRecordedTag,
+	-chanTag:      chanRecordedTag,
+}
+
+var unrecordedTypeTagFor = [...]int{
+	-namedRecordedTag:     namedTag,
+	-arrayRecordedTag:     arrayTag,
+	-sliceRecordedTag:     sliceTag,
+	-dddRecordedTag:       dddTag,
+	-structRecordedTag:    structTag,
+	-pointerRecordedTag:   pointerTag,
+	-signatureRecordedTag: signatureTag,
+	-interfaceRecordedTag: interfaceTag,
+	-mapRecordedTag:       mapTag,
+	-chanRecordedTag:      chanTag,
+}
 
 // Debugging support.
 // (tagString is only used when tracing is enabled)

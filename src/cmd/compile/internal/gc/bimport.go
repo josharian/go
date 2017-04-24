@@ -99,7 +99,7 @@ func Import(imp *types.Pkg, in *bufio.Reader) {
 	//	fallthrough
 	case 4, 3, 2, 1:
 		p.debugFormat = p.rawStringln(p.rawByte()) == "debug"
-		p.trackAllTypes = p.bool()
+		p.trackAllTypes = false // p.bool()
 		p.posInfoFormat = p.bool()
 	case 0:
 		// Go1.7 encoding format - nothing to do here
@@ -399,9 +399,9 @@ func (p *importer) pos() src.XPos {
 	return xpos
 }
 
-func (p *importer) newtyp(etype types.EType) *types.Type {
+func (p *importer) newtyp(etype types.EType, recorded bool) *types.Type {
 	t := types.New(etype)
-	if p.trackAllTypes {
+	if recorded {
 		p.typList = append(p.typList, t)
 	}
 	return t
@@ -438,6 +438,8 @@ func (p *importer) typ() *types.Type {
 		return p.typList[i]
 	}
 
+	i, recorded := readTypeTag(i)
+
 	// otherwise, i is the type tag (< 0)
 	var t *types.Type
 	switch i {
@@ -446,7 +448,9 @@ func (p *importer) typ() *types.Type {
 		tsym := p.qualifiedName()
 
 		t = pkgtype(p.imp, tsym)
-		p.typList = append(p.typList, t)
+		if recorded {
+			p.typList = append(p.typList, t)
+		}
 
 		// read underlying type
 		t0 := p.typ()
@@ -502,31 +506,31 @@ func (p *importer) typ() *types.Type {
 		dclcontext = savedContext
 
 	case arrayTag:
-		t = p.newtyp(TARRAY)
+		t = p.newtyp(TARRAY, recorded)
 		bound := p.int64()
 		elem := p.typ()
 		t.Extra = &types.Array{Elem: elem, Bound: bound}
 
 	case sliceTag:
-		t = p.newtyp(TSLICE)
+		t = p.newtyp(TSLICE, recorded)
 		elem := p.typ()
 		t.Extra = types.Slice{Elem: elem}
 
 	case dddTag:
-		t = p.newtyp(TDDDFIELD)
+		t = p.newtyp(TDDDFIELD, recorded)
 		t.Extra = types.DDDField{T: p.typ()}
 
 	case structTag:
-		t = p.newtyp(TSTRUCT)
+		t = p.newtyp(TSTRUCT, recorded)
 		t.SetFields(p.fieldList())
 		checkwidth(t)
 
 	case pointerTag:
-		t = p.newtyp(types.Tptr)
+		t = p.newtyp(types.Tptr, recorded)
 		t.Extra = types.Ptr{Elem: p.typ()}
 
 	case signatureTag:
-		t = p.newtyp(TFUNC)
+		t = p.newtyp(TFUNC, recorded)
 		params := p.paramList()
 		result := p.paramList()
 		functypefield0(t, nil, params, result)
@@ -535,18 +539,18 @@ func (p *importer) typ() *types.Type {
 		if ml := p.methodList(); len(ml) == 0 {
 			t = types.Types[TINTER]
 		} else {
-			t = p.newtyp(TINTER)
+			t = p.newtyp(TINTER, recorded)
 			t.SetInterface(ml)
 		}
 
 	case mapTag:
-		t = p.newtyp(TMAP)
+		t = p.newtyp(TMAP, recorded)
 		mt := t.MapType()
 		mt.Key = p.typ()
 		mt.Val = p.typ()
 
 	case chanTag:
-		t = p.newtyp(TCHAN)
+		t = p.newtyp(TCHAN, recorded)
 		ct := t.ChanType()
 		ct.Dir = types.ChanDir(p.int())
 		ct.Elem = p.typ()
