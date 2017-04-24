@@ -68,6 +68,7 @@ const (
 
 	// pseudo-types for import/export
 	TDDDFIELD // wrapper: contained type is a ... field
+	TELIDED
 
 	NTYPE
 )

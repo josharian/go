@@ -95,6 +95,9 @@ func algtype1(t *types.Type) (AlgKind, *types.Type) {
 	}
 
 	switch t.Etype {
+	case TELIDED:
+		// TODO: use
+		return AMEM, nil
 	case TANY, TFORW:
 		// will be defined later.
 		return ANOEQ, t

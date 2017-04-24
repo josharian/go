@@ -673,7 +673,18 @@ func (p *exporter) typ(t *types.Type) {
 			}
 			orig = errorInterface
 		}
-		p.typ(orig)
+		if orig.IsStruct() && tsym.Pkg.Path != "" && !exportname(tsym.Name) {
+			p.typtag(elidedTag, false)
+			p.int(int(orig.Width))
+			p.int(int(orig.Align))
+			alg, broke := algtype1(orig)
+			p.int(int(alg))
+			if alg == ANOEQ {
+				p.typ(broke)
+			}
+		} else {
+			p.typ(orig)
+		}
 
 		// interfaces don't have associated methods
 		if t.Orig.IsInterface() {
@@ -1663,6 +1674,9 @@ func (p *exporter) index(marker byte, index int) {
 
 func (p *exporter) typtag(tag int, record bool) {
 	if record {
+		if tag == elidedTag {
+			Fatalf("do not record elided type")
+		}
 		tag = recordedTypeTagFor[-tag]
 	}
 	p.tag(tag)
@@ -1849,6 +1863,8 @@ const (
 	interfaceRecordedTag
 	mapRecordedTag
 	chanRecordedTag
+
+	elidedTag
 )
 
 func readTypeTag(tag int) (int, bool) {

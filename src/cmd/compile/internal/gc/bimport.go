@@ -421,7 +421,7 @@ func (p *importer) importtype(pt, t *types.Type) {
 			// If we track all types, t may not be fully set up yet.
 			// Collect the types and verify identity later.
 			p.cmpList = append(p.cmpList, struct{ pt, t *types.Type }{pt, t})
-		} else if !eqtype(pt.Orig, t) {
+		} else if !eqtype(pt.Orig, t) && pt.Etype != TELIDED && t.Etype != TELIDED {
 			yyerror("inconsistent definition for type %v during import\n\t%L (in %q)\n\t%L (in %q)", pt.Sym, pt, pt.Sym.Importdef.Path, t, p.imp.Path)
 		}
 	}
@@ -554,6 +554,17 @@ func (p *importer) typ() *types.Type {
 		ct := t.ChanType()
 		ct.Dir = types.ChanDir(p.int())
 		ct.Elem = p.typ()
+
+	case elidedTag:
+		t = types.New(TELIDED)
+		t.Width = int64(p.int())
+		t.Align = uint8(p.int())
+		at := AlgKind(p.int())
+		var broke *types.Type
+		if at == ANOEQ {
+			broke = p.typ()
+		}
+		_, _ = at, broke // TODO: store and use
 
 	default:
 		p.formatErrorf("unexpected type (tag = %d)", i)

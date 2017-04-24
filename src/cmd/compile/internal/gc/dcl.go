@@ -979,7 +979,7 @@ func addmethod(msym *types.Sym, t *types.Type, local, nointerface bool) {
 		}
 
 		switch {
-		case t == nil || t.Broke():
+		case t == nil || t.Broke() || t.Etype == TELIDED:
 			// rely on typecheck having complained before
 		case t.Sym == nil:
 			yyerror("invalid receiver type %v (%v is an unnamed type)", pa, t)

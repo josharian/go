@@ -48,9 +48,10 @@ const (
 	TUNSAFEPTR = types.TUNSAFEPTR
 
 	// pseudo-types for literals
-	TIDEAL = types.TIDEAL
-	TNIL   = types.TNIL
-	TBLANK = types.TBLANK
+	TIDEAL  = types.TIDEAL
+	TNIL    = types.TNIL
+	TBLANK  = types.TBLANK
+	TELIDED = types.TELIDED
 
 	// pseudo-types for frame layout
 	TFUNCARGS = types.TFUNCARGS
