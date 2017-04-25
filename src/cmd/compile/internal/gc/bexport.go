@@ -940,7 +940,7 @@ func (p *exporter) param(q *types.Field, n int, numbered bool) {
 	// TODO(gri) This is compiler-specific (escape info).
 	// Move into compiler-specific section eventually?
 	// (Not having escape info causes tests to fail, e.g. runtime GCInfoTest)
-	p.string(q.Note)
+	p.int(int(q.Esc))
 }
 
 func parName(f *types.Field, numbered bool) string {

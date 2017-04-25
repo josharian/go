@@ -763,7 +763,7 @@ func (p *importer) param(named bool) *types.Field {
 
 	// TODO(gri) This is compiler-specific (escape info).
 	// Move into compiler-specific section eventually?
-	f.Note = p.string()
+	f.Esc = uint16(p.int())
 
 	return f
 }

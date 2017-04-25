@@ -324,6 +324,8 @@ type Field struct {
 	Offset int64
 
 	Note string // literal string annotation
+
+	Esc uint16
 }
 
 const (

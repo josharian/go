@@ -411,13 +411,13 @@ func ordercall(n *Node, order *Order) {
 		for i, t := range n.Left.Type.Params().FieldSlice() {
 			// Check for "unsafe-uintptr" tag provided by escape analysis.
 			if t.Isddd() && !n.Isddd() {
-				if t.Note == uintptrEscapesTag {
+				if t.Esc == EscUintptrEscapes {
 					for ; i < n.List.Len(); i++ {
 						keepAlive(i)
 					}
 				}
 			} else {
-				if t.Note == unsafeUintptrTag || t.Note == uintptrEscapesTag {
+				if t.Esc == EscUnsafeUintptr || t.Esc == EscUintptrEscapes {
 					keepAlive(i)
 				}
 			}

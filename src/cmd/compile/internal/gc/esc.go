@@ -349,11 +349,17 @@ func (e *EscState) track(n *Node) {
 // EscNever which is sticky, eX < eY means that eY is more exposed
 // than eX, and hence replaces it in a conservative analysis.
 const (
-	EscUnknown        = iota
-	EscNone           // Does not escape to heap, result, or parameters.
-	EscReturn         // Is returned or reachable from returned.
-	EscHeap           // Reachable from the heap
-	EscNever          // By construction will not escape.
+	EscUnknown = iota
+	EscNone    // Does not escape to heap, result, or parameters.
+	EscReturn  // Is returned or reachable from returned.
+	EscHeap    // Reachable from the heap
+	EscNever   // By construction will not escape.
+	// This special tag is applied to uintptr variables
+	// that we believe may hold unsafe.Pointers for
+	// calls into assembly functions.
+	EscUintptrEscapes
+	// This special tag is applied to uintptr parameters of functions marked go:uintptrescapes.
+	EscUnsafeUintptr
 	EscBits           = 3
 	EscMask           = (1 << EscBits) - 1
 	EscContentEscapes = 1 << EscBits // value obtained by indirect of parameter escapes to heap
@@ -1319,8 +1325,8 @@ func describeEscape(em uint16) string {
 
 // escassignfromtag models the input-to-output assignment flow of one of a function
 // calls arguments, where the flow is encoded in "note".
-func (e *EscState) escassignfromtag(note string, dsts Nodes, src, call *Node) uint16 {
-	em := parsetag(note)
+func (e *EscState) escassignfromtag(note uint16, dsts Nodes, src, call *Node) uint16 {
+	em := note
 	if src.Op == OLITERAL {
 		return em
 	}
@@ -1596,12 +1602,12 @@ func (e *EscState) esccall(call *Node, parent *Node) {
 		rf := fntype.Recv()
 		r := call.Left.Left
 		if types.Haspointers(rf.Type) {
-			e.escassignfromtag(rf.Note, cE.Retval, r, call)
+			e.escassignfromtag(rf.Esc, cE.Retval, r, call)
 		}
 	}
 
 	for i, param := range fntype.Params().FieldSlice() {
-		note := param.Note
+		note := param.Esc
 		var arg *Node
 		if param.Isddd() && !call.Isddd() {
 			rest := args[i:]
@@ -1622,7 +1628,7 @@ func (e *EscState) esccall(call *Node, parent *Node) {
 				if Debug['m'] > 3 {
 					fmt.Printf("%v::esccall:: ... <- %S\n", linestr(lineno), a)
 				}
-				if note == uintptrEscapesTag {
+				if note == EscUintptrEscapes {
 					e.escassignSinkWhyWhere(arg, a, "arg to uintptrescapes ...", call)
 				} else {
 					e.escassignWhyWhere(arg, a, "arg to ...", call)
@@ -1630,7 +1636,7 @@ func (e *EscState) esccall(call *Node, parent *Node) {
 			}
 		} else {
 			arg = args[i]
-			if note == uintptrEscapesTag {
+			if note == EscUintptrEscapes {
 				e.escassignSinkWhy(arg, arg, "escaping uintptr")
 			}
 		}
@@ -2014,17 +2020,6 @@ recurse:
 	e.pdepth--
 }
 
-// This special tag is applied to uintptr variables
-// that we believe may hold unsafe.Pointers for
-// calls into assembly functions.
-// It is logically a constant, but using a var
-// lets us take the address below to get a *string.
-var unsafeUintptrTag = "unsafe-uintptr"
-
-// This special tag is applied to uintptr parameters of functions
-// marked go:uintptrescapes.
-const uintptrEscapesTag = "uintptr-escapes"
-
 func (e *EscState) esctag(fn *Node) {
 	fn.Esc = EscFuncTagged
 
@@ -2041,7 +2036,7 @@ func (e *EscState) esctag(fn *Node) {
 		if fn.Noescape() {
 			for _, f := range fn.Type.Params().Fields().Slice() {
 				if types.Haspointers(f.Type) {
-					f.Note = mktag(EscNone)
+					f.Esc = EscNone
 				}
 			}
 		}
@@ -2059,7 +2054,7 @@ func (e *EscState) esctag(fn *Node) {
 				if Debug['m'] != 0 {
 					Warnl(fn.Pos, "%v assuming %v is unsafe uintptr", funcSym(fn), name(f.Sym, narg))
 				}
-				f.Note = unsafeUintptrTag
+				f.Esc = EscUnsafeUintptr
 			}
 		}
 
@@ -2074,7 +2069,7 @@ func (e *EscState) esctag(fn *Node) {
 				if Debug['m'] != 0 {
 					Warnl(fn.Pos, "%v marking %v as escaping uintptr", funcSym(fn), name(f.Sym, narg))
 				}
-				f.Note = uintptrEscapesTag
+				f.Esc = EscUintptrEscapes
 			}
 
 			if f.Isddd() && f.Type.Elem().Etype == TUINTPTR {
@@ -2082,7 +2077,7 @@ func (e *EscState) esctag(fn *Node) {
 				if Debug['m'] != 0 {
 					Warnl(fn.Pos, "%v marking %v as escaping ...uintptr", funcSym(fn), name(f.Sym, narg))
 				}
-				f.Note = uintptrEscapesTag
+				f.Esc = EscUintptrEscapes
 			}
 		}
 	}
@@ -2095,9 +2090,9 @@ func (e *EscState) esctag(fn *Node) {
 		switch ln.Esc & EscMask {
 		case EscNone, // not touched by escflood
 			EscReturn:
-			if types.Haspointers(ln.Type) { // don't bother tagging for scalars
-				if ln.Name.Param.Field.Note != uintptrEscapesTag {
-					ln.Name.Param.Field.Note = mktag(int(ln.Esc))
+			if types.Haspointers(ln.Type) { // don't bother tagging for scalars -- WHY NOT?
+				if ln.Name.Param.Field.Esc != EscUintptrEscapes {
+					ln.Name.Param.Field.Esc = ln.Esc
 				}
 			}
 
@@ -2110,7 +2105,7 @@ func (e *EscState) esctag(fn *Node) {
 	// so we need to mark them separately.)
 	for _, f := range fn.Type.Params().Fields().Slice() {
 		if f.Sym == nil || f.Sym.IsBlank() {
-			f.Note = mktag(EscNone)
+			f.Esc = EscNone
 		}
 	}
 }
