@@ -7,8 +7,6 @@ package gc
 import (
 	"cmd/compile/internal/types"
 	"fmt"
-	"strconv"
-	"strings"
 )
 
 // Run analysis on minimal sets of mutually recursive functions
@@ -1231,47 +1229,6 @@ func (e *EscState) escassign(dst, src *Node, step *EscStep) {
 
 	e.pdepth--
 	lineno = lno
-}
-
-// Common case for escapes is 16 bits 000000000xxxEEEE
-// where commonest cases for xxx encoding in-to-out pointer
-//  flow are 000, 001, 010, 011  and EEEE is computed Esc bits.
-// Note width of xxx depends on value of constant
-// bitsPerOutputInTag -- expect 2 or 3, so in practice the
-// tag cache array is 64 or 128 long. Some entries will
-// never be populated.
-var tags [1 << (bitsPerOutputInTag + EscReturnBits)]string
-
-// mktag returns the string representation for an escape analysis tag.
-func mktag(mask int) string {
-	switch mask & EscMask {
-	case EscNone, EscReturn:
-	default:
-		Fatalf("escape mktag")
-	}
-
-	if mask < len(tags) && tags[mask] != "" {
-		return tags[mask]
-	}
-
-	s := fmt.Sprintf("esc:0x%x", mask)
-	if mask < len(tags) {
-		tags[mask] = s
-	}
-	return s
-}
-
-// parsetag decodes an escape analysis tag and returns the esc value.
-func parsetag(note string) uint16 {
-	if !strings.HasPrefix(note, "esc:") {
-		return EscUnknown
-	}
-	n, _ := strconv.ParseInt(note[4:], 0, 0)
-	em := uint16(n)
-	if em == 0 {
-		return EscNone
-	}
-	return em
 }
 
 // describeEscape returns a string describing the escape tag.
