@@ -1922,7 +1922,12 @@ func predeclared() []*types.Type {
 			// any type, for builtin export data
 			types.Types[TANY],
 
-			types.NewSlice(types.Bytetype),
+			// commonly used types
+			types.NewSlice(types.Bytetype),                 // []byte
+			types.NewSlice(types.Types[TSTRING]),           // []string
+			types.NewSlice(types.Types[TINT]),              // []int
+			types.NewSlice(types.NewSlice(types.Bytetype)), // [][]byte
+			types.NewPtr(types.Bytetype),                   // *byte
 		}
 	}
 	return predecl
