@@ -1241,7 +1241,33 @@ func mktag(mask int) string {
 	switch mask & EscMask {
 	case EscNone, EscReturn:
 	default:
-		Fatalf("escape mktag")
+		Fatalf("escape mktag %v", mask)
+	}
+
+	if mask < len(tags) && tags[mask] != "" {
+		return tags[mask]
+	}
+
+	s := fmt.Sprintf("esc:0x%x", mask)
+	if mask < len(tags) {
+		tags[mask] = s
+	}
+	return s
+}
+
+func mktagfromexport(mask int) string {
+	switch mask {
+	case -1:
+		return unsafeUintptrTag
+	case -2:
+		return uintptrEscapesTag
+	case -3:
+		return ""
+	}
+	switch mask & EscMask {
+	case EscNone, EscReturn:
+	default:
+		Fatalf("escape mktag %v", mask)
 	}
 
 	if mask < len(tags) && tags[mask] != "" {
@@ -1266,6 +1292,27 @@ func parsetag(note string) uint16 {
 		return EscNone
 	}
 	return em
+}
+
+// parsetag decodes an escape analysis tag and returns the esc value.
+func parsetagforexport(note string) int {
+	switch note {
+	case unsafeUintptrTag:
+		return -1
+	case uintptrEscapesTag:
+		return -2
+	case "":
+		return -3
+	}
+	if !strings.HasPrefix(note, "esc:") {
+		return EscUnknown
+	}
+	n, _ := strconv.ParseInt(note[4:], 0, 0)
+	em := uint16(n)
+	if em == 0 {
+		return EscNone
+	}
+	return int(em)
 }
 
 // describeEscape returns a string describing the escape tag.
@@ -1368,7 +1415,7 @@ func (e *EscState) escassignfromtag(note string, dsts Nodes, src, call *Node) ui
 	// so there is no need to check here.
 
 	if em != 0 && dstsi >= dsts.Len() {
-		Fatalf("corrupt esc tag %q or messed up escretval list\n", note)
+		Fatalf("corrupt esc tag %d / %q or messed up escretval list\n", em, note)
 	}
 	return em0
 }
