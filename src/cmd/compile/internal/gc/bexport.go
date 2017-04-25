@@ -1921,7 +1921,31 @@ func predeclared() []*types.Type {
 
 			// any type, for builtin export data
 			types.Types[TANY],
+
+			types.NewSlice(types.Bytetype),
 		}
 	}
 	return predecl
 }
+
+// types.NewSlice(types.Bytetype),
+// 6.93%  1057 RECORD []byte
+// 2.58%   393 RECORD []string
+// 2.05%   313 RECORD [4]byte
+// 0.90%   138 RECORD []int
+// 0.90%   138 RECORD struct {}
+// 0.78%   119 RECORD [16]byte
+// 0.77%   118 RECORD [7]string
+// 0.70%   107 RECORD [][]byte
+// 0.67%   103 RECORD *time.Location
+// 0.67%   103 RECORD *time.Time
+// 0.67%   103 RECORD *time.zone
+// 0.67%   103 RECORD struct { time.name string; time.offset int; time.isDST bool }
+// 0.67%   103 RECORD struct { time.when int64; time.index uint8; time.isstd bool; time.isutc bool }
+// 0.62%    94 RECORD func(AST) bool
+// 0.60%    92 RECORD func()
+// 0.56%    85 RECORD *byte
+// 0.53%    81 RECORD map[string]bool
+// 0.50%    76 RECORD *os.File
+// 0.47%    71 RECORD *sync.Mutex
+// 0.47%    71 RECORD func(string) bool
