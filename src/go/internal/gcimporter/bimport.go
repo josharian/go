@@ -690,7 +690,7 @@ func (p *importer) param(named bool) (*types.Var, bool) {
 	}
 
 	// read and discard compiler-specific info
-	p.string()
+	p.int()
 
 	return types.NewVar(token.NoPos, pkg, name, t), isddd
 }
