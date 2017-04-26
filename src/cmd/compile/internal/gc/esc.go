@@ -1331,7 +1331,7 @@ func (e *EscState) escassignfromtag(note uint16, dsts Nodes, src, call *Node) ui
 	// so there is no need to check here.
 
 	if em != 0 && dstsi >= dsts.Len() {
-		Fatalf("corrupt esc tag %q or messed up escretval list\n", note)
+		Fatalf("corrupt esc tag %b or messed up escretval list\n", note)
 	}
 	return em0
 }
