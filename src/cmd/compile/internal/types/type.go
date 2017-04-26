@@ -260,7 +260,8 @@ func (t *Type) StructType() *Struct {
 
 // Interface contains Type fields specific to interface types.
 type Interface struct {
-	Fields Fields
+	Fields  Fields
+	ArrayOf [2]*Type
 }
 
 // Ptr contains Type fields specific to pointer types.
@@ -434,9 +435,22 @@ func NewArray(elem *Type, bound int64) *Type {
 	if bound < 0 {
 		Fatalf("NewArray: invalid bound %v", bound)
 	}
+	var cache **Type
+	if elem.IsInterface() && bound > 0 {
+		i := elem.Extra.(*Interface)
+		if bound-1 < int64(len(i.ArrayOf)) {
+			cache = &i.ArrayOf[bound-1]
+			if *cache != nil {
+				return *cache
+			}
+		}
+	}
 	t := New(TARRAY)
 	t.Extra = &Array{Elem: elem, Bound: bound}
 	t.SetNotInHeap(elem.NotInHeap())
+	if cache != nil {
+		*cache = t
+	}
 	return t
 }
 
