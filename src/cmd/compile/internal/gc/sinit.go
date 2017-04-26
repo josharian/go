@@ -33,7 +33,7 @@ var (
 )
 
 // init1 walks the AST starting at n, and accumulates in out
-// the list of definitions needing init code in dependency order.
+// statements to include in the init() function body.
 func init1(n *Node, out *[]*Node) {
 	if n == nil {
 		return
@@ -46,7 +46,7 @@ func init1(n *Node, out *[]*Node) {
 
 	if n.Left != nil && n.Type != nil && n.Left.Op == OTYPE && n.Class() == PFUNC {
 		// Methods called as Type.Method(receiver, ...).
-		// Definitions for method expressions are stored in type->nname.
+		// Definitions for method expressions are stored in the FuncType's Nname.
 		init1(asNode(n.Type.FuncType().Nname), out)
 	}
 
@@ -157,7 +157,6 @@ func init1(n *Node, out *[]*Node) {
 	initlist = initlist[:last]
 
 	n.SetInitorder(InitDone)
-	return
 }
 
 // foundinitloop prints an init loop error and exits.
@@ -214,10 +213,10 @@ func init2(n *Node, out *[]*Node) {
 	init2list(n.Rlist, out)
 	init2list(n.Nbody, out)
 
-	if n.Op == OCLOSURE {
+	switch n.Op {
+	case OCLOSURE:
 		init2list(n.Func.Closure.Nbody, out)
-	}
-	if n.Op == ODOTMETH || n.Op == OCALLPART {
+	case ODOTMETH, OCALLPART:
 		init2(asNode(n.Type.FuncType().Nname), out)
 	}
 }
@@ -229,8 +228,7 @@ func init2list(l Nodes, out *[]*Node) {
 }
 
 func initreorder(l []*Node, out *[]*Node) {
-	var n *Node
-	for _, n = range l {
+	for _, n := range l {
 		switch n.Op {
 		case ODCLFUNC, ODCLCONST, ODCLTYPE:
 			continue
@@ -246,9 +244,9 @@ func initreorder(l []*Node, out *[]*Node) {
 // declarations and outputs the corresponding list of statements
 // to include in the init() function body.
 func initfix(l []*Node) []*Node {
-	var lout []*Node
 	initplans = make(map[*Node]*InitPlan)
 	lno := lineno
+	var lout []*Node
 	initreorder(l, &lout)
 	lineno = lno
 	initplans = nil
