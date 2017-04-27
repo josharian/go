@@ -7,7 +7,10 @@ package gc
 import (
 	"cmd/compile/internal/types"
 	"fmt"
+	"os"
 )
+
+var j = os.Getenv("J") != ""
 
 // Static initialization ordering state.
 // These values are stored in two bits in Node.flags.
@@ -256,6 +259,9 @@ func initfix(l []*Node) []*Node {
 // compilation of top-level (static) assignments
 // into DATA statements if at all possible.
 func staticinit(n *Node, out *[]*Node) bool {
+	if j {
+		fmt.Printf("staticinit %v\n", n)
+	}
 	if n.Op != ONAME || n.Class() != PEXTERN || n.Name.Defn == nil || n.Name.Defn.Op != OAS {
 		Fatalf("staticinit")
 	}
@@ -373,6 +379,12 @@ func staticcopy(l *Node, r *Node, out *[]*Node) bool {
 }
 
 func staticassign(l *Node, r *Node, out *[]*Node) bool {
+	if j {
+		fmt.Printf("staticassign %v %v\n", l, r)
+		// 		defer func() {
+		// fmt.Printf("staticassign", ...)
+		// 			}()
+	}
 	for r.Op == OCONVNOP {
 		r = r.Left
 	}
@@ -466,7 +478,20 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		return true
 
 	case OMAPLIT:
-		break
+		if j {
+			_ = isStaticCompositeMap(r)
+			break
+			// Init pointer.
+			a := staticname(r.Type)
+
+			inittemps[r] = a
+
+			// Init underlying literal.
+			nn := &Nodes{slice: out}
+			maplit(r, a, nn)
+			out = nn.slice
+			return true
+		}
 
 	case OCLOSURE:
 		if hasemptycvars(r) {
@@ -548,6 +573,35 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 	return false
 }
 
+// isStaticCompositeLiteral reports whether n is a map whose keys and values are
+// all either compile-time constants or other static composite maps.
+func isStaticCompositeMap(n *Node) bool {
+	if n.Op != OMAPLIT {
+		Fatalf("isStaticCompositeMap %v", n.Op)
+	}
+	for _, r := range n.List.Slice() {
+		if r.Op != OKEY {
+			Fatalf("isStaticCompositeMap: elem not OKEY: %v", r)
+		}
+		if !isStaticCompositeLiteral(r.Left) {
+			if j {
+				fmt.Printf("isStaticCompositeMap %v? no, non-literal key %v\n", n, r.Left)
+			}
+			return false
+		}
+		if !isStaticCompositeLiteral(r.Right) && !isStaticCompositeMap(r.Right) {
+			if j {
+				fmt.Printf("isStaticCompositeMap %v? no, non-literal val %v\n", n, r.Right)
+			}
+			return false
+		}
+	}
+	if j {
+		fmt.Printf("isStaticCompositeMap %v? yes\n", n)
+	}
+	return true
+}
+
 // initContext is the context in which static data is populated.
 // It is either in an init function or in any other function.
 // Static data populated in an init function will be written either
@@ -564,6 +618,13 @@ const (
 	inInitFunction initContext = iota
 	inNonInitFunction
 )
+
+func initContextForFunc(fn *Node) initContext {
+	if fn.funcname() == "init" {
+		return inInitFunction
+	}
+	return inNonInitFunction
+}
 
 // from here down is the walk analysis
 // of composite literals.
@@ -1063,7 +1124,7 @@ func addMapEntries(m *Node, dyn []*Node, init *Nodes) {
 	init.Append(a)
 }
 
-func anylit(n *Node, var_ *Node, init *Nodes) {
+func anylit(n *Node, var_ *Node, init *Nodes, ctxt initContext) {
 	t := n.Type
 	switch n.Op {
 	default:
@@ -1095,7 +1156,7 @@ func anylit(n *Node, var_ *Node, init *Nodes) {
 
 		var_ = nod(OIND, var_, nil)
 		var_ = typecheck(var_, Erv|Easgn)
-		anylit(n.Left, var_, init)
+		anylit(n.Left, var_, init, ctxt)
 
 	case OSTRUCTLIT, OARRAYLIT:
 		if !t.IsStruct() && !t.IsArray() {
@@ -1148,11 +1209,16 @@ func anylit(n *Node, var_ *Node, init *Nodes) {
 		if !t.IsMap() {
 			Fatalf("anylit: not map")
 		}
+		if j {
+			if ctxt == inInitFunction && isStaticCompositeMap(n) {
+
+			}
+		}
 		maplit(n, var_, init)
 	}
 }
 
-func oaslit(n *Node, init *Nodes) bool {
+func oaslit(n *Node, init *Nodes, ctxt initContext) bool {
 	if n.Left == nil || n.Right == nil {
 		// not a special composite literal assignment
 		return false
@@ -1180,7 +1246,7 @@ func oaslit(n *Node, init *Nodes) bool {
 			// not a special composite literal assignment
 			return false
 		}
-		anylit(n.Right, n.Left, init)
+		anylit(n.Right, n.Left, init, ctxt)
 	}
 
 	n.Op = OEMPTY

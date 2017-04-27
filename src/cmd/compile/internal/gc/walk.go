@@ -676,7 +676,7 @@ opswitch:
 		n.Left = walkexpr(n.Left, init)
 		n.Left = safeexpr(n.Left, init)
 
-		if oaslit(n, init) {
+		if oaslit(n, init, initContextForFunc(Curfn)) {
 			break
 		}
 
@@ -1626,7 +1626,7 @@ opswitch:
 			break
 		}
 		var_ := temp(n.Type)
-		anylit(n, var_, init)
+		anylit(n, var_, init, initContextForFunc(Curfn))
 		n = var_
 
 	case OSEND:
@@ -3143,12 +3143,12 @@ func walkcompare(n *Node, init *Nodes) *Node {
 	if !inline {
 		if isvaluelit(cmpl) {
 			var_ := temp(cmpl.Type)
-			anylit(cmpl, var_, init)
+			anylit(cmpl, var_, init, initContextForFunc(Curfn))
 			cmpl = var_
 		}
 		if isvaluelit(cmpr) {
 			var_ := temp(cmpr.Type)
-			anylit(cmpr, var_, init)
+			anylit(cmpr, var_, init, initContextForFunc(Curfn))
 			cmpr = var_
 		}
 		if !islvalue(cmpl) || !islvalue(cmpr) {
