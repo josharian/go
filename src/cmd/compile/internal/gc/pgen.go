@@ -218,6 +218,9 @@ func compile(fn *Node) {
 	}
 	// fieldtrack must be called after pp.Flush. See issue 20014.
 	fieldtrack(pp.Text.From.Sym, fn.Func.FieldTrack)
+	// if os.Getenv("B") != "" {
+	// 	fmt.Println(ssafn.Name, ssafn.UsedBudget, pp.Text.From.Sym.Size)
+	// }
 	pp.Free()
 }
 

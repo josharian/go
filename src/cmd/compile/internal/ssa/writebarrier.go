@@ -9,6 +9,8 @@ import (
 	"cmd/internal/src"
 )
 
+var WBBUDGET int
+
 // nonWBBudget is the number of non-WB stores we can duplicate
 // on either side of a check of runtime.writeBarrier.enabled.
 const nonWBBudget = 0
@@ -45,6 +47,7 @@ func writebarrier(f *Func) {
 	if !f.fe.UseWriteBarrier() {
 		return
 	}
+	// usedbudget := false
 
 	var sb, sp, wbaddr, const0 *Value
 	var writebarrierptr, typedmemmove, typedmemclr *obj.LSym
@@ -120,7 +123,7 @@ func writebarrier(f *Func) {
 		var last *Value
 		var start, end int
 		values := b.Values
-		budget := nonWBBudget
+		budget := WBBUDGET //nonWBBudget
 	FindSeq:
 		for i := len(values) - 1; i >= 0; i-- {
 			w := values[i]
@@ -281,6 +284,11 @@ func writebarrier(f *Func) {
 			}
 		}
 	}
+
+	// if usedbudget {
+	// 	f.UsedBudget = true
+	// 	// fmt.Println(f.Name)
+	// }
 }
 
 // wbcall emits write barrier runtime call in b, returns memory.

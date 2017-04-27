@@ -172,6 +172,7 @@ func Main(archInit func(*Arch)) {
 
 	flag.BoolVar(&compiling_runtime, "+", false, "compiling runtime")
 	objabi.Flagcount("%", "debug non-static initializers", &Debug['%'])
+	flag.IntVar(&ssa.WBBUDGET, "wbb", 0, "set non-writebarrier-budget")
 	objabi.Flagcount("B", "disable bounds checking", &Debug['B'])
 	objabi.Flagcount("C", "disable printing of columns in error messages", &Debug['C']) // TODO(gri) remove eventually
 	flag.StringVar(&localimport, "D", "", "set relative `path` for local imports")
