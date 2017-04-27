@@ -9,6 +9,10 @@ import (
 	"cmd/internal/src"
 )
 
+// nonWBBudget is the number of non-WB stores we can duplicate
+// on either side of a check of runtime.writeBarrier.enabled.
+const nonWBBudget = 0
+
 // needwb returns whether we need write barrier for store op v.
 // v must be Store/Move/Zero.
 func needwb(v *Value) bool {
@@ -116,18 +120,33 @@ func writebarrier(f *Func) {
 		var last *Value
 		var start, end int
 		values := b.Values
+		budget := nonWBBudget
+	FindSeq:
 		for i := len(values) - 1; i >= 0; i-- {
 			w := values[i]
-			if w.Op == OpStoreWB || w.Op == OpMoveWB || w.Op == OpZeroWB {
+			switch w.Op {
+			case OpStoreWB, OpMoveWB, OpZeroWB:
+				start = i
 				if last == nil {
 					last = w
 					end = i + 1
 				}
-			} else {
-				if last != nil {
-					start = i + 1
-					break
+			case OpStore:
+				if last == nil {
+					continue
 				}
+				if budget > 0 {
+					budget--
+				} else {
+					break FindSeq
+				}
+			case OpVarDef, OpVarLive, OpVarKill:
+				continue
+			default:
+				if last == nil {
+					continue
+				}
+				break FindSeq
 			}
 		}
 		stores = append(stores[:0], b.Values[start:end]...) // copy to avoid aliasing
@@ -189,15 +208,25 @@ func writebarrier(f *Func) {
 			case OpZeroWB:
 				fn = typedmemclr
 				typ = &ExternSymbol{Sym: w.Aux.(Type).Symbol()}
+			case OpStore:
+				val = w.Args[1]
+			case OpVarDef, OpVarLive, OpVarKill:
 			}
 
 			// then block: emit write barrier call
-			volatile := w.Op == OpMoveWB && isVolatile(val)
-			memThen = wbcall(pos, bThen, fn, typ, ptr, val, memThen, sp, sb, volatile)
+			switch w.Op {
+			case OpStoreWB, OpMoveWB, OpZeroWB:
+				volatile := w.Op == OpMoveWB && isVolatile(val)
+				memThen = wbcall(pos, bThen, fn, typ, ptr, val, memThen, sp, sb, volatile)
+			case OpStore:
+				memThen = bThen.NewValue3A(pos, OpStore, TypeMem, w.Aux, ptr, val, memThen)
+			case OpVarDef, OpVarLive, OpVarKill:
+				memThen = bThen.NewValue1A(pos, w.Op, TypeMem, w.Aux, memThen)
+			}
 
 			// else block: normal store
 			switch w.Op {
-			case OpStoreWB:
+			case OpStoreWB, OpStore:
 				memElse = bElse.NewValue3A(pos, OpStore, TypeMem, w.Aux, ptr, val, memElse)
 			case OpMoveWB:
 				memElse = bElse.NewValue3I(pos, OpMove, TypeMem, w.AuxInt, ptr, val, memElse)
@@ -205,6 +234,8 @@ func writebarrier(f *Func) {
 			case OpZeroWB:
 				memElse = bElse.NewValue2I(pos, OpZero, TypeMem, w.AuxInt, ptr, memElse)
 				memElse.Aux = w.Aux
+			case OpVarDef, OpVarLive, OpVarKill:
+				memElse = bElse.NewValue1A(pos, w.Op, TypeMem, w.Aux, memElse)
 			}
 
 			if !f.WBPos.IsKnown() {
