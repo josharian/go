@@ -10,6 +10,10 @@ import (
 	"cmd/internal/src"
 )
 
+// nonWBBudget is the number of non-WB stores we can duplicate
+// on either side of a check of runtime.writeBarrier.enabled.
+const nonWBBudget = 2
+
 // needwb returns whether we need write barrier for store op v.
 // v must be Store/Move/Zero.
 func needwb(v *Value) bool {
@@ -117,6 +121,7 @@ func writebarrier(f *Func) {
 		var last *Value
 		var start, end int
 		values := b.Values
+		budget := nonWBBudget
 	FindSeq:
 		for i := len(values) - 1; i >= 0; i-- {
 			w := values[i]
@@ -126,6 +131,15 @@ func writebarrier(f *Func) {
 				if last == nil {
 					last = w
 					end = i + 1
+				}
+			case OpStore:
+				if last == nil {
+					continue
+				}
+				if budget > 0 {
+					budget--
+				} else {
+					break FindSeq
 				}
 			case OpVarDef, OpVarLive, OpVarKill:
 				continue
@@ -195,6 +209,8 @@ func writebarrier(f *Func) {
 			case OpZeroWB:
 				fn = typedmemclr
 				typ = &ExternSymbol{Sym: w.Aux.(*types.Type).Symbol()}
+			case OpStore:
+				val = w.Args[1]
 			case OpVarDef, OpVarLive, OpVarKill:
 			}
 
@@ -203,13 +219,15 @@ func writebarrier(f *Func) {
 			case OpStoreWB, OpMoveWB, OpZeroWB:
 				volatile := w.Op == OpMoveWB && isVolatile(val)
 				memThen = wbcall(pos, bThen, fn, typ, ptr, val, memThen, sp, sb, volatile)
+			case OpStore:
+				memThen = bThen.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, memThen)
 			case OpVarDef, OpVarLive, OpVarKill:
 				memThen = bThen.NewValue1A(pos, w.Op, types.TypeMem, w.Aux, memThen)
 			}
 
 			// else block: normal store
 			switch w.Op {
-			case OpStoreWB:
+			case OpStoreWB, OpStore:
 				memElse = bElse.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, memElse)
 			case OpMoveWB:
 				memElse = bElse.NewValue3I(pos, OpMove, types.TypeMem, w.AuxInt, ptr, val, memElse)
