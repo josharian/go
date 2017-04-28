@@ -439,7 +439,7 @@ func isartificial(n *Node) bool {
 		}
 
 		// statictmp's are read-only
-		if strings.HasPrefix(n.Sym.Name, "statictmp_") {
+		if strings.HasPrefix(n.Sym.Name, "statictmp_") || strings.HasPrefix(n.Sym.Name, ".s.") {
 			return true
 		}
 

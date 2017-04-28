@@ -187,16 +187,21 @@ func isaddrokay(n *Node) bool {
 // The result of orderaddrtemp MUST be assigned back to n, e.g.
 // 	n.Left = orderaddrtemp(n.Left, order)
 func orderaddrtemp(n *Node, order *Order) *Node {
-	if consttype(n) >= 0 {
+	if ct := consttype(n); ct >= 0 {
 		// TODO: expand this to all static composite literal nodes?
 		n = defaultlit(n, nil)
 		dowidth(n.Type)
-		vstat := staticname(n.Type)
-		vstat.Name.SetReadonly(true)
-		var out []*Node
-		staticassign(vstat, n, &out)
-		if out != nil {
-			Fatalf("staticassign of const generated code: %+v", n)
+		var vstat *Node
+		if ct != CTNIL {
+			vstat = staticConstant(n)
+		} else {
+			vstat = staticname(n.Type)
+			vstat.Name.SetReadonly(true)
+			var out []*Node
+			staticassign(vstat, n, &out)
+			if out != nil {
+				Fatalf("staticassign of const generated code: %+v", n)
+			}
 		}
 		vstat = typecheck(vstat, Erv)
 		return vstat

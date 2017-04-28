@@ -7,6 +7,7 @@ package gc
 import (
 	"cmd/compile/internal/types"
 	"fmt"
+	"math"
 )
 
 // Static initialization ordering state.
@@ -566,6 +567,61 @@ const (
 	inInitFunction initContext = iota
 	inNonInitFunction
 )
+
+// staticConstant emits a readonly, constant-addressable static symbol containing c's value.
+func staticConstant(c *Node) *Node {
+	var symname string
+	switch v := c.Val().U.(type) {
+	case bool:
+		if v {
+			symname = ".s.b.t"
+		} else {
+			symname = ".s.b.f"
+		}
+	case *Mpint:
+		symname = fmt.Sprintf(".s.i%d.%d", c.Type.Size(), c.Int64())
+	case *Mpflt:
+		f := c.Val().Interface().(float64)
+		switch c.Type.Size() {
+		case 4:
+			symname = fmt.Sprintf(".s.f4.%x", math.Float32bits(float32(f)))
+		case 8:
+			symname = fmt.Sprintf(".s.f8.%x", math.Float64bits(f))
+		}
+	case *Mpcplx:
+		f := c.Val().Interface().(complex128)
+		switch c.Type.Size() {
+		case 8:
+			symname = fmt.Sprintf(".s.c8.%x.%x", math.Float32bits(float32(real(f))), math.Float32bits(float32(imag(f))))
+		case 16:
+			symname = fmt.Sprintf(".s.c16.%x.%x", math.Float64bits(real(f)), math.Float64bits(imag(f)))
+		}
+	case string:
+		symname = ".s.str." + stringsymname(v)
+	}
+	if symname == "" {
+		Fatalf("staticConstant type %v (%v)", c.Type, consttype(c))
+	}
+	// TODO(josharian): figure out how to cleanly share these across packages.
+	// That would currently require breaking some abstraction layers.
+	s := lookup(symname)
+	if s.Def == nil {
+		n := newname(s)
+		addvar(n, c.Type, PEXTERN)
+		n.Name.SetReadonly(true)
+		var out []*Node
+		staticassign(n, c, &out)
+		if out != nil {
+			Fatalf("staticConstant generated code: %+v", n)
+		}
+		s.Def = asTypesNode(n)
+	}
+	n := asNode(s.Def)
+	// Give each caller their own copy.
+	cp := treecopy(n, c.Pos)
+	cp.Type = c.Type
+	return cp
+}
 
 // from here down is the walk analysis
 // of composite literals.

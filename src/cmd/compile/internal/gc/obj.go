@@ -291,24 +291,22 @@ func dbvec(s *obj.LSym, off int, bv bvec) int {
 	return off
 }
 
-func stringsym(s string) (data *obj.LSym) {
-	var symname string
+func stringsymname(s string) string {
+	// TODO(josharian): consider making these names shorter.
 	if len(s) > 100 {
 		// Huge strings are hashed to avoid long names in object files.
 		// Indulge in some paranoia by writing the length of s, too,
 		// as protection against length extension attacks.
 		h := sha256.New()
 		io.WriteString(h, s)
-		symname = fmt.Sprintf(".gostring.%d.%x", len(s), h.Sum(nil))
-	} else {
-		// Small strings get named directly by their contents.
-		symname = strconv.Quote(s)
+		return fmt.Sprintf(".gostring.%d.%x", len(s), h.Sum(nil))
 	}
+	// Small strings get named directly by their contents.
+	return strconv.Quote(s)
+}
 
-	const prefix = "go.string."
-	symdataname := prefix + symname
-
-	symdata := Ctxt.Lookup(symdataname)
+func stringsym(s string) (data *obj.LSym) {
+	symdata := Ctxt.Lookup("go.string." + stringsymname(s))
 
 	if !symdata.SeenGlobl() {
 		// string data
