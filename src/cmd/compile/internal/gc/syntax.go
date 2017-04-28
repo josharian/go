@@ -95,8 +95,6 @@ const (
 	_, nodeAddable  // addressable
 	_, nodeHasCall  // expression contains a function call
 	_, nodeLikely   // if statement condition likely
-	_, nodeHasVal   // node.E contains a Val
-	_, nodeHasOpt   // node.E contains an Opt
 	_, nodeEmbedded // ODCLFIELD embedded type
 )
 
@@ -122,8 +120,6 @@ func (n *Node) Bounded() bool               { return n.flags&nodeBounded != 0 }
 func (n *Node) Addable() bool               { return n.flags&nodeAddable != 0 }
 func (n *Node) HasCall() bool               { return n.flags&nodeHasCall != 0 }
 func (n *Node) Likely() bool                { return n.flags&nodeLikely != 0 }
-func (n *Node) HasVal() bool                { return n.flags&nodeHasVal != 0 }
-func (n *Node) HasOpt() bool                { return n.flags&nodeHasOpt != 0 }
 func (n *Node) Embedded() bool              { return n.flags&nodeEmbedded != 0 }
 
 func (n *Node) SetClass(b Class)     { n.flags.set3(nodeClass, uint8(b)) }
@@ -148,50 +144,16 @@ func (n *Node) SetBounded(b bool)               { n.flags.set(nodeBounded, b) }
 func (n *Node) SetAddable(b bool)               { n.flags.set(nodeAddable, b) }
 func (n *Node) SetHasCall(b bool)               { n.flags.set(nodeHasCall, b) }
 func (n *Node) SetLikely(b bool)                { n.flags.set(nodeLikely, b) }
-func (n *Node) SetHasVal(b bool)                { n.flags.set(nodeHasVal, b) }
-func (n *Node) SetHasOpt(b bool)                { n.flags.set(nodeHasOpt, b) }
 func (n *Node) SetEmbedded(b bool)              { n.flags.set(nodeEmbedded, b) }
 
 // Val returns the Val for the node.
 func (n *Node) Val() Val {
-	if !n.HasVal() {
-		return Val{}
-	}
 	return Val{n.E}
 }
 
 // SetVal sets the Val for the node, which must not have been used with SetOpt.
 func (n *Node) SetVal(v Val) {
-	if n.HasOpt() {
-		Debug['h'] = 1
-		Dump("have Opt", n)
-		Fatalf("have Opt")
-	}
-	n.SetHasVal(true)
 	n.E = v.U
-}
-
-// Opt returns the optimizer data for the node.
-func (n *Node) Opt() interface{} {
-	if !n.HasOpt() {
-		return nil
-	}
-	return n.E
-}
-
-// SetOpt sets the optimizer data for the node, which must not have been used with SetVal.
-// SetOpt(nil) is ignored for Vals to simplify call sites that are clearing Opts.
-func (n *Node) SetOpt(x interface{}) {
-	if x == nil && n.HasVal() {
-		return
-	}
-	if n.HasVal() {
-		Debug['h'] = 1
-		Dump("have Val", n)
-		Fatalf("have Val")
-	}
-	n.SetHasOpt(true)
-	n.E = x
 }
 
 func (n *Node) Iota() int64 {

@@ -320,17 +320,13 @@ type NodeEscState struct {
 }
 
 func (e *EscState) nodeEscState(n *Node) *NodeEscState {
-	if nE, ok := n.Opt().(*NodeEscState); ok {
+	if nE, ok := e.m[n]; ok {
 		return nE
-	}
-	if n.Opt() != nil {
-		Fatalf("nodeEscState: opt in use (%T)", n.Opt())
 	}
 	nE := &NodeEscState{
 		Curfn: Curfn,
 	}
-	n.SetOpt(nE)
-	e.opts = append(e.opts, n)
+	e.m[n] = nE
 	return nE
 }
 
@@ -405,12 +401,13 @@ type EscState struct {
 	edgecount int     // diagnostic
 	noesc     []*Node // list of possible non-escaping nodes, for printing
 	recursive bool    // recursive function or group of mutually recursive functions.
-	opts      []*Node // nodes with .Opt initialized
 	walkgen   uint32
+	m         map[*Node]*NodeEscState
 }
 
 func newEscState(recursive bool) *EscState {
 	e := new(EscState)
+	e.m = make(map[*Node]*NodeEscState)
 	e.theSink.Op = ONAME
 	e.theSink.Orig = &e.theSink
 	e.theSink.SetClass(PEXTERN)
@@ -533,10 +530,6 @@ func escAnalyze(all []*Node, recursive bool) {
 				Warnl(n.Pos, "%v %S does not escape", e.curfnSym(n), n)
 			}
 		}
-	}
-
-	for _, x := range e.opts {
-		x.SetOpt(nil)
 	}
 }
 
