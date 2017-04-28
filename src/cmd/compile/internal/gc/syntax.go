@@ -37,8 +37,8 @@ type Node struct {
 	// ONAME, OTYPE, OPACK, OLABEL, some OLITERAL
 	Name *Name
 
-	Sym *types.Sym  // various
-	E   interface{} // Opt or Val, see methods below
+	Sym *types.Sym // various
+	val *Val
 
 	// Various. Usually an offset into a struct. For example:
 	// - ONAME nodes that refer to local variables use it to identify their stack frame position.
@@ -148,12 +148,15 @@ func (n *Node) SetEmbedded(b bool)              { n.flags.set(nodeEmbedded, b) }
 
 // Val returns the Val for the node.
 func (n *Node) Val() Val {
-	return Val{n.E}
+	if n.val == nil {
+		return Val{}
+	}
+	return *n.val
 }
 
 // SetVal sets the Val for the node, which must not have been used with SetOpt.
 func (n *Node) SetVal(v Val) {
-	n.E = v.U
+	n.val = &v
 }
 
 func (n *Node) Iota() int64 {
