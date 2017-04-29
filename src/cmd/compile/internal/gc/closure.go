@@ -32,7 +32,7 @@ func closurehdr(ntype *Node) {
 	for _, n1 := range n.List.Slice() {
 		name := n1.Left
 		if name != nil {
-			name = newname(name.Sym)
+			name = newname(name.Sym())
 		}
 		a := nod(ODCLFIELD, name, n1.Right)
 		a.SetIsddd(n1.Isddd())
@@ -44,7 +44,7 @@ func closurehdr(ntype *Node) {
 	for _, n2 := range n.Rlist.Slice() {
 		name := n2.Left
 		if name != nil {
-			name = newname(name.Sym)
+			name = newname(name.Sym())
 		}
 		ntype.Rlist.Append(nod(ODCLFIELD, name, n2.Right))
 	}
@@ -72,7 +72,7 @@ func closurebody(body []*Node) *Node {
 		// If the closure usage of v is not dense,
 		// we need to make it dense; now that we're out
 		// of the function in which v appeared,
-		// look up v.Sym in the enclosing function
+		// look up v.Sym() in the enclosing function
 		// and keep it around for use in the compiled code.
 		//
 		// That is, suppose we just finished parsing the innermost
@@ -93,11 +93,11 @@ func closurebody(body []*Node) *Node {
 		// At this point v.Outer is f2's v; there is no f3's v.
 		// To construct the closure f4 from within f3,
 		// we need to use f3's v and in this case we need to create f3's v.
-		// We are now in the context of f3, so calling oldname(v.Sym)
+		// We are now in the context of f3, so calling oldname(v.Sym())
 		// obtains f3's v, creating it if necessary (as it is in the example).
 		//
 		// capturevars will decide whether to use v directly or &v.
-		v.Name.Param.Outer = oldname(v.Sym)
+		v.Name.Param.Outer = oldname(v.Sym())
 	}
 
 	return func_
@@ -157,8 +157,8 @@ func typecheckclosure(func_ *Node, top int) {
 var closurename_closgen int
 
 func closurename(n *Node) *types.Sym {
-	if n.Sym != nil {
-		return n.Sym
+	if n.Sym() != nil {
+		return n.Sym()
 	}
 	gen := 0
 	outer := ""
@@ -197,8 +197,8 @@ func closurename(n *Node) *types.Sym {
 	default:
 		Fatalf("closurename called for %S", n)
 	}
-	n.Sym = lookup(fmt.Sprintf("%s.%s%d", outer, prefix, gen))
-	return n.Sym
+	n.SetSym(lookup(fmt.Sprintf("%s.%s%d", outer, prefix, gen)))
+	return n.Sym()
 }
 
 func makeclosure(func_ *Node) *Node {
@@ -214,7 +214,7 @@ func makeclosure(func_ *Node) *Node {
 	xfunc.Func.SetIsHiddenClosure(Curfn != nil)
 
 	xfunc.Func.Nname = newfuncname(closurename(func_))
-	xfunc.Func.Nname.Sym.SetExported(true) // disable export
+	xfunc.Func.Nname.Sym().SetExported(true) // disable export
 	xfunc.Func.Nname.Name.Param.Ntype = xtype
 	xfunc.Func.Nname.Name.Defn = xfunc
 	declare(xfunc.Func.Nname, PFUNC)
@@ -222,7 +222,7 @@ func makeclosure(func_ *Node) *Node {
 	xfunc.Func.Depth = func_.Func.Depth
 	xfunc.Func.Endlineno = func_.Func.Endlineno
 	if Ctxt.Flag_dynlink {
-		makefuncsym(xfunc.Func.Nname.Sym)
+		makefuncsym(xfunc.Func.Nname.Sym())
 	}
 
 	xfunc.Nbody.Set(func_.Nbody.Slice())
@@ -285,13 +285,13 @@ func capturevars(xfunc *Node) {
 		if Debug['m'] > 1 {
 			var name *types.Sym
 			if v.Name.Curfn != nil && v.Name.Curfn.Func.Nname != nil {
-				name = v.Name.Curfn.Func.Nname.Sym
+				name = v.Name.Curfn.Func.Nname.Sym()
 			}
 			how := "ref"
 			if v.Name.Byval() {
 				how = "value"
 			}
-			Warnl(v.Pos, "%v capturing by %s: %v (addr=%v assign=%v width=%d)", name, how, v.Sym, outermost.Addrtaken(), outermost.Assigned(), int32(v.Type.Width))
+			Warnl(v.Pos, "%v capturing by %s: %v (addr=%v assign=%v width=%d)", name, how, v.Sym(), outermost.Addrtaken(), outermost.Assigned(), int32(v.Type.Width))
 		}
 
 		outer = typecheck(outer, Erv)
@@ -345,7 +345,7 @@ func transformclosure(xfunc *Node) {
 				// we introduce function param &v *T
 				// and v remains PAUTOHEAP with &v heapaddr
 				// (accesses will implicitly deref &v).
-				addr := newname(lookup("&" + v.Sym.Name))
+				addr := newname(lookup("&" + v.Sym().Name))
 				addr.Type = types.NewPtr(v.Type)
 				addr.SetClass(PPARAM)
 				v.Name.Param.Heapaddr = addr
@@ -353,7 +353,7 @@ func transformclosure(xfunc *Node) {
 			}
 
 			fld.Type = asNode(fld.Nname).Type
-			fld.Sym = asNode(fld.Nname).Sym
+			fld.Sym = asNode(fld.Nname).Sym()
 
 			params = append(params, fld)
 			decls = append(decls, asNode(fld.Nname))
@@ -395,7 +395,7 @@ func transformclosure(xfunc *Node) {
 			} else {
 				// Declare variable holding addresses taken from closure
 				// and initialize in entry prologue.
-				addr := newname(lookup("&" + v.Sym.Name))
+				addr := newname(lookup("&" + v.Sym().Name))
 				addr.Type = types.NewPtr(v.Type)
 				addr.SetClass(PAUTO)
 				addr.Name.SetUsed(true)
@@ -483,7 +483,7 @@ func walkclosure(func_ *Node, init *Nodes) *Node {
 		if !v.Name.Byval() {
 			typ1 = nod(OIND, typ1, nil)
 		}
-		typ.List.Append(nod(ODCLFIELD, newname(v.Sym), typ1))
+		typ.List.Append(nod(ODCLFIELD, newname(v.Sym()), typ1))
 	}
 
 	clos := nod(OCOMPLIT, nil, nod(OIND, typ, nil))
@@ -606,7 +606,7 @@ func makepartialcall(fn *Node, t0 *types.Type, meth *types.Sym) *Node {
 
 	xfunc.Func.SetDupok(true)
 	xfunc.Func.Nname = newfuncname(sym)
-	xfunc.Func.Nname.Sym.SetExported(true) // disable export
+	xfunc.Func.Nname.Sym().SetExported(true) // disable export
 	xfunc.Func.Nname.Name.Param.Ntype = xtype
 	xfunc.Func.Nname.Name.Defn = xfunc
 	declare(xfunc.Func.Nname, PFUNC)

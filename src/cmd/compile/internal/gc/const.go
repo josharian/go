@@ -1706,13 +1706,13 @@ func isgoconst(n *Node) bool {
 		}
 
 	case ONAME:
-		l := asNode(n.Sym.Def)
+		l := asNode(n.Sym().Def)
 		if l != nil && l.Op == OLITERAL && n.Val().Ctype() != CTNIL {
 			return true
 		}
 
 	case ONONAME:
-		if asNode(n.Sym.Def) != nil && asNode(n.Sym.Def).Op == OIOTA {
+		if asNode(n.Sym().Def) != nil && asNode(n.Sym().Def).Op == OIOTA {
 			return true
 		}
 

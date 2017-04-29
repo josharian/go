@@ -37,7 +37,7 @@ type Node struct {
 	// ONAME, OTYPE, OPACK, OLABEL, some OLITERAL
 	Name *Name
 
-	Sym *types.Sym // various
+	sym *types.Sym // various
 	val *Val
 
 	// Various. Usually an offset into a struct. For example:
@@ -145,6 +145,14 @@ func (n *Node) SetAddable(b bool)               { n.flags.set(nodeAddable, b) }
 func (n *Node) SetHasCall(b bool)               { n.flags.set(nodeHasCall, b) }
 func (n *Node) SetLikely(b bool)                { n.flags.set(nodeLikely, b) }
 func (n *Node) SetEmbedded(b bool)              { n.flags.set(nodeEmbedded, b) }
+
+func (n *Node) Sym() *types.Sym {
+	return n.sym
+}
+
+func (n *Node) SetSym(s *types.Sym) {
+	n.sym = s
+}
 
 // Val returns the Val for the node.
 func (n *Node) Val() Val {

@@ -60,7 +60,7 @@ var vargen int
 
 var declare_typegen int
 
-// declare records that Node n declares symbol n.Sym in the specified
+// declare records that Node n declares symbol n.Sym() in the specified
 // declaration context.
 func declare(n *Node, ctxt Class) {
 	if ctxt == PDISCARD {
@@ -76,7 +76,7 @@ func declare(n *Node, ctxt Class) {
 		n.Name = new(Name)
 	}
 	n.Pos = lineno
-	s := n.Sym
+	s := n.Sym()
 
 	// kludgy: typecheckok means we're past parsing. Eg genwrapper may declare out of package names later.
 	if !inimport && !typecheckok && s.Pkg != localpkg {
@@ -131,7 +131,7 @@ func declare(n *Node, ctxt Class) {
 }
 
 func addvar(n *Node, t *types.Type, ctxt Class) {
-	if n == nil || n.Sym == nil || (n.Op != ONAME && n.Op != ONONAME) || t == nil {
+	if n == nil || n.Sym() == nil || (n.Op != ONAME && n.Op != ONONAME) || t == nil {
 		Fatalf("addvar: n=%v t=%v nil", n, t)
 	}
 
@@ -203,7 +203,7 @@ func newnoname(s *types.Sym) *Node {
 		Fatalf("newnoname nil")
 	}
 	n := nod(ONONAME, nil, nil)
-	n.Sym = s
+	n.SetSym(s)
 	n.SetAddable(true)
 	n.Xoffset = 0
 	return n
@@ -233,7 +233,7 @@ func typenod(t *types.Type) *Node {
 	if asNode(t.Nod) == nil || asNode(t.Nod).Type != t {
 		t.Nod = asTypesNode(nod(OTYPE, nil, nil))
 		asNode(t.Nod).Type = t
-		asNode(t.Nod).Sym = t.Sym
+		asNode(t.Nod).SetSym(t.Sym)
 	}
 
 	return asNode(t.Nod)
@@ -1224,7 +1224,7 @@ func (c *nowritebarrierrecChecker) visitcode(n *Node) {
 func (c *nowritebarrierrecChecker) visitcall(n *Node) {
 	fn := n.Left
 	if n.Op == OCALLMETH {
-		fn = asNode(n.Left.Sym.Def)
+		fn = asNode(n.Left.Sym().Def)
 	}
 	if fn == nil || fn.Op != ONAME || fn.Class() != PFUNC || fn.Name.Defn == nil {
 		return

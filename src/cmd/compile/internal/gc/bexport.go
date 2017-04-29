@@ -250,7 +250,7 @@ func export(out *bufio.Writer, trace bool) int {
 	// this phase.
 	objcount := 0
 	for _, n := range exportlist {
-		sym := n.Sym
+		sym := n.Sym()
 
 		if sym.Exported() {
 			continue
@@ -307,7 +307,7 @@ func export(out *bufio.Writer, trace bool) int {
 	objcount = 0
 	for i := numglobals; exportInlined && i < len(exportlist); i++ {
 		n := exportlist[i]
-		sym := n.Sym
+		sym := n.Sym()
 
 		// TODO(gri) The rest of this loop body is identical with
 		// the loop body above. Leave alone for now since there
@@ -953,7 +953,7 @@ func parName(f *types.Field, numbered bool) string {
 	// ~r%d is a (formerly) unnamed result.
 	if asNode(f.Nname) != nil {
 		if asNode(f.Nname).Orig != nil {
-			s = asNode(f.Nname).Orig.Sym
+			s = asNode(f.Nname).Orig.Sym()
 			if s != nil && s.Name[0] == '~' {
 				if s.Name[1] == 'r' { // originally an unnamed result
 					return "" // s = nil
@@ -1143,7 +1143,7 @@ func (p *exporter) elemList(list Nodes) {
 		if p.trace {
 			p.tracef("\n")
 		}
-		p.fieldSym(n.Sym, false)
+		p.fieldSym(n.Sym(), false)
 		p.expr(n.Left)
 	}
 }
@@ -1190,14 +1190,14 @@ func (p *exporter) expr(n *Node) {
 	case ONAME:
 		// Special case: name used as local variable in export.
 		// _ becomes ~b%d internally; print as _ for export
-		if n.Sym != nil && n.Sym.Name[0] == '~' && n.Sym.Name[1] == 'b' {
+		if s := n.Sym(); s != nil && s.Name[0] == '~' && s.Name[1] == 'b' {
 			p.op(ONAME)
 			p.pos(n)
 			p.string("_") // inlined and customized version of p.sym(n)
 			break
 		}
 
-		if n.Sym != nil && !isblank(n) && n.Name.Vargen > 0 {
+		if n.Sym() != nil && !isblank(n) && n.Name.Vargen > 0 {
 			p.op(ONAME)
 			p.pos(n)
 			p.sym(n)
@@ -1211,7 +1211,7 @@ func (p *exporter) expr(n *Node) {
 			p.op(OXDOT)
 			p.pos(n)
 			p.expr(n.Left) // n.Left.Op == OTYPE
-			p.fieldSym(n.Right.Sym, true)
+			p.fieldSym(n.Right.Sym(), true)
 			break
 		}
 
@@ -1273,7 +1273,7 @@ func (p *exporter) expr(n *Node) {
 		p.op(OXDOT)
 		p.pos(n)
 		p.expr(n.Left)
-		p.fieldSym(n.Sym, true)
+		p.fieldSym(n.Sym(), true)
 
 	case ODOTTYPE, ODOTTYPE2:
 		p.op(ODOTTYPE)
@@ -1564,7 +1564,7 @@ func (p *exporter) fieldSym(s *types.Sym, short bool) {
 // sym must encode the _ (blank) identifier as a single string "_" since
 // encoding for some nodes is based on this assumption (e.g. ONAME nodes).
 func (p *exporter) sym(n *Node) {
-	s := n.Sym
+	s := n.Sym()
 	if s.Pkg != nil {
 		if len(s.Name) > 0 && s.Name[0] == '.' {
 			Fatalf("exporter: exporting synthetic symbol %s", s.Name)

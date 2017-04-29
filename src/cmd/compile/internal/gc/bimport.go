@@ -649,7 +649,7 @@ func (p *importer) field() *types.Field {
 func (p *importer) methodList() (methods []*types.Field) {
 	for n := p.int(); n > 0; n-- {
 		f := types.NewField()
-		f.Nname = asTypesNode(newname(nblank.Sym))
+		f.Nname = asTypesNode(newname(nblank.Sym()))
 		asNode(f.Nname).Pos = p.pos()
 		f.Type = p.typ()
 		methods = append(methods, f)
@@ -1193,7 +1193,7 @@ func (p *importer) node() *Node {
 		pos := p.pos()
 		left, _ := p.exprsOrNil()
 		if left != nil {
-			left = newname(left.Sym)
+			left = newname(left.Sym())
 		}
 		return nodl(pos, op, left, nil)
 
@@ -1201,7 +1201,7 @@ func (p *importer) node() *Node {
 	// 	unreachable - not emitted by exporter
 
 	case OGOTO, OLABEL:
-		return nodl(p.pos(), op, newname(p.expr().Sym), nil)
+		return nodl(p.pos(), op, newname(p.expr().Sym()), nil)
 
 	case OEND:
 		return nil

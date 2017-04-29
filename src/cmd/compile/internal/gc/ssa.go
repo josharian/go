@@ -307,15 +307,15 @@ func (s *state) Debug_checknil() bool                                { return s.
 
 var (
 	// dummy node for the memory variable
-	memVar = Node{Op: ONAME, Sym: &types.Sym{Name: "mem"}}
+	memVar = Node{Op: ONAME, sym: &types.Sym{Name: "mem"}}
 
 	// dummy nodes for temporary variables
-	ptrVar    = Node{Op: ONAME, Sym: &types.Sym{Name: "ptr"}}
-	lenVar    = Node{Op: ONAME, Sym: &types.Sym{Name: "len"}}
-	newlenVar = Node{Op: ONAME, Sym: &types.Sym{Name: "newlen"}}
-	capVar    = Node{Op: ONAME, Sym: &types.Sym{Name: "cap"}}
-	typVar    = Node{Op: ONAME, Sym: &types.Sym{Name: "typ"}}
-	okVar     = Node{Op: ONAME, Sym: &types.Sym{Name: "ok"}}
+	ptrVar    = Node{Op: ONAME, sym: &types.Sym{Name: "ptr"}}
+	lenVar    = Node{Op: ONAME, sym: &types.Sym{Name: "len"}}
+	newlenVar = Node{Op: ONAME, sym: &types.Sym{Name: "newlen"}}
+	capVar    = Node{Op: ONAME, sym: &types.Sym{Name: "cap"}}
+	typVar    = Node{Op: ONAME, sym: &types.Sym{Name: "typ"}}
+	okVar     = Node{Op: ONAME, sym: &types.Sym{Name: "ok"}}
 )
 
 // startBlock sets the current block we're generating code in to b.
