@@ -278,6 +278,28 @@ func schedule(f *Func) {
 	f.scheduled = true
 }
 
+// sortPhisFirst rearranges values so that all phi values are at the beginning.
+// TODO: remove all uses of sortPhisFirst and delete it. See issue 20178.
+func sortPhisFirst(values []*Value) {
+	phi := 0
+	for i, v := range values {
+		if v.Op == OpPhi {
+			if i != phi {
+				values[phi], values[i] = values[i], values[phi]
+			}
+			phi++
+		}
+	}
+}
+
+// sortAllPhisFirst rearranges all values in f so that phi values are at the beginning.
+// TODO: remove all uses of sortAllPhisFirst and delete it. See issue 20178.
+func sortAllPhisFirst(f *Func) {
+	for _, b := range f.Blocks {
+		sortPhisFirst(b.Values)
+	}
+}
+
 // storeOrder orders values with respect to stores. That is,
 // if v transitively depends on store s, v is ordered after s,
 // otherwise v is ordered before s.

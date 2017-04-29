@@ -14,6 +14,7 @@ import (
 )
 
 func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
+	sortAllPhisFirst(f) // required by canMergeLoad and maybe others
 	// repeat rewrites until we find no more rewrites
 	for {
 		change := false
