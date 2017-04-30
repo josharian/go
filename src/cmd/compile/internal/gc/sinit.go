@@ -929,12 +929,9 @@ func slicelit(ctxt initContext, n *Node, var_ *Node, init *Nodes) {
 	init.Append(a)
 }
 
+// maplit populates the map m with the values in n.
+// m must already have been created.
 func maplit(n *Node, m *Node, init *Nodes) {
-	// make the map var
-	a := nod(OMAKE, nil, nil)
-	a.List.Set2(typenod(n.Type), nodintconst(int64(n.List.Len())))
-	litas(m, a, init)
-
 	// Split the initializers into static and dynamic.
 	var stat, dyn []*Node
 	for _, r := range n.List.Slice() {
@@ -1150,6 +1147,11 @@ func anylit(n *Node, var_ *Node, init *Nodes) {
 		if !t.IsMap() {
 			Fatalf("anylit: not map")
 		}
+		// make the map var
+		a := nod(OMAKE, nil, nil)
+		a.List.Set2(typenod(n.Type), nodintconst(int64(n.List.Len())))
+		litas(var_, a, init)
+		// populate it
 		maplit(n, var_, init)
 	}
 }

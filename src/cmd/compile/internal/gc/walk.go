@@ -1634,6 +1634,35 @@ opswitch:
 			n = typecheck(n, Erv)
 			break
 		}
+		// TODO: checking Curfn.funcname() == "init" is not the right way,
+		// if for no other reason than we're trying to eliminate Curfn.
+		// But what to replace it with?
+		if n.Op == OMAPLIT && Curfn.funcname() == "init" {
+			// Construct a static hmap.
+			t := n.Type
+			ht := hmap(t)
+			h := staticname(ht)
+			// Take its address, to pass as *hmap to makemap.
+			mp := nod(OCONVNOP, nod(OADDR, h, nil), nil)
+			mp.Type = types.NewPtr(ht)
+			// Pass a nil bucket pointer to makemap.
+			b := nodnil()
+			// Call makemap.
+			fn := syslook("makemap") // TODO(josharian): refactor out constructing a makemap call?
+			fn = substArgTypes(fn, hmap(t), mapbucket(t), t.Key(), t.Val())
+			call := mkcall1(fn, n.Type, init, typename(n.Type), nodintconst(int64(n.List.Len())), mp, b)
+			call = typecheck(call, Etop)
+			call = walkexpr(call, init)
+			init.Append(call)
+
+			// Convert the *hmap to a map for use in maplit.
+			m := nod(OCONVNOP, mp, nil)
+			m.Type = t
+			// Populate the map and return it.
+			maplit(n, m, init)
+			n = m
+			break
+		}
 		var_ := temp(n.Type)
 		anylit(n, var_, init)
 		n = var_

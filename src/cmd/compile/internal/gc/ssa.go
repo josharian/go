@@ -1509,6 +1509,11 @@ func (s *state) expr(n *Node) *ssa.Value {
 			return v
 		}
 
+		// Conversion of *hmap to map.
+		if to.Etype == TMAP && from.IsPtr() && from.Elem().StructType().Map != nil {
+			return v
+		}
+
 		// named <--> unnamed type or typed <--> untyped const
 		if from.Etype == to.Etype {
 			return v
