@@ -2233,16 +2233,31 @@ func checkdefergo(n *Node) {
 
 	switch n.Left.Op {
 	// ok
-	case OCALLINTER,
-		OCALLMETH,
-		OCALLFUNC,
-		OCLOSE,
-		OCOPY,
-		ODELETE,
-		OPANIC,
-		OPRINT,
-		OPRINTN,
-		ORECOVER:
+	case OCALLINTER, OCALLMETH, OCALLFUNC:
+		return
+
+	case OCLOSE, OCOPY, ODELETE, OPANIC, OPRINT, OPRINTN, ORECOVER:
+		// To avoid having to special case defer/go <builtin> throughout the compiler, convert
+		//   defer builtin(a, b, c)
+		// to
+		//   defer func(a TA, b TB, c TC) {
+		//     builtin(a, b, c)
+		//   }(a, b, c)
+
+		tfn := nod(OTFUNC, nil, nil)
+		var params []*Node
+		for i, arg := range n.Left.List.Slice() {
+			param := namedfield(fmt.Sprintf("p%d", i), arg.Type)
+			params = append(params, param)
+		}
+		closurehdr(tfn)
+		args := n.Left.List
+		n.Left.List = n.Left.List.Set(params)
+		body := []*Node{n.Left}
+		fn := closurebody(body)
+		call := nod(OCALL, fn, nil)
+		call.List.Set(args)
+		n.Left = call
 		return
 
 	case OAPPEND,
