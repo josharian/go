@@ -117,6 +117,7 @@ func declare(n *Node, ctxt Class) {
 		// Don't repeat the error here.
 		if ctxt != PPARAM && ctxt != PPARAMOUT {
 			redeclare(s, "in this block")
+			n.SetDiag(true)
 		}
 	}
 

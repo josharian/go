@@ -7,6 +7,7 @@ package gc
 import (
 	"cmd/compile/internal/types"
 	"fmt"
+	"os"
 )
 
 // function literals aka closures
@@ -176,11 +177,16 @@ func closurename(n *Node) *types.Sym {
 		outer = n.Func.Outerfunc.funcname()
 
 		prefix = "func"
-
+		if os.Getenv("J") != "" {
+			fmt.Printf("WTF %v\n", n.Func.Outerfunc.Func.Nname.Diag())
+		}
 		// Yes, functions can be named _.
 		// Can't use function closgen in such case,
 		// because it would lead to name clashes.
-		if !isblank(n.Func.Outerfunc.Func.Nname) {
+		// And if there has already been a name clash,
+		// avoid function closgen to prevent spurious errors.
+		// See issue 17758.
+		if !isblank(n.Func.Outerfunc.Func.Nname) && !n.Func.Outerfunc.Func.Nname.Diag() {
 			n.Func.Outerfunc.Func.Closgen++
 			gen = n.Func.Outerfunc.Func.Closgen
 		} else {
