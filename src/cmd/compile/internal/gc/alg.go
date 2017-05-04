@@ -214,31 +214,65 @@ func genhash(sym *types.Sym, t *types.Type) {
 		Fatalf("genhash %v", t)
 
 	case types.TARRAY:
+		// TODO: eq routines todo
+
+		// fmt.Printf("OPT %v\n", t.NumElem())
+		// 26.65%   242 OPT 2
+		// 16.85%   153 OPT 3
+		// 10.13%    92 OPT 4
+		//  6.06%    55 OPT 5
+		//  5.07%    46 OPT 6
+		//  3.41%    31 OPT 7
+		//  2.31%    21 OPT 8
+		//  1.87%    17 OPT 1
+		//  1.76%    16 OPT 11
+		//  1.76%    16 OPT 9
+		//  1.54%    14 OPT 12
+		//  1.43%    13 OPT 10
+		//  0.99%     9 OPT 13
+		//  0.99%     9 OPT 32
+		//  0.77%     7 OPT 61
+
 		// An array of pure memory would be handled by the
 		// standard algorithm, so the element type must not be
 		// pure memory.
 		hashel := hashfor(t.Elem())
 
-		n := nod(ORANGE, nil, nod(OIND, np, nil))
-		ni := newname(lookup("i"))
-		ni.Type = types.Types[TINT]
-		n.List.Set1(ni)
-		n.SetColas(true)
-		colasdefn(n.List.Slice(), n)
-		ni = n.List.First()
+		if t.NumElem() > 2 {
+			n := nod(ORANGE, nil, nod(OIND, np, nil))
+			ni := newname(lookup("i"))
+			ni.Type = types.Types[TINT]
+			n.List.Set1(ni)
+			n.SetColas(true)
+			colasdefn(n.List.Slice(), n)
+			ni = n.List.First()
 
-		// h = hashel(&p[i], h)
-		call := nod(OCALL, hashel, nil)
+			// h = hashel(&p[i], h)
+			call := nod(OCALL, hashel, nil)
 
-		nx := nod(OINDEX, np, ni)
-		nx.SetBounded(true)
-		na := nod(OADDR, nx, nil)
-		na.Etype = 1 // no escape to heap
-		call.List.Append(na)
-		call.List.Append(nh)
-		n.Nbody.Append(nod(OAS, nh, call))
+			nx := nod(OINDEX, np, ni)
+			nx.SetBounded(true)
+			na := nod(OADDR, nx, nil)
+			na.Etype = 1 // no escape to heap
+			call.List.Append(na)
+			call.List.Append(nh)
+			n.Nbody.Append(nod(OAS, nh, call))
 
-		fn.Nbody.Append(n)
+			fn.Nbody.Append(n)
+		} else {
+			// h = hashel(&p[i], h)
+			for i := int64(0); i < t.NumElem(); i++ {
+				call := nod(OCALL, hashel, nil)
+
+				nx := nod(OINDEX, np, nodintconst(i))
+				nx.SetBounded(true)
+				na := nod(OADDR, nx, nil)
+				na.Etype = 1 // no escape to heap
+				call.List.Append(na)
+				call.List.Append(nh)
+				fn.Nbody.Append(nod(OAS, nh, call))
+			}
+		}
 
 	case types.TSTRUCT:
 		// Walk the struct using memhash for runs of AMEM
