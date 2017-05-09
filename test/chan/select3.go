@@ -14,11 +14,9 @@ import "time"
 const always = "function did not"
 const never = "function did"
 
-
 func unreachable() {
 	panic("control flow shouldn't reach here")
 }
-
 
 // Calls f and verifies that f always/never panics depending on signal.
 func testPanic(signal string, f func()) {
@@ -34,7 +32,6 @@ func testPanic(signal string, f func()) {
 	f()
 }
 
-
 // Calls f and empirically verifies that f always/never blocks depending on signal.
 func testBlock(signal string, f func()) {
 	c := make(chan string)
@@ -43,14 +40,13 @@ func testBlock(signal string, f func()) {
 		c <- never // f didn't block
 	}()
 	go func() {
-		time.Sleep(1e8) // 0.1s seems plenty long
-		c <- always     // f blocked always
+		time.Sleep(100 * time.Millisecond) // 0.1s seems plenty long
+		c <- always                        // f blocked always
 	}()
 	if <-c != signal {
 		panic(signal + " block")
 	}
 }
-
 
 func main() {
 	const async = 1 // asynchronous channels
@@ -114,8 +110,7 @@ func main() {
 
 	// empty selects always block
 	testBlock(always, func() {
-		select {
-		}
+		select {}
 	})
 
 	// selects with only nil channels always block
