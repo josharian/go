@@ -1204,6 +1204,31 @@
 (Mod64u <t> x (Const64 [c])) && x.Op != OpConst64 && c > 0 && umagicOK(64,c)
   -> (Sub64 x (Mul64 <t> (Div64u <t> x (Const64 <t> [c])) (Const64 <t> [c])))
 
+// Signed x % c == 0 is special, since we don't care whether x % c is negative or positive.
+// Rewrite it to unsigned x % c == 0, which is much more efficient to compute. Issue 15806.
+// Unfortunately, we don't get an opportunity to see these before the Mod gets rewritten,
+// (see https://github.com/golang/go/issues/19013#issuecomment-278756847),
+// so instead of matching (Eq (Mod x y) (Const [0])), match the expanded expression.
+(Eq8  z:(Const8  [0]) (Sub8  x (Mul8  <t> d:(Div8  x (Const8  [c])) (Const8  <t> [c])))) && d.Uses == 1
+  -> (Eq8  z (Mod8u  <t.ToUnsigned()> x (Const8  <t> [c])))
+(Eq16 z:(Const16 [0]) (Sub16 x (Mul16 <t> d:(Div16 x (Const16 [c])) (Const16 <t> [c])))) && d.Uses == 1
+  -> (Eq16 z (Mod16u <t.ToUnsigned()> x (Const16 <t> [c])))
+(Eq32 z:(Const32 [0]) (Sub32 x (Mul32 <t> d:(Div32 x (Const32 [c])) (Const32 <t> [c])))) && d.Uses == 1
+  -> (Eq32 z (Mod32u <t.ToUnsigned()> x (Const32 <t> [c])))
+(Eq64 z:(Const64 [0]) (Sub64 x (Mul64 <t> d:(Div64 x (Const64 [c])) (Const64 <t> [c])))) && d.Uses == 1
+  -> (Eq64 z (Mod64u <t.ToUnsigned()> x (Const64 <t> [c])))
+
+// These Eq and Neq simplifications are delayed because they must
+// occur after the signed x % c == 0 optimization.
+(Eq8   (Sub8  x y) (Const8  [0])) -> (Eq8   x y)
+(Eq16  (Sub16 x y) (Const16 [0])) -> (Eq16  x y)
+(Eq32  (Sub32 x y) (Const32 [0])) -> (Eq32  x y)
+(Eq64  (Sub64 x y) (Const64 [0])) -> (Eq64  x y)
+(Neq8  (Sub8  x y) (Const8  [0])) -> (Neq8  x y)
+(Neq16 (Sub16 x y) (Const16 [0])) -> (Neq16 x y)
+(Neq32 (Sub32 x y) (Const32 [0])) -> (Neq32 x y)
+(Neq64 (Sub64 x y) (Const64 [0])) -> (Neq64 x y)
+
 // Reassociate expressions involving
 // constants such that constants come first,
 // exposing obvious constant-folding opportunities.
