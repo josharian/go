@@ -4,6 +4,8 @@
 
 package ssa
 
+import "fmt"
+
 // trim removes blocks with no code in them.
 // These blocks were inserted to remove critical edges.
 func trim(f *Func) {
@@ -94,11 +96,33 @@ func trim(f *Func) {
 	}
 }
 
+func emptyBlock(b *Block) bool {
+	if emptyBlock2(b) && !emptyBlock1(b) {
+		fmt.Printf("OPT: %v in %v\n", b, b.Func.Name)
+	}
+	return emptyBlock1(b)
+}
+
 // emptyBlock returns true if the block does not contain actual
 // instructions
-func emptyBlock(b *Block) bool {
+func emptyBlock1(b *Block) bool {
 	for _, v := range b.Values {
-		if v.Op != OpPhi {
+		switch v.Op {
+		case OpPhi /*, OpVarDef, OpVarKill, OpVarLive, OpKeepAlive*/ :
+			// not an actual instruction
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+func emptyBlock2(b *Block) bool {
+	for _, v := range b.Values {
+		switch v.Op {
+		case OpPhi, OpVarDef, OpVarKill, OpVarLive, OpKeepAlive:
+			// not an actual instruction
+		default:
 			return false
 		}
 	}
