@@ -10,12 +10,15 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"io/ioutil"
 	"os"
+	"os/exec"
 )
 
 type HTMLWriter struct {
 	Logger
-	w io.WriteCloser
+	w   io.WriteCloser
+	dot *dotWriter
 }
 
 func NewHTMLWriter(path string, logger Logger, funcname string) *HTMLWriter {
@@ -24,6 +27,7 @@ func NewHTMLWriter(path string, logger Logger, funcname string) *HTMLWriter {
 		logger.Fatalf(src.NoXPos, "%v", err)
 	}
 	html := HTMLWriter{w: out, Logger: logger}
+	html.dot = newDotWriter()
 	html.start(funcname)
 	return &html
 }
@@ -33,6 +37,23 @@ func (w *HTMLWriter) start(name string) {
 		return
 	}
 	w.WriteString("<html>")
+	// TODO: These numbers work well for fannkuch.
+	// The columns are too big for simpler CFGs.
+	// How do I pick a good size?
+	// And it will need to be applied post-facto;
+	// should we buffer the entire HTML so that
+	// we can fix it up in html head,
+	// or should we fix it with javascript?
+	// If we fix it with javascript,
+	// we can just let the user pick the size.
+	// This seems better but the resulting reflow
+	// seems to make Chrome lock up.
+	tableWidth := "400"
+	elemWidth := "300"
+	if w.dot.err == nil {
+		tableWidth = "800"
+		elemWidth = "700"
+	}
 	w.WriteString(`<head>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <style>
@@ -54,13 +75,13 @@ func (w *HTMLWriter) start(name string) {
 table {
     border: 1px solid black;
     table-layout: fixed;
-    width: 300px;
+    width: ` + tableWidth + `px;
 }
 
 th, td {
     border: 1px solid black;
     overflow: hidden;
-    width: 400px;
+    width: ` + elemWidth + `px;
     vertical-align: top;
     padding: 5px;
 }
@@ -129,13 +150,21 @@ dd.ssa-prog {
 .highlight-powderblue     { background-color: powderblue; }
 .highlight-lightgray      { background-color: lightgray; }
 
-.outline-blue           { outline: blue solid 2px; }
-.outline-red            { outline: red solid 2px; }
-.outline-blueviolet     { outline: blueviolet solid 2px; }
-.outline-darkolivegreen { outline: darkolivegreen solid 2px; }
-.outline-fuchsia        { outline: fuchsia solid 2px; }
-.outline-sienna         { outline: sienna solid 2px; }
-.outline-gold           { outline: gold solid 2px; }
+span.outline-blue           { outline: blue solid 2px; }
+span.outline-red            { outline: red solid 2px; }
+span.outline-blueviolet     { outline: blueviolet solid 2px; }
+span.outline-darkolivegreen { outline: darkolivegreen solid 2px; }
+span.outline-fuchsia        { outline: fuchsia solid 2px; }
+span.outline-sienna         { outline: sienna solid 2px; }
+span.outline-gold           { outline: gold solid 2px; }
+
+ellipse.outline-blue           { stroke: blue; stroke-width: 3; }
+ellipse.outline-red            { stroke: red; stroke-width: 3; }
+ellipse.outline-blueviolet     { stroke: blueviolet; stroke-width: 3; }
+ellipse.outline-darkolivegreen { stroke: darkolivegreen; stroke-width: 3; }
+ellipse.outline-fuchsia        { stroke: fuchsia; stroke-width: 3; }
+ellipse.outline-sienna         { stroke: sienna; stroke-width: 3; }
+ellipse.outline-gold           { stroke: gold; stroke-width: 3; }
 
 </style>
 
@@ -252,6 +281,39 @@ window.onload = function() {
     for (var i = 0; i < ssablocks.length; i++) {
         ssablocks[i].addEventListener('click', ssaBlockClicked);
     }
+
+    // find all svg block nodes, add their block classes
+    var nodes = document.querySelectorAll('*[id^="graph_node_"]');
+    for (var i = 0; i < nodes.length; i++) {
+    	var node = nodes[i];
+    	var name = node.id.toString();
+    	var block = name.substring(name.lastIndexOf("_")+1);
+    	node.classList.remove("node");
+    	node.classList.add(block);
+        node.addEventListener('click', ssaBlockClicked);
+        var ellipse = node.getElementsByTagName('ellipse')[0];
+        ellipse.classList.add(block);
+    }
+
+    document.onkeypress = function(e) {
+    	console.log(e.keyCode);
+    	return; // TODO: decide what to do here...see comments about table width above
+        switch (e.keyCode) {
+        case 'w'.charCodeAt():
+        	// Make columns wider by applying a new "wide columns" class.
+        	var tagnames = ["table", "th", "td"];
+        	for (var j = 0; j < tagnames.length; i++) {
+        		console.log("tag", tagnames[j])
+        		var x = document.getElementsByTagName(tagnames[j]);
+		        for (var i = 0; i < x.length; i++) {
+		        	console.log("add width3 to", x[i])
+		            x[i].classList.add("width3");
+		        }
+        	}
+        case 's'.charCodeAt():
+        	// TODO: make skinnier
+        }
+    };
 };
 
 function toggle_visibility(id) {
@@ -287,6 +349,10 @@ Faded out values and blocks are dead code that has not been eliminated.
 Values printed in italics have a dependency cycle.
 </p>
 
+<p>
+Press 'w' to make the columns wider, 's' to make them skinnier.
+</pr>
+
 </div>
 `)
 	w.WriteString("<table>")
@@ -301,6 +367,10 @@ func (w *HTMLWriter) Close() {
 	io.WriteString(w.w, "</table>")
 	io.WriteString(w.w, "</body>")
 	io.WriteString(w.w, "</html>")
+	// if w.dot.err != nil {
+	// 	// TODO: Put this somewhere visible in the HTML instead of panicking
+	// 	panic(w.dot.err)
+	// }
 	w.w.Close()
 }
 
@@ -309,8 +379,7 @@ func (w *HTMLWriter) WriteFunc(title string, f *Func) {
 	if w == nil {
 		return // avoid generating HTML just to discard it
 	}
-	w.WriteColumn(title, f.HTML())
-	// TODO: Add visual representation of f's CFG.
+	w.WriteColumn(title, f.HTML(w.dot))
 }
 
 // WriteColumn writes raw HTML in a column headed by title.
@@ -399,15 +468,110 @@ func (b *Block) LongHTML() string {
 	return s
 }
 
-func (f *Func) HTML() string {
-	var buf bytes.Buffer
-	fmt.Fprint(&buf, "<code>")
-	p := htmlFuncPrinter{w: &buf}
+func (f *Func) HTML(dot *dotWriter) string {
+	buf := new(bytes.Buffer)
+	dot.writeFuncSVG(buf, f)
+	fmt.Fprint(buf, "<code>")
+	p := htmlFuncPrinter{w: buf}
 	fprintFunc(p, f)
 
 	// fprintFunc(&buf, f) // TODO: HTML, not text, <br /> for line breaks, etc.
-	fmt.Fprint(&buf, "</code>")
+	fmt.Fprint(buf, "</code>")
 	return buf.String()
+}
+
+func (d *dotWriter) writeFuncSVG(w io.Writer, f *Func) {
+	if d.err != nil {
+		return
+	}
+	buf := new(bytes.Buffer)
+	cmd := exec.Command(d.path, "-Tsvg")
+	pipe, err := cmd.StdinPipe()
+	d.setErr(err)
+	cmd.Stdout = buf
+	d.setErr(cmd.Start())
+	fmt.Fprintln(pipe, "digraph {")
+	//fmt.Fprintln(pipe, "splines=ortho;")
+	for i, b := range f.Blocks {
+		layout := ""
+		if f.laidout {
+			layout = fmt.Sprintf(" (%d)", i)
+		}
+		fmt.Fprintf(pipe, `%v [label="%v%s\n%v",id="graph_node_%d_%v"];`, b, b, layout, b.Kind, d.ngraphs, b)
+		fmt.Fprintln(pipe)
+	}
+	indexOf := make([]int, f.NumBlocks())
+	for i, b := range f.Blocks {
+		indexOf[b.ID] = i
+	}
+	layoutDrawn := make([]bool, f.NumBlocks())
+	for _, b := range f.Blocks {
+		for i, s := range b.Succs {
+			style := "solid"
+			if b.unlikelyIndex() == i {
+				style = "dashed"
+			}
+			color := "black"
+			if f.laidout && indexOf[s.b.ID] == indexOf[b.ID]+1 {
+				color = "green"
+				layoutDrawn[s.b.ID] = true
+			}
+			fmt.Fprintf(pipe, `%v -> %v [label=" %d ",style="%s",color="%s"];`, b, s.b, i, style, color)
+			fmt.Fprintln(pipe)
+		}
+	}
+	if f.laidout {
+		fmt.Fprintln(pipe, "edge[constraint=false];")
+		for i := 1; i < len(f.Blocks); i++ {
+			if layoutDrawn[f.Blocks[i].ID] {
+				continue
+			}
+			fmt.Fprintf(pipe, `%s -> %s [color="green",style="dotted"];`, f.Blocks[i-1], f.Blocks[i])
+			fmt.Fprintln(pipe)
+		}
+	}
+	fmt.Fprintln(pipe, "}")
+	pipe.Close()
+	d.setErr(cmd.Wait())
+
+	// Apparently there's no way to give a reliable target width to dot?
+	// And no way to supply an HTML class for the svg element either?
+	// For now, use an awful hack--edit the html as it passes through
+	// our fingers, finding '<svg width="..." height="..." [everything else]'
+	// and replacing it with '<svg width="100%" [everything else]'.
+	d.copyAfter(w, buf, `<svg `)
+	d.copyAfter(w, buf, `width="`)
+	io.WriteString(w, `100%"`)
+	d.copyAfter(ioutil.Discard, buf, `"`)
+	d.copyAfter(ioutil.Discard, buf, `height="`)
+	d.copyAfter(ioutil.Discard, buf, `"`)
+	if d.err != nil {
+		return
+	}
+	io.Copy(w, buf)
+	d.ngraphs++ // used to give each node a unique id
+}
+
+func (b *Block) unlikelyIndex() int {
+	switch b.Likely {
+	case BranchLikely:
+		return 1
+	case BranchUnlikely:
+		return 0
+	}
+	return -1
+}
+
+func (d *dotWriter) copyAfter(w io.Writer, buf *bytes.Buffer, sep string) {
+	if d.err != nil {
+		return
+	}
+	i := bytes.Index(buf.Bytes(), []byte(sep))
+	if i == -1 {
+		d.setErr(fmt.Errorf("couldn't find dot sep %q", sep))
+		return
+	}
+	io.CopyN(w, buf, int64(i+len(sep)))
 }
 
 type htmlFuncPrinter struct {
@@ -474,4 +638,27 @@ func (p htmlFuncPrinter) named(n LocalSlot, vals []*Value) {
 		fmt.Fprintf(p.w, "%s ", val.HTML())
 	}
 	fmt.Fprintf(p.w, "</li>")
+}
+
+type dotWriter struct {
+	path    string
+	err     error
+	ngraphs int
+}
+
+func newDotWriter() *dotWriter {
+	// if os.Getenv("GOSSACFG") == "" {
+	// 	return &dotWriter{err: errors.New("enable visual CFG by setting GOSSACFG=1")}
+	// }
+	path, err := exec.LookPath("dot")
+	return &dotWriter{path: path, err: err}
+}
+
+func (d *dotWriter) setErr(err error) {
+	if err == nil {
+		return
+	}
+	if d.err == nil {
+		d.err = err
+	}
 }

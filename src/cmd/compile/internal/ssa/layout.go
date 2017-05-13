@@ -117,4 +117,5 @@ blockloop:
 		}
 	}
 	f.Blocks = order
+	f.laidout = true
 }

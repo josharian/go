@@ -42,6 +42,7 @@ type Func struct {
 	DebugTest  bool        // default true unless $GOSSAHASH != ""; as a debugging aid, make new code conditional on this and use GOSSAHASH to binary search for failing cases
 
 	scheduled bool // Values in Blocks are in final order
+	laidout   bool // Blocks are ordered
 	NoSplit   bool // true if function is marked as nosplit.  Used by schedule check pass.
 
 	WBPos src.XPos // line number of first write barrier

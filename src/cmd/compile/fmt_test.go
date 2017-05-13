@@ -626,6 +626,7 @@ var knownFormats = map[string]string{
 	"cmd/compile/internal/gc.Val %v":                  "",
 	"cmd/compile/internal/gc.fmtMode %d":              "",
 	"cmd/compile/internal/gc.initKind %d":             "",
+	"cmd/compile/internal/ssa.BlockKind %v":           "",
 	"cmd/compile/internal/ssa.BranchPrediction %d":    "",
 	"cmd/compile/internal/ssa.Edge %v":                "",
 	"cmd/compile/internal/ssa.GCNode %v":              "",
