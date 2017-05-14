@@ -134,6 +134,7 @@ const (
 	likelyDistance   = 1
 	normalDistance   = 10
 	unlikelyDistance = 100
+	exitDistance     = 1000
 )
 
 // regalloc performs register allocation on f. It sets f.RegAlloc
@@ -2334,12 +2335,12 @@ func (s *regAllocState) computeLive() {
 				// value use from the first user in a successor block.
 				delta := int32(normalDistance)
 				if len(p.Succs) == 2 {
-					if p.Succs[0].b == b && p.Likely == BranchLikely ||
-						p.Succs[1].b == b && p.Likely == BranchUnlikely {
+					switch {
+					case b.Kind == BlockExit:
+						delta = exitDistance
+					case p.Succs[0].b == b && p.Likely == BranchLikely, p.Succs[1].b == b && p.Likely == BranchUnlikely:
 						delta = likelyDistance
-					}
-					if p.Succs[0].b == b && p.Likely == BranchUnlikely ||
-						p.Succs[1].b == b && p.Likely == BranchLikely {
+					case p.Succs[0].b == b && p.Likely == BranchUnlikely, p.Succs[1].b == b && p.Likely == BranchLikely:
 						delta = unlikelyDistance
 					}
 				}
