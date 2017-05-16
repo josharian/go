@@ -58,6 +58,12 @@ func PutUvarint(buf []byte, x uint64) int {
 //              and -n is the number of bytes read
 //
 func Uvarint(buf []byte) (uint64, int) {
+	if len(buf) == 0 {
+		return 0, 0
+	}
+	if x := uint64(buf[0]); x&0x80 == 0 {
+		return x, 1
+	}
 	var x uint64
 	var s uint
 	for i, b := range buf {
@@ -67,7 +73,7 @@ func Uvarint(buf []byte) (uint64, int) {
 			}
 			return x | uint64(b)<<s, i + 1
 		}
-		x |= uint64(b&0x7f) << s
+		x |= uint64(b&0x7f) << (s & 63)
 		s += 7
 	}
 	return 0, 0

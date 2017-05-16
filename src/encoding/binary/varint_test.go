@@ -6,6 +6,7 @@ package binary
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"testing"
 )
@@ -164,5 +165,21 @@ func BenchmarkPutUvarint64(b *testing.B) {
 		for j := uint(0); j < MaxVarintLen64; j++ {
 			PutUvarint(buf, 1<<(j*7))
 		}
+	}
+}
+
+func BenchmarkUvarint(b *testing.B) {
+	for shift := uint(0); shift < 64; shift += 10 {
+		b.Run(fmt.Sprintf("1<<%d", shift), func(b *testing.B) {
+			x := uint64(1) << shift
+			buf := make([]byte, MaxVarintLen64)
+			PutUvarint(buf, x)
+			for i := 0; i < b.N; i++ {
+				y, _ := Uvarint(buf)
+				if x != y {
+					b.Fatalf("uvarint did not round trip: %v != %v", x, y)
+				}
+			}
+		})
 	}
 }
