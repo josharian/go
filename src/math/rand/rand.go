@@ -14,7 +14,11 @@
 // package.
 package rand
 
-import "sync"
+import (
+	"sync"
+	"sync/atomic"
+	"unsafe"
+)
 
 // A Source represents a source of uniformly-distributed
 // pseudo-random int64 values in the range [0, 1<<63).
@@ -232,7 +236,7 @@ func read(p []byte, int63 func() int64, readVal *int64, readPos *int8) (n int, e
  * Top-level convenience functions
  */
 
-var globalRand = New(&lockedSource{src: NewSource(1).(Source64)})
+var globalRand = New(newLockedSource())
 
 // Seed uses the provided seed value to initialize the default Source to a
 // deterministic state. If Seed is not called, the generator behaves as
@@ -313,43 +317,97 @@ func NormFloat64() float64 { return globalRand.NormFloat64() }
 //
 func ExpFloat64() float64 { return globalRand.ExpFloat64() }
 
+func newLockedSource() *lockedSource {
+	ls := new(lockedSource)
+	for i := range ls.srcs {
+		// TODO: What are good initial values?
+		ls.srcs[i].Source64 = NewSource(1 + int64(i)*104729).(Source64)
+	}
+	return ls
+}
+
+const nLockedSources = 64
+
 type lockedSource struct {
-	lk  sync.Mutex
-	src Source64
+	n    uint32
+	_    [128 - 32]byte
+	srcs [nLockedSources]locksource
+}
+
+type locksource struct {
+	sync.Mutex
+	Source64
+	_ [128 - unsafe.Sizeof(struct {
+		sync.Mutex
+		Source64
+	}{})]byte
+}
+
+func (r *lockedSource) enter() (*locksource, bool) {
+	idx := atomic.AddUint32(&r.n, 1) - 1
+	return &r.srcs[idx%nLockedSources], idx == 0
+}
+
+func (r *lockedSource) exit() {
+	// possibly still serial; attempt to detect concurrency.
+	// use load-then-store intead of compare-and-swap
+	// because it is more performant.
+	// If there is a logic race, it will result
+	// in unnecessarily setting r.n to zero,
+	// i.e. a false positive for being serial, which is ok.
+	if atomic.LoadUint32(&r.n) == 1 {
+		atomic.StoreUint32(&r.n, 0)
+	}
 }
 
 func (r *lockedSource) Int63() (n int64) {
-	r.lk.Lock()
-	n = r.src.Int63()
-	r.lk.Unlock()
+	ls, ser := r.enter()
+	ls.Lock()
+	n = ls.Int63()
+	ls.Unlock()
+	if ser {
+		r.exit()
+	}
 	return
 }
 
 func (r *lockedSource) Uint64() (n uint64) {
-	r.lk.Lock()
-	n = r.src.Uint64()
-	r.lk.Unlock()
+	ls, ser := r.enter()
+	ls.Lock()
+	n = ls.Uint64()
+	ls.Unlock()
+	if ser {
+		r.exit()
+	}
 	return
 }
 
 func (r *lockedSource) Seed(seed int64) {
-	r.lk.Lock()
-	r.src.Seed(seed)
-	r.lk.Unlock()
+	atomic.StoreUint32(&r.n, 0)
+	ls, ser := r.enter()
+	ls.Lock()
+	ls.Seed(seed)
+	ls.Unlock()
+	if ser {
+		r.exit()
+	}
 }
 
 // seedPos implements Seed for a lockedSource without a race condiiton.
 func (r *lockedSource) seedPos(seed int64, readPos *int8) {
-	r.lk.Lock()
-	r.src.Seed(seed)
+	atomic.StoreUint32(&r.n, 0)
+	ls := &r.srcs[0]
+	ls.Lock()
+	ls.Seed(seed)
 	*readPos = 0
-	r.lk.Unlock()
+	ls.Unlock()
 }
 
 // read implements Read for a lockedSource without a race condition.
 func (r *lockedSource) read(p []byte, readVal *int64, readPos *int8) (n int, err error) {
-	r.lk.Lock()
-	n, err = read(p, r.src.Int63, readVal, readPos)
-	r.lk.Unlock()
+	ls := &r.srcs[0]
+	ls.Lock()
+	n, err = read(p, ls.Int63, readVal, readPos)
+	ls.Unlock()
 	return
 }
