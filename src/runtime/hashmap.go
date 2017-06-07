@@ -1109,7 +1109,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					dst.b = h.newoverflow(t, dst.b)
 					dst.i = 0
 				}
-				dst.b.tophash[dst.i&7] = top
+				dst.b.tophash[dst.i&(bucketCnt-1)] = top
 				k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
 				dk := add(unsafe.Pointer(dst.b), dataOffset+dst.i*uintptr(t.keysize))
 				if t.indirectkey {
