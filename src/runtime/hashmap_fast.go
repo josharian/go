@@ -27,13 +27,13 @@ func mapaccess1_fast32(t *maptype, h *hmap, key uint32) unsafe.Pointer {
 	} else {
 		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 		m := uintptr(1)<<h.B - 1
-		b = (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
+		b = t.bucketptr(h.buckets, hash&m)
 		if c := h.oldbuckets; c != nil {
 			if !h.sameSizeGrow() {
 				// There used to be half as many buckets; mask down one more power of two.
 				m >>= 1
 			}
-			oldb := (*bmap)(add(c, (hash&m)*uintptr(t.bucketsize)))
+			oldb := t.bucketptr(c, hash&m)
 			if !evacuated(oldb) {
 				b = oldb
 			}
@@ -75,13 +75,13 @@ func mapaccess2_fast32(t *maptype, h *hmap, key uint32) (unsafe.Pointer, bool) {
 	} else {
 		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 		m := uintptr(1)<<h.B - 1
-		b = (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
+		b = t.bucketptr(h.buckets, hash&m)
 		if c := h.oldbuckets; c != nil {
 			if !h.sameSizeGrow() {
 				// There used to be half as many buckets; mask down one more power of two.
 				m >>= 1
 			}
-			oldb := (*bmap)(add(c, (hash&m)*uintptr(t.bucketsize)))
+			oldb := t.bucketptr(c, hash&m)
 			if !evacuated(oldb) {
 				b = oldb
 			}
@@ -123,13 +123,13 @@ func mapaccess1_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 	} else {
 		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 		m := uintptr(1)<<h.B - 1
-		b = (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
+		b = t.bucketptr(h.buckets, hash&m)
 		if c := h.oldbuckets; c != nil {
 			if !h.sameSizeGrow() {
 				// There used to be half as many buckets; mask down one more power of two.
 				m >>= 1
 			}
-			oldb := (*bmap)(add(c, (hash&m)*uintptr(t.bucketsize)))
+			oldb := t.bucketptr(c, hash&m)
 			if !evacuated(oldb) {
 				b = oldb
 			}
@@ -171,13 +171,13 @@ func mapaccess2_fast64(t *maptype, h *hmap, key uint64) (unsafe.Pointer, bool) {
 	} else {
 		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 		m := uintptr(1)<<h.B - 1
-		b = (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
+		b = t.bucketptr(h.buckets, hash&m)
 		if c := h.oldbuckets; c != nil {
 			if !h.sameSizeGrow() {
 				// There used to be half as many buckets; mask down one more power of two.
 				m >>= 1
 			}
-			oldb := (*bmap)(add(c, (hash&m)*uintptr(t.bucketsize)))
+			oldb := t.bucketptr(c, hash&m)
 			if !evacuated(oldb) {
 				b = oldb
 			}
@@ -270,13 +270,13 @@ func mapaccess1_faststr(t *maptype, h *hmap, ky string) unsafe.Pointer {
 dohash:
 	hash := t.key.alg.hash(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 	m := uintptr(1)<<h.B - 1
-	b := (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
+	b := t.bucketptr(h.buckets, hash&m)
 	if c := h.oldbuckets; c != nil {
 		if !h.sameSizeGrow() {
 			// There used to be half as many buckets; mask down one more power of two.
 			m >>= 1
 		}
-		oldb := (*bmap)(add(c, (hash&m)*uintptr(t.bucketsize)))
+		oldb := t.bucketptr(c, hash&m)
 		if !evacuated(oldb) {
 			b = oldb
 		}
@@ -371,13 +371,13 @@ func mapaccess2_faststr(t *maptype, h *hmap, ky string) (unsafe.Pointer, bool) {
 dohash:
 	hash := t.key.alg.hash(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 	m := uintptr(1)<<h.B - 1
-	b := (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
+	b := t.bucketptr(h.buckets, hash&m)
 	if c := h.oldbuckets; c != nil {
 		if !h.sameSizeGrow() {
 			// There used to be half as many buckets; mask down one more power of two.
 			m >>= 1
 		}
-		oldb := (*bmap)(add(c, (hash&m)*uintptr(t.bucketsize)))
+		oldb := t.bucketptr(c, hash&m)
 		if !evacuated(oldb) {
 			b = oldb
 		}
