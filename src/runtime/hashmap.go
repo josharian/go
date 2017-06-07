@@ -1079,14 +1079,14 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				if top < minTopHash {
 					throw("bad map state")
 				}
-				k2 := k
-				if t.indirectkey {
-					k2 = *((*unsafe.Pointer)(k2))
-				}
 				useX := true
 				if !h.sameSizeGrow() {
 					// Compute hash to make our evacuation decision (whether we need
 					// to send this key/value to bucket x or bucket y).
+					k2 := k
+					if t.indirectkey {
+						k2 = *(*unsafe.Pointer)(k2)
+					}
 					hash := alg.hash(k2, uintptr(h.hash0))
 					if h.flags&iterator != 0 {
 						if !t.reflexivekey && !alg.equal(k2, k2) {
@@ -1125,7 +1125,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					}
 					x.tophash[xi] = top
 					if t.indirectkey {
-						*(*unsafe.Pointer)(xk) = k2 // copy pointer
+						*(*unsafe.Pointer)(xk) = *(*unsafe.Pointer)(k) // copy pointer
 					} else {
 						typedmemmove(t.key, xk, k) // copy value
 					}
@@ -1148,9 +1148,9 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					}
 					y.tophash[yi] = top
 					if t.indirectkey {
-						*(*unsafe.Pointer)(yk) = k2
+						*(*unsafe.Pointer)(yk) = *(*unsafe.Pointer)(k) // copy pointer
 					} else {
-						typedmemmove(t.key, yk, k)
+						typedmemmove(t.key, yk, k) // copy value
 					}
 					if t.indirectvalue {
 						*(*unsafe.Pointer)(yv) = *(*unsafe.Pointer)(v)
