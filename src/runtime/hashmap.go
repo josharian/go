@@ -1048,7 +1048,6 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 	if !evacuated(b) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
-
 		var (
 			x, y   *bmap          // current low/high buckets in new map
 			xi, yi int            // key/val indices into x and y
@@ -1114,53 +1113,49 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					}
 					useX = hash&newbit == 0
 				}
+
+				var (
+					evac byte            // evacuation mark to leave behind
+					dstb **bmap          // dest bucket
+					dsti *int            // dest index into dstb
+					dstk *unsafe.Pointer // pointer to dst key storage
+					dstv *unsafe.Pointer // pointer to dst val storage
+				)
 				if useX {
-					b.tophash[i] = evacuatedX
-					if xi == bucketCnt {
-						newx := h.newoverflow(t, x)
-						x = newx
-						xi = 0
-						xk = add(unsafe.Pointer(x), dataOffset)
-						xv = add(xk, bucketCnt*uintptr(t.keysize))
-					}
-					x.tophash[xi] = top
-					if t.indirectkey {
-						*(*unsafe.Pointer)(xk) = *(*unsafe.Pointer)(k) // copy pointer
-					} else {
-						typedmemmove(t.key, xk, k) // copy value
-					}
-					if t.indirectvalue {
-						*(*unsafe.Pointer)(xv) = *(*unsafe.Pointer)(v)
-					} else {
-						typedmemmove(t.elem, xv, v)
-					}
-					xi++
-					xk = add(xk, uintptr(t.keysize))
-					xv = add(xv, uintptr(t.valuesize))
+					evac = evacuatedX
+					dstb = &x
+					dsti = &xi
+					dstk = &xk
+					dstv = &xv
 				} else {
-					b.tophash[i] = evacuatedY
-					if yi == bucketCnt {
-						newy := h.newoverflow(t, y)
-						y = newy
-						yi = 0
-						yk = add(unsafe.Pointer(y), dataOffset)
-						yv = add(yk, bucketCnt*uintptr(t.keysize))
-					}
-					y.tophash[yi] = top
-					if t.indirectkey {
-						*(*unsafe.Pointer)(yk) = *(*unsafe.Pointer)(k) // copy pointer
-					} else {
-						typedmemmove(t.key, yk, k) // copy value
-					}
-					if t.indirectvalue {
-						*(*unsafe.Pointer)(yv) = *(*unsafe.Pointer)(v)
-					} else {
-						typedmemmove(t.elem, yv, v)
-					}
-					yi++
-					yk = add(yk, uintptr(t.keysize))
-					yv = add(yv, uintptr(t.valuesize))
+					evac = evacuatedY
+					dstb = &y
+					dsti = &yi
+					dstk = &yk
+					dstv = &yv
 				}
+
+				b.tophash[i] = evac
+				if *dsti == bucketCnt {
+					*dsti = 0
+					*dstb = h.newoverflow(t, *dstb)
+					*dstk = add(unsafe.Pointer(*dstb), dataOffset)
+					*dstv = add(*dstk, bucketCnt*uintptr(t.keysize))
+				}
+				(*dstb).tophash[*dsti] = top
+				if t.indirectkey {
+					*(*unsafe.Pointer)(*dstk) = *(*unsafe.Pointer)(k) // copy pointer
+				} else {
+					typedmemmove(t.key, *dstk, k) // copy value
+				}
+				if t.indirectvalue {
+					*(*unsafe.Pointer)(*dstv) = *(*unsafe.Pointer)(v)
+				} else {
+					typedmemmove(t.elem, *dstv, v)
+				}
+				*dsti++
+				*dstk = add(*dstk, uintptr(t.keysize))
+				*dstv = add(*dstv, uintptr(t.valuesize))
 			}
 		}
 		// Unlink the overflow buckets & clear key/value to help GC.
