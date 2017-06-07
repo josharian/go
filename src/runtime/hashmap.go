@@ -1041,6 +1041,14 @@ func bucketEvacuated(t *maptype, h *hmap, bucket uintptr) bool {
 	return evacuated(b)
 }
 
+// evacdst is an evacuation destination.
+type evacdst struct {
+	b *bmap          // current destination bucket
+	i int            // key/val index into b
+	k unsafe.Pointer // pointers to current key storage
+	v unsafe.Pointer // pointers to current value storage
+}
+
 func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 	b := (*bmap)(add(h.oldbuckets, oldbucket*uintptr(t.bucketsize)))
 	newbit := h.noldbuckets()
@@ -1048,23 +1056,19 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 	if !evacuated(b) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
-		var (
-			x, y   *bmap          // current low/high buckets in new map
-			xi, yi int            // key/val indices into x and y
-			xk, yk unsafe.Pointer // pointers to current x and y key storage
-			xv, yv unsafe.Pointer // pointers to current x and y value storage
-		)
-		x = (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))
-		xi = 0
-		xk = add(unsafe.Pointer(x), dataOffset)
-		xv = add(xk, bucketCnt*uintptr(t.keysize))
+		var x, y evacdst
+		// TODO: refactor into "new evac" function
+		x.b = (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))
+		x.i = 0
+		x.k = add(unsafe.Pointer(x.b), dataOffset)
+		x.v = add(x.k, bucketCnt*uintptr(t.keysize))
 		if !h.sameSizeGrow() {
-			// Only calculate y pointers if we're growing bigger.
+			// Only calculate y if we're growing bigger.
 			// Otherwise GC can see bad pointers.
-			y = (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
-			yi = 0
-			yk = add(unsafe.Pointer(y), dataOffset)
-			yv = add(yk, bucketCnt*uintptr(t.keysize))
+			y.b = (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
+			y.i = 0
+			y.k = add(unsafe.Pointer(y.b), dataOffset)
+			y.v = add(y.k, bucketCnt*uintptr(t.keysize))
 		}
 		for ; b != nil; b = b.overflow(t) {
 			k := add(unsafe.Pointer(b), dataOffset)
@@ -1114,48 +1118,35 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					useX = hash&newbit == 0
 				}
 
-				var (
-					evac byte            // evacuation mark to leave behind
-					dstb **bmap          // dest bucket
-					dsti *int            // dest index into dstb
-					dstk *unsafe.Pointer // pointer to dst key storage
-					dstv *unsafe.Pointer // pointer to dst val storage
-				)
+				var dst *evacdst // destination
 				if useX {
-					evac = evacuatedX
-					dstb = &x
-					dsti = &xi
-					dstk = &xk
-					dstv = &xv
+					b.tophash[i] = evacuatedX
+					dst = &x
 				} else {
-					evac = evacuatedY
-					dstb = &y
-					dsti = &yi
-					dstk = &yk
-					dstv = &yv
+					b.tophash[i] = evacuatedY
+					dst = &y
 				}
 
-				b.tophash[i] = evac
-				if *dsti == bucketCnt {
-					*dsti = 0
-					*dstb = h.newoverflow(t, *dstb)
-					*dstk = add(unsafe.Pointer(*dstb), dataOffset)
-					*dstv = add(*dstk, bucketCnt*uintptr(t.keysize))
+				if dst.i == bucketCnt {
+					dst.b = h.newoverflow(t, dst.b)
+					dst.i = 0
+					dst.k = add(unsafe.Pointer(dst.b), dataOffset)
+					dst.v = add(dst.k, bucketCnt*uintptr(t.keysize))
 				}
-				(*dstb).tophash[*dsti] = top
+				dst.b.tophash[dst.i] = top
 				if t.indirectkey {
-					*(*unsafe.Pointer)(*dstk) = *(*unsafe.Pointer)(k) // copy pointer
+					*(*unsafe.Pointer)(dst.k) = *(*unsafe.Pointer)(k) // copy pointer
 				} else {
-					typedmemmove(t.key, *dstk, k) // copy value
+					typedmemmove(t.key, dst.k, k) // copy value
 				}
 				if t.indirectvalue {
-					*(*unsafe.Pointer)(*dstv) = *(*unsafe.Pointer)(v)
+					*(*unsafe.Pointer)(dst.v) = *(*unsafe.Pointer)(v)
 				} else {
-					typedmemmove(t.elem, *dstv, v)
+					typedmemmove(t.elem, dst.v, v)
 				}
-				*dsti++
-				*dstk = add(*dstk, uintptr(t.keysize))
-				*dstv = add(*dstv, uintptr(t.valuesize))
+				dst.i++
+				dst.k = add(dst.k, uintptr(t.keysize))
+				dst.v = add(dst.v, uintptr(t.valuesize))
 			}
 		}
 		// Unlink the overflow buckets & clear key/value to help GC.
