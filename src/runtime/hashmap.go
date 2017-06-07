@@ -1063,8 +1063,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 		}
 		for ; b != nil; b = b.overflow(t) {
 			k := add(unsafe.Pointer(b), dataOffset)
-			v := add(k, bucketCnt*uintptr(t.keysize))
-			for i := 0; i < bucketCnt; i, k, v = i+1, add(k, uintptr(t.keysize)), add(v, uintptr(t.valuesize)) {
+			for i := uintptr(0); i < bucketCnt; i, k = i+1, add(k, uintptr(t.keysize)) {
 				top := b.tophash[i]
 				if top == empty {
 					b.tophash[i] = evacuatedEmpty
@@ -1129,6 +1128,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				} else {
 					typedmemmove(t.key, dk, k) // copy value
 				}
+				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
 				dv := add(unsafe.Pointer(dst.b), dataOffset+bucketCnt*uintptr(t.keysize)+dst.i*uintptr(t.valuesize))
 				if t.indirectvalue {
 					*(*unsafe.Pointer)(dv) = *(*unsafe.Pointer)(v)
