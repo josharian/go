@@ -1056,8 +1056,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 			y.b = (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
 		}
 		for ; b != nil; b = b.overflow(t) {
-			k := add(unsafe.Pointer(b), dataOffset)
-			for i := uintptr(0); i < bucketCnt; i, k = i+1, add(k, uintptr(t.keysize)) {
+			for i := uintptr(0); i < bucketCnt; i++ {
 				top := b.tophash[i]
 				if top == empty {
 					b.tophash[i] = evacuatedEmpty
@@ -1070,13 +1069,13 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				if !h.sameSizeGrow() {
 					// Compute hash to make our evacuation decision (whether we need
 					// to send this key/value to bucket x or bucket y).
-					k2 := k
+					k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
 					if t.indirectkey {
-						k2 = *(*unsafe.Pointer)(k2)
+						k = *(*unsafe.Pointer)(k)
 					}
-					hash := alg.hash(k2, uintptr(h.hash0))
+					hash := alg.hash(k, uintptr(h.hash0))
 					if h.flags&iterator != 0 {
-						if !t.reflexivekey && !alg.equal(k2, k2) {
+						if !t.reflexivekey && !alg.equal(k, k) {
 							// If key != key (NaNs), then the hash could be (and probably
 							// will be) entirely different from the old hash. Moreover,
 							// it isn't reproducible. Reproducibility is required in the
@@ -1113,6 +1112,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					dst.i = 0
 				}
 				dst.b.tophash[dst.i&7] = top
+				k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
 				dk := add(unsafe.Pointer(dst.b), dataOffset+dst.i*uintptr(t.keysize))
 				if t.indirectkey {
 					*(*unsafe.Pointer)(dk) = *(*unsafe.Pointer)(k) // copy pointer
