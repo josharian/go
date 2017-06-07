@@ -1059,14 +1059,12 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 		var x, y evacdst
 		// TODO: refactor into "new evac" function
 		x.b = (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))
-		x.i = 0
 		x.k = add(unsafe.Pointer(x.b), dataOffset)
 		x.v = add(x.k, bucketCnt*uintptr(t.keysize))
 		if !h.sameSizeGrow() {
 			// Only calculate y if we're growing bigger.
 			// Otherwise GC can see bad pointers.
 			y.b = (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
-			y.i = 0
 			y.k = add(unsafe.Pointer(y.b), dataOffset)
 			y.v = add(y.k, bucketCnt*uintptr(t.keysize))
 		}
