@@ -1043,10 +1043,8 @@ func bucketEvacuated(t *maptype, h *hmap, bucket uintptr) bool {
 
 // evacdst is an evacuation destination.
 type evacdst struct {
-	b *bmap          // current destination bucket
-	i int            // key/val index into b
-	k unsafe.Pointer // pointers to current key storage
-	v unsafe.Pointer // pointers to current value storage
+	b *bmap // current destination bucket
+	i int   // key/val index into b
 }
 
 func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
@@ -1056,17 +1054,12 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 	if !evacuated(b) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
-		var x, y evacdst
-		// TODO: refactor into "new evac" function
-		x.b = (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))
-		x.k = add(unsafe.Pointer(x.b), dataOffset)
-		x.v = add(x.k, bucketCnt*uintptr(t.keysize))
+		x := evacdst{b: (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))}
+		var y evacdst
 		if !h.sameSizeGrow() {
 			// Only calculate y if we're growing bigger.
 			// Otherwise GC can see bad pointers.
 			y.b = (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
-			y.k = add(unsafe.Pointer(y.b), dataOffset)
-			y.v = add(y.k, bucketCnt*uintptr(t.keysize))
 		}
 		for ; b != nil; b = b.overflow(t) {
 			k := add(unsafe.Pointer(b), dataOffset)
@@ -1128,23 +1121,21 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				if dst.i == bucketCnt {
 					dst.b = h.newoverflow(t, dst.b)
 					dst.i = 0
-					dst.k = add(unsafe.Pointer(dst.b), dataOffset)
-					dst.v = add(dst.k, bucketCnt*uintptr(t.keysize))
 				}
 				dst.b.tophash[dst.i] = top
+				dk := add(unsafe.Pointer(dst.b), dataOffset+uintptr(dst.i)*uintptr(t.keysize))
 				if t.indirectkey {
-					*(*unsafe.Pointer)(dst.k) = *(*unsafe.Pointer)(k) // copy pointer
+					*(*unsafe.Pointer)(dk) = *(*unsafe.Pointer)(k) // copy pointer
 				} else {
-					typedmemmove(t.key, dst.k, k) // copy value
+					typedmemmove(t.key, dk, k) // copy value
 				}
+				dv := add(unsafe.Pointer(dst.b), dataOffset+bucketCnt*uintptr(t.keysize)+uintptr(dst.i)*uintptr(t.valuesize))
 				if t.indirectvalue {
-					*(*unsafe.Pointer)(dst.v) = *(*unsafe.Pointer)(v)
+					*(*unsafe.Pointer)(dv) = *(*unsafe.Pointer)(v)
 				} else {
-					typedmemmove(t.elem, dst.v, v)
+					typedmemmove(t.elem, dv, v)
 				}
 				dst.i++
-				dst.k = add(dst.k, uintptr(t.keysize))
-				dst.v = add(dst.v, uintptr(t.valuesize))
 			}
 		}
 		// Unlink the overflow buckets & clear key/value to help GC.
