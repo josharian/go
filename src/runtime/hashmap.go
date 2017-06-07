@@ -1043,8 +1043,8 @@ func bucketEvacuated(t *maptype, h *hmap, bucket uintptr) bool {
 
 // evacdst is an evacuation destination.
 type evacdst struct {
-	b *bmap // current destination bucket
-	i int   // key/val index into b
+	b *bmap   // current destination bucket
+	i uintptr // key/val index into b
 }
 
 func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
@@ -1123,13 +1123,13 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					dst.i = 0
 				}
 				dst.b.tophash[dst.i] = top
-				dk := add(unsafe.Pointer(dst.b), dataOffset+uintptr(dst.i)*uintptr(t.keysize))
+				dk := add(unsafe.Pointer(dst.b), dataOffset+dst.i*uintptr(t.keysize))
 				if t.indirectkey {
 					*(*unsafe.Pointer)(dk) = *(*unsafe.Pointer)(k) // copy pointer
 				} else {
 					typedmemmove(t.key, dk, k) // copy value
 				}
-				dv := add(unsafe.Pointer(dst.b), dataOffset+bucketCnt*uintptr(t.keysize)+uintptr(dst.i)*uintptr(t.valuesize))
+				dv := add(unsafe.Pointer(dst.b), dataOffset+bucketCnt*uintptr(t.keysize)+dst.i*uintptr(t.valuesize))
 				if t.indirectvalue {
 					*(*unsafe.Pointer)(dv) = *(*unsafe.Pointer)(v)
 				} else {
