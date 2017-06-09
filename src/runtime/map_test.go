@@ -663,30 +663,35 @@ func benchmarkMapDeleteInt64(b *testing.B, n int) {
 	}
 }
 
-func benchmarkMapAssignStr(b *testing.B, n int) {
-	k := make([]string, n)
-	for i := 0; i < len(k); i++ {
-		k[i] = strconv.Itoa(i)
+var intStrs []string // re-usable slice: ["0", "1", "2", ...]
+
+func growIntStrs(n int) {
+	for len(intStrs) < n {
+		intStrs = append(intStrs, strconv.Itoa(len(intStrs)))
 	}
+}
+
+func benchmarkMapAssignStr(b *testing.B, n int) {
+	growIntStrs(n)
 	b.ResetTimer()
 	a := make(map[string]int)
 	for i := 0; i < b.N; i++ {
-		a[k[i&(n-1)]] = i
+		a[intStrs[i&(n-1)]] = i
 	}
 }
 
 func benchmarkMapDeleteStr(b *testing.B, n int) {
-	k := make([]string, n*b.N)
+	growIntStrs(n * b.N)
 	for i := 0; i < n*b.N; i++ {
-		k[i] = strconv.Itoa(i)
+		intStrs[i] = strconv.Itoa(i)
 	}
 	a := make(map[string]int, n*b.N)
 	for i := 0; i < n*b.N; i++ {
-		a[k[i]] = i
+		a[intStrs[i]] = i
 	}
 	b.ResetTimer()
 	for i := 0; i < n*b.N; i = i + n {
-		delete(a, k[i])
+		delete(a, intStrs[i])
 	}
 }
 
