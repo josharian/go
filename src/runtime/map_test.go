@@ -7,6 +7,7 @@ package runtime_test
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"reflect"
 	"runtime"
 	"sort"
@@ -628,89 +629,114 @@ func TestNonEscapingMap(t *testing.T) {
 }
 
 func benchmarkMapAssignInt32(b *testing.B, n int) {
-	a := make(map[int32]int)
+	a := make(map[int32]int, n)
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		a[int32(i&(n-1))] = i
 	}
 }
 
-func benchmarkMapDeleteInt32(b *testing.B, n int) {
-	a := make(map[int32]int, n*b.N)
-	for i := 0; i < n*b.N; i++ {
-		a[int32(i)] = i
-	}
+func benchmarkMapDeleteInt32(b *testing.B, size int32) {
+	a := make(map[int32]int32, size)
 	b.ResetTimer()
-	for i := 0; i < n*b.N; i = i + n {
-		delete(a, int32(i))
+	for j := 0; j < b.N; j++ {
+		b.StopTimer()
+		for i := int32(0); i < size; i++ {
+			a[i] = i
+		}
+		b.StartTimer()
+		for i := int32(0); i < size; i++ {
+			delete(a, i)
+		}
 	}
 }
 
 func benchmarkMapAssignInt64(b *testing.B, n int) {
-	a := make(map[int64]int)
+	a := make(map[int64]int, n)
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		a[int64(i&(n-1))] = i
 	}
 }
 
-func benchmarkMapDeleteInt64(b *testing.B, n int) {
-	a := make(map[int64]int, n*b.N)
-	for i := 0; i < n*b.N; i++ {
-		a[int64(i)] = i
-	}
+func benchmarkMapDeleteInt64(b *testing.B, size int64) {
+	a := make(map[int64]int64, size)
 	b.ResetTimer()
-	for i := 0; i < n*b.N; i = i + n {
-		delete(a, int64(i))
+	for j := 0; j < b.N; j++ {
+		b.StopTimer()
+		for i := int64(0); i < size; i++ {
+			a[i] = i
+		}
+		b.StartTimer()
+		for i := int64(0); i < size; i++ {
+			delete(a, i)
+		}
 	}
 }
 
-var intStrs []string // re-usable slice: ["0", "1", "2", ...]
+// re-usable slices of strings for use as map keys in benchmarks
+var (
+	shortMapKey []string // ["0", "1", "2", ...], string length variable but short
+	longMapKey  []string // ["00...00", "00..01", "00..02", ...], string length 128
+)
 
-func growIntStrs(n int) {
-	for len(intStrs) < n {
-		intStrs = append(intStrs, strconv.Itoa(len(intStrs)))
+func prepareMapKeys(n int) {
+	for len(shortMapKey) < n {
+		shortMapKey = append(shortMapKey, strconv.Itoa(len(shortMapKey)))
+		longMapKey = append(longMapKey, fmt.Sprintf("%0128d", len(longMapKey)))
 	}
 }
 
-func benchmarkMapAssignStr(b *testing.B, n int) {
-	growIntStrs(n)
+func benchmarkMapAssignStr(b *testing.B, keys []string, n int) {
+	a := make(map[string]int, n)
 	b.ResetTimer()
-	a := make(map[string]int)
 	for i := 0; i < b.N; i++ {
-		a[intStrs[i&(n-1)]] = i
+		a[keys[i&(n-1)]] = i
 	}
 }
 
-func benchmarkMapDeleteStr(b *testing.B, n int) {
-	growIntStrs(n * b.N)
-	for i := 0; i < n*b.N; i++ {
-		intStrs[i] = strconv.Itoa(i)
-	}
-	a := make(map[string]int, n*b.N)
-	for i := 0; i < n*b.N; i++ {
-		a[intStrs[i]] = i
-	}
-	b.ResetTimer()
-	for i := 0; i < n*b.N; i = i + n {
-		delete(a, intStrs[i])
-	}
+var keybuf string
+
+func init() { // TODO: not init, only as needed
+	var buf [2000000]byte // big enough for largest size below (TODO: better doc)
+	rand.Read(buf[:])
+	keybuf = string(buf[:])
 }
 
-func runWith(f func(*testing.B, int), v ...int) func(*testing.B) {
-	return func(b *testing.B) {
-		for _, n := range v {
-			b.Run(strconv.Itoa(n), func(b *testing.B) { f(b, n) })
+func benchmarkMapDeleteStr(b *testing.B, keylen, size int) {
+	for j := 0; j < b.N; j++ {
+		b.StopTimer()
+		a := make(map[string]int, size)
+		for i := 0; i < size; i++ {
+			a[keybuf[i:i+keylen]] = i
+		}
+		b.StartTimer()
+		for i := 0; i < size; i++ {
+			delete(a, keybuf[i:i+keylen])
 		}
 	}
 }
 
 func BenchmarkMapAssign(b *testing.B) {
-	b.Run("Int32", runWith(benchmarkMapAssignInt32, 1<<8, 1<<16))
-	b.Run("Int64", runWith(benchmarkMapAssignInt64, 1<<8, 1<<16))
-	b.Run("Str", runWith(benchmarkMapAssignStr, 1<<8, 1<<16))
+	for _, size := range [...]int{1 << 16, 1 << 8} {
+		prepareMapKeys(size)
+		b.ResetTimer()
+		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
+			b.Run("Int32", func(b *testing.B) { benchmarkMapAssignInt32(b, size) })
+			b.Run("Int64", func(b *testing.B) { benchmarkMapAssignInt64(b, size) })
+			b.Run("ShortStr", func(b *testing.B) { benchmarkMapAssignStr(b, shortMapKey, size) })
+			b.Run("LongStr", func(b *testing.B) { benchmarkMapAssignStr(b, longMapKey, size) })
+		})
+	}
 }
 
 func BenchmarkMapDelete(b *testing.B) {
-	b.Run("Int32", runWith(benchmarkMapDeleteInt32, 1, 2, 4))
-	b.Run("Int64", runWith(benchmarkMapDeleteInt64, 1, 2, 4))
-	b.Run("Str", runWith(benchmarkMapDeleteStr, 1, 2, 4))
+	for _, size := range [...]int{100000, 1000} {
+		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
+			b.Run("Int32", func(b *testing.B) { benchmarkMapDeleteInt32(b, int32(size)) })
+			b.Run("Int64", func(b *testing.B) { benchmarkMapDeleteInt64(b, int64(size)) })
+			b.Run("ShortStr", func(b *testing.B) { benchmarkMapDeleteStr(b, 8, size) })
+			b.Run("LongStr", func(b *testing.B) { benchmarkMapDeleteStr(b, 256, size) })
+		})
+	}
 }
