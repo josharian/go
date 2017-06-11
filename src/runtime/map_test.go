@@ -596,12 +596,18 @@ func TestIgnoreBogusMapHint(t *testing.T) {
 }
 
 func benchmarkMapPop(b *testing.B, n int) {
-	m := map[int]int{}
 	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		m := make(map[int]int, n)
 		for j := 0; j < n; j++ {
 			m[j] = j
 		}
-		for j := 0; j < n; j++ {
+		// First iterator allocates.
+		for range m {
+			break
+		}
+		b.StartTimer()
+		for len(m) > 0 {
 			// Use iterator to pop an element.
 			// We want this to be fast, see issue 8412.
 			for k := range m {
