@@ -1030,6 +1030,17 @@ func growWork(t *maptype, h *hmap, bucket uintptr) {
 	}
 }
 
+func growWork64(t *maptype, h *hmap, bucket uintptr) {
+	// make sure we evacuate the oldbucket corresponding
+	// to the bucket we're about to use
+	evacuate64(t, h, bucket&h.oldbucketmask())
+
+	// evacuate one more oldbucket to make progress on growing
+	if h.growing() {
+		evacuate64(t, h, h.nevacuate)
+	}
+}
+
 func bucketEvacuated(t *maptype, h *hmap, bucket uintptr) bool {
 	return evacuated(t.bucketptr(h.oldbuckets, bucket))
 }
@@ -1143,27 +1154,108 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 
 	// Advance evacuation mark
 	if oldbucket == h.nevacuate {
-		h.nevacuate = oldbucket + 1
-		// Experiments suggest that 1024 is overkill by at least an order of magnitude.
-		// Put it in there as a safeguard anyway, to ensure O(1) behavior.
-		stop := h.nevacuate + 1024
-		if stop > newbit {
-			stop = newbit
+		advanceEvacuationMark(h, t, newbit)
+	}
+}
+
+func evacuate64(t *maptype, h *hmap, oldbucket uintptr) {
+	b := t.bucketptr(h.oldbuckets, oldbucket)
+	newbit := h.noldbuckets()
+	alg := t.key.alg
+	if !evacuated(b) {
+		// TODO: reuse overflow buckets instead of using new ones, if there
+		// is no iterator using the old buckets.  (If !oldIterator.)
+		x := evacdst{b: t.bucketptr(h.buckets, oldbucket)}
+		var y evacdst
+		if !h.sameSizeGrow() {
+			// Only calculate y if we're growing bigger.
+			// Otherwise GC can see bad pointers.
+			y.b = t.bucketptr(h.buckets, oldbucket+newbit)
 		}
-		for h.nevacuate != stop && bucketEvacuated(t, h, h.nevacuate) {
-			h.nevacuate++
-		}
-		if h.nevacuate == newbit { // newbit == # of oldbuckets
-			// Growing is all done. Free old main bucket array.
-			h.oldbuckets = nil
-			// Can discard old overflow buckets as well.
-			// If they are still referenced by an iterator,
-			// then the iterator holds a pointers to the slice.
-			if h.extra != nil {
-				h.extra.overflow[1] = nil
+		for ; b != nil; b = b.overflow(t) {
+			for i := uintptr(0); i < bucketCnt; i++ {
+				top := b.tophash[i]
+				if top == empty {
+					b.tophash[i] = evacuatedEmpty
+					continue
+				}
+				if top < minTopHash {
+					throw("bad map state")
+				}
+				useX := true
+				if !h.sameSizeGrow() {
+					// Compute hash to make our evacuation decision (whether we need
+					// to send this key/value to bucket x or bucket y).
+					k := t.keyptr(b, i)
+					hash := alg.hash(k, uintptr(h.hash0))
+					useX = hash&newbit == 0
+				}
+
+				var dst *evacdst // destination
+				if useX {
+					b.tophash[i] = evacuatedX
+					dst = &x
+				} else {
+					b.tophash[i] = evacuatedY
+					dst = &y
+				}
+
+				if dst.i == bucketCnt {
+					dst.b = h.newoverflow(t, dst.b)
+					dst.i = 0
+				}
+				dst.b.tophash[dst.i&(bucketCnt-1)] = top
+				k := t.keyptr(b, i)
+				dk := t.keyptr(dst.b, dst.i)
+				typedmemmove(t.key, dk, k) // copy value
+				v := t.valptr(b, i)
+				dv := t.valptr(dst.b, dst.i)
+				typedmemmove(t.elem, dv, v)
+				dst.i++
 			}
-			h.flags &^= sameSizeGrow
 		}
+		// Unlink the overflow buckets & clear key/value to help GC.
+		if h.flags&oldIterator == 0 {
+			b = t.bucketptr(h.oldbuckets, oldbucket)
+			// Preserve b.tophash because the evacuation
+			// state is maintained there.
+			ptr := add(unsafe.Pointer(b), dataOffset)
+			n := uintptr(t.bucketsize) - dataOffset
+			if t.bucket.kind&kindNoPointers == 0 {
+				memclrHasPointers(ptr, n)
+			} else {
+				memclrNoHeapPointers(ptr, n)
+			}
+		}
+	}
+
+	// Advance evacuation mark
+	if oldbucket == h.nevacuate {
+		advanceEvacuationMark(h, t, newbit)
+	}
+}
+
+func advanceEvacuationMark(h *hmap, t *maptype, newbit uintptr) {
+	h.nevacuate++
+	// Experiments suggest that 1024 is overkill by at least an order of magnitude.
+	// Put it in there as a safeguard anyway, to ensure O(1) behavior.
+	stop := h.nevacuate + 1024
+	if stop > newbit {
+		stop = newbit
+	}
+	for h.nevacuate != stop && bucketEvacuated(t, h, h.nevacuate) {
+		h.nevacuate++
+	}
+	if h.nevacuate == newbit { // newbit == # of oldbuckets
+		// Growing is all done. Free old main bucket array.
+		h.oldbuckets = nil
+		// Can discard old overflow buckets as well.
+		// If they are still referenced by an iterator,
+		// then the iterator holds a pointers to the slice.
+		if h.extra != nil {
+			h.extra.overflow[1] = nil
+		}
+		h.flags &^= sameSizeGrow
 	}
 }
 
