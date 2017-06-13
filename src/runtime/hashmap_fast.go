@@ -511,7 +511,7 @@ func mapassign_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 again:
 	bucket := hash & (uintptr(1)<<h.B - 1)
 	if h.growing() {
-		growWork(t, h, bucket)
+		growWork64(t, h, bucket)
 	}
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + bucket*uintptr(t.bucketsize)))
 	top := tophash(hash)
@@ -734,7 +734,7 @@ func mapdelete_fast64(t *maptype, h *hmap, key uint64) {
 
 	bucket := hash & (uintptr(1)<<h.B - 1)
 	if h.growing() {
-		growWork(t, h, bucket)
+		growWork64(t, h, bucket)
 	}
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + bucket*uintptr(t.bucketsize)))
 	top := tophash(hash)
