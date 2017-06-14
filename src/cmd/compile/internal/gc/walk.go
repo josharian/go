@@ -2811,8 +2811,8 @@ func mapfast(t *types.Type) int {
 		return mapfast32
 	case AMEM64:
 		return mapfast64
-	case ASTRING:
-		return mapfaststr
+		// case ASTRING:
+		// 	return mapfaststr
 	}
 	return mapslow
 }

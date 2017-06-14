@@ -98,6 +98,11 @@ func strhash(a unsafe.Pointer, h uintptr) uintptr {
 	return memhash(x.str, h, uintptr(x.len))
 }
 
+func StrHash(s string) uintptr {
+	x := (*stringStruct)((unsafe.Pointer)(&s))
+	return memhash(x.str, 0x3234afe, uintptr(x.len))
+}
+
 // NOTE: Because NaN != NaN, a map can contain any
 // number of (mostly useless) entries keyed with NaNs.
 // To avoid long hash chains, we assign a random number
