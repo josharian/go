@@ -113,6 +113,8 @@ func hidePanic() {
 	}
 }
 
+var InputFilename string
+
 // supportsDynlink reports whether or not the code generator for the given
 // architecture supports the -shared and -dynlink flags.
 func supportsDynlink(arch *sys.Arch) bool {
@@ -276,7 +278,7 @@ func Main(archInit func(*Arch)) {
 		Ctxt.Flag_locationlists = false
 	}
 
-	if flag.NArg() < 1 && debugstr != "help" && debugstr != "ssa/help" {
+	if flag.NArg() < 1 && debugstr != "help" && debugstr != "ssa/help" && InputFilename == "" {
 		usage()
 	}
 
@@ -294,7 +296,12 @@ func Main(archInit func(*Arch)) {
 	thearch.LinkArch.Init(Ctxt)
 
 	if outfile == "" {
-		p := flag.Arg(0)
+		var p string
+		if flag.NArg() == 0 {
+			p = InputFilename
+		} else {
+			p = flag.Arg(0)
+		}
 		if i := strings.LastIndex(p, "/"); i >= 0 {
 			p = p[i+1:]
 		}
@@ -491,7 +498,12 @@ func Main(archInit func(*Arch)) {
 	loadsys()
 
 	timings.Start("fe", "parse")
-	lines := parseFiles(flag.Args())
+	var lines uint
+	if flag.NArg() == 0 {
+		lines = parseFiles([]string{InputFilename})
+	} else {
+		lines = parseFiles(flag.Args())
+	}
 	timings.Stop()
 	timings.AddEvent(int64(lines), "lines")
 

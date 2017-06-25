@@ -5,6 +5,7 @@
 package gc
 
 import (
+	"bytes"
 	"cmd/compile/internal/types"
 	"cmd/internal/objabi"
 	"cmd/internal/src"
@@ -46,7 +47,12 @@ func errorexit() {
 	if outfile != "" {
 		os.Remove(outfile)
 	}
-	os.Exit(2)
+	// buf := make([]byte, 16384)
+	// n := runtime.Stack(buf, false)
+	// buf = buf[:n]
+	// panic(stdout.String() + "\n" + string(buf))
+	// os.Exit(2)
+	panic("controlled exit")
 }
 
 func adderrorname(n *Node) {
@@ -73,6 +79,8 @@ func (x byPos) Len() int           { return len(x) }
 func (x byPos) Less(i, j int) bool { return x[i].pos.Before(x[j].pos) }
 func (x byPos) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
 
+var stdout = new(bytes.Buffer)
+
 // flusherrors sorts errors seen so far by line number, prints them to stdout,
 // and empties the errors array.
 func flusherrors() {
@@ -83,7 +91,7 @@ func flusherrors() {
 	sort.Stable(byPos(errors))
 	for i, err := range errors {
 		if i == 0 || err.msg != errors[i-1].msg {
-			fmt.Printf("%s", err.msg)
+			fmt.Fprintf(stdout, "%s", err.msg)
 		}
 	}
 	errors = errors[:0]
