@@ -5,6 +5,7 @@
 package gc
 
 import (
+	"bytes"
 	"cmd/compile/internal/types"
 	"cmd/internal/objabi"
 	"cmd/internal/src"
@@ -12,6 +13,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"os"
+	"runtime"
 	"runtime/debug"
 	"sort"
 	"strconv"
@@ -38,7 +40,11 @@ func errorexit() {
 	if outfile != "" {
 		os.Remove(outfile)
 	}
-	os.Exit(2)
+	buf := make([]byte, 16384)
+	n := runtime.Stack(buf, false)
+	buf = buf[:n]
+	panic(stdout.String() + "\n" + string(buf))
+	// os.Exit(2)
 }
 
 func adderrorname(n *Node) {
@@ -65,6 +71,8 @@ func (x byPos) Len() int           { return len(x) }
 func (x byPos) Less(i, j int) bool { return x[i].pos.Before(x[j].pos) }
 func (x byPos) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
 
+var stdout = new(bytes.Buffer)
+
 // flusherrors sorts errors seen so far by line number, prints them to stdout,
 // and empties the errors array.
 func flusherrors() {
@@ -75,7 +83,7 @@ func flusherrors() {
 	sort.Stable(byPos(errors))
 	for i := 0; i < len(errors); i++ {
 		if i == 0 || errors[i].msg != errors[i-1].msg {
-			fmt.Printf("%s", errors[i].msg)
+			fmt.Fprintf(stdout, "%s", errors[i].msg)
 		}
 	}
 	errors = errors[:0]

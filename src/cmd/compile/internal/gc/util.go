@@ -5,6 +5,7 @@
 package gc
 
 import (
+	"fmt"
 	"os"
 	"runtime"
 	"runtime/pprof"
@@ -28,7 +29,10 @@ func Exit(code int) {
 		atExitFuncs = atExitFuncs[:i]
 		f()
 	}
-	os.Exit(code)
+	// if code == 0 {
+	// 	os.Exit(code)
+	// }
+	panic(fmt.Errorf("gc error exit %d", code))
 }
 
 var (
