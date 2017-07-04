@@ -307,6 +307,9 @@ func makemap(t *maptype, hint int, h *hmap) *hmap {
 		t.elem.size <= maxValueSize && (t.indirectvalue() || t.valuesize != uint8(t.elem.size)) {
 		throw("value size wrong")
 	}
+	if uintptr(t.valueoff) != dataOffset+bucketCnt*uintptr(t.keysize) {
+		throw("valueoff wrong")
+	}
 
 	// invariants we depend on. We should probably check these at compile time
 	// somewhere, but for now we'll do it here.
@@ -410,7 +413,7 @@ func mapaccess1(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 				k = *((*unsafe.Pointer)(k))
 			}
 			if alg.equal(key, k) {
-				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
+				v := add(unsafe.Pointer(b), uintptr(t.valueoff)+i*uintptr(t.valuesize))
 				if t.indirectvalue() {
 					v = *((*unsafe.Pointer)(v))
 				}
@@ -462,7 +465,7 @@ func mapaccess2(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, bool) 
 				k = *((*unsafe.Pointer)(k))
 			}
 			if alg.equal(key, k) {
-				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
+				v := add(unsafe.Pointer(b), uintptr(t.valueoff)+i*uintptr(t.valuesize))
 				if t.indirectvalue() {
 					v = *((*unsafe.Pointer)(v))
 				}
@@ -503,7 +506,7 @@ func mapaccessK(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, unsafe
 				k = *((*unsafe.Pointer)(k))
 			}
 			if alg.equal(key, k) {
-				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
+				v := add(unsafe.Pointer(b), uintptr(t.valueoff)+i*uintptr(t.valuesize))
 				if t.indirectvalue() {
 					v = *((*unsafe.Pointer)(v))
 				}
@@ -575,7 +578,7 @@ again:
 				if b.tophash[i] == empty && inserti == nil {
 					inserti = &b.tophash[i]
 					insertk = add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
-					val = add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
+					val = add(unsafe.Pointer(b), uintptr(t.valueoff)+i*uintptr(t.valuesize))
 				}
 				continue
 			}
@@ -590,7 +593,7 @@ again:
 			if t.needkeyupdate() {
 				typedmemmove(t.key, k, key)
 			}
-			val = add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
+			val = add(unsafe.Pointer(b), uintptr(t.valueoff)+i*uintptr(t.valuesize))
 			goto done
 		}
 		ovf := b.overflow(t)
@@ -694,7 +697,7 @@ search:
 			}
 			// Only clear value if there are pointers in it.
 			if t.indirectvalue() || t.elem.kind&kindNoPointers == 0 {
-				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
+				v := add(unsafe.Pointer(b), uintptr(t.valueoff)+i*uintptr(t.valuesize))
 				if t.indirectvalue() {
 					*(*unsafe.Pointer)(v) = nil
 				} else {
@@ -832,7 +835,7 @@ next:
 		if t.indirectkey() {
 			k = *((*unsafe.Pointer)(k))
 		}
-		v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+uintptr(offi)*uintptr(t.valuesize))
+		v := add(unsafe.Pointer(b), uintptr(t.valueoff)+uintptr(offi)*uintptr(t.valuesize))
 		if checkBucket != noCheck && !h.sameSizeGrow() {
 			// Special case: iterator was started during a grow to a larger size
 			// and the grow is not done yet. We're working on a bucket whose

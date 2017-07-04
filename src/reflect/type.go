@@ -410,7 +410,7 @@ type mapType struct {
 	keysize    uint8  // size of key slot
 	valuesize  uint8  // size of value slot
 	bucketsize uint16 // size of bucket
-	_          uint16 // padding, to be used for other purposes soon
+	valueoff   uint16 // offset of values == dataOffset+bucketCnt*uintptr(t.keysize)
 	flag       mapFlag
 	_          uint8 // padding
 }
@@ -1916,6 +1916,15 @@ func MapOf(key, elem Type) Type {
 		mt.valuesize = uint8(etyp.size)
 	}
 	mt.bucketsize = uint16(mt.bucket.size)
+
+	const bucketCnt = 8
+	// Matches runtime/hashmap dataOffset. See comments there.
+	const dataOffset = unsafe.Offsetof(struct {
+		bmap struct{ tophash [bucketCnt]uint8 }
+		v    int64
+	}{}.v)
+
+	mt.valueoff = uint16(dataOffset) + bucketCnt*uint16(mt.keysize)
 	if isReflexive(ktyp) {
 		mt.flag |= mapFlagReflexiveKey
 	}

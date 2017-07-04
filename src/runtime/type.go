@@ -365,7 +365,7 @@ type maptype struct {
 	keysize    uint8  // size of key slot
 	valuesize  uint8  // size of value slot
 	bucketsize uint16 // size of bucket
-	_          uint16 // padding, to be used for other purposes soon
+	valueoff   uint16 // offset of values == dataOffset+bucketCnt*uintptr(t.keysize)
 	flag       mapFlag
 	_          uint8 // padding
 }

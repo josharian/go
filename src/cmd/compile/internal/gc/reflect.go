@@ -1270,12 +1270,14 @@ ok:
 		ot = dsymptr(lsym, ot, s3.Linksym(), 0)
 		ot = dsymptr(lsym, ot, s4.Linksym(), 0)
 		var flag mapFlag
+		var keysize uint8
 		if t.Key().Width > MAXKEYSIZE {
-			ot = duint8(lsym, ot, uint8(Widthptr))
+			keysize = uint8(Widthptr)
 			flag |= mapFlagIndirectKey
 		} else {
-			ot = duint8(lsym, ot, uint8(t.Key().Width))
+			keysize = uint8(t.Key().Width)
 		}
+		ot = duint8(lsym, ot, keysize)
 
 		if t.Val().Width > MAXVALSIZE {
 			ot = duint8(lsym, ot, uint8(Widthptr))
@@ -1292,7 +1294,9 @@ ok:
 			flag |= mapFlagNeedKeyUpdate
 		}
 
-		ot = duint16(lsym, ot, 0) // pad
+		const dataOffset = 8 // TODO: calculate properly
+		valueoff := dataOffset + BUCKETSIZE*uint16(keysize)
+		ot = duint16(lsym, ot, valueoff)
 		ot = duint8(lsym, ot, uint8(flag))
 		ot = duint8(lsym, ot, 0) // pad
 		ot = dextratype(lsym, ot, t, 0)
