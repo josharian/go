@@ -26,7 +26,7 @@ func mapaccess1_fast32(t *maptype, h *hmap, key uint32) unsafe.Pointer {
 		b = (*bmap)(h.buckets)
 	} else {
 		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
-		m := uintptr(1)<<h.B - 1
+		m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 		b = t.bucketptr(h.buckets, hash&m)
 		if c := h.oldbuckets; c != nil {
 			if !h.sameSizeGrow() {
@@ -74,7 +74,7 @@ func mapaccess2_fast32(t *maptype, h *hmap, key uint32) (unsafe.Pointer, bool) {
 		b = (*bmap)(h.buckets)
 	} else {
 		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
-		m := uintptr(1)<<h.B - 1
+		m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 		b = t.bucketptr(h.buckets, hash&m)
 		if c := h.oldbuckets; c != nil {
 			if !h.sameSizeGrow() {
@@ -122,7 +122,7 @@ func mapaccess1_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 		b = (*bmap)(h.buckets)
 	} else {
 		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
-		m := uintptr(1)<<h.B - 1
+		m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 		b = t.bucketptr(h.buckets, hash&m)
 		if c := h.oldbuckets; c != nil {
 			if !h.sameSizeGrow() {
@@ -170,7 +170,7 @@ func mapaccess2_fast64(t *maptype, h *hmap, key uint64) (unsafe.Pointer, bool) {
 		b = (*bmap)(h.buckets)
 	} else {
 		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
-		m := uintptr(1)<<h.B - 1
+		m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 		b = t.bucketptr(h.buckets, hash&m)
 		if c := h.oldbuckets; c != nil {
 			if !h.sameSizeGrow() {
@@ -269,7 +269,7 @@ func mapaccess1_faststr(t *maptype, h *hmap, ky string) unsafe.Pointer {
 	}
 dohash:
 	hash := t.key.alg.hash(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
-	m := uintptr(1)<<h.B - 1
+	m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 	b := t.bucketptr(h.buckets, hash&m)
 	if c := h.oldbuckets; c != nil {
 		if !h.sameSizeGrow() {
@@ -370,7 +370,7 @@ func mapaccess2_faststr(t *maptype, h *hmap, ky string) (unsafe.Pointer, bool) {
 	}
 dohash:
 	hash := t.key.alg.hash(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
-	m := uintptr(1)<<h.B - 1
+	m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 	b := t.bucketptr(h.buckets, hash&m)
 	if c := h.oldbuckets; c != nil {
 		if !h.sameSizeGrow() {
@@ -424,7 +424,7 @@ func mapassign_fast32(t *maptype, h *hmap, key uint32) unsafe.Pointer {
 	}
 
 again:
-	bucket := hash & (uintptr(1)<<h.B - 1)
+	bucket := hash & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	if h.growing() {
 		growWork(t, h, bucket)
 	}
@@ -509,7 +509,7 @@ func mapassign_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 	}
 
 again:
-	bucket := hash & (uintptr(1)<<h.B - 1)
+	bucket := hash & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	if h.growing() {
 		growWork64(t, h, bucket)
 	}
@@ -595,7 +595,7 @@ func mapassign_faststr(t *maptype, h *hmap, ky string) unsafe.Pointer {
 	}
 
 again:
-	bucket := hash & (uintptr(1)<<h.B - 1)
+	bucket := hash & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	if h.growing() {
 		growWork(t, h, bucket)
 	}
@@ -680,7 +680,7 @@ func mapdelete_fast32(t *maptype, h *hmap, key uint32) {
 	// Set hashWriting after calling alg.hash for consistency with mapdelete
 	h.flags |= hashWriting
 
-	bucket := hash & (uintptr(1)<<h.B - 1)
+	bucket := hash & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	if h.growing() {
 		growWork(t, h, bucket)
 	}
@@ -732,7 +732,7 @@ func mapdelete_fast64(t *maptype, h *hmap, key uint64) {
 	// Set hashWriting after calling alg.hash for consistency with mapdelete
 	h.flags |= hashWriting
 
-	bucket := hash & (uintptr(1)<<h.B - 1)
+	bucket := hash & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	if h.growing() {
 		growWork64(t, h, bucket)
 	}
@@ -785,7 +785,7 @@ func mapdelete_faststr(t *maptype, h *hmap, ky string) {
 	// Set hashWriting after calling alg.hash for consistency with mapdelete
 	h.flags |= hashWriting
 
-	bucket := hash & (uintptr(1)<<h.B - 1)
+	bucket := hash & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	if h.growing() {
 		growWork(t, h, bucket)
 	}

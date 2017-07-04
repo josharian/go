@@ -100,6 +100,9 @@ const (
 
 	// sentinel bucket ID for iterator checks
 	noCheck = 1<<(8*sys.PtrSize) - 1
+
+	// bucketShiftMask is used to improve codegen for shifts of hmap.B
+	bucketShiftMask = 8*sys.PtrSize - 1
 )
 
 // A header for a Go map.
@@ -208,7 +211,7 @@ func (h *hmap) incrnoverflow() {
 	// Increment with probability 1/(1<<(h.B-15)).
 	// When we reach 1<<15 - 1, we will have approximately
 	// as many overflow buckets as buckets.
-	mask := uint32(1)<<(h.B-15) - 1
+	mask := uint32(1)<<((h.B-15)&31) - 1
 	// Example: if h.B == 18, then mask == 7,
 	// and fastrand & 7 == 0 with probability 1/8.
 	if fastrand()&mask == 0 {
@@ -365,7 +368,7 @@ func mapaccess1(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 	}
 	alg := t.key.alg
 	hash := alg.hash(key, uintptr(h.hash0))
-	m := uintptr(1)<<h.B - 1
+	m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 	b := t.bucketptr(h.buckets, hash&m)
 	if c := h.oldbuckets; c != nil {
 		if !h.sameSizeGrow() {
@@ -420,7 +423,7 @@ func mapaccess2(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, bool) 
 	}
 	alg := t.key.alg
 	hash := alg.hash(key, uintptr(h.hash0))
-	m := uintptr(1)<<h.B - 1
+	m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + (hash&m)*uintptr(t.bucketsize)))
 	if c := h.oldbuckets; c != nil {
 		if !h.sameSizeGrow() {
@@ -464,7 +467,7 @@ func mapaccessK(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, unsafe
 	}
 	alg := t.key.alg
 	hash := alg.hash(key, uintptr(h.hash0))
-	m := uintptr(1)<<h.B - 1
+	m := uintptr(1)<<(h.B&bucketShiftMask) - 1
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + (hash&m)*uintptr(t.bucketsize)))
 	if c := h.oldbuckets; c != nil {
 		if !h.sameSizeGrow() {
@@ -546,7 +549,7 @@ func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 	}
 
 again:
-	bucket := hash & (uintptr(1)<<h.B - 1)
+	bucket := hash & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	if h.growing() {
 		growWork(t, h, bucket)
 	}
@@ -653,7 +656,7 @@ func mapdelete(t *maptype, h *hmap, key unsafe.Pointer) {
 	// in which case we have not actually done a write (delete).
 	h.flags |= hashWriting
 
-	bucket := hash & (uintptr(1)<<h.B - 1)
+	bucket := hash & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	if h.growing() {
 		growWork(t, h, bucket)
 	}
@@ -745,7 +748,7 @@ func mapiterinit(t *maptype, h *hmap, it *hiter) {
 	if h.B > 31-bucketCntBits {
 		r += uintptr(fastrand()) << 31
 	}
-	it.startBucket = r & (uintptr(1)<<h.B - 1)
+	it.startBucket = r & (uintptr(1)<<(h.B&bucketShiftMask) - 1)
 	it.offset = uint8(r >> h.B & (bucketCnt - 1))
 
 	// iterator state
@@ -804,7 +807,7 @@ next:
 			checkBucket = noCheck
 		}
 		bucket++
-		if bucket == uintptr(1)<<it.B {
+		if bucket == uintptr(1)<<(it.B&bucketShiftMask) {
 			bucket = 0
 			it.wrapped = true
 		}
@@ -831,7 +834,7 @@ next:
 					// If the item in the oldbucket is not destined for
 					// the current new bucket in the iteration, skip it.
 					hash := alg.hash(k2, uintptr(h.hash0))
-					if hash&(uintptr(1)<<it.B-1) != checkBucket {
+					if hash&(uintptr(1)<<(it.B&bucketShiftMask)-1) != checkBucket {
 						continue
 					}
 				} else {
@@ -978,7 +981,7 @@ func hashGrow(t *maptype, h *hmap) {
 // overLoadFactor reports whether count items placed in 1<<B buckets is over loadFactor.
 func overLoadFactor(count int64, B uint8) bool {
 	// TODO: rewrite to use integer math and comparison?
-	return count >= bucketCnt && float32(count) >= loadFactor*float32((uint64(1)<<B))
+	return count >= bucketCnt && float32(count) >= loadFactor*float32((uint64(1)<<(B&63)))
 }
 
 // tooManyOverflowBuckets reports whether noverflow buckets is too many for a map with 1<<B buckets.
@@ -990,7 +993,7 @@ func tooManyOverflowBuckets(noverflow uint16, B uint8) bool {
 	// "too many" means (approximately) as many overflow buckets as regular buckets.
 	// See incrnoverflow for more details.
 	if B < 16 {
-		return noverflow >= uint16(1)<<B
+		return noverflow >= uint16(1)<<(B&15)
 	}
 	return noverflow >= 1<<15
 }
