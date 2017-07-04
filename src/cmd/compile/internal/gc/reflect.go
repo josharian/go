@@ -1102,6 +1102,17 @@ func formalType(t *types.Type) *types.Type {
 	return t
 }
 
+// Match reflect/type.go definitions.
+type mapFlag uint8
+
+// Match reflect/type.go definitions.
+const (
+	mapFlagIndirectKey   mapFlag = 1 << iota // store ptr to key instead of key itself
+	mapFlagIndirectValue                     // store ptr to value instead of value itself
+	mapFlagReflexiveKey                      // true if k==k for all keys
+	mapFlagNeedKeyUpdate                     // true if we need to update key on an overwrite
+)
+
 func dtypesym(t *types.Type) *types.Sym {
 	t = formalType(t)
 	if t.IsUntyped() {
@@ -1258,25 +1269,32 @@ ok:
 		ot = dsymptr(lsym, ot, s2.Linksym(), 0)
 		ot = dsymptr(lsym, ot, s3.Linksym(), 0)
 		ot = dsymptr(lsym, ot, s4.Linksym(), 0)
+		var flag mapFlag
 		if t.Key().Width > MAXKEYSIZE {
 			ot = duint8(lsym, ot, uint8(Widthptr))
-			ot = duint8(lsym, ot, 1) // indirect
+			flag |= mapFlagIndirectKey
 		} else {
 			ot = duint8(lsym, ot, uint8(t.Key().Width))
-			ot = duint8(lsym, ot, 0) // not indirect
 		}
 
 		if t.Val().Width > MAXVALSIZE {
 			ot = duint8(lsym, ot, uint8(Widthptr))
-			ot = duint8(lsym, ot, 1) // indirect
+			flag |= mapFlagIndirectValue
 		} else {
 			ot = duint8(lsym, ot, uint8(t.Val().Width))
-			ot = duint8(lsym, ot, 0) // not indirect
 		}
 
 		ot = duint16(lsym, ot, uint16(mapbucket(t).Width))
-		ot = duint8(lsym, ot, uint8(obj.Bool2int(isreflexive(t.Key()))))
-		ot = duint8(lsym, ot, uint8(obj.Bool2int(needkeyupdate(t.Key()))))
+		if isreflexive(t.Key()) {
+			flag |= mapFlagReflexiveKey
+		}
+		if needkeyupdate(t.Key()) {
+			flag |= mapFlagNeedKeyUpdate
+		}
+
+		ot = duint16(lsym, ot, 0) // pad
+		ot = duint8(lsym, ot, uint8(flag))
+		ot = duint8(lsym, ot, 0) // pad
 		ot = dextratype(lsym, ot, t, 0)
 
 	case TPTR32, TPTR64:

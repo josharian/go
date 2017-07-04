@@ -391,20 +391,28 @@ type interfaceType struct {
 	methods []imethod // sorted by hash
 }
 
+type mapFlag uint8
+
+const (
+	mapFlagIndirectKey   mapFlag = 1 << iota // store ptr to key instead of key itself
+	mapFlagIndirectValue                     // store ptr to value instead of value itself
+	mapFlagReflexiveKey                      // true if k==k for all keys
+	mapFlagNeedKeyUpdate                     // true if we need to update key on an overwrite
+)
+
 // mapType represents a map type.
 type mapType struct {
-	rtype         `reflect:"map"`
-	key           *rtype // map key type
-	elem          *rtype // map element (value) type
-	bucket        *rtype // internal bucket structure
-	hmap          *rtype // internal map header
-	keysize       uint8  // size of key slot
-	indirectkey   uint8  // store ptr to key instead of key itself
-	valuesize     uint8  // size of value slot
-	indirectvalue uint8  // store ptr to value instead of value itself
-	bucketsize    uint16 // size of bucket
-	reflexivekey  bool   // true if k==k for all keys
-	needkeyupdate bool   // true if we need to update key on an overwrite
+	rtype      `reflect:"map"`
+	key        *rtype // map key type
+	elem       *rtype // map element (value) type
+	bucket     *rtype // internal bucket structure
+	hmap       *rtype // internal map header
+	keysize    uint8  // size of key slot
+	valuesize  uint8  // size of value slot
+	bucketsize uint16 // size of bucket
+	_          uint16 // padding, to be used for other purposes soon
+	flag       mapFlag
+	_          uint8 // padding
 }
 
 // ptrType represents a pointer type.
@@ -1897,21 +1905,23 @@ func MapOf(key, elem Type) Type {
 	mt.bucket = bucketOf(ktyp, etyp)
 	if ktyp.size > maxKeySize {
 		mt.keysize = uint8(ptrSize)
-		mt.indirectkey = 1
+		mt.flag |= mapFlagIndirectKey
 	} else {
 		mt.keysize = uint8(ktyp.size)
-		mt.indirectkey = 0
 	}
 	if etyp.size > maxValSize {
 		mt.valuesize = uint8(ptrSize)
-		mt.indirectvalue = 1
+		mt.flag |= mapFlagIndirectValue
 	} else {
 		mt.valuesize = uint8(etyp.size)
-		mt.indirectvalue = 0
 	}
 	mt.bucketsize = uint16(mt.bucket.size)
-	mt.reflexivekey = isReflexive(ktyp)
-	mt.needkeyupdate = needKeyUpdate(ktyp)
+	if isReflexive(ktyp) {
+		mt.flag |= mapFlagReflexiveKey
+	}
+	if needKeyUpdate(ktyp) {
+		mt.flag |= mapFlagNeedKeyUpdate
+	}
 	mt.ptrToThis = 0
 
 	ti, _ := lookupCache.LoadOrStore(ckey, &mt.rtype)

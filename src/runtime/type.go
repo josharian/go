@@ -345,19 +345,29 @@ type interfacetype struct {
 	mhdr    []imethod
 }
 
+// Match reflect/type.go definitions.
+type mapFlag uint8
+
+// Match reflect/type.go definitions.
+const (
+	mapFlagIndirectKey   mapFlag = 1 << iota // store ptr to key instead of key itself
+	mapFlagIndirectValue                     // store ptr to value instead of value itself
+	mapFlagReflexiveKey                      // true if k==k for all keys
+	mapFlagNeedKeyUpdate                     // true if we need to update key on an overwrite
+)
+
 type maptype struct {
-	typ           _type
-	key           *_type
-	elem          *_type
-	bucket        *_type // internal type representing a hash bucket
-	hmap          *_type // internal type representing a hmap
-	keysize       uint8  // size of key slot
-	indirectkey   bool   // store ptr to key instead of key itself
-	valuesize     uint8  // size of value slot
-	indirectvalue bool   // store ptr to value instead of value itself
-	bucketsize    uint16 // size of bucket
-	reflexivekey  bool   // true if k==k for all keys
-	needkeyupdate bool   // true if we need to update key on an overwrite
+	typ        _type
+	key        *_type
+	elem       *_type
+	bucket     *_type // internal type representing a hash bucket
+	hmap       *_type // internal type representing a hmap
+	keysize    uint8  // size of key slot
+	valuesize  uint8  // size of value slot
+	bucketsize uint16 // size of bucket
+	_          uint16 // padding, to be used for other purposes soon
+	flag       mapFlag
+	_          uint8 // padding
 }
 
 type arraytype struct {
