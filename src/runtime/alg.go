@@ -290,6 +290,9 @@ func alginit() {
 		algarray[alg_MEM32].hash = aeshash32
 		algarray[alg_MEM64].hash = aeshash64
 		algarray[alg_STRING].hash = aeshashstr
+		hash32 = aeshash32
+		hash64 = aeshash64
+		hashstr = aeshashstr
 		// Initialize with random data so hash collisions will be hard to engineer.
 		getRandomData(aeskeysched[:])
 		return
@@ -300,3 +303,10 @@ func alginit() {
 	hashkey[2] |= 1
 	hashkey[3] |= 1
 }
+
+var (
+	// todo: better names, later
+	hash32  = memhash32
+	hash64  = memhash64
+	hashstr = strhash
+)

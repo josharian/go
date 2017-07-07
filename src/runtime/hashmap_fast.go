@@ -25,7 +25,7 @@ func mapaccess1_fast32(t *maptype, h *hmap, key uint32) unsafe.Pointer {
 		// One-bucket table. No need to hash.
 		b = (*bmap)(h.buckets)
 	} else {
-		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
+		hash := hash32(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 		m := uintptr(1)<<h.B - 1
 		b = (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
 		if c := h.oldbuckets; c != nil {
@@ -74,7 +74,7 @@ func mapaccess2_fast32(t *maptype, h *hmap, key uint32) (unsafe.Pointer, bool) {
 		// One-bucket table. No need to hash.
 		b = (*bmap)(h.buckets)
 	} else {
-		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
+		hash := hash32(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 		m := uintptr(1)<<h.B - 1
 		b = (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
 		if c := h.oldbuckets; c != nil {
@@ -123,7 +123,7 @@ func mapaccess1_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 		// One-bucket table. No need to hash.
 		b = (*bmap)(h.buckets)
 	} else {
-		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
+		hash := hash64(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 		m := uintptr(1)<<h.B - 1
 		b = (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
 		if c := h.oldbuckets; c != nil {
@@ -172,7 +172,7 @@ func mapaccess2_fast64(t *maptype, h *hmap, key uint64) (unsafe.Pointer, bool) {
 		// One-bucket table. No need to hash.
 		b = (*bmap)(h.buckets)
 	} else {
-		hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
+		hash := hash64(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 		m := uintptr(1)<<h.B - 1
 		b = (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
 		if c := h.oldbuckets; c != nil {
@@ -274,7 +274,7 @@ func mapaccess1_faststr(t *maptype, h *hmap, ky string) unsafe.Pointer {
 		return unsafe.Pointer(&zeroVal[0])
 	}
 dohash:
-	hash := t.key.alg.hash(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
+	hash := hashstr(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 	m := uintptr(1)<<h.B - 1
 	b := (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
 	if c := h.oldbuckets; c != nil {
@@ -381,7 +381,7 @@ func mapaccess2_faststr(t *maptype, h *hmap, ky string) (unsafe.Pointer, bool) {
 		return unsafe.Pointer(&zeroVal[0]), false
 	}
 dohash:
-	hash := t.key.alg.hash(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
+	hash := hashstr(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 	m := uintptr(1)<<h.B - 1
 	b := (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
 	if c := h.oldbuckets; c != nil {
@@ -430,7 +430,7 @@ func mapassign_fast32(t *maptype, h *hmap, key uint32) unsafe.Pointer {
 	if h.flags&hashWriting != 0 {
 		throw("concurrent map writes")
 	}
-	hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
+	hash := hash32(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
 	// Set hashWriting after calling alg.hash for consistency with mapassign.
 	h.flags |= hashWriting
@@ -518,7 +518,7 @@ func mapassign_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 	if h.flags&hashWriting != 0 {
 		throw("concurrent map writes")
 	}
-	hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
+	hash := hash64(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
 	// Set hashWriting after calling alg.hash for consistency with mapassign.
 	h.flags |= hashWriting
@@ -607,7 +607,7 @@ func mapassign_faststr(t *maptype, h *hmap, ky string) unsafe.Pointer {
 		throw("concurrent map writes")
 	}
 	key := stringStructOf(&ky)
-	hash := t.key.alg.hash(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
+	hash := hashstr(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 
 	// Set hashWriting after calling alg.hash for consistency with mapassign.
 	h.flags |= hashWriting
@@ -700,7 +700,7 @@ func mapdelete_fast32(t *maptype, h *hmap, key uint32) {
 		throw("concurrent map writes")
 	}
 
-	hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
+	hash := hash32(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
 	// Set hashWriting after calling alg.hash for consistency with mapdelete
 	h.flags |= hashWriting
@@ -755,7 +755,7 @@ func mapdelete_fast64(t *maptype, h *hmap, key uint64) {
 		throw("concurrent map writes")
 	}
 
-	hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
+	hash := hash64(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
 	// Set hashWriting after calling alg.hash for consistency with mapdelete
 	h.flags |= hashWriting
@@ -811,7 +811,7 @@ func mapdelete_faststr(t *maptype, h *hmap, ky string) {
 	}
 
 	key := stringStructOf(&ky)
-	hash := t.key.alg.hash(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
+	hash := hashstr(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 
 	// Set hashWriting after calling alg.hash for consistency with mapdelete
 	h.flags |= hashWriting
