@@ -302,6 +302,7 @@ type rtype struct {
 	fieldAlign uint8    // alignment of struct field with this type
 	kind       uint8    // enumeration for C
 	alg        *typeAlg // algorithm table
+	_          uintptr  // pad
 	gcdata     *byte    // garbage collection data
 	str        nameOff  // string form
 	ptrToThis  typeOff  // type for pointer to this type, may be zero

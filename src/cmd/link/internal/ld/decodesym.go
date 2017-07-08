@@ -59,7 +59,7 @@ func decodeInuxi(arch *sys.Arch, p []byte, sz int) uint64 {
 	}
 }
 
-func commonsize() int      { return 4*SysArch.PtrSize + 8 + 8 } // runtime._type
+func commonsize() int      { return 5*SysArch.PtrSize + 8 + 8 } // runtime._type
 func structfieldSize() int { return 3 * SysArch.PtrSize }       // runtime.structfield
 func uncommonSize() int    { return 4 + 2 + 2 + 4 + 4 }         // runtime.uncommontype
 
@@ -119,7 +119,7 @@ func decodetypeGcprog(ctxt *Link, s *Symbol) []byte {
 		Exitf("cannot find gcprog for %s", s.Name)
 		return nil
 	}
-	return decodeRelocSym(s, 2*int32(SysArch.PtrSize)+8+1*int32(SysArch.PtrSize)).P
+	return decodeRelocSym(s, 2*int32(SysArch.PtrSize)+8+2*int32(SysArch.PtrSize)).P
 }
 
 func decodetypeGcprogShlib(ctxt *Link, s *Symbol) uint64 {
@@ -131,7 +131,7 @@ func decodetypeGcprogShlib(ctxt *Link, s *Symbol) uint64 {
 		}
 		return 0
 	}
-	return decodeInuxi(ctxt.Arch, s.P[2*int32(SysArch.PtrSize)+8+1*int32(SysArch.PtrSize):], SysArch.PtrSize)
+	return decodeInuxi(ctxt.Arch, s.P[2*int32(SysArch.PtrSize)+8+2*int32(SysArch.PtrSize):], SysArch.PtrSize)
 }
 
 func decodetypeGcmask(ctxt *Link, s *Symbol) []byte {
@@ -147,7 +147,7 @@ func decodetypeGcmask(ctxt *Link, s *Symbol) []byte {
 		Exitf("cannot find gcmask for %s", s.Name)
 		return nil
 	}
-	mask := decodeRelocSym(s, 2*int32(SysArch.PtrSize)+8+1*int32(SysArch.PtrSize))
+	mask := decodeRelocSym(s, 2*int32(SysArch.PtrSize)+8+2*int32(SysArch.PtrSize))
 	return mask.P
 }
 
@@ -224,7 +224,7 @@ func decodetypeStructFieldArrayOff(s *Symbol, i int) int {
 
 // decodetypeStr returns the contents of an rtype's str field (a nameOff).
 func decodetypeStr(s *Symbol) string {
-	str := decodetypeName(s, 4*SysArch.PtrSize+8)
+	str := decodetypeName(s, 5*SysArch.PtrSize+8)
 	if s.P[2*SysArch.PtrSize+4]&tflagExtraStar != 0 {
 		return str[1:]
 	}

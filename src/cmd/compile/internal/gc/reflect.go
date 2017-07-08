@@ -79,8 +79,8 @@ const (
 	MAXVALSIZE = 128
 )
 
-func structfieldSize() int { return 3 * Widthptr } // Sizeof(runtime.structfield{})
-func imethodSize() int     { return 4 + 4 }        // Sizeof(runtime.imethod{})
+func structfieldSize() int             { return 3 * Widthptr } // Sizeof(runtime.structfield{})
+func imethodSize() int                 { return 4 + 4 }        // Sizeof(runtime.imethod{})
 func uncommonSize(t *types.Type) int { // Sizeof(runtime.uncommontype{})
 	if t.Sym == nil && len(methods(t)) == 0 {
 		return 0
@@ -816,6 +816,7 @@ func dcommontype(lsym *obj.LSym, ot int, t *types.Type) int {
 	//		fieldAlign    uint8
 	//		kind          uint8
 	//		alg           *typeAlg
+	//      _             uintptr
 	//		gcdata        *byte
 	//		str           nameOff
 	//		ptrToThis     typeOff
@@ -881,6 +882,7 @@ func dcommontype(lsym *obj.LSym, ot int, t *types.Type) int {
 	} else {
 		ot = dsymptr(lsym, ot, algsym, 0)
 	}
+	ot = duintptr(lsym, ot, 0)       // pad
 	ot = dsymptr(lsym, ot, gcsym, 0) // gcdata
 
 	nsym := dname(p, "", nil, exported)

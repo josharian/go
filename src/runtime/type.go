@@ -34,6 +34,7 @@ type _type struct {
 	fieldalign uint8
 	kind       uint8
 	alg        *typeAlg
+	_          uintptr // pad
 	// gcdata stores the GC type data for the garbage collector.
 	// If the KindGCProg bit is set in kind, gcdata is a GC program.
 	// Otherwise it is a ptrmask bitmap. See mbitmap.go for details.
