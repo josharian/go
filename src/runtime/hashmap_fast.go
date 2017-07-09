@@ -432,7 +432,7 @@ func mapassign_fast32(t *maptype, h *hmap, key uint32) unsafe.Pointer {
 	}
 	hash := hash32(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
-	// Set hashWriting after calling alg.hash for consistency with mapassign.
+	// Set hashWriting after calling hash for consistency with mapassign.
 	h.flags |= hashWriting
 
 	if h.buckets == nil {
@@ -520,7 +520,7 @@ func mapassign_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 	}
 	hash := hash64(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
-	// Set hashWriting after calling alg.hash for consistency with mapassign.
+	// Set hashWriting after calling hash for consistency with mapassign.
 	h.flags |= hashWriting
 
 	if h.buckets == nil {
@@ -609,7 +609,7 @@ func mapassign_faststr(t *maptype, h *hmap, ky string) unsafe.Pointer {
 	key := stringStructOf(&ky)
 	hash := hashstr(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 
-	// Set hashWriting after calling alg.hash for consistency with mapassign.
+	// Set hashWriting after calling hash for consistency with mapassign.
 	h.flags |= hashWriting
 
 	if h.buckets == nil {
@@ -702,7 +702,7 @@ func mapdelete_fast32(t *maptype, h *hmap, key uint32) {
 
 	hash := hash32(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
-	// Set hashWriting after calling alg.hash for consistency with mapdelete
+	// Set hashWriting after calling hash for consistency with mapdelete
 	h.flags |= hashWriting
 
 	bucket := hash & (uintptr(1)<<h.B - 1)
@@ -757,7 +757,7 @@ func mapdelete_fast64(t *maptype, h *hmap, key uint64) {
 
 	hash := hash64(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
-	// Set hashWriting after calling alg.hash for consistency with mapdelete
+	// Set hashWriting after calling hash for consistency with mapdelete
 	h.flags |= hashWriting
 
 	bucket := hash & (uintptr(1)<<h.B - 1)
@@ -813,7 +813,7 @@ func mapdelete_faststr(t *maptype, h *hmap, ky string) {
 	key := stringStructOf(&ky)
 	hash := hashstr(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 
-	// Set hashWriting after calling alg.hash for consistency with mapdelete
+	// Set hashWriting after calling hash for consistency with mapdelete
 	h.flags |= hashWriting
 
 	bucket := hash & (uintptr(1)<<h.B - 1)

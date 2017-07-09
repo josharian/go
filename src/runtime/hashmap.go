@@ -354,8 +354,7 @@ func mapaccess1(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 	if h.flags&hashWriting != 0 {
 		throw("concurrent map read and map write")
 	}
-	alg := t.key.alg
-	hash := alg.hash(key, uintptr(h.hash0))
+	hash := t.key.hashfn(key, uintptr(h.hash0))
 	m := uintptr(1)<<h.B - 1
 	b := (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
 	if c := h.oldbuckets; c != nil {
@@ -381,7 +380,7 @@ func mapaccess1(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 			if t.indirectkey {
 				k = *((*unsafe.Pointer)(k))
 			}
-			if alg.equal(key, k) {
+			if t.key.equal(key, k) {
 				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
 				if t.indirectvalue {
 					v = *((*unsafe.Pointer)(v))
@@ -412,8 +411,7 @@ func mapaccess2(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, bool) 
 	if h.flags&hashWriting != 0 {
 		throw("concurrent map read and map write")
 	}
-	alg := t.key.alg
-	hash := alg.hash(key, uintptr(h.hash0))
+	hash := t.key.hashfn(key, uintptr(h.hash0))
 	m := uintptr(1)<<h.B - 1
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + (hash&m)*uintptr(t.bucketsize)))
 	if c := h.oldbuckets; c != nil {
@@ -439,7 +437,7 @@ func mapaccess2(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, bool) 
 			if t.indirectkey {
 				k = *((*unsafe.Pointer)(k))
 			}
-			if alg.equal(key, k) {
+			if t.key.equal(key, k) {
 				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
 				if t.indirectvalue {
 					v = *((*unsafe.Pointer)(v))
@@ -459,8 +457,7 @@ func mapaccessK(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, unsafe
 	if h == nil || h.count == 0 {
 		return nil, nil
 	}
-	alg := t.key.alg
-	hash := alg.hash(key, uintptr(h.hash0))
+	hash := t.key.hashfn(key, uintptr(h.hash0))
 	m := uintptr(1)<<h.B - 1
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + (hash&m)*uintptr(t.bucketsize)))
 	if c := h.oldbuckets; c != nil {
@@ -486,7 +483,7 @@ func mapaccessK(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, unsafe
 			if t.indirectkey {
 				k = *((*unsafe.Pointer)(k))
 			}
-			if alg.equal(key, k) {
+			if t.key.equal(key, k) {
 				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
 				if t.indirectvalue {
 					v = *((*unsafe.Pointer)(v))
@@ -534,10 +531,9 @@ func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 	if h.flags&hashWriting != 0 {
 		throw("concurrent map writes")
 	}
-	alg := t.key.alg
-	hash := alg.hash(key, uintptr(h.hash0))
+	hash := t.key.hashfn(key, uintptr(h.hash0))
 
-	// Set hashWriting after calling alg.hash, since alg.hash may panic,
+	// Set hashWriting after calling hash, since hash may panic,
 	// in which case we have not actually done a write.
 	h.flags |= hashWriting
 
@@ -573,7 +569,7 @@ again:
 			if t.indirectkey {
 				k = *((*unsafe.Pointer)(k))
 			}
-			if !alg.equal(key, k) {
+			if !t.key.equal(key, k) {
 				continue
 			}
 			// already have a mapping for key. Update it.
@@ -649,10 +645,9 @@ func mapdelete(t *maptype, h *hmap, key unsafe.Pointer) {
 		throw("concurrent map writes")
 	}
 
-	alg := t.key.alg
-	hash := alg.hash(key, uintptr(h.hash0))
+	hash := t.key.hashfn(key, uintptr(h.hash0))
 
-	// Set hashWriting after calling alg.hash, since alg.hash may panic,
+	// Set hashWriting after calling hash, since hash may panic,
 	// in which case we have not actually done a write (delete).
 	h.flags |= hashWriting
 
@@ -675,7 +670,7 @@ func mapdelete(t *maptype, h *hmap, key unsafe.Pointer) {
 			if t.indirectkey {
 				k2 = *((*unsafe.Pointer)(k2))
 			}
-			if !alg.equal(key, k2) {
+			if !t.key.equal(key, k2) {
 				continue
 			}
 			if t.indirectkey {
@@ -782,7 +777,6 @@ func mapiternext(it *hiter) {
 	b := it.bptr
 	i := it.i
 	checkBucket := it.checkBucket
-	alg := t.key.alg
 
 next:
 	if b == nil {
@@ -833,10 +827,10 @@ next:
 				if t.indirectkey {
 					k2 = *((*unsafe.Pointer)(k2))
 				}
-				if t.reflexivekey || alg.equal(k2, k2) {
+				if t.reflexivekey || t.key.equal(k2, k2) {
 					// If the item in the oldbucket is not destined for
 					// the current new bucket in the iteration, skip it.
-					hash := alg.hash(k2, uintptr(h.hash0))
+					hash := t.key.hashfn(k2, uintptr(h.hash0))
 					if hash&(uintptr(1)<<it.B-1) != checkBucket {
 						continue
 					}
@@ -870,7 +864,7 @@ next:
 				if t.indirectkey {
 					k2 = *((*unsafe.Pointer)(k2))
 				}
-				if t.reflexivekey || alg.equal(k2, k2) {
+				if t.reflexivekey || t.key.equal(k2, k2) {
 					// Check the current hash table for the data.
 					// This code handles the case where the key
 					// has been deleted, updated, or deleted and reinserted.
@@ -1044,7 +1038,6 @@ func bucketEvacuated(t *maptype, h *hmap, bucket uintptr) bool {
 func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 	b := (*bmap)(add(h.oldbuckets, oldbucket*uintptr(t.bucketsize)))
 	newbit := h.noldbuckets()
-	alg := t.key.alg
 	if !evacuated(b) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
@@ -1087,9 +1080,9 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				if !h.sameSizeGrow() {
 					// Compute hash to make our evacuation decision (whether we need
 					// to send this key/value to bucket x or bucket y).
-					hash := alg.hash(k2, uintptr(h.hash0))
+					hash := t.key.hashfn(k2, uintptr(h.hash0))
 					if h.flags&iterator != 0 {
-						if !t.reflexivekey && !alg.equal(k2, k2) {
+						if !t.reflexivekey && !t.key.equal(k2, k2) {
 							// If key != key (NaNs), then the hash could be (and probably
 							// will be) entirely different from the old hash. Moreover,
 							// it isn't reproducible. Reproducibility is required in the
@@ -1203,7 +1196,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 }
 
 func ismapkey(t *_type) bool {
-	return t.alg.hash != nil
+	return t.hashfn != nil
 }
 
 // Reflect stubs. Called from ../reflect/asm_*.s

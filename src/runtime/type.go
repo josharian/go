@@ -33,8 +33,12 @@ type _type struct {
 	align      uint8
 	fieldalign uint8
 	kind       uint8
-	alg        *typeAlg
-	_          uintptr // pad
+	// function for hashing objects of this type
+	// (ptr to object, seed) -> hash
+	hashfn func(unsafe.Pointer, uintptr) uintptr
+	// function for comparing objects of this type
+	// (ptr to object A, ptr to object B) -> ==?
+	equal func(unsafe.Pointer, unsafe.Pointer) bool
 	// gcdata stores the GC type data for the garbage collector.
 	// If the KindGCProg bit is set in kind, gcdata is a GC program.
 	// Otherwise it is a ptrmask bitmap. See mbitmap.go for details.

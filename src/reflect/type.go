@@ -295,27 +295,21 @@ const (
 // rtype must be kept in sync with ../runtime/type.go:/^type._type.
 type rtype struct {
 	size       uintptr
-	ptrdata    uintptr  // number of bytes in the type that can contain pointers
-	hash       uint32   // hash of type; avoids computation in hash tables
-	tflag      tflag    // extra type information flags
-	align      uint8    // alignment of variable with this type
-	fieldAlign uint8    // alignment of struct field with this type
-	kind       uint8    // enumeration for C
-	alg        *typeAlg // algorithm table
-	_          uintptr  // pad
-	gcdata     *byte    // garbage collection data
-	str        nameOff  // string form
-	ptrToThis  typeOff  // type for pointer to this type, may be zero
-}
-
-// a copy of runtime.typeAlg
-type typeAlg struct {
+	ptrdata    uintptr // number of bytes in the type that can contain pointers
+	hash       uint32  // hash of type; avoids computation in hash tables
+	tflag      tflag   // extra type information flags
+	align      uint8   // alignment of variable with this type
+	fieldAlign uint8   // alignment of struct field with this type
+	kind       uint8   // enumeration for C
 	// function for hashing objects of this type
 	// (ptr to object, seed) -> hash
-	hash func(unsafe.Pointer, uintptr) uintptr
+	hashfn func(unsafe.Pointer, uintptr) uintptr
 	// function for comparing objects of this type
 	// (ptr to object A, ptr to object B) -> ==?
-	equal func(unsafe.Pointer, unsafe.Pointer) bool
+	equal     func(unsafe.Pointer, unsafe.Pointer) bool
+	gcdata    *byte   // garbage collection data
+	str       nameOff // string form
+	ptrToThis typeOff // type for pointer to this type, may be zero
 }
 
 // Method on non-interface type
