@@ -5985,6 +5985,8 @@ func rewriteValuegeneric_OpConstString_0(v *Value) bool {
 	return false
 }
 func rewriteValuegeneric_OpConvert_0(v *Value) bool {
+	b := v.Block
+	_ = b
 	// match: (Convert (Add64 (Convert ptr mem) off) mem)
 	// cond:
 	// result: (Add64 ptr off)
@@ -6035,6 +6037,150 @@ func rewriteValuegeneric_OpConvert_0(v *Value) bool {
 		v.reset(OpAdd64)
 		v.AddArg(ptr)
 		v.AddArg(off)
+		return true
+	}
+	// match: (Convert (Add64 <t> x (Add64 (Convert ptr mem) y)) mem)
+	// cond:
+	// result: (Add64 ptr (Add64 <t> x y))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpAdd64 {
+			break
+		}
+		t := v_0.Type
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpAdd64 {
+			break
+		}
+		_ = v_0_1.Args[1]
+		v_0_1_0 := v_0_1.Args[0]
+		if v_0_1_0.Op != OpConvert {
+			break
+		}
+		_ = v_0_1_0.Args[1]
+		ptr := v_0_1_0.Args[0]
+		mem := v_0_1_0.Args[1]
+		y := v_0_1.Args[1]
+		if mem != v.Args[1] {
+			break
+		}
+		v.reset(OpAdd64)
+		v.AddArg(ptr)
+		v0 := b.NewValue0(v.Pos, OpAdd64, t)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Convert (Add64 <t> x (Add64 y (Convert ptr mem))) mem)
+	// cond:
+	// result: (Add64 ptr (Add64 <t> x y))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpAdd64 {
+			break
+		}
+		t := v_0.Type
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpAdd64 {
+			break
+		}
+		_ = v_0_1.Args[1]
+		y := v_0_1.Args[0]
+		v_0_1_1 := v_0_1.Args[1]
+		if v_0_1_1.Op != OpConvert {
+			break
+		}
+		_ = v_0_1_1.Args[1]
+		ptr := v_0_1_1.Args[0]
+		mem := v_0_1_1.Args[1]
+		if mem != v.Args[1] {
+			break
+		}
+		v.reset(OpAdd64)
+		v.AddArg(ptr)
+		v0 := b.NewValue0(v.Pos, OpAdd64, t)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Convert (Add64 <t> (Add64 (Convert ptr mem) y) x) mem)
+	// cond:
+	// result: (Add64 ptr (Add64 <t> x y))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpAdd64 {
+			break
+		}
+		t := v_0.Type
+		_ = v_0.Args[1]
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAdd64 {
+			break
+		}
+		_ = v_0_0.Args[1]
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpConvert {
+			break
+		}
+		_ = v_0_0_0.Args[1]
+		ptr := v_0_0_0.Args[0]
+		mem := v_0_0_0.Args[1]
+		y := v_0_0.Args[1]
+		x := v_0.Args[1]
+		if mem != v.Args[1] {
+			break
+		}
+		v.reset(OpAdd64)
+		v.AddArg(ptr)
+		v0 := b.NewValue0(v.Pos, OpAdd64, t)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Convert (Add64 <t> (Add64 y (Convert ptr mem)) x) mem)
+	// cond:
+	// result: (Add64 ptr (Add64 <t> x y))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpAdd64 {
+			break
+		}
+		t := v_0.Type
+		_ = v_0.Args[1]
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAdd64 {
+			break
+		}
+		_ = v_0_0.Args[1]
+		y := v_0_0.Args[0]
+		v_0_0_1 := v_0_0.Args[1]
+		if v_0_0_1.Op != OpConvert {
+			break
+		}
+		_ = v_0_0_1.Args[1]
+		ptr := v_0_0_1.Args[0]
+		mem := v_0_0_1.Args[1]
+		x := v_0.Args[1]
+		if mem != v.Args[1] {
+			break
+		}
+		v.reset(OpAdd64)
+		v.AddArg(ptr)
+		v0 := b.NewValue0(v.Pos, OpAdd64, t)
+		v0.AddArg(x)
+		v0.AddArg(y)
+		v.AddArg(v0)
 		return true
 	}
 	// match: (Convert (Convert ptr mem) mem)
