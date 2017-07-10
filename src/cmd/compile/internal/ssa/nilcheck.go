@@ -163,66 +163,92 @@ const minZeroPage = 4096
 func nilcheckelim2(f *Func) {
 	unnecessary := f.newSparseSet(f.NumValues())
 	defer f.retSparseSet(unnecessary)
+	var chain []*Block
 	for _, b := range f.Blocks {
+		chain = chain[:0]
+		// TODO: this could be quadratic. fix.
+		for {
+			chain = append(chain, b)
+			// TODO: why are there cases in which b == b.Succs[0].Block() -- that is, in which
+			// there is an infinite loop block? Are they legit, like for{}, or do they indicate bugs?
+			// TODO: do we need to worry about more complicated infinite loops here?
+			// e.g. should I be checking instead whether b == chain[0]?
+			if b.Kind != BlockPlain || b == b.Succs[0].Block() {
+				break
+			}
+			b = b.Succs[0].Block()
+		}
+
+		// TODO: the existing code contains a bug (#20962) that must be fixed first
+
 		// Walk the block backwards. Find instructions that will fault if their
 		// input pointer is nil. Remove nil checks on those pointers, as the
 		// faulting instruction effectively does the nil check for free.
 		unnecessary.clear()
-		for i := len(b.Values) - 1; i >= 0; i-- {
-			v := b.Values[i]
-			if opcodeTable[v.Op].nilCheck && unnecessary.contains(v.Args[0].ID) {
-				if f.fe.Debug_checknil() && v.Pos.Line() > 1 {
-					f.Warnl(v.Pos, "removed nil check")
-				}
-				v.reset(OpUnknown)
-				continue
-			}
-			if v.Type.IsMemory() || v.Type.IsTuple() && v.Type.FieldType(1).IsMemory() {
-				if v.Op == OpVarDef || v.Op == OpVarKill || v.Op == OpVarLive {
-					// These ops don't really change memory.
+		for x := len(chain) - 1; x >= 0; x-- {
+			b = chain[x]
+			for i := len(b.Values) - 1; i >= 0; i-- {
+				v := b.Values[i]
+				if opcodeTable[v.Op].nilCheck && unnecessary.contains(v.Args[0].ID) {
+					if f.fe.Debug_checknil() && v.Pos.Line() > 1 {
+						f.Warnl(v.Pos, "removed nil check")
+					}
+					v.reset(OpUnknown)
 					continue
 				}
-				// This op changes memory.  Any faulting instruction after v that
-				// we've recorded in the unnecessary map is now obsolete.
-				unnecessary.clear()
-			}
-
-			// Find any pointers that this op is guaranteed to fault on if nil.
-			var ptrstore [2]*Value
-			ptrs := ptrstore[:0]
-			if opcodeTable[v.Op].faultOnNilArg0 {
-				ptrs = append(ptrs, v.Args[0])
-			}
-			if opcodeTable[v.Op].faultOnNilArg1 {
-				ptrs = append(ptrs, v.Args[1])
-			}
-			for _, ptr := range ptrs {
-				// Check to make sure the offset is small.
-				switch opcodeTable[v.Op].auxType {
-				case auxSymOff:
-					if v.Aux != nil || v.AuxInt < 0 || v.AuxInt >= minZeroPage {
+				if v.Type.IsMemory() || v.Type.IsTuple() && v.Type.FieldType(1).IsMemory() {
+					if v.Op == OpVarDef || v.Op == OpVarKill || v.Op == OpVarLive {
+						// These ops don't really change memory.
 						continue
 					}
-				case auxSymValAndOff:
-					off := ValAndOff(v.AuxInt).Off()
-					if v.Aux != nil || off < 0 || off >= minZeroPage {
-						continue
-					}
-				case auxInt32:
-					// Mips uses this auxType for atomic add constant. It does not affect the effective address.
-				case auxInt64:
-					// ARM uses this auxType for duffcopy/duffzero/alignment info.
-					// It does not affect the effective address.
-				case auxNone:
-					// offset is zero.
-				default:
-					v.Fatalf("can't handle aux %s (type %d) yet\n", v.auxString(), int(opcodeTable[v.Op].auxType))
+					// This op changes memory.  Any faulting instruction after v that
+					// we've recorded in the unnecessary map is now obsolete.
+					unnecessary.clear()
 				}
-				// This instruction is guaranteed to fault if ptr is nil.
-				// Any previous nil check op is unnecessary.
-				unnecessary.add(ptr.ID)
+
+				// Find any pointers that this op is guaranteed to fault on if nil.
+				var ptrstore [2]*Value
+				ptrs := ptrstore[:0]
+				if opcodeTable[v.Op].faultOnNilArg0 {
+					ptrs = append(ptrs, v.Args[0])
+				}
+				if opcodeTable[v.Op].faultOnNilArg1 {
+					ptrs = append(ptrs, v.Args[1])
+				}
+				for _, ptr := range ptrs {
+					// Check to make sure the offset is small.
+					switch opcodeTable[v.Op].auxType {
+					case auxSymOff:
+						if v.Aux != nil || v.AuxInt < 0 || v.AuxInt >= minZeroPage {
+							continue
+						}
+					case auxSymValAndOff:
+						off := ValAndOff(v.AuxInt).Off()
+						if v.Aux != nil || off < 0 || off >= minZeroPage {
+							continue
+						}
+					case auxInt32:
+						// Mips uses this auxType for atomic add constant. It does not affect the effective address.
+					case auxInt64:
+						// ARM uses this auxType for duffcopy/duffzero/alignment info.
+						// It does not affect the effective address.
+					case auxNone:
+						// offset is zero.
+					default:
+						v.Fatalf("can't handle aux %s (type %d) yet\n", v.auxString(), int(opcodeTable[v.Op].auxType))
+					}
+					// This instruction is guaranteed to fault if ptr is nil.
+					// Any previous nil check op is unnecessary.
+					unnecessary.add(ptr.ID)
+				}
 			}
 		}
+	}
+
+	// TODO: skip this work when no nil checks have been eliminated (#20964)
+	// how to do that cheaply (local var per block? slice of "needs compaction" bools?)
+	// depends on how the work gets scheduled, which interacts with avoiding quadratic scheduling (above).
+	for _, b := range f.Blocks {
 		// Remove values we've clobbered with OpUnknown.
 		i := 0
 		for _, v := range b.Values {
@@ -235,8 +261,5 @@ func nilcheckelim2(f *Func) {
 			b.Values[j] = nil
 		}
 		b.Values = b.Values[:i]
-
-		// TODO: if b.Kind == BlockPlain, start the analysis in the subsequent block to find
-		// more unnecessary nil checks.  Would fix test/nilptr3_ssa.go:157.
 	}
 }
