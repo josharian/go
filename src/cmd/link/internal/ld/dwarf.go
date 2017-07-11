@@ -14,8 +14,11 @@
 package ld
 
 import (
+	"bytes"
 	"cmd/internal/dwarf"
 	"cmd/internal/objabi"
+	"compress/zlib"
+	"encoding/binary"
 	"fmt"
 	"log"
 	"os"
@@ -86,7 +89,7 @@ func writeabbrev(ctxt *Link, syms []*Symbol) []*Symbol {
 	s.Type = SDWARFSECT
 	abbrevsym = s
 	Addbytes(s, dwarf.GetAbbrev())
-	return append(syms, s)
+	return append(syms, compressedDWARFSym(ctxt, s))
 }
 
 /*
@@ -1313,7 +1316,7 @@ func writeranges(ctxt *Link, syms []*Symbol) []*Symbol {
 	}
 	if rangesec.Size > 0 {
 		// PE does not like empty sections
-		syms = append(syms, rangesec)
+		syms = append(syms, compressedDWARFSym(ctxt, rangesec))
 	}
 	return syms
 }
@@ -1430,6 +1433,27 @@ func writepub(ctxt *Link, sname string, ispub func(*dwarf.DWDie) bool, syms []*S
 	return syms
 }
 
+func compressedDWARFSym(ctxt *Link, s *Symbol) *Symbol {
+	if os.Getenv("J") == "" {
+		return s
+	}
+	if !strings.HasPrefix(s.Name, ".debug_") {
+		panic("not a dwarf sym")
+	}
+	z := ctxt.Syms.Lookup(".zdebug_"+s.Name[len(".debug_"):], 0)
+	z.Type = SDWARFSECT
+	z.Sect = s.Sect
+	buf := new(bytes.Buffer)
+	buf.WriteString("ZLIB")
+	binary.Write(buf, binary.BigEndian, uint64(len(s.P)))
+	w := zlib.NewWriter(buf)
+	w.Write(s.P)
+	w.Close()
+	z.P = buf.Bytes()
+	z.Size = int64(len(z.P))
+	return z
+}
+
 /*
  *  emit .debug_aranges.  _info must have been written before,
  *  because we need die->offs of dwarf.DW_globals.
@@ -1471,7 +1495,7 @@ func writearanges(ctxt *Link, syms []*Symbol) []*Symbol {
 		adduintxx(ctxt, s, 0, SysArch.PtrSize)
 	}
 	if s.Size > 0 {
-		syms = append(syms, s)
+		syms = append(syms, compressedDWARFSym(ctxt, s))
 	}
 	return syms
 }
@@ -1614,8 +1638,13 @@ func dwarfaddshstrings(ctxt *Link, shstrtab *Symbol) {
 		return
 	}
 
-	Addstring(shstrtab, ".debug_abbrev")
-	Addstring(shstrtab, ".debug_aranges")
+	if os.Getenv("J") != "" {
+		Addstring(shstrtab, ".zdebug_abbrev")
+		Addstring(shstrtab, ".zdebug_aranges")
+	} else {
+		Addstring(shstrtab, ".debug_abbrev")
+		Addstring(shstrtab, ".debug_aranges")
+	}
 	Addstring(shstrtab, ".debug_frame")
 	Addstring(shstrtab, ".debug_info")
 	Addstring(shstrtab, ".debug_line")
@@ -1625,7 +1654,11 @@ func dwarfaddshstrings(ctxt *Link, shstrtab *Symbol) {
 	Addstring(shstrtab, ".debug_ranges")
 	if Linkmode == LinkExternal {
 		Addstring(shstrtab, elfRelType+".debug_info")
-		Addstring(shstrtab, elfRelType+".debug_aranges")
+		if os.Getenv("J") != "" {
+			Addstring(shstrtab, elfRelType+".zdebug_aranges")
+		} else {
+			Addstring(shstrtab, elfRelType+".debug_aranges")
+		}
 		Addstring(shstrtab, elfRelType+".debug_line")
 		Addstring(shstrtab, elfRelType+".debug_frame")
 		Addstring(shstrtab, elfRelType+".debug_pubnames")

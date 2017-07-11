@@ -22,9 +22,9 @@ import (
 
 func checkGdbEnvironment(t *testing.T) {
 	testenv.MustHaveGoBuild(t)
-	if runtime.GOOS == "darwin" {
-		t.Skip("gdb does not work on darwin")
-	}
+	// if runtime.GOOS == "darwin" {
+	// 	t.Skip("gdb does not work on darwin")
+	// }
 	if runtime.GOOS == "linux" && runtime.GOARCH == "ppc64" {
 		t.Skip("skipping gdb tests on linux/ppc64; see golang.org/issue/17366")
 	}

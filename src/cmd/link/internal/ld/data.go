@@ -599,7 +599,11 @@ func relocsym(ctxt *Link, s *Symbol) {
 				sectName = r.Sym.Sect.Name
 				vaddr = int64(r.Sym.Sect.Vaddr)
 			case r.Sym.Type == SDWARFRANGE:
-				sectName = ".debug_ranges"
+				if os.Getenv("J") == "" {
+					sectName = ".debug_ranges"
+				} else {
+					sectName = ".zdebug_ranges"
+				}
 			default:
 				Errorf(s, "missing DWARF section for relocation target %s", r.Sym.Name)
 			}
@@ -1052,7 +1056,6 @@ func Dwarfblk(ctxt *Link, addr int64, size int64) {
 	if *flagA {
 		ctxt.Logf("dwarfblk [%#x,%#x) at offset %#x\n", addr, addr+size, coutbuf.Offset())
 	}
-
 	blk(ctxt, dwarfp, addr, size, zeros[:])
 }
 

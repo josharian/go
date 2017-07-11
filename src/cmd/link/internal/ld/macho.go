@@ -6,6 +6,7 @@ package ld
 
 import (
 	"cmd/internal/sys"
+	"fmt"
 	"sort"
 	"strings"
 )
@@ -405,6 +406,20 @@ func machoshbits(ctxt *Link, mseg *MachoSeg, sect *Section, segname string) {
 
 	if segname == "__DWARF" {
 		msect.flag |= 0x02000000
+	}
+}
+
+func machoCompressDWARF() {
+	for i := 0; i < nseg; i++ {
+		s := &seg[i]
+		if s.name != "__DWARF" {
+			continue
+		}
+		fmt.Printf("seg %v %d %d\n", s.name, s.nsect, len(s.sect))
+		for j := uint32(0); j < s.nsect; j++ {
+			t := &s.sect[j]
+			fmt.Printf("  sect %#v\n", t)
+		}
 	}
 }
 
