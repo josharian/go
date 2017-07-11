@@ -218,11 +218,8 @@ func machowrite() int {
 		Thearch.Lput(0) /* reserved */
 	}
 
-	var j int
-	var s *MachoSeg
-	var t *MachoSect
 	for i := 0; i < nseg; i++ {
-		s = &seg[i]
+		s := &seg[i]
 		if macho64 {
 			Thearch.Lput(25) /* segment 64 */
 			Thearch.Lput(72 + 80*s.nsect)
@@ -249,8 +246,8 @@ func machowrite() int {
 			Thearch.Lput(s.flag)
 		}
 
-		for j = 0; uint32(j) < s.nsect; j++ {
-			t = &s.sect[j]
+		for j := 0; uint32(j) < s.nsect; j++ {
+			t := &s.sect[j]
 			if macho64 {
 				strnput(t.name, 16)
 				strnput(t.segname, 16)
@@ -280,13 +277,12 @@ func machowrite() int {
 		}
 	}
 
-	var l *MachoLoad
 	for i := 0; i < len(load); i++ {
-		l = &load[i]
-		Thearch.Lput(l.type_)
-		Thearch.Lput(4 * (uint32(len(l.data)) + 2))
-		for j = 0; j < len(l.data); j++ {
-			Thearch.Lput(l.data[j])
+		ml := &load[i]
+		Thearch.Lput(ml.type_)
+		Thearch.Lput(4 * (uint32(len(ml.data)) + 2))
+		for j := 0; j < len(ml.data); j++ {
+			Thearch.Lput(ml.data[j])
 		}
 	}
 
