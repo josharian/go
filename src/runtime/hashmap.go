@@ -308,6 +308,9 @@ func makemap(t *maptype, hint int64, h *hmap, bucket unsafe.Pointer) *hmap {
 	if dataOffset%uintptr(t.elem.align) != 0 {
 		throw("need padding in bucket (value)")
 	}
+	if evacuatedX+1 != evacuatedY {
+		throw("bad evacuatedN")
+	}
 
 	// find size parameter which will hold the requested # of elements
 	B := uint8(0)
@@ -1060,12 +1063,13 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 	if !evacuated(b) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
-		x := evacdst{b: t.bucketptr(h.buckets, oldbucket)}
-		var y evacdst
+
+		// xy contains the x and y (low and high) evacuation destinations.
+		xy := [2]evacdst{evacdst{b: t.bucketptr(h.buckets, oldbucket)}}
 		if !h.sameSizeGrow() {
 			// Only calculate y if we're growing bigger.
 			// Otherwise GC can see bad pointers.
-			y.b = t.bucketptr(h.buckets, oldbucket+newbit)
+			xy[1].b = t.bucketptr(h.buckets, oldbucket+newbit)
 		}
 		for ; b != nil; b = b.overflow(t) {
 			for i := uintptr(0); i < bucketCnt; i++ {
@@ -1077,7 +1081,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				if top < minTopHash {
 					throw("bad map state")
 				}
-				useX := true
+				var useY uint8
 				if !h.sameSizeGrow() {
 					// Compute hash to make our evacuation decision (whether we need
 					// to send this key/value to bucket x or bucket y).
@@ -1105,17 +1109,13 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 						}
 						top = tophash(hash)
 					}
-					useX = hash&newbit == 0
+					if hash&newbit != 0 {
+						useY = 1
+					}
 				}
 
-				var dst *evacdst // destination
-				if useX {
-					b.tophash[i] = evacuatedX
-					dst = &x
-				} else {
-					b.tophash[i] = evacuatedY
-					dst = &y
-				}
+				b.tophash[i] = evacuatedX + useY
+				dst := &xy[useY] // destination
 
 				if dst.i == bucketCnt {
 					dst.b = h.newoverflow(t, dst.b)
@@ -1166,12 +1166,13 @@ func evacuate64(t *maptype, h *hmap, oldbucket uintptr) {
 	if !evacuated(b) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
-		x := evacdst{b: t.bucketptr(h.buckets, oldbucket)}
-		var y evacdst
+
+		// xy contains the x and y (low and high) evacuation destinations.
+		xy := [2]evacdst{evacdst{b: t.bucketptr(h.buckets, oldbucket)}}
 		if !h.sameSizeGrow() {
 			// Only calculate y if we're growing bigger.
 			// Otherwise GC can see bad pointers.
-			y.b = t.bucketptr(h.buckets, oldbucket+newbit)
+			xy[1].b = t.bucketptr(h.buckets, oldbucket+newbit)
 		}
 		for ; b != nil; b = b.overflow(t) {
 			for i := uintptr(0); i < bucketCnt; i++ {
@@ -1183,23 +1184,19 @@ func evacuate64(t *maptype, h *hmap, oldbucket uintptr) {
 				if top < minTopHash {
 					throw("bad map state")
 				}
-				useX := true
+				var useY uint8
 				if !h.sameSizeGrow() {
 					// Compute hash to make our evacuation decision (whether we need
 					// to send this key/value to bucket x or bucket y).
 					k := add(unsafe.Pointer(b), dataOffset+i*8)
 					hash := t.key.alg.hash(k, uintptr(h.hash0))
-					useX = hash&newbit == 0
+					if hash&newbit != 0 {
+						useY = 1
+					}
 				}
 
-				var dst *evacdst // destination
-				if useX {
-					b.tophash[i] = evacuatedX
-					dst = &x
-				} else {
-					b.tophash[i] = evacuatedY
-					dst = &y
-				}
+				b.tophash[i] = evacuatedX + useY
+				dst := &xy[useY]
 
 				if dst.i == bucketCnt {
 					dst.b = h.newoverflow(t, dst.b)
