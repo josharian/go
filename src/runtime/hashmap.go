@@ -1049,31 +1049,23 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
 
-		var (
-			x, y   *bmap          // current low/high buckets in new map
-			xi, yi int            // key/val indices into x and y
-			xk, yk unsafe.Pointer // pointers to current x and y key storage
-			xv, yv unsafe.Pointer // pointers to current x and y value storage
-		)
-		x = (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))
-		xi = 0
-		xk = add(unsafe.Pointer(x), dataOffset)
-		xv = add(xk, bucketCnt*uintptr(t.keysize))
-		if !h.sameSizeGrow() {
-			// Only calculate y pointers if we're growing bigger.
-			// Otherwise GC can see bad pointers.
-			y = (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
-			yi = 0
-			yk = add(unsafe.Pointer(y), dataOffset)
-			yv = add(yk, bucketCnt*uintptr(t.keysize))
-		}
-		for ; b != nil; b = b.overflow(t) {
-			k := add(unsafe.Pointer(b), dataOffset)
+		// Two passes.
+		// First pass, make all decisions and move everything that's going to the low bucket.
+		// Second pass, move everything that's going to the high bucket.
+		// TODO: explain why (cache), if in fact it helps perf.
+
+		// First pass: decide, move x things, mark y things.
+		x := (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))
+		xi := 0
+		xk := add(unsafe.Pointer(x), dataOffset)
+		xv := add(xk, bucketCnt*uintptr(t.keysize))
+		for c := b; c != nil; c = c.overflow(t) {
+			k := add(unsafe.Pointer(c), dataOffset)
 			v := add(k, bucketCnt*uintptr(t.keysize))
 			for i := 0; i < bucketCnt; i, k, v = i+1, add(k, uintptr(t.keysize)), add(v, uintptr(t.valuesize)) {
-				top := b.tophash[i]
+				top := c.tophash[i]
 				if top == empty {
-					b.tophash[i] = evacuatedEmpty
+					c.tophash[i] = evacuatedEmpty
 					continue
 				}
 				if top < minTopHash {
@@ -1115,7 +1107,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					useX = hash&newbit == 0
 				}
 				if useX {
-					b.tophash[i] = evacuatedX
+					c.tophash[i] = evacuatedX
 					if xi == bucketCnt {
 						newx := h.newoverflow(t, x)
 						x = newx
@@ -1137,8 +1129,28 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					xi++
 					xk = add(xk, uintptr(t.keysize))
 					xv = add(xv, uintptr(t.valuesize))
-				} else {
-					b.tophash[i] = evacuatedY
+				}
+			}
+		}
+
+		// Second pass: Move y things. Only relevant for growing bigger.
+		if !h.sameSizeGrow() {
+			// Only calculate y pointers if we're growing bigger.
+			// Otherwise GC can see bad pointers.
+			y := (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
+			yi := 0
+			yk := add(unsafe.Pointer(y), dataOffset)
+			yv := add(yk, bucketCnt*uintptr(t.keysize))
+			for c := b; c != nil; c = c.overflow(t) {
+				k := add(unsafe.Pointer(c), dataOffset)
+				v := add(k, bucketCnt*uintptr(t.keysize))
+				for i := 0; i < bucketCnt; i, k, v = i+1, add(k, uintptr(t.keysize)), add(v, uintptr(t.valuesize)) {
+					top := c.tophash[i]
+					switch top {
+					case empty, evacuatedEmpty, evacuatedX:
+						continue
+					}
+					c.tophash[i] = evacuatedY
 					if yi == bucketCnt {
 						newy := h.newoverflow(t, y)
 						y = newy
@@ -1148,7 +1160,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					}
 					y.tophash[yi] = top
 					if t.indirectkey {
-						*(*unsafe.Pointer)(yk) = k2
+						*(*unsafe.Pointer)(yk) = *(*unsafe.Pointer)(k)
 					} else {
 						typedmemmove(t.key, yk, k)
 					}
@@ -1163,6 +1175,7 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				}
 			}
 		}
+
 		// Unlink the overflow buckets & clear key/value to help GC.
 		if h.flags&oldIterator == 0 {
 			b = (*bmap)(add(h.oldbuckets, oldbucket*uintptr(t.bucketsize)))
