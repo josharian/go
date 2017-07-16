@@ -1133,8 +1133,10 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 				dv := t.valptr(dst.b, dst.i)
 				if t.indirectvalue {
 					*(*unsafe.Pointer)(dv) = *(*unsafe.Pointer)(v)
-				} else {
+				} else if t.elem.kind&kindNoPointers == 0 {
 					typedmemmove(t.elem, dv, v)
+				} else {
+					memmove(dv, v, t.elem.size)
 				}
 				dst.i++
 			}
@@ -1208,7 +1210,13 @@ func evacuate64(t *maptype, h *hmap, oldbucket uintptr) {
 				*((*uint64)(dk)) = *((*uint64)(k)) // copy key
 				v := t.valptr(b, i)
 				dv := t.valptr(dst.b, dst.i)
-				typedmemmove(t.elem, dv, v)
+				if t.indirectvalue {
+					*(*unsafe.Pointer)(dv) = *(*unsafe.Pointer)(v)
+				} else if t.elem.kind&kindNoPointers == 0 {
+					typedmemmove(t.elem, dv, v)
+				} else {
+					memmove(dv, v, t.elem.size)
+				}
 				dst.i++
 			}
 		}
