@@ -1057,7 +1057,6 @@ type evacdst struct {
 func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 	b := t.bucketptr(h.oldbuckets, oldbucket)
 	newbit := h.noldbuckets()
-	alg := t.key.alg
 	if !evacuated(b) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
@@ -1086,8 +1085,8 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 					if t.indirectkey {
 						k = *(*unsafe.Pointer)(k)
 					}
-					hash := alg.hash(k, uintptr(h.hash0))
-					if h.flags&iterator != 0 && !t.reflexivekey && !alg.equal(k, k) {
+					hash := t.key.alg.hash(k, uintptr(h.hash0))
+					if h.flags&iterator != 0 && !t.reflexivekey && !t.key.alg.equal(k, k) {
 						// If key != key (NaNs), then the hash could be (and probably
 						// will be) entirely different from the old hash. Moreover,
 						// it isn't reproducible. Reproducibility is required in the
