@@ -1163,7 +1163,6 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 func evacuate64(t *maptype, h *hmap, oldbucket uintptr) {
 	b := t.bucketptr(h.oldbuckets, oldbucket)
 	newbit := h.noldbuckets()
-	alg := t.key.alg
 	if !evacuated(b) {
 		// TODO: reuse overflow buckets instead of using new ones, if there
 		// is no iterator using the old buckets.  (If !oldIterator.)
@@ -1188,8 +1187,8 @@ func evacuate64(t *maptype, h *hmap, oldbucket uintptr) {
 				if !h.sameSizeGrow() {
 					// Compute hash to make our evacuation decision (whether we need
 					// to send this key/value to bucket x or bucket y).
-					k := t.keyptr(b, i)
-					hash := alg.hash(k, uintptr(h.hash0))
+					k := add(unsafe.Pointer(b), dataOffset+i*8)
+					hash := t.key.alg.hash(k, uintptr(h.hash0))
 					useX = hash&newbit == 0
 				}
 
@@ -1207,9 +1206,9 @@ func evacuate64(t *maptype, h *hmap, oldbucket uintptr) {
 					dst.i = 0
 				}
 				dst.b.tophash[dst.i&(bucketCnt-1)] = top
-				k := t.keyptr(b, i)
-				dk := t.keyptr(dst.b, dst.i)
-				typedmemmove(t.key, dk, k) // copy value
+				k := add(unsafe.Pointer(b), dataOffset+i*8)
+				dk := add(unsafe.Pointer(dst.b), dataOffset+dst.i*8)
+				*((*uint64)(dk)) = *((*uint64)(k)) // copy key
 				v := t.valptr(b, i)
 				dv := t.valptr(dst.b, dst.i)
 				typedmemmove(t.elem, dv, v)
