@@ -554,6 +554,7 @@ again:
 	if insertb == nil {
 		// all current buckets are full, allocate a new one.
 		insertb = h.newoverflow(t, b)
+		inserti = 0 // not necessary, but avoids needlessly spilling inserti
 	}
 
 	// store new key/value at insert position
