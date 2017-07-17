@@ -514,14 +514,13 @@ again:
 		growWork64(t, h, bucket)
 	}
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + bucket*uintptr(t.bucketsize)))
-	top := tophash(hash)
 
 	var insertb *bmap
 	var inserti uintptr
 	for {
 		for i := uintptr(0); i < bucketCnt; i++ {
-			if b.tophash[i] != top {
-				if b.tophash[i] == empty && insertb == nil {
+			if b.tophash[i] == empty {
+				if insertb == nil {
 					insertb = b
 					inserti = i
 				}
@@ -558,7 +557,7 @@ again:
 
 	// store new key/value at insert position
 	*((*uint64)(add(unsafe.Pointer(insertb), dataOffset+inserti*8))) = key
-	insertb.tophash[inserti&7] = top
+	insertb.tophash[inserti&7] = tophash(hash)
 	h.count++
 
 done:
