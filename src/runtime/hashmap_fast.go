@@ -505,7 +505,8 @@ func mapassign_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 	h.flags |= hashWriting
 
 	if h.buckets == nil {
-		h.buckets = newarray(t.bucket, 1)
+		newarr := newarray(t.bucket, 1)
+		h.buckets = newarr
 	}
 
 again:
