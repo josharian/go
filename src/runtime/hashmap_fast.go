@@ -514,14 +514,13 @@ again:
 		growWork(t, h, bucket)
 	}
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + bucket*uintptr(t.bucketsize)))
-	top := tophash(hash)
 
 	var insertb *bmap
 	var inserti uintptr
 	for {
 		for i := uintptr(0); i < bucketCnt; i++ {
-			if b.tophash[i] != top {
-				if b.tophash[i] == empty && insertb == nil {
+			if b.tophash[i] == empty {
+				if insertb == nil {
 					insertb = b
 					inserti = i
 				}
@@ -559,7 +558,7 @@ again:
 
 	// store new key/value at insert position
 	typedmemmove(t.key, add(unsafe.Pointer(insertb), dataOffset+inserti*8), unsafe.Pointer(&key))
-	insertb.tophash[inserti&(bucketCnt-1)] = top // mask inserti to avoid bounds checks
+	insertb.tophash[inserti&(bucketCnt-1)] = tophash(hash) // mask inserti to avoid bounds checks
 	h.count++
 
 done:
