@@ -24,7 +24,9 @@ func itabhash(inter *interfacetype, typ *_type) uint32 {
 	h := inter.typ.hash
 	h += 17 * typ.hash
 	// TODO(rsc): h += 23 * x.mhash ?
-	return h % hashSize
+	// This return value is faster than n % hashSize;
+	// see lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
+	return uint32((uint64(h) * hashSize) >> 32)
 }
 
 func getitab(inter *interfacetype, typ *_type, canfail bool) *itab {
