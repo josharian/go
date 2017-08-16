@@ -375,16 +375,14 @@ again:
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + bucket*uintptr(t.bucketsize)))
 	top := tophash(hash)
 
-	var inserti *uint8
-	var insertk unsafe.Pointer
-	var val unsafe.Pointer
+	var insertb *bmap
+	var inserti uintptr
 	for {
 		for i := uintptr(0); i < bucketCnt; i++ {
 			if b.tophash[i] != top {
-				if b.tophash[i] == empty && inserti == nil {
-					inserti = &b.tophash[i]
-					insertk = add(unsafe.Pointer(b), dataOffset+i*4)
-					val = add(unsafe.Pointer(b), dataOffset+bucketCnt*4+i*uintptr(t.valuesize))
+				if b.tophash[i] == empty && insertb == nil {
+					insertb = b
+					inserti = i
 				}
 				continue
 			}
@@ -392,7 +390,8 @@ again:
 			if k != key {
 				continue
 			}
-			val = add(unsafe.Pointer(b), dataOffset+bucketCnt*4+i*uintptr(t.valuesize))
+			insertb = b
+			inserti = i
 			goto done
 		}
 		ovf := b.overflow(t)
@@ -411,20 +410,19 @@ again:
 		goto again // Growing the table invalidates everything, so try again
 	}
 
-	if inserti == nil {
+	if insertb == nil {
 		// all current buckets are full, allocate a new one.
-		newb := h.newoverflow(t, b)
-		inserti = &newb.tophash[0]
-		insertk = add(unsafe.Pointer(newb), dataOffset)
-		val = add(insertk, bucketCnt*4)
+		insertb = h.newoverflow(t, b)
+		inserti = 0 // not necessary, but avoids needlessly spilling inserti
 	}
 
 	// store new key/value at insert position
-	typedmemmove(t.key, insertk, unsafe.Pointer(&key))
-	*inserti = top
+	typedmemmove(t.key, add(unsafe.Pointer(insertb), dataOffset+inserti*4), unsafe.Pointer(&key))
+	insertb.tophash[inserti&(bucketCnt-1)] = top // mask inserti to avoid bounds checks
 	h.count++
 
 done:
+	val := add(unsafe.Pointer(insertb), dataOffset+bucketCnt*4+inserti*uintptr(t.valuesize))
 	if h.flags&hashWriting == 0 {
 		throw("concurrent map writes")
 	}
@@ -544,16 +542,14 @@ again:
 	b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + bucket*uintptr(t.bucketsize)))
 	top := tophash(hash)
 
-	var inserti *uint8
-	var insertk unsafe.Pointer
-	var val unsafe.Pointer
+	var insertb *bmap
+	var inserti uintptr
 	for {
 		for i := uintptr(0); i < bucketCnt; i++ {
 			if b.tophash[i] != top {
-				if b.tophash[i] == empty && inserti == nil {
-					inserti = &b.tophash[i]
-					insertk = add(unsafe.Pointer(b), dataOffset+i*2*sys.PtrSize)
-					val = add(unsafe.Pointer(b), dataOffset+bucketCnt*2*sys.PtrSize+i*uintptr(t.valuesize))
+				if b.tophash[i] == empty && insertb == nil {
+					insertb = b
+					inserti = i
 				}
 				continue
 			}
@@ -565,7 +561,8 @@ again:
 				continue
 			}
 			// already have a mapping for key. Update it.
-			val = add(unsafe.Pointer(b), dataOffset+bucketCnt*2*sys.PtrSize+i*uintptr(t.valuesize))
+			insertb = b
+			inserti = i
 			goto done
 		}
 		ovf := b.overflow(t)
@@ -584,20 +581,19 @@ again:
 		goto again // Growing the table invalidates everything, so try again
 	}
 
-	if inserti == nil {
+	if insertb == nil {
 		// all current buckets are full, allocate a new one.
-		newb := h.newoverflow(t, b)
-		inserti = &newb.tophash[0]
-		insertk = add(unsafe.Pointer(newb), dataOffset)
-		val = add(insertk, bucketCnt*2*sys.PtrSize)
+		insertb = h.newoverflow(t, b)
+		inserti = 0 // not necessary, but avoids needlessly spilling inserti
 	}
 
 	// store new key/value at insert position
-	*((*stringStruct)(insertk)) = *key
-	*inserti = top
+	*((*stringStruct)(add(unsafe.Pointer(insertb), dataOffset+inserti*2*sys.PtrSize))) = *key
+	insertb.tophash[inserti&(bucketCnt-1)] = top // mask inserti to avoid bounds checks
 	h.count++
 
 done:
+	val := add(unsafe.Pointer(insertb), dataOffset+bucketCnt*2*sys.PtrSize+inserti*uintptr(t.valuesize))
 	if h.flags&hashWriting == 0 {
 		throw("concurrent map writes")
 	}
