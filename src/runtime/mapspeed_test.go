@@ -310,14 +310,24 @@ func BenchmarkSmallKeyMap(b *testing.B) {
 }
 
 func BenchmarkMapPopulate(b *testing.B) {
-	for size := 1; size < 1000000; size *= 10 {
-		b.Run(strconv.Itoa(size), func(b *testing.B) {
-			b.ReportAllocs()
-			for i := 0; i < b.N; i++ {
-				m := make(map[int]bool)
-				for j := 0; j < size; j++ {
-					m[j] = true
-				}
+	for _, grow := range [...]bool{false, true} {
+		b.Run(fmt.Sprintf("grow=%v", grow), func(b *testing.B) {
+			for size := 10; size < 100000; size *= 10 {
+				b.Run(strconv.Itoa(size), func(b *testing.B) {
+					if grow {
+						b.ReportAllocs()
+					}
+					for i := 0; i < b.N; i++ {
+						var hint int
+						if !grow {
+							hint = size
+						}
+						m := make(map[int]bool, hint)
+						for j := 0; j < size; j++ {
+							m[j] = true
+						}
+					}
+				})
 			}
 		})
 	}
