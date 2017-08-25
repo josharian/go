@@ -53,9 +53,10 @@ func memhash8(p unsafe.Pointer, h uintptr) uintptr {
 func memhash16(p unsafe.Pointer, h uintptr) uintptr {
 	return memhash(p, h, 2)
 }
-func memhash32(p unsafe.Pointer, h uintptr) uintptr {
-	return memhash(p, h, 4)
-}
+
+// func memhash32(p unsafe.Pointer, h uintptr) uintptr {
+// 	return memhash(p, h, 4)
+// }
 func memhash64(p unsafe.Pointer, h uintptr) uintptr {
 	return memhash(p, h, 8)
 }
@@ -283,7 +284,7 @@ var hashkey [4]uintptr
 
 func alginit() {
 	// Install aes hash algorithm if we have the instructions we need
-	if (GOARCH == "386" || GOARCH == "amd64") &&
+	if (GOARCH == "386" || GOARCH == "amd64") && false &&
 		GOOS != "nacl" &&
 		support_aes && // AESENC
 		support_ssse3 && // PSHUFB
