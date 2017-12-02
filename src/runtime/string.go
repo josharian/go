@@ -51,7 +51,14 @@ func concatstrings(buf *tmpBuf, a []string) string {
 	return s
 }
 
-func concatstring2(buf *tmpBuf, a [2]string) string {
+func concatstring2(buf *tmpBuf, a [2]string) (ret string) {
+	if a[0] != "" && uintptr(stringStructOf(&a[0]).str)+uintptr(stringStructOf(&a[0]).len) == uintptr(stringStructOf(&a[1]).str) {
+		// println("OPT", len(a), a[0], a[1])
+		stringStructOf(&ret).str = stringStructOf(&a[0]).str
+		stringStructOf(&ret).len = stringStructOf(&a[0]).len + stringStructOf(&a[1]).len
+		return ret
+	}
+
 	return concatstrings(buf, a[:])
 }
 
