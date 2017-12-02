@@ -23,6 +23,9 @@ func needwb(v *Value) bool {
 	if IsStackAddr(v.Args[0]) {
 		return false // write on stack doesn't need write barrier
 	}
+	if v.Args[1].Op == OpGetG {
+		return false // Gs aren't managed by the garbage collector
+	}
 	return true
 }
 
@@ -219,6 +222,7 @@ func writebarrier(f *Func) {
 				volatile := w.Op == OpMoveWB && isVolatile(val)
 				if w.Op == OpStoreWB && !f.fe.Debug_eagerwb() {
 					memThen = bThen.NewValue3A(pos, OpWB, types.TypeMem, gcWriteBarrier, ptr, val, memThen)
+					// fmt.Println(val.Op)
 				} else {
 					memThen = wbcall(pos, bThen, fn, typ, ptr, val, memThen, sp, sb, volatile)
 				}

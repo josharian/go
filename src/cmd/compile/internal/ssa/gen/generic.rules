@@ -1439,6 +1439,8 @@
 	&& warnRule(fe.Debug_checknil() && v.Pos.Line() > 1, v, "removed nil check")
 	-> (Invalid)
 
+(Store {typ} [sz] ptr (ConstNil) mem) && noteRule("OPT") -> (Zero {typ} [sz] ptr mem)
+
 // Address comparison shows up in type assertions.
 (EqPtr x x) -> (ConstBool [1])
 (EqPtr (Addr {a} x) (Addr {b} x)) -> (ConstBool [b2i(a == b)])

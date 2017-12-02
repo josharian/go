@@ -24377,6 +24377,27 @@ func rewriteValuegeneric_OpStore_10(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	// match: (Store {typ} ptr (ConstNil) mem)
+	// cond: noteRule("OPT")
+	// result: (Zero {typ} ptr mem)
+	for {
+		typ := v.Aux
+		_ = v.Args[2]
+		ptr := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpConstNil {
+			break
+		}
+		mem := v.Args[2]
+		if !(noteRule("OPT")) {
+			break
+		}
+		v.reset(OpZero)
+		v.Aux = typ
+		v.AddArg(ptr)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValuegeneric_OpStringLen_0(v *Value) bool {
