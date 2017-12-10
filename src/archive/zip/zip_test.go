@@ -16,6 +16,7 @@ import (
 	"io"
 	"io/ioutil"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -773,4 +774,29 @@ func (zeros) Read(p []byte) (int, error) {
 		p[i] = 0
 	}
 	return len(p), nil
+}
+
+func BenchmarkOpen(b *testing.B) {
+	buf := new(bytes.Buffer)
+	w := NewWriter(buf)
+	for i := 0; i < 10000; i++ {
+		f, err := w.Create(strconv.Itoa(i))
+		if err != nil {
+			b.Fatal(err)
+		}
+		f.Write([]byte(strconv.Itoa(i)))
+	}
+	w.Close()
+	r := bytes.NewReader(buf.Bytes())
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		r.Seek(0, io.SeekStart)
+		r, err := NewReader(r, int64(buf.Len()))
+		if err != nil {
+			b.Fatal(err)
+		}
+		for _, f := range r.File {
+			f.Open()
+		}
+	}
 }
