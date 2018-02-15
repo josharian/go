@@ -277,7 +277,7 @@ func TestMemclr(t *testing.T) {
 }
 
 func BenchmarkMemclr(b *testing.B) {
-	for _, n := range []int{5, 16, 64, 256, 4096, 65536} {
+	for _, n := range []int{5, 16, 64, 256, 4096, 8192, 65536} {
 		x := make([]byte, n)
 		b.Run(fmt.Sprint(n), func(b *testing.B) {
 			b.SetBytes(int64(n))
