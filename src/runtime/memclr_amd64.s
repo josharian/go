@@ -21,7 +21,8 @@ tail:
 	CMPQ	BX, $2
 	JBE	_1or2
 	CMPQ	BX, $4
-	JBE	_3or4
+	JB	_3
+	JBE	_4
 	CMPQ	BX, $8
 	JB	_5through7
 	JE	_8
@@ -121,9 +122,12 @@ _1or2:
 	RET
 _0:
 	RET
-_3or4:
+_3:
 	MOVW	AX, (DI)
-	MOVW	AX, -2(DI)(BX*1)
+	MOVB	AX, 2(DI)
+	RET
+_4:
+	MOVL	AX, (DI)
 	RET
 _5through7:
 	MOVL	AX, (DI)
