@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"internal/race"
 	"internal/testenv"
+	mathrand "math/rand"
 	. "runtime"
 	"testing"
 )
@@ -298,6 +299,21 @@ func BenchmarkMemclrMedium(b *testing.B) {
 			}
 		})
 	}
+}
+
+func BenchmarkMemclrMixed(b *testing.B) {
+	// b.Run("Intn16", func(b *testing.B) {
+	mathrand.Seed(998234)
+	var sz [2048]int
+	for i := range sz {
+		sz[i] = mathrand.Intn(16)
+	}
+	x := make([]byte, 16)
+	for i := 0; i < b.N; i++ {
+		n := sz[i%len(sz)]
+		MemclrBytes(x[:n])
+	}
+	// })
 }
 
 func BenchmarkMemclrLarge(b *testing.B) {
