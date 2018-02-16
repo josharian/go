@@ -12,10 +12,12 @@
 TEXT runtime·memclrNoHeapPointers(SB), NOSPLIT, $0-16
 	MOVQ	ptr+0(FP), DI
 	MOVQ	n+8(FP), BX
-	XORQ	AX, AX
+	CMPQ	BX, $16
+	JGT	large
 
 	// MOVOU seems always faster than REP STOSQ.
 tail:
+	XORQ	AX, AX
 	TESTQ	BX, BX
 	JEQ	_0
 	CMPQ	BX, $2
@@ -27,6 +29,7 @@ tail:
 	JE	_8
 	CMPQ	BX, $16
 	JBE	_9through16
+large:
 	PXOR	X0, X0
 	CMPQ	BX, $32
 	JBE	_17through32
