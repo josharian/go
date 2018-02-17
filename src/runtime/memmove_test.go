@@ -277,7 +277,19 @@ func TestMemclr(t *testing.T) {
 }
 
 func BenchmarkMemclrSmall(b *testing.B) {
-	for _, n := range []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 64, 256, 4096, 8192, 65536} {
+	for _, n := range []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16} {
+		x := make([]byte, n)
+		b.Run(fmt.Sprint(n), func(b *testing.B) {
+			b.SetBytes(int64(n))
+			for i := 0; i < b.N; i++ {
+				MemclrBytes(x)
+			}
+		})
+	}
+}
+
+func BenchmarkMemclrMedium(b *testing.B) {
+	for _, n := range []int{64, 256, 1024, 4096, 8192, 16384, 65536} {
 		x := make([]byte, n)
 		b.Run(fmt.Sprint(n), func(b *testing.B) {
 			b.SetBytes(int64(n))
