@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"internal/race"
 	"internal/testenv"
+	mathrand "math/rand"
 	. "runtime"
 	"testing"
 )
@@ -276,8 +277,8 @@ func TestMemclr(t *testing.T) {
 	}
 }
 
-func BenchmarkMemclr(b *testing.B) {
-	for _, n := range []int{5, 16, 64, 256, 4096, 65536} {
+func BenchmarkMemclrSmall(b *testing.B) {
+	for _, n := range []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16} {
 		x := make([]byte, n)
 		b.Run(fmt.Sprint(n), func(b *testing.B) {
 			b.SetBytes(int64(n))
@@ -286,12 +287,54 @@ func BenchmarkMemclr(b *testing.B) {
 			}
 		})
 	}
+}
+
+func BenchmarkMemclrMedium(b *testing.B) {
+	for _, n := range []int{64, 256, 1024, 4096, 8192, 16384, 65536} {
+		x := make([]byte, n)
+		b.Run(fmt.Sprint(n), func(b *testing.B) {
+			b.SetBytes(int64(n))
+			for i := 0; i < b.N; i++ {
+				MemclrBytes(x)
+			}
+		})
+	}
+}
+
+func BenchmarkMemclrMixed(b *testing.B) {
+	// b.Run("Intn16", func(b *testing.B) {
+	mathrand.Seed(998234)
+	var sz [2048]int
+	for i := range sz {
+		sz[i] = mathrand.Intn(16)
+	}
+	x := make([]byte, 16)
+	for i := 0; i < b.N; i++ {
+		n := sz[i%len(sz)]
+		MemclrBytes(x[:n])
+	}
+	// })
+}
+
+func BenchmarkMemclrLarge(b *testing.B) {
 	for _, m := range []int{1, 4, 8, 16, 64} {
 		x := make([]byte, m<<20)
 		b.Run(fmt.Sprint(m, "M"), func(b *testing.B) {
 			b.SetBytes(int64(m << 20))
 			for i := 0; i < b.N; i++ {
 				MemclrBytes(x)
+			}
+		})
+	}
+}
+
+func BenchmarkMemclrPages(b *testing.B) {
+	for n := 1; n < 5; n++ {
+		x := make([]byte, n*8192)
+		b.Run(fmt.Sprint(n), func(b *testing.B) {
+			b.SetBytes(int64(len(x)))
+			for i := 0; i < b.N; i++ {
+				MemclrPages(x)
 			}
 		})
 	}

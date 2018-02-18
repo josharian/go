@@ -171,6 +171,11 @@ func MemclrBytes(b []byte) {
 	memclrNoHeapPointers(s.array, uintptr(s.len))
 }
 
+func MemclrPages(b []byte) {
+	s := (*slice)(unsafe.Pointer(&b))
+	memclrNoHeapPages(s.array, uintptr(s.len)/pageSize)
+}
+
 var HashLoad = &hashLoad
 
 // entry point for testing

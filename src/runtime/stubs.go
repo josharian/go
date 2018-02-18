@@ -72,6 +72,9 @@ func badsystemstack() {
 //go:noescape
 func memclrNoHeapPointers(ptr unsafe.Pointer, n uintptr)
 
+//go:noescape
+func memclrNoHeapPages(ptr unsafe.Pointer, n uintptr)
+
 //go:linkname reflect_memclrNoHeapPointers reflect.memclrNoHeapPointers
 func reflect_memclrNoHeapPointers(ptr unsafe.Pointer, n uintptr) {
 	memclrNoHeapPointers(ptr, n)

@@ -2922,6 +2922,7 @@ func (asmbuf *AsmBuf) asmidx(ctxt *obj.Link, scale int, index int, base int) {
 	// X/Y index register is used in VSIB.
 	switch index {
 	default:
+		ctxt.Diag("asmidx: bad index")
 		goto bad
 
 	case REG_NONE:
@@ -2985,6 +2986,7 @@ func (asmbuf *AsmBuf) asmidx(ctxt *obj.Link, scale int, index int, base int) {
 
 	switch scale {
 	default:
+		ctxt.Diag("asmidx: bad scale")
 		goto bad
 
 	case 1:
@@ -3003,6 +3005,7 @@ func (asmbuf *AsmBuf) asmidx(ctxt *obj.Link, scale int, index int, base int) {
 bas:
 	switch base {
 	default:
+		ctxt.Diag("asmidx: bad base")
 		goto bad
 
 	case REG_NONE: /* must be mod=00 */
