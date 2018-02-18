@@ -788,7 +788,21 @@ func mallocgc(size uintptr, typ *_type, needzero bool) unsafe.Pointer {
 			}
 			x = unsafe.Pointer(v)
 			if needzero && span.needzero != 0 {
-				memclrNoHeapPointers(unsafe.Pointer(v), size)
+				switch size {
+				case 8:
+					*(*uint64)(x) = 0
+				case 16:
+					*(*[2]uint64)(x) = [2]uint64{}
+				case 32:
+					*(*[4]uint64)(x) = [4]uint64{}
+
+				// 25.97% 1940586 64
+				// 21.60% 1613717 128
+				// 16.81% 1255950 48
+				// 14.60% 1090656 96
+				default:
+					memclrNoHeapPointers(x, size)
+				}
 			}
 		}
 	} else {
