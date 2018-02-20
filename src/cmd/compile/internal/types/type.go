@@ -8,6 +8,7 @@ import (
 	"cmd/internal/obj"
 	"cmd/internal/src"
 	"fmt"
+	"sync"
 )
 
 // Dummy Node so we can refer to *Node without actually
@@ -404,12 +405,22 @@ func (f *Fields) Append(s ...*Field) {
 	*f.s = append(*f.s, s...)
 }
 
+var (
+	mu   sync.Mutex
+	bulk []Type
+)
+
 // New returns a new Type of the specified kind.
 func New(et EType) *Type {
-	t := &Type{
-		Etype: et,
-		Width: BADWIDTH,
+	mu.Lock()
+	if len(bulk) == 0 {
+		bulk = make([]Type, 500)
 	}
+	t := &bulk[0]
+	bulk = bulk[1:]
+	mu.Unlock()
+	t.Etype = et
+	t.Width = BADWIDTH
 	t.Orig = t
 	// TODO(josharian): lazily initialize some of these?
 	switch t.Etype {
