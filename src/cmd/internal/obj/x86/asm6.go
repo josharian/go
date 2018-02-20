@@ -2099,7 +2099,7 @@ func span6(ctxt *obj.Link, s *obj.LSym, newprog obj.ProgAlloc) {
 			p.Pc = int64(c)
 
 			// process forward jumps to p
-			for q = p.Rel; q != nil; q = q.Forwd {
+			for q = p.Rel; q != nil; q = asmbuf.forwd[q] {
 				v := int32(p.Pc - (q.Pc + int64(q.Isize)))
 				if q.Back&2 != 0 { // short
 					if v > 127 {
@@ -2826,6 +2826,7 @@ type AsmBuf struct {
 	rep     int
 	repn    int
 	lock    bool
+	forwd   map[*obj.Prog]*obj.Prog
 }
 
 // Put1 appends one byte to the end of the buffer.
@@ -4255,7 +4256,15 @@ func (asmbuf *AsmBuf) doasm(ctxt *obj.Link, cursym *obj.LSym, p *obj.Prog) {
 				}
 
 				// Annotate target; will fill in later.
-				p.Forwd = q.Rel
+
+				// p.Forwd = q.Rel
+				f := asmbuf.forwd[p]
+				if f != q.Rel {
+					if asmbuf.forwd == nil {
+						asmbuf.forwd = make(map[*obj.Prog]*obj.Prog)
+					}
+					asmbuf.forwd[p] = q.Rel
+				}
 
 				q.Rel = p
 				if p.Back&2 != 0 && p.As != AXBEGIN { // short
