@@ -3707,8 +3707,11 @@ func (asmbuf *AsmBuf) doasm(ctxt *obj.Link, cursym *obj.LSym, p *obj.Prog) {
 	if ft != Ynone*Ymax {
 		args = append(args, ft)
 	}
-	for i := range p.RestArgs {
-		args = append(args, oclass(ctxt, p, &p.RestArgs[i])*Ymax)
+	if p.RestArgs != nil {
+		rest := *p.RestArgs
+		for i := range rest {
+			args = append(args, oclass(ctxt, p, &rest[i])*Ymax)
+		}
 	}
 	if tt != Ynone*Ymax {
 		args = append(args, tt)
@@ -4973,5 +4976,6 @@ func (asmbuf *AsmBuf) asmins(ctxt *obj.Link, cursym *obj.LSym, p *obj.Prog) {
 
 // Extract 4 operands from p.
 func unpackOps4(p *obj.Prog) (*obj.Addr, *obj.Addr, *obj.Addr, *obj.Addr) {
-	return &p.From, &p.RestArgs[0], &p.RestArgs[1], &p.To
+	rest := *p.RestArgs
+	return &p.From, &rest[0], &rest[1], &p.To
 }

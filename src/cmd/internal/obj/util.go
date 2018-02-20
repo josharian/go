@@ -128,9 +128,12 @@ func (p *Prog) InstructionString() string {
 		fmt.Fprintf(&buf, "%s%v", sep, Rconv(int(p.Reg)))
 		sep = ", "
 	}
-	for i := range p.RestArgs {
-		fmt.Fprintf(&buf, "%s%v", sep, Dconv(p, &p.RestArgs[i]))
-		sep = ", "
+	if p.RestArgs != nil {
+		rest := *p.RestArgs
+		for i := range rest {
+			fmt.Fprintf(&buf, "%s%v", sep, Dconv(p, &rest[i]))
+			sep = ", "
+		}
 	}
 
 	if p.As == ATEXT {

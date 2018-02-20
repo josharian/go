@@ -264,12 +264,12 @@ const (
 // The other fields not yet mentioned are for use by the back ends and should
 // be left zeroed by creators of Prog lists.
 type Prog struct {
-	Ctxt     *Link  // linker context
-	Link     *Prog  // next Prog in linked list
-	From     Addr   // first source operand
-	RestArgs []Addr // can pack any operands that not fit into {Prog.From, Prog.To}
-	To       Addr   // destination operand (second is RegTo2 below)
-	Pcond    *Prog  // target of conditional jump
+	Ctxt     *Link   // linker context
+	Link     *Prog   // next Prog in linked list
+	From     Addr    // first source operand
+	RestArgs *[]Addr // can pack any operands that not fit into {Prog.From, Prog.To}
+	To       Addr    // destination operand (second is RegTo2 below)
+	Pcond    *Prog   // target of conditional jump
 	// Forwd    *Prog    // for x86 back end
 	Rel    *Prog    // for x86, arm back ends
 	Pc     int64    // for back ends or assembler: virtual or actual program counter, depending on phase
@@ -295,7 +295,7 @@ func (p *Prog) From3Type() AddrType {
 	if p.RestArgs == nil {
 		return TYPE_NONE
 	}
-	return p.RestArgs[0].Type
+	return (*p.RestArgs)[0].Type
 }
 
 // GetFrom3 returns second source operand (the first is Prog.From).
@@ -311,7 +311,7 @@ func (p *Prog) GetFrom3() *Addr {
 	if p.RestArgs == nil {
 		return nil
 	}
-	return &p.RestArgs[0]
+	return &(*p.RestArgs)[0]
 }
 
 // SetFrom3 assigns []Addr{a} to p.RestArgs.
@@ -319,7 +319,8 @@ func (p *Prog) GetFrom3() *Addr {
 //
 // Deprecated: for the same reasons as Prog.GetFrom3.
 func (p *Prog) SetFrom3(a Addr) {
-	p.RestArgs = []Addr{a}
+	rest := []Addr{a}
+	p.RestArgs = &rest
 }
 
 // An As denotes an assembler opcode.

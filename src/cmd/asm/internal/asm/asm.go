@@ -641,7 +641,8 @@ func (p *Parser) asmInstruction(op obj.As, cond string, a []obj.Addr) {
 		}
 		if p.arch.Family == sys.AMD64 {
 			prog.From = a[0]
-			prog.RestArgs = []obj.Addr{a[1], a[2]}
+			rest := []obj.Addr{a[1], a[2]}
+			prog.RestArgs = &rest
 			prog.To = a[3]
 			break
 		}

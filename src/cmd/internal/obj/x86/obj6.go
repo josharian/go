@@ -437,7 +437,13 @@ func rewriteToUseGot(ctxt *obj.Link, p *obj.Prog, newprog obj.ProgAlloc) {
 		p2.Scond = p.Scond
 		p2.From = p.From
 		if p.RestArgs != nil {
-			p2.RestArgs = append(p2.RestArgs, p.RestArgs...)
+			if p2.RestArgs == nil {
+				rest := make([]obj.Addr, len(*p.RestArgs))
+				p2.RestArgs = &rest
+				copy(rest, *p.RestArgs)
+			} else {
+				*p2.RestArgs = append(*p2.RestArgs, *p.RestArgs...)
+			}
 		}
 		p2.Reg = p.Reg
 		p2.To = p.To
