@@ -149,11 +149,11 @@ func linkpatch(ctxt *Link, sym *LSym, newprog ProgAlloc) {
 			if int64(c) == q.Pc {
 				break
 			}
-			if q.Forwd != nil && int64(c) >= q.Forwd.Pc {
-				q = q.Forwd
-			} else {
-				q = q.Link
-			}
+			// if q.Forwd != nil && int64(c) >= q.Forwd.Pc {
+			// 	q = q.Forwd
+			// } else {
+			q = q.Link
+			// }
 		}
 
 		if q == nil {
