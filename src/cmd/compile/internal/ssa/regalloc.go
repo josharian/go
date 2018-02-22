@@ -118,6 +118,8 @@ import (
 	"cmd/internal/objabi"
 	"cmd/internal/src"
 	"fmt"
+	"math/bits"
+	"os"
 	"unsafe"
 )
 
@@ -176,13 +178,23 @@ func countRegs(r regMask) int {
 }
 
 // pickReg picks an arbitrary register from the register mask.
-func pickReg(r regMask) register {
+func pickReg(r regMask, op Op) register {
 	// pick the lowest one
 	if r == 0 {
 		panic("can't pick a register from an empty set")
 	}
+	origr := r
+	r = regMask(bits.RotateLeft64(uint64(r), int(op)))
 	for i := register(0); ; i++ {
 		if r&1 != 0 {
+			shl := register(op % 64)
+			i -= shl
+			if int8(i) < 0 {
+				i += 64
+			}
+			if origr&(1<<i) == 0 {
+				panic(fmt.Sprintf("OOPS: %b ROT %v (%d) = %b picked %d\n", origr, int(op), shl, r, i))
+			}
 			return i
 		}
 		r >>= 1
@@ -317,7 +329,7 @@ func (s *regAllocState) freeReg(r register) {
 // freeRegs frees up all registers listed in m.
 func (s *regAllocState) freeRegs(m regMask) {
 	for m&s.used != 0 {
-		s.freeReg(pickReg(m & s.used))
+		s.freeReg(pickReg(m&s.used, 0)) // TODO
 	}
 }
 
@@ -362,7 +374,7 @@ func (s *regAllocState) allocReg(mask regMask, v *Value) register {
 
 	// Pick an unused register if one is available.
 	if mask&^s.used != 0 {
-		return pickReg(mask &^ s.used)
+		return pickReg(mask&^s.used, v.Op)
 	}
 
 	// Pick a value to spill. Spill the value with the
@@ -398,7 +410,10 @@ func (s *regAllocState) allocReg(mask regMask, v *Value) register {
 	v2 := s.regs[r].v
 	m := s.compatRegs(v2.Type) &^ s.used &^ s.tmpused &^ (regMask(1) << r)
 	if m != 0 && !s.values[v2.ID].rematerializeable && countRegs(s.values[v2.ID].regs) == 1 {
-		r2 := pickReg(m)
+		r2 := pickReg(m, v.Op)
+		if os.Getenv("J") != "" {
+			fmt.Printf("punted to acquire %v for %v\n", r, v.Op)
+		}
 		c := s.curBlock.NewValue1(v2.Pos, OpCopy, v2.Type, s.regs[r].c)
 		s.copies[c] = false
 		if s.f.pass.debug > regDebug {
@@ -444,7 +459,7 @@ func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, pos 
 
 	// Check if v is already in a requested register.
 	if mask&vi.regs != 0 {
-		r := pickReg(mask & vi.regs)
+		r := pickReg(mask&vi.regs, v.Op)
 		if s.regs[r].v != v || s.regs[r].c == nil {
 			panic("bad register state")
 		}
@@ -461,7 +476,7 @@ func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, pos 
 	var c *Value
 	if vi.regs != 0 {
 		// Copy from a register that v is already in.
-		r2 := pickReg(vi.regs)
+		r2 := pickReg(vi.regs, v.Op)
 		if s.regs[r2].v != v {
 			panic("bad register state")
 		}
@@ -858,7 +873,7 @@ func (s *regAllocState) regalloc(f *Func) {
 				// They're not suitable for further (phi-function) allocation.
 				m := s.values[a.ID].regs &^ phiUsed & s.allocatable
 				if m != 0 {
-					r := pickReg(m)
+					r := pickReg(m, a.Op)
 					phiUsed |= regMask(1) << r
 					phiRegs = append(phiRegs, r)
 				} else {
@@ -890,7 +905,7 @@ func (s *regAllocState) regalloc(f *Func) {
 					// them (and they are not going to be helpful anyway).
 					m := s.compatRegs(a.Type) &^ s.used &^ phiUsed
 					if m != 0 && !s.values[a.ID].rematerializeable && countRegs(s.values[a.ID].regs) == 1 {
-						r2 := pickReg(m)
+						r2 := pickReg(m, a.Op)
 						c := p.NewValue1(a.Pos, OpCopy, a.Type, s.regs[r].c)
 						s.copies[c] = false
 						if s.f.pass.debug > regDebug {
@@ -921,7 +936,7 @@ func (s *regAllocState) regalloc(f *Func) {
 				}
 				m := s.compatRegs(v.Type) &^ phiUsed &^ s.used
 				if m != 0 {
-					r := pickReg(m)
+					r := pickReg(m, v.Op)
 					phiRegs[i] = r
 					phiUsed |= regMask(1) << r
 				}
@@ -1025,7 +1040,7 @@ func (s *regAllocState) regalloc(f *Func) {
 					continue
 				}
 				desired.clobber(j.regs)
-				desired.add(v.Args[j.idx].ID, pickReg(j.regs))
+				desired.add(v.Args[j.idx].ID, pickReg(j.regs, v.Op))
 			}
 			if opcodeTable[v.Op].resultInArg0 {
 				if opcodeTable[v.Op].commutative {
@@ -2075,6 +2090,7 @@ func (e *edgeState) erase(loc Location) {
 }
 
 // findRegFor finds a register we can use to make a temp copy of type typ.
+// TODO: pass an op in for these cases.
 func (e *edgeState) findRegFor(typ *types.Type) Location {
 	// Which registers are possibilities.
 	var m regMask
@@ -2092,15 +2108,15 @@ func (e *edgeState) findRegFor(typ *types.Type) Location {
 	// 4) TODO: a register holding a rematerializeable value
 	x := m &^ e.usedRegs
 	if x != 0 {
-		return &e.s.registers[pickReg(x)]
+		return &e.s.registers[pickReg(x, 0)]
 	}
 	x = m &^ e.uniqueRegs &^ e.finalRegs
 	if x != 0 {
-		return &e.s.registers[pickReg(x)]
+		return &e.s.registers[pickReg(x, 0)]
 	}
 	x = m &^ e.uniqueRegs
 	if x != 0 {
-		return &e.s.registers[pickReg(x)]
+		return &e.s.registers[pickReg(x, 0)]
 	}
 
 	// No register is available.
@@ -2252,7 +2268,7 @@ func (s *regAllocState) computeLive() {
 						continue
 					}
 					desired.clobber(j.regs)
-					desired.add(v.Args[j.idx].ID, pickReg(j.regs))
+					desired.add(v.Args[j.idx].ID, pickReg(j.regs, v.Op))
 				}
 				// Set desired register of input 0 if this is a 2-operand instruction.
 				if opcodeTable[v.Op].resultInArg0 {
