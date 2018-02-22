@@ -186,6 +186,7 @@ func writebarrier(f *Func) {
 		// and simple store version to bElse
 		memThen := mem
 		memElse := mem
+		var pending []*Value
 		for _, w := range stores {
 			ptr := w.Args[0]
 			pos := w.Pos
@@ -227,7 +228,7 @@ func writebarrier(f *Func) {
 			// else block: normal store
 			switch w.Op {
 			case OpStoreWB:
-				memElse = bElse.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, memElse)
+				pending = append(pending, bEnd.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, mem))
 			case OpMoveWB:
 				memElse = bElse.NewValue3I(pos, OpMove, types.TypeMem, w.AuxInt, ptr, val, memElse)
 				memElse.Aux = w.Aux
@@ -244,12 +245,16 @@ func writebarrier(f *Func) {
 		// which may be used in subsequent blocks. Other memories in the
 		// sequence must be dead after this block since there can be only
 		// one memory live.
+		memEnd := bEnd.NewValue2(last.Pos, OpPhi, types.TypeMem, memThen, memElse)
+		for _, w := range pending {
+			w.SetArg(2, memEnd)
+			memEnd = w
+		}
 		bEnd.Values = append(bEnd.Values, last)
 		last.Block = bEnd
-		last.reset(OpPhi)
+		last.reset(OpCopy)
 		last.Type = types.TypeMem
-		last.AddArg(memThen)
-		last.AddArg(memElse)
+		last.AddArg(memEnd)
 		for _, w := range stores {
 			if w != last {
 				w.resetArgs()
