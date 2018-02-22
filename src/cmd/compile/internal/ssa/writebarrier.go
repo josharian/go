@@ -233,8 +233,9 @@ func writebarrier(f *Func) {
 				memElse = bElse.NewValue3I(pos, OpMove, types.TypeMem, w.AuxInt, ptr, val, memElse)
 				memElse.Aux = w.Aux
 			case OpZeroWB:
-				memElse = bElse.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
-				memElse.Aux = w.Aux
+				z := bEnd.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
+				z.Aux = w.Aux
+				pending = append(pending, z)
 			case OpVarDef, OpVarLive, OpVarKill:
 				memElse = bElse.NewValue1A(pos, w.Op, types.TypeMem, w.Aux, memElse)
 			}
@@ -247,7 +248,7 @@ func writebarrier(f *Func) {
 		// one memory live.
 		memEnd := bEnd.NewValue2(last.Pos, OpPhi, types.TypeMem, memThen, memElse)
 		for _, w := range pending {
-			w.SetArg(2, memEnd)
+			w.SetArg(len(w.Args)-1, memEnd)
 			memEnd = w
 		}
 		bEnd.Values = append(bEnd.Values, last)
