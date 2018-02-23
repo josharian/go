@@ -117,29 +117,42 @@ func writebarrier(f *Func) {
 		var last *Value
 		var start, end int
 		values := b.Values
-		hasmove := false
-	FindSeq:
+	FindLast:
 		for i := len(values) - 1; i >= 0; i-- {
 			w := values[i]
 			switch w.Op {
-			case OpMoveWB:
-				hasmove = true
-				fallthrough
-			case OpStoreWB, OpZeroWB:
-				start = i
-				if last == nil {
-					last = w
-					end = i + 1
-				}
-			case OpVarDef, OpVarLive, OpVarKill:
-				continue
-			default:
-				if last == nil {
-					continue
-				}
-				break FindSeq
+			case OpMoveWB, OpStoreWB, OpZeroWB:
+				last = w
+				end = i + 1
+				break FindLast
 			}
 		}
+		if last.Op == OpMoveWB {
+			for i := end - 1; i >= 0; i-- {
+				w := values[i]
+				switch w.Op {
+				case OpMoveWB:
+					start = i
+					continue
+				case OpVarDef, OpVarLive, OpVarKill:
+					continue
+				}
+				break
+			}
+		} else {
+			for i := end - 1; i >= 0; i-- {
+				w := values[i]
+				switch w.Op {
+				case OpStoreWB, OpZeroWB:
+					start = i
+					continue
+				case OpVarDef, OpVarLive, OpVarKill:
+					continue
+				}
+				break
+			}
+		}
+
 		stores = append(stores[:0], b.Values[start:end]...) // copy to avoid aliasing
 		after = append(after[:0], b.Values[end:]...)
 		b.Values = b.Values[:start]
@@ -232,22 +245,22 @@ func writebarrier(f *Func) {
 			// else block: normal store
 			switch w.Op {
 			case OpStoreWB:
-				if hasmove {
-					memElse = bElse.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, memElse)
-				} else {
-					pending = append(pending, bEnd.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, mem))
-				}
+				// if hasmove {
+				// 	memElse = bElse.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, memElse)
+				// } else {
+				pending = append(pending, bEnd.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, mem))
+				// }
 			case OpMoveWB:
 				memElse = bElse.NewValue3I(pos, OpMove, types.TypeMem, w.AuxInt, ptr, val, memElse)
 				memElse.Aux = w.Aux
 			case OpZeroWB:
-				if hasmove {
-					memElse = bElse.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
-				} else {
-					z := bEnd.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
-					z.Aux = w.Aux
-					pending = append(pending, z)
-				}
+				// if hasmove {
+				// 	memElse = bElse.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
+				// } else {
+				z := bEnd.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
+				z.Aux = w.Aux
+				pending = append(pending, z)
+				// }
 			case OpVarDef, OpVarLive, OpVarKill:
 				memElse = bElse.NewValue1A(pos, w.Op, types.TypeMem, w.Aux, memElse)
 			}
