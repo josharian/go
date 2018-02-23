@@ -146,7 +146,7 @@ func writebarrier(f *Func) {
 				case OpStoreWB, OpZeroWB:
 					start = i
 					continue
-				case OpVarDef, OpVarLive, OpVarKill, OpStore:
+				case OpVarDef, OpVarLive, OpVarKill, OpStore, OpNilCheck:
 					continue
 				}
 				break
@@ -226,7 +226,7 @@ func writebarrier(f *Func) {
 				nWBops--
 			case OpStore:
 				val = w.Args[1]
-			case OpVarDef, OpVarLive, OpVarKill:
+			case OpVarDef, OpVarLive, OpVarKill, OpNilCheck:
 			}
 
 			// then block: emit write barrier call
@@ -266,6 +266,8 @@ func writebarrier(f *Func) {
 			case OpVarDef, OpVarLive, OpVarKill:
 				// TODO: when last.Op != Move, add these to pending instead? does interleaving matter?
 				memElse = bElse.NewValue1A(pos, w.Op, types.TypeMem, w.Aux, memElse)
+			case OpNilCheck:
+				pending = append(pending, bEnd.NewValue2(pos, w.Op, types.TypeMem, ptr, mem))
 			}
 		}
 
