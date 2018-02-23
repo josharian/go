@@ -117,11 +117,15 @@ func writebarrier(f *Func) {
 		var last *Value
 		var start, end int
 		values := b.Values
+		hasmove := false
 	FindSeq:
 		for i := len(values) - 1; i >= 0; i-- {
 			w := values[i]
 			switch w.Op {
-			case OpStoreWB, OpMoveWB, OpZeroWB:
+			case OpMoveWB:
+				hasmove = true
+				fallthrough
+			case OpStoreWB, OpZeroWB:
 				start = i
 				if last == nil {
 					last = w
@@ -228,14 +232,22 @@ func writebarrier(f *Func) {
 			// else block: normal store
 			switch w.Op {
 			case OpStoreWB:
-				pending = append(pending, bEnd.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, mem))
+				if hasmove {
+					memElse = bElse.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, memElse)
+				} else {
+					pending = append(pending, bEnd.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, mem))
+				}
 			case OpMoveWB:
 				memElse = bElse.NewValue3I(pos, OpMove, types.TypeMem, w.AuxInt, ptr, val, memElse)
 				memElse.Aux = w.Aux
 			case OpZeroWB:
-				z := bEnd.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
-				z.Aux = w.Aux
-				pending = append(pending, z)
+				if hasmove {
+					memElse = bElse.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
+				} else {
+					z := bEnd.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
+					z.Aux = w.Aux
+					pending = append(pending, z)
+				}
 			case OpVarDef, OpVarLive, OpVarKill:
 				memElse = bElse.NewValue1A(pos, w.Op, types.TypeMem, w.Aux, memElse)
 			}
