@@ -247,22 +247,14 @@ func writebarrier(f *Func) {
 			// else block: normal store
 			switch w.Op {
 			case OpStoreWB, OpStore:
-				// if hasmove {
-				// 	memElse = bElse.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, memElse)
-				// } else {
 				pending = append(pending, bEnd.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, mem))
-				// }
 			case OpMoveWB:
 				memElse = bElse.NewValue3I(pos, OpMove, types.TypeMem, w.AuxInt, ptr, val, memElse)
 				memElse.Aux = w.Aux
 			case OpZeroWB:
-				// if hasmove {
-				// 	memElse = bElse.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
-				// } else {
 				z := bEnd.NewValue2I(pos, OpZero, types.TypeMem, w.AuxInt, ptr, memElse)
 				z.Aux = w.Aux
 				pending = append(pending, z)
-				// }
 			case OpVarDef, OpVarLive, OpVarKill:
 				// TODO: when last.Op != Move, add these to pending instead? does interleaving matter?
 				memElse = bElse.NewValue1A(pos, w.Op, types.TypeMem, w.Aux, memElse)
