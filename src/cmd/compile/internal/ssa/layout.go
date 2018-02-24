@@ -110,7 +110,7 @@ blockloop:
 					// 	fmt.Printf("diamond\n")
 					// }
 					// Use likely direction if we have it.
-					if b.Likely == BranchUnlikely {
+					if b.Likely != BranchLikely {
 						s0, s1 = s1, s0
 					}
 					bid = s0.ID
