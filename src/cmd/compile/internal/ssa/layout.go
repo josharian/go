@@ -102,7 +102,7 @@ blockloop:
 		// Use degree for now.
 		bid = 0
 		mindegree := f.NumBlocks()
-		for _, e := range order[len(order)-1].Succs {
+		for _, e := range b.Succs {
 			c := e.b
 			if scheduled[c.ID] || c.Kind == BlockExit {
 				continue
