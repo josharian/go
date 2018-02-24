@@ -18,7 +18,7 @@ func layoutRegallocOrder(f *Func) []*Block {
 
 	switch f.pass.test {
 	case 0: // layout order
-		return layoutOrder(f)
+		return layoutOrderX(f, true)
 	case 1: // existing block order
 		return f.Blocks
 	case 2: // reverse of postorder; legal, but usually not good.
@@ -35,6 +35,10 @@ func layoutRegallocOrder(f *Func) []*Block {
 }
 
 func layoutOrder(f *Func) []*Block {
+	return layoutOrderX(f, false)
+}
+
+func layoutOrderX(f *Func, detectDiamonds bool) []*Block {
 	order := make([]*Block, 0, f.NumBlocks())
 	scheduled := make([]bool, f.NumBlocks())
 	idToBlock := make([]*Block, f.NumBlocks())
@@ -95,7 +99,7 @@ blockloop:
 		// Pick among the successor blocks that have not been scheduled yet.
 
 		// Detect diamonds
-		if len(b.Succs) == 2 {
+		if detectDiamonds && len(b.Succs) == 2 {
 			s0 := b.Succs[0].b
 			s1 := b.Succs[1].b
 			if len(s0.Succs) == 1 && len(s1.Succs) == 1 {
