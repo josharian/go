@@ -43,16 +43,14 @@ func layoutOrder(f *Func) []*Block {
 	defer f.retSparseSet(posdegree)
 	zerodegree := f.newSparseSet(f.NumBlocks()) // blocks with zero remaining degree
 	defer f.retSparseSet(zerodegree)
-	exit := f.newSparseSet(f.NumBlocks()) // exit blocks
+
+	exit := exitBlocks(f) // exit blocks are always scheduled last
 	defer f.retSparseSet(exit)
 
 	// Initialize indegree of each block
 	for _, b := range f.Blocks {
 		idToBlock[b.ID] = b
-		if b.Kind == BlockExit {
-			// exit blocks are always scheduled last
-			// TODO: also add blocks post-dominated by exit blocks
-			exit.add(b.ID)
+		if exit.contains(b.ID) {
 			continue
 		}
 		indegree[b.ID] = len(b.Preds)
@@ -74,12 +72,14 @@ blockloop:
 			break
 		}
 
-		for _, e := range b.Succs {
-			c := e.b
-			indegree[c.ID]--
-			if indegree[c.ID] == 0 {
-				posdegree.remove(c.ID)
-				zerodegree.add(c.ID)
+		if !exit.contains(b.ID) {
+			for _, e := range b.Succs {
+				c := e.b
+				indegree[c.ID]--
+				if indegree[c.ID] == 0 {
+					posdegree.remove(c.ID)
+					zerodegree.add(c.ID)
+				}
 			}
 		}
 
@@ -104,7 +104,7 @@ blockloop:
 		mindegree := f.NumBlocks()
 		for _, e := range order[len(order)-1].Succs {
 			c := e.b
-			if scheduled[c.ID] || c.Kind == BlockExit {
+			if scheduled[c.ID] || exit.contains(c.ID) {
 				continue
 			}
 			if indegree[c.ID] < mindegree {
@@ -144,4 +144,36 @@ blockloop:
 		}
 	}
 	return order
+}
+
+func exitBlocks(f *Func) *sparseSet {
+	exit := f.newSparseSet(f.NumBlocks()) // exit blocks
+	var work []*Block
+	for _, b := range f.Blocks {
+		if b.Kind == BlockExit {
+			exit.add(b.ID)
+			work = append(work, b)
+		}
+	}
+	for len(work) > 0 {
+		b := work[0]
+		work = work[1:]
+		if exit.contains(b.ID) {
+			continue
+		}
+		for _, c := range b.Preds {
+			postdom := true
+			for _, d := range c.b.Succs {
+				if !exit.contains(d.b.ID) {
+					postdom = false
+					break
+				}
+			}
+			if postdom {
+				exit.add(c.b.ID)
+				work = append(work, c.b)
+			}
+		}
+	}
+	return exit
 }
