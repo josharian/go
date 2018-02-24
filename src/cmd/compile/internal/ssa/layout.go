@@ -86,6 +86,14 @@ blockloop:
 		// Pick the next block to schedule
 		// Pick among the successor blocks that have not been scheduled yet.
 
+		if len(b.Succs) == 1 {
+			s := b.Succs[0].b
+			if !scheduled[s.ID] {
+				bid = s.ID
+				continue
+			}
+		}
+
 		// Use likely direction if we have it.
 		var likely *Block
 		switch b.Likely {
