@@ -4,11 +4,6 @@
 
 package ssa
 
-import (
-	"fmt"
-	"os"
-)
-
 // layout orders basic blocks in f with the goal of minimizing control flow instructions.
 // After this phase returns, the order of f.Blocks matters and is the order
 // in which those blocks will appear in the assembly output.
@@ -104,28 +99,25 @@ blockloop:
 		// Pick among the successor blocks that have not been scheduled yet.
 
 		// Detect diamonds
-		if len(b.Succs) != 2 {
-			if os.Getenv("J") != "" {
-				fmt.Printf("SUCC %d\n", len(b.Succs))
-			}
-		}
-		if detectDiamonds && len(b.Succs) == 2 {
+		if false && detectDiamonds && len(b.Succs) == 2 {
 			s0 := b.Succs[0].b
 			s1 := b.Succs[1].b
 			if len(s0.Succs) == 1 && len(s1.Succs) == 1 {
 				s0s := s0.Succs[0].b
 				s1s := s1.Succs[0].b
 				if s0s == s1s && !scheduled[s0s.ID] && !scheduled[s1s.ID] {
-					if os.Getenv("J") != "" {
-						fmt.Printf("diamond %d %d\n", len(s0.Values), len(s1.Values))
+					if len(s0.Values) == 0 || len(s1.Values) == 0 {
+						// if os.Getenv("J") != "" {
+						// 	fmt.Printf("diamond %v %v %v\n", len(s0.Values) == 0, len(s1.Values) == 0, b.Likely)
+						// }
+						// Use likely direction if we have it.
+						if b.Likely != BranchLikely {
+							s0, s1 = s1, s0
+						}
+						bid = s0.ID
+						q = append(q, s1.ID, s0s.ID)
+						continue
 					}
-					// Use likely direction if we have it.
-					if b.Likely != BranchLikely {
-						s0, s1 = s1, s0
-					}
-					bid = s0.ID
-					q = append(q, s1.ID, s0s.ID)
-					continue
 				}
 			}
 		}
@@ -188,4 +180,16 @@ blockloop:
 		}
 	}
 	return order
+}
+
+func cv(vv []*Value) int {
+	n := 0
+	for _, v := range vv {
+		switch v.Op {
+		case OpVarDef, OpVarKill, OpVarLive:
+			continue
+		}
+		n++
+	}
+	return n
 }
