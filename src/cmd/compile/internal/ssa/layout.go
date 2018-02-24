@@ -94,6 +94,24 @@ blockloop:
 			}
 		}
 
+		if len(order) > 1 {
+			prev := order[len(order)-2]
+			for _, e := range prev.Succs {
+				c := e.b
+				if scheduled[c.ID] {
+					continue
+				}
+				if len(c.Values) > 0 || c.Control != nil {
+					continue
+				}
+				if c.Likely != BranchUnknown {
+					continue
+				}
+				bid = c.ID
+				continue blockloop
+			}
+		}
+
 		// Use likely direction if we have it.
 		var likely *Block
 		switch b.Likely {
