@@ -18,7 +18,7 @@ func layoutRegallocOrder(f *Func) []*Block {
 
 	switch f.pass.test {
 	case 0: // layout order
-		return layoutOrderX(f, true)
+		return layoutOrderX(f, false)
 	case 1: // existing block order
 		return f.Blocks
 	case 2: // reverse of postorder; legal, but usually not good.
@@ -35,7 +35,7 @@ func layoutRegallocOrder(f *Func) []*Block {
 }
 
 func layoutOrder(f *Func) []*Block {
-	return layoutOrderX(f, false)
+	return layoutOrderX(f, true)
 }
 
 func layoutOrderX(f *Func, detectDiamonds bool) []*Block {
