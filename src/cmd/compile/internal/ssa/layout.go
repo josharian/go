@@ -63,6 +63,8 @@ func layoutOrder(f *Func) []*Block {
 		}
 	}
 
+	var q []ID
+
 	bid := f.Entry.ID
 blockloop:
 	for {
@@ -84,7 +86,35 @@ blockloop:
 		}
 
 		// Pick the next block to schedule
+		if len(q) > 0 {
+			bid = q[0]
+			q = q[1:]
+			continue
+		}
+
 		// Pick among the successor blocks that have not been scheduled yet.
+
+		// Detect diamonds
+		if len(b.Succs) == 2 {
+			s0 := b.Succs[0].b
+			s1 := b.Succs[1].b
+			if len(s0.Succs) == 1 && len(s1.Succs) == 1 {
+				s0s := s0.Succs[0].b
+				s1s := s1.Succs[0].b
+				if s0s == s1s && !scheduled[s0s.ID] && !scheduled[s1s.ID] {
+					// if os.Getenv("J") != "" {
+					// 	fmt.Printf("diamond\n")
+					// }
+					// Use likely direction if we have it.
+					if b.Likely == BranchUnlikely {
+						s0, s1 = s1, s0
+					}
+					bid = s0.ID
+					q = append(q, s1.ID, s0s.ID)
+					continue
+				}
+			}
+		}
 
 		// Use likely direction if we have it.
 		var likely *Block
