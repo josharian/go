@@ -105,7 +105,7 @@ blockloop:
 			if len(s0.Succs) == 1 && len(s1.Succs) == 1 {
 				s0s := s0.Succs[0].b
 				s1s := s1.Succs[0].b
-				if s0s == s1s && !scheduled[s0s.ID] && !scheduled[s1s.ID] {
+				if s0s == s1s && !scheduled[s0s.ID] && !scheduled[s1s.ID] && (len(s0.Values) == 0 || len(s1.Values) == 0) {
 					// if os.Getenv("J") != "" {
 					// 	fmt.Printf("diamond\n")
 					// }
