@@ -899,13 +899,20 @@ func readvarint(p *byte) (read uint32, val uint32) {
 	for {
 		b := *(*byte)(add(unsafe.Pointer(p), uintptr(n)))
 		n++
-		v |= uint32(b&0x7F) << (shift & 31)
+		v |= uint32(b & 0x7F)
 		if b&0x80 == 0 {
 			break
 		}
+		v = rot32(v, 32-7)
 		shift += 7
 	}
+	v = rot32(v, shift)
 	return n, v
+}
+
+func rot32(x uint32, y uint32) uint32 {
+	y = y & 31
+	return x<<y | x>>(32-y)
 }
 
 type stackmap struct {
