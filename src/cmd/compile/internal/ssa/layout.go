@@ -101,10 +101,10 @@ blockloop:
 		if detectDiamonds && len(b.Succs) == 2 {
 			s0 := b.Succs[0].b
 			s1 := b.Succs[1].b
-			if len(s0.Succs) == 1 && len(s1.Succs) == 1 {
+			if !scheduled[s0.ID] && !scheduled[s1.ID] && (len(s0.Values) == 0 || len(s1.Values) == 0) && len(s0.Succs) == 1 && len(s1.Succs) == 1 {
 				s0s := s0.Succs[0].b
 				s1s := s1.Succs[0].b
-				if s0s == s1s && !scheduled[s0s.ID] && !scheduled[s1s.ID] && (len(s0.Values) == 0 || len(s1.Values) == 0) {
+				if s0s == s1s && !scheduled[s0s.ID] {
 					// Place empty block second.
 					if len(s0.Values) == 0 {
 						s0, s1 = s1, s0
