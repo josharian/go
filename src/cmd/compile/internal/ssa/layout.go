@@ -86,6 +86,15 @@ blockloop:
 		// Pick the next block to schedule
 		// Pick among the successor blocks that have not been scheduled yet.
 
+		// Schedule empty blocks immediately.
+		for _, e := range b.Succs {
+			c := e.b
+			if !scheduled[c.ID] && len(c.Values) == 0 && c.Control == nil {
+				bid = c.ID
+				continue blockloop
+			}
+		}
+
 		// Use likely direction if we have it.
 		var likely *Block
 		switch b.Likely {
