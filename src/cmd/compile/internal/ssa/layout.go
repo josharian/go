@@ -104,7 +104,7 @@ blockloop:
 		mindegree := f.NumBlocks()
 		for _, e := range b.Succs {
 			c := e.b
-			if scheduled[c.ID] || c.Kind == BlockExit {
+			if scheduled[c.ID] || exit.contains(c.ID) {
 				continue
 			}
 			if indegree[c.ID] < mindegree {
