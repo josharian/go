@@ -878,7 +878,7 @@ func step(p []byte, pc *uintptr, val *int32, first bool) (newp []byte, ok bool) 
 	}
 	n := uint32(1)
 	if uvdelta&0x80 != 0 {
-		n, uvdelta = readvarint(p)
+		n, uvdelta = readvarint(&p[0])
 	}
 	*val += int32(-(uvdelta & 1) ^ (uvdelta >> 1))
 	p = p[n:]
@@ -886,7 +886,7 @@ func step(p []byte, pc *uintptr, val *int32, first bool) (newp []byte, ok bool) 
 	pcdelta := uint32(p[0])
 	n = 1
 	if pcdelta&0x80 != 0 {
-		n, pcdelta = readvarint(p)
+		n, pcdelta = readvarint(&p[0])
 	}
 	p = p[n:]
 	*pc += uintptr(pcdelta * sys.PCQuantum)
@@ -894,10 +894,10 @@ func step(p []byte, pc *uintptr, val *int32, first bool) (newp []byte, ok bool) 
 }
 
 // readvarint reads a varint from p.
-func readvarint(p []byte) (read uint32, val uint32) {
+func readvarint(p *byte) (read uint32, val uint32) {
 	var v, shift, n uint32
 	for {
-		b := p[n]
+		b := *(*byte)(add(unsafe.Pointer(p), uintptr(n)))
 		n++
 		v |= uint32(b&0x7F) << (shift & 31)
 		if b&0x80 == 0 {
