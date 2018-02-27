@@ -119,7 +119,7 @@ blockloop:
 		// No successor of the previously scheduled block works.
 		// Pick a zero-degree block if we can.
 		for zerodegree.size() > 0 {
-			cid := zerodegree.pop()
+			cid := zerodegree.first()
 			if !scheduled[cid] {
 				bid = cid
 				continue blockloop
@@ -127,7 +127,7 @@ blockloop:
 		}
 		// Still nothing, pick any non-exit block.
 		for posdegree.size() > 0 {
-			cid := posdegree.pop()
+			cid := posdegree.first()
 			if !scheduled[cid] {
 				bid = cid
 				continue blockloop

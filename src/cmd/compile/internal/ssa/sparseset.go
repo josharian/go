@@ -70,6 +70,12 @@ func (s *sparseSet) pop() ID {
 	return x
 }
 
+func (s *sparseSet) first() ID {
+	x := s.dense[0]
+	s.remove(x)
+	return x
+}
+
 func (s *sparseSet) clear() {
 	s.dense = s.dense[:0]
 }
