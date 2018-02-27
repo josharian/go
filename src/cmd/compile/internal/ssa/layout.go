@@ -111,6 +111,24 @@ blockloop:
 			continue
 		}
 
+		// Use degree for now.
+		bid = 0
+		mindegree := f.NumBlocks()
+		for _, e := range order[len(order)-1].Succs {
+			c := e.b
+			if scheduled[c.ID] || c.Kind == BlockExit {
+				continue
+			}
+			if indegree[c.ID] < mindegree {
+				mindegree = indegree[c.ID]
+				bid = c.ID
+			}
+		}
+		if bid != 0 {
+			continue
+		}
+		// TODO: improve this part
+
 		// TODO: this is quadratic; keep a queue or a mark or something
 		for i := len(order) - 1; i >= 0; i-- {
 			c := order[i]
@@ -131,23 +149,6 @@ blockloop:
 			f.Fatalf("unscheduledSuccs out of sync: %v -- %d -- %v", c, unscheduledSuccs[c.ID], c.Succs)
 		}
 
-		// Use degree for now.
-		bid = 0
-		mindegree := f.NumBlocks()
-		for _, e := range order[len(order)-1].Succs {
-			c := e.b
-			if scheduled[c.ID] || c.Kind == BlockExit {
-				continue
-			}
-			if indegree[c.ID] < mindegree {
-				mindegree = indegree[c.ID]
-				bid = c.ID
-			}
-		}
-		if bid != 0 {
-			continue
-		}
-		// TODO: improve this part
 		// No successor of the previously scheduled block works.
 		// Pick a zero-degree block if we can.
 		for zerodegree.size() > 0 {
