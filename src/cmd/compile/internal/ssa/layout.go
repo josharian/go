@@ -4,6 +4,8 @@
 
 package ssa
 
+import "fmt"
+
 // layout orders basic blocks in f with the goal of minimizing control flow instructions.
 // After this phase returns, the order of f.Blocks matters and is the order
 // in which those blocks will appear in the assembly output.
@@ -39,6 +41,7 @@ func layoutOrder(f *Func) []*Block {
 	scheduled := make([]bool, f.NumBlocks())
 	idToBlock := make([]*Block, f.NumBlocks())
 	indegree := make([]int, f.NumBlocks())
+	unscheduledSuccs := make([]int, f.NumBlocks())
 	posdegree := f.newSparseSet(f.NumBlocks()) // blocks with positive remaining degree
 	defer f.retSparseSet(posdegree)
 	zerodegree := f.newSparseSet(f.NumBlocks()) // blocks with zero remaining degree
@@ -56,6 +59,10 @@ func layoutOrder(f *Func) []*Block {
 			continue
 		}
 		indegree[b.ID] = len(b.Preds)
+		for _, e := range b.Preds {
+			c := e.b
+			unscheduledSuccs[c.ID]++
+		}
 		if len(b.Preds) == 0 {
 			zerodegree.add(b.ID)
 		} else {
@@ -83,6 +90,11 @@ blockloop:
 			}
 		}
 
+		for _, e := range b.Preds {
+			c := e.b
+			unscheduledSuccs[c.ID]--
+		}
+
 		// Pick the next block to schedule
 		// Pick among the successor blocks that have not been scheduled yet.
 
@@ -97,6 +109,26 @@ blockloop:
 		if likely != nil && !scheduled[likely.ID] {
 			bid = likely.ID
 			continue
+		}
+
+		// TODO: this is quadratic; keep a queue or a mark or something
+		for i := len(order) - 1; i >= 0; i-- {
+			c := order[i]
+			if unscheduledSuccs[c.ID] <= 0 {
+				continue
+			}
+			for _, e := range c.Succs {
+				d := e.b
+				if !scheduled[d.ID] && d.Kind != BlockExit {
+					bid = d.ID
+					continue blockloop
+				}
+			}
+			for _, e := range c.Succs {
+				d := e.b
+				fmt.Printf("succ %v %v %v", d, scheduled[d.ID], d.Kind)
+			}
+			f.Fatalf("unscheduledSuccs out of sync: %v -- %d -- %v", c, unscheduledSuccs[c.ID], c.Succs)
 		}
 
 		// Use degree for now.
