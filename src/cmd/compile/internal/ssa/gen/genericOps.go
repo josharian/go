@@ -344,7 +344,8 @@ var genericOps = []opData{
 	// call: it takes arguments in registers, doesn't clobber
 	// general-purpose registers (the exact clobber set is
 	// arch-dependent), and is not a safe-point.
-	{name: "WB", argLength: 3, typ: "Mem", aux: "Sym", symEffect: "None"}, // arg0=destptr, arg1=srcptr, arg2=mem, aux=runtime.gcWriteBarrier
+	{name: "WB", argLength: 3, typ: "Mem", aux: "Sym", symEffect: "None"},     // arg0=destptr, arg1=srcptr, arg2=mem, aux=runtime.gcWriteBarrier
+	{name: "WBZero", argLength: 2, typ: "Mem", aux: "Sym", symEffect: "None"}, // arg0=destptr, arg1=srcptr, arg2=mem, aux=runtime.gcWriteBarrier
 
 	// Function calls. Arguments to the call have already been written to the stack.
 	// Return values appear on the stack. The method receiver, if any, is treated

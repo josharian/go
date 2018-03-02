@@ -679,6 +679,7 @@ const (
 	OpAMD64LoweredGetCallerSP
 	OpAMD64LoweredNilCheck
 	OpAMD64LoweredWB
+	OpAMD64LoweredWBZero
 	OpAMD64MOVQconvert
 	OpAMD64MOVLconvert
 	OpAMD64FlagEQ
@@ -1981,6 +1982,7 @@ const (
 	OpMoveWB
 	OpZeroWB
 	OpWB
+	OpWBZero
 	OpClosureCall
 	OpStaticCall
 	OpInterCall
@@ -8361,6 +8363,19 @@ var opcodeTable = [...]opInfo{
 			inputs: []inputInfo{
 				{0, 128}, // DI
 				{1, 1},   // AX
+			},
+			clobbers: 4294901760, // X0 X1 X2 X3 X4 X5 X6 X7 X8 X9 X10 X11 X12 X13 X14 X15
+		},
+	},
+	{
+		name:         "LoweredWBZero",
+		auxType:      auxSym,
+		argLen:       2,
+		clobberFlags: true,
+		symEffect:    SymNone,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{0, 128}, // DI
 			},
 			clobbers: 4294901760, // X0 X1 X2 X3 X4 X5 X6 X7 X8 X9 X10 X11 X12 X13 X14 X15
 		},
@@ -24265,6 +24280,13 @@ var opcodeTable = [...]opInfo{
 		name:      "WB",
 		auxType:   auxSym,
 		argLen:    3,
+		symEffect: SymNone,
+		generic:   true,
+	},
+	{
+		name:      "WBZero",
+		auxType:   auxSym,
+		argLen:    2,
 		symEffect: SymNone,
 		generic:   true,
 	},

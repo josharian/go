@@ -847,7 +847,7 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		p.To.Type = obj.TYPE_REG
 		p.To.Reg = v.Reg()
 
-	case ssa.OpAMD64LoweredWB:
+	case ssa.OpAMD64LoweredWB, ssa.OpAMD64LoweredWBZero:
 		p := s.Prog(obj.ACALL)
 		p.To.Type = obj.TYPE_MEM
 		p.To.Name = obj.NAME_EXTERN

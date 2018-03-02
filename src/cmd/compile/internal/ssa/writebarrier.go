@@ -44,7 +44,7 @@ func writebarrier(f *Func) {
 	}
 
 	var sb, sp, wbaddr, const0 *Value
-	var typedmemmove, typedmemclr, gcWriteBarrier *obj.LSym
+	var typedmemmove, typedmemclr, gcWriteBarrier, gcWriteBarrierZero *obj.LSym
 	var stores, after []*Value
 	var sset *sparseSet
 	var storeNumber []int32
@@ -97,6 +97,7 @@ func writebarrier(f *Func) {
 			wbsym := f.fe.Syslook("writeBarrier")
 			wbaddr = f.Entry.NewValue1A(initpos, OpAddr, f.Config.Types.UInt32Ptr, wbsym, sb)
 			gcWriteBarrier = f.fe.Syslook("gcWriteBarrier")
+			gcWriteBarrierZero = f.fe.Syslook("gcWriteBarrierZero")
 			typedmemmove = f.fe.Syslook("typedmemmove")
 			typedmemclr = f.fe.Syslook("typedmemclr")
 			const0 = f.ConstInt32(initpos, f.Config.Types.UInt32, 0)
@@ -212,10 +213,14 @@ func writebarrier(f *Func) {
 			// then block: emit write barrier call
 			switch w.Op {
 			case OpStoreWB, OpMoveWB, OpZeroWB:
-				volatile := w.Op == OpMoveWB && isVolatile(val)
 				if w.Op == OpStoreWB {
-					memThen = bThen.NewValue3A(pos, OpWB, types.TypeMem, gcWriteBarrier, ptr, val, memThen)
+					if val.Op == OpConstNil {
+						memThen = bThen.NewValue2A(pos, OpWBZero, types.TypeMem, gcWriteBarrierZero, ptr, memThen)
+					} else {
+						memThen = bThen.NewValue3A(pos, OpWB, types.TypeMem, gcWriteBarrier, ptr, val, memThen)
+					}
 				} else {
+					volatile := w.Op == OpMoveWB && isVolatile(val)
 					memThen = wbcall(pos, bThen, fn, typ, ptr, val, memThen, sp, sb, volatile)
 				}
 				// Note that we set up a writebarrier function call.

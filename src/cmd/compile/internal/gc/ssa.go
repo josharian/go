@@ -72,6 +72,7 @@ func initssaconfig() {
 	goschedguarded = sysfunc("goschedguarded")
 	writeBarrier = sysfunc("writeBarrier")
 	gcWriteBarrier = sysfunc("gcWriteBarrier")
+	gcWriteBarrierZero = sysfunc("gcWriteBarrierZero")
 	typedmemmove = sysfunc("typedmemmove")
 	typedmemclr = sysfunc("typedmemclr")
 	Udiv = sysfunc("udiv")
@@ -5356,6 +5357,8 @@ func (e *ssafn) Syslook(name string) *obj.LSym {
 		return writeBarrier
 	case "gcWriteBarrier":
 		return gcWriteBarrier
+	case "gcWriteBarrierZero":
+		return gcWriteBarrierZero
 	case "typedmemmove":
 		return typedmemmove
 	case "typedmemclr":

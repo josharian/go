@@ -923,6 +923,8 @@ func rewriteValueAMD64(v *Value) bool {
 		return rewriteValueAMD64_OpTrunc64to8_0(v)
 	case OpWB:
 		return rewriteValueAMD64_OpWB_0(v)
+	case OpWBZero:
+		return rewriteValueAMD64_OpWBZero_0(v)
 	case OpXor16:
 		return rewriteValueAMD64_OpXor16_0(v)
 	case OpXor32:
@@ -49674,6 +49676,22 @@ func rewriteValueAMD64_OpWB_0(v *Value) bool {
 		v.Aux = fn
 		v.AddArg(destptr)
 		v.AddArg(srcptr)
+		v.AddArg(mem)
+		return true
+	}
+}
+func rewriteValueAMD64_OpWBZero_0(v *Value) bool {
+	// match: (WBZero {fn} destptr mem)
+	// cond:
+	// result: (LoweredWBZero {fn} destptr mem)
+	for {
+		fn := v.Aux
+		_ = v.Args[1]
+		destptr := v.Args[0]
+		mem := v.Args[1]
+		v.reset(OpAMD64LoweredWBZero)
+		v.Aux = fn
+		v.AddArg(destptr)
 		v.AddArg(mem)
 		return true
 	}

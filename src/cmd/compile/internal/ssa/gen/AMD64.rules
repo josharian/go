@@ -558,6 +558,7 @@
 
 // Write barrier.
 (WB {fn} destptr srcptr mem) -> (LoweredWB {fn} destptr srcptr mem)
+(WBZero {fn} destptr mem) -> (LoweredWBZero {fn} destptr mem)
 
 // ***************************
 // Above: lowering rules

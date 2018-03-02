@@ -293,6 +293,7 @@ var (
 	goschedguarded,
 	writeBarrier,
 	gcWriteBarrier,
+	gcWriteBarrierZero,
 	typedmemmove,
 	typedmemclr,
 	Udiv *obj.LSym
