@@ -2146,7 +2146,7 @@ func clearpools() {
 		for j := range pool {
 			pool[j] = nil
 		}
-		sched.deferpool[i] = nil
+		sched.deferpool[i] = sched.deferpool[i][:cap(sched.deferpool[i])/2]
 	}
 	unlock(&sched.deferlock)
 }
