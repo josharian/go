@@ -590,7 +590,7 @@ type schedt struct {
 
 	// Central pool of available defer structs of different sizes.
 	deferlock mutex
-	deferpool [5]*_defer
+	deferpool [5][]*_defer
 
 	// freem is the list of m's waiting to be freed when their
 	// m.exited is set. Linked through m.freelink.

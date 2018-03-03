@@ -200,13 +200,20 @@ func newdefer(siz int32) *_defer {
 			// Take the slow path on the system stack so
 			// we don't grow newdefer's stack.
 			systemstack(func() {
+				// Steal up to half of our local cache from the global cache.
+				move := cap(pp.deferpool[sc]) / 2
 				lock(&sched.deferlock)
-				for len(pp.deferpool[sc]) < cap(pp.deferpool[sc])/2 && sched.deferpool[sc] != nil {
-					d := sched.deferpool[sc]
-					sched.deferpool[sc] = d.link
-					d.link = nil
-					pp.deferpool[sc] = append(pp.deferpool[sc], d)
+				if n := len(sched.deferpool[sc]); n < move {
+					move = n
 				}
+				end := len(sched.deferpool[sc]) - move
+				tail := sched.deferpool[sc][end:]
+				copy(pp.deferpool[sc][:move], tail)
+				// clear and shrink global cache
+				for i := range tail {
+					tail[i] = nil
+				}
+				sched.deferpool[sc] = sched.deferpool[sc][:end]
 				unlock(&sched.deferlock)
 			})
 		}
@@ -254,23 +261,16 @@ func freedefer(d *_defer) {
 		// Take this slow path on the system stack so
 		// we don't grow freedefer's stack.
 		systemstack(func() {
-			var first, last *_defer
-			for len(pp.deferpool[sc]) > cap(pp.deferpool[sc])/2 {
-				n := len(pp.deferpool[sc])
-				d := pp.deferpool[sc][n-1]
-				pp.deferpool[sc][n-1] = nil
-				pp.deferpool[sc] = pp.deferpool[sc][:n-1]
-				if first == nil {
-					first = d
-				} else {
-					last.link = d
-				}
-				last = d
-			}
+			move := cap(pp.deferpool[sc]) / 2
 			lock(&sched.deferlock)
-			last.link = sched.deferpool[sc]
-			sched.deferpool[sc] = first
+			tail := pp.deferpool[sc][move:]
+			sched.deferpool[sc] = append(sched.deferpool[sc], tail...)
 			unlock(&sched.deferlock)
+			// zero local copy of tail
+			for i := range tail {
+				tail[i] = nil
+			}
+			pp.deferpool[sc] = pp.deferpool[sc][:move]
 		})
 	}
 
