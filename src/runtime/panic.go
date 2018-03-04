@@ -196,32 +196,20 @@ func newdefer(siz int32) *_defer {
 	gp := getg()
 	if sc < uintptr(len(p{}.deferpool)) {
 		pp := gp.m.p.ptr()
-		if len(pp.deferpool[sc]) == 0 && sched.deferpool[sc] != nil {
-			// Take the slow path on the system stack so
-			// we don't grow newdefer's stack.
-			systemstack(func() {
-				// Steal up to half of our local cache from the global cache.
-				move := cap(pp.deferpool[sc]) / 2
-				lock(&sched.deferlock)
-				if n := len(sched.deferpool[sc]); n < move {
-					move = n
-				}
-				end := len(sched.deferpool[sc]) - move
-				tail := sched.deferpool[sc][end:]
-				copy(pp.deferpool[sc][:move], tail)
-				// clear and shrink global cache
-				for i := range tail {
-					tail[i] = nil
-				}
-				sched.deferpool[sc] = sched.deferpool[sc][:end]
-				unlock(&sched.deferlock)
-			})
+		if pp.deferused[sc] == len(pp.deferpool[sc]) {
+			lock(&sched.deferlock)
+			if len(sched.deferpool[sc]) > 0 {
+				last := len(sched.deferpool[sc]) - 1
+				pp.deferpool[sc] = sched.deferpool[sc][last]
+				sched.deferpool[sc] = sched.deferpool[sc][:last]
+			} else {
+				pp.deferpool[sc] = new([32]_defer)
+			}
+			unlock(&sched.deferlock)
+			pp.deferused[sc] = 0
 		}
-		if n := len(pp.deferpool[sc]); n > 0 {
-			d = pp.deferpool[sc][n-1]
-			pp.deferpool[sc][n-1] = nil
-			pp.deferpool[sc] = pp.deferpool[sc][:n-1]
-		}
+		d = &pp.deferpool[sc][pp.deferused[sc]]
+		pp.deferused[sc]++
 	}
 	if d == nil {
 		// Allocate new defer+args.
@@ -255,23 +243,12 @@ func freedefer(d *_defer) {
 		return
 	}
 	pp := getg().m.p.ptr()
-	if len(pp.deferpool[sc]) == cap(pp.deferpool[sc]) {
-		// Transfer half of local cache to the central cache.
-		//
-		// Take this slow path on the system stack so
-		// we don't grow freedefer's stack.
-		systemstack(func() {
-			move := cap(pp.deferpool[sc]) / 2
-			lock(&sched.deferlock)
-			tail := pp.deferpool[sc][move:]
-			sched.deferpool[sc] = append(sched.deferpool[sc], tail...)
-			unlock(&sched.deferlock)
-			// zero local copy of tail
-			for i := range tail {
-				tail[i] = nil
-			}
-			pp.deferpool[sc] = pp.deferpool[sc][:move]
-		})
+	pp.deferused[sc]--
+	if pp.deferused[sc] == 0 {
+		lock(&sched.deferlock)
+		sched.deferpool[sc] = append(sched.deferpool[sc], pp.deferpool[sc])
+		unlock(&sched.deferlock)
+		pp.deferpool[sc] = nil
 	}
 
 	// These lines used to be simply `*d = _defer{}` but that
@@ -283,8 +260,6 @@ func freedefer(d *_defer) {
 	d.fn = nil
 	d._panic = nil
 	d.link = nil
-
-	pp.deferpool[sc] = append(pp.deferpool[sc], d)
 }
 
 // Separate function so that it can split stack.
