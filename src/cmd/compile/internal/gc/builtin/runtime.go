@@ -140,6 +140,7 @@ var writeBarrier struct {
 func typedmemmove(typ *byte, dst *any, src *any)
 func typedmemclr(typ *byte, dst *any)
 func typedslicecopy(typ *byte, dst any, src any) int
+func wbelse(unsafe.Pointer, unsafe.Pointer)
 
 func selectnbsend(hchan chan<- any, elem *any) bool
 func selectnbrecv(elem *any, hchan <-chan any) bool

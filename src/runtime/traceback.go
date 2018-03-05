@@ -427,9 +427,10 @@ func gentraceback(pc0, sp0, lr0 uintptr, gp *g, skip int, pcbuf *uintptr, max in
 					ix := pcdatavalue(f, _PCDATA_InlTreeIndex, tracepc, nil)
 					for ix != -1 {
 						name := funcnameFromNameoff(f, inltree[ix].func_)
-						print(name, "(...)\n")
-						print("\t", file, ":", line, "\n")
-
+						if flags&_TraceTop == 0 {
+							print(name, "(...)\n")
+							print("\t", file, ":", line, "\n")
+						}
 						file = funcfile(f, inltree[ix].file)
 						line = inltree[ix].line
 						ix = inltree[ix].parent
@@ -438,25 +439,29 @@ func gentraceback(pc0, sp0, lr0 uintptr, gp *g, skip int, pcbuf *uintptr, max in
 				if name == "runtime.gopanic" {
 					name = "panic"
 				}
-				print(name, "(")
-				argp := (*[100]uintptr)(unsafe.Pointer(frame.argp))
-				for i := uintptr(0); i < frame.arglen/sys.PtrSize; i++ {
-					if i >= 10 {
-						print(", ...")
-						break
+				if flags&_TraceTop == 0 {
+					print(name, "(")
+					argp := (*[100]uintptr)(unsafe.Pointer(frame.argp))
+					for i := uintptr(0); i < frame.arglen/sys.PtrSize; i++ {
+						if i >= 10 {
+							print(", ...")
+							break
+						}
+						if i != 0 {
+							print(", ")
+						}
+						print(hex(argp[i]))
 					}
-					if i != 0 {
-						print(", ")
-					}
-					print(hex(argp[i]))
+					print(")\n")
 				}
-				print(")\n")
 				print("\t", file, ":", line)
-				if frame.pc > f.entry {
-					print(" +", hex(frame.pc-f.entry))
-				}
-				if g.m.throwing > 0 && gp == g.m.curg || level >= 2 {
-					print(" fp=", hex(frame.fp), " sp=", hex(frame.sp), " pc=", hex(frame.pc))
+				if flags&_TraceTop == 0 {
+					if frame.pc > f.entry {
+						print(" +", hex(frame.pc-f.entry))
+					}
+					if g.m.throwing > 0 && gp == g.m.curg || level >= 2 {
+						print(" fp=", hex(frame.fp), " sp=", hex(frame.sp), " pc=", hex(frame.pc))
+					}
 				}
 				print("\n")
 				nprint++
@@ -565,14 +570,14 @@ func gentraceback(pc0, sp0, lr0 uintptr, gp *g, skip int, pcbuf *uintptr, max in
 	// stopped nicely, and the stack walk may not be able to complete.
 	// It's okay in those situations not to use up the entire defer stack:
 	// incomplete information then is still better than nothing.
-	if callback != nil && n < max && _defer != nil {
+	if callback != nil && n < max && _defer != nil && flags&_TraceTop == 0 {
 		if _defer != nil {
 			print("runtime: g", gp.goid, ": leftover defer sp=", hex(_defer.sp), " pc=", hex(_defer.pc), "\n")
 		}
 		for _defer = gp._defer; _defer != nil; _defer = _defer.link {
 			print("\tdefer ", _defer, " sp=", hex(_defer.sp), " pc=", hex(_defer.pc), "\n")
 		}
-		throw("traceback has leftover defers")
+		// throw("traceback has leftover defers")
 	}
 
 	if callback != nil && n < max && frame.sp != gp.stktopsp {
@@ -726,14 +731,20 @@ func traceback1(pc, sp, lr uintptr, gp *g, flags uint) {
 	}
 	// Print traceback. By default, omits runtime frames.
 	// If that means we print nothing at all, repeat forcing all frames printed.
-	n = gentraceback(pc, sp, lr, gp, 0, nil, _TracebackMaxFrames, nil, nil, flags)
+	max := _TracebackMaxFrames
+	if flags&_TraceTop != 0 {
+		max = 1
+	}
+	n = gentraceback(pc, sp, lr, gp, 0, nil, max, nil, nil, flags)
 	if n == 0 && (flags&_TraceRuntimeFrames) == 0 {
-		n = gentraceback(pc, sp, lr, gp, 0, nil, _TracebackMaxFrames, nil, nil, flags|_TraceRuntimeFrames)
+		n = gentraceback(pc, sp, lr, gp, 0, nil, max, nil, nil, flags|_TraceRuntimeFrames)
 	}
 	if n == _TracebackMaxFrames {
 		print("...additional frames elided...\n")
 	}
-	printcreatedby(gp)
+	if flags&_TraceTop == 0 {
+		printcreatedby(gp)
+	}
 }
 
 func callers(skip int, pcbuf []uintptr) int {

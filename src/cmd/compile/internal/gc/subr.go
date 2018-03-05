@@ -316,8 +316,12 @@ func nodl(pos src.XPos, op Op, nleft, nright *Node) *Node {
 		n = new(Node)
 	}
 	n.Op = op
-	n.Left = nleft
-	n.Right = nright
+	if nleft != nil {
+		n.Left = nleft
+	}
+	if nright != nil {
+		n.Right = nright
+	}
 	n.Pos = pos
 	n.Xoffset = BADWIDTH
 	n.Orig = n

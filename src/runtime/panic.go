@@ -224,7 +224,9 @@ func newdefer(siz int32) *_defer {
 		})
 	}
 	d.siz = siz
-	d.link = gp._defer
+	if gp._defer != nil {
+		d.link = gp._defer
+	}
 	gp._defer = d
 	return d
 }
@@ -283,7 +285,9 @@ func freedefer(d *_defer) {
 	// d._panic and d.fn must be nil already.
 	// If not, we would have called freedeferpanic or freedeferfn above,
 	// both of which throw.
-	d.link = nil
+	if d.link != nil {
+		d.link = nil
+	}
 
 	pp.deferpool[sc] = append(pp.deferpool[sc], d)
 }

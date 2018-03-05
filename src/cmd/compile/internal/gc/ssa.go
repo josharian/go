@@ -74,6 +74,7 @@ func initssaconfig() {
 	gcWriteBarrier = sysfunc("gcWriteBarrier")
 	typedmemmove = sysfunc("typedmemmove")
 	typedmemclr = sysfunc("typedmemclr")
+	wbelse = sysfunc("wbelse")
 	Udiv = sysfunc("udiv")
 
 	// GO386=387 runtime functions
@@ -5360,6 +5361,8 @@ func (e *ssafn) Syslook(name string) *obj.LSym {
 		return typedmemmove
 	case "typedmemclr":
 		return typedmemclr
+	case "wbelse":
+		return wbelse
 	}
 	Fatalf("unknown Syslook func %v", name)
 	return nil

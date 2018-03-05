@@ -295,6 +295,7 @@ var (
 	gcWriteBarrier,
 	typedmemmove,
 	typedmemclr,
+	wbelse,
 	Udiv *obj.LSym
 
 	// GO386=387

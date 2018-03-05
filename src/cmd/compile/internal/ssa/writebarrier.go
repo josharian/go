@@ -44,7 +44,7 @@ func writebarrier(f *Func) {
 	}
 
 	var sb, sp, wbaddr, const0 *Value
-	var typedmemmove, typedmemclr, gcWriteBarrier *obj.LSym
+	var typedmemmove, typedmemclr, gcWriteBarrier, wbelse *obj.LSym
 	var stores, after []*Value
 	var sset *sparseSet
 	var storeNumber []int32
@@ -99,6 +99,7 @@ func writebarrier(f *Func) {
 			gcWriteBarrier = f.fe.Syslook("gcWriteBarrier")
 			typedmemmove = f.fe.Syslook("typedmemmove")
 			typedmemclr = f.fe.Syslook("typedmemclr")
+			wbelse = f.fe.Syslook("wbelse")
 			const0 = f.ConstInt32(initpos, f.Config.Types.UInt32, 0)
 
 			// allocate auxiliary data structures for computing store order
@@ -227,6 +228,7 @@ func writebarrier(f *Func) {
 			// else block: normal store
 			switch w.Op {
 			case OpStoreWB:
+				memElse = wbcall(pos, bElse, wbelse, typ, ptr, val, memElse, sp, sb, false)
 				memElse = bElse.NewValue3A(pos, OpStore, types.TypeMem, w.Aux, ptr, val, memElse)
 			case OpMoveWB:
 				memElse = bElse.NewValue3I(pos, OpMove, types.TypeMem, w.AuxInt, ptr, val, memElse)
