@@ -271,6 +271,12 @@ func freedefer(d *_defer) {
 			last.link = sched.deferpool[sc]
 			sched.deferpool[sc] = first
 			unlock(&sched.deferlock)
+			// Ensure that there's space in pp.deferpool[sc] for one more item.
+			// The loop above doesn't quite guarantee it in isolation,
+			// in the case in which the len/cap is 0 or 1.
+			// Since we're in the slow path, be defensive.
+			pp.deferpool[sc] = append(pp.deferpool[sc], nil)
+			pp.deferpool[sc] = pp.deferpool[sc][:len(pp.deferpool[sc])-1]
 		})
 	}
 
@@ -283,9 +289,14 @@ func freedefer(d *_defer) {
 	// d._panic and d.fn must be nil already.
 	// If not, we would have called freedeferpanic or freedeferfn above,
 	// both of which throw.
-	d.link = nil
 
-	pp.deferpool[sc] = append(pp.deferpool[sc], d)
+	// We ensured above that cap(pp.deferpool[sc]) > len(pp.deferpool[sc]).
+	last := len(pp.deferpool[sc])
+	pp.deferpool[sc] = pp.deferpool[sc][:last+1]
+	pp.deferpool[sc][last] = d
+	// Zero d.link here instead of above so that the writebarrier check
+	// can be combined with storing d to the deferpool.
+	d.link = nil
 }
 
 // Separate function so that it can split stack.
