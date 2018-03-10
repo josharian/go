@@ -340,9 +340,7 @@ TEXT runtime·mcall(SB), NOSPLIT, $0-8
 	MOVQ	g_m(BX), BX
 	MOVQ	m_g0(BX), SI
 	CMPQ	SI, AX	// if g == m->g0 call badmcall
-	JNE	3(PC)
-	MOVQ	$runtime·badmcall(SB), AX
-	JMP	AX
+	JEQ	bad
 	MOVQ	SI, g(CX)	// g = m->g0
 	MOVQ	(g_sched+gobuf_sp)(SI), SP	// sp = m->g0->sched.sp
 	PUSHQ	AX
@@ -353,6 +351,9 @@ TEXT runtime·mcall(SB), NOSPLIT, $0-8
 	MOVQ	$runtime·badmcall2(SB), AX
 	JMP	AX
 	RET
+bad:
+	MOVQ	$runtime·badmcall(SB), AX
+	JMP	AX
 
 // systemstack_switch is a dummy routine that systemstack leaves at the bottom
 // of the G stack. We need to distinguish the routine that
