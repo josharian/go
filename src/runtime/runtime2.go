@@ -652,6 +652,7 @@ type _func struct {
 // allocated in non-garbage-collected memory
 // Needs to be in sync with
 // ../cmd/compile/internal/gc/reflect.go:/^func.dumptypestructs.
+//go:notinheap
 type itab struct {
 	inter *interfacetype
 	_type *_type
