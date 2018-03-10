@@ -209,6 +209,25 @@ func (gp *guintptr) cas(old, new guintptr) bool {
 	return atomic.Casuintptr((*uintptr)(unsafe.Pointer(gp)), uintptr(old), uintptr(new))
 }
 
+func (g *g) cachep() {
+	if g.m == nil {
+		g.p = 0
+		return
+	}
+	gmp := g.m.p
+	g.m.g0.p = gmp
+	g.m.gsignal.p = gmp
+	if curg := g.m.curg; curg != nil {
+		curg.p = gmp
+	}
+	// if g0 := g.m.g0; g0 != nil {
+	// 	g0.p = gmp
+	// }
+	// if gsig := g.m.gsignal; gsig != nil {
+	// 	gsig.p = gmp
+	// }
+}
+
 // setGNoWB performs *gp = new without a write barrier.
 // For times when it's impractical to use a guintptr.
 //go:nosplit
@@ -347,9 +366,10 @@ type g struct {
 	stackguard0 uintptr // offset known to liblink
 	stackguard1 uintptr // offset known to liblink
 
-	_panic         *_panic // innermost panic - offset known to liblink
-	_defer         *_defer // innermost defer
-	m              *m      // current m; offset known to arm liblink
+	_panic         *_panic  // innermost panic - offset known to liblink
+	_defer         *_defer  // innermost defer
+	m              *m       // current m; offset known to arm liblink
+	p              puintptr // current p (0 if not running)
 	sched          gobuf
 	syscallsp      uintptr        // if status==Gsyscall, syscallsp = sched.sp to use during gc
 	syscallpc      uintptr        // if status==Gsyscall, syscallpc = sched.pc to use during gc

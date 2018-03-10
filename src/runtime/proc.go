@@ -659,6 +659,7 @@ func helpgc(nproc int32) {
 		}
 		mp.helpgc = n
 		mp.p.set(allp[pos])
+		_g_.cachep()
 		mp.mcache = allp[pos].mcache
 		pos++
 		notewakeup(&mp.park)
@@ -1232,6 +1233,7 @@ func mstart1(dummy int32) {
 		acquirep(_g_.m.nextp.ptr())
 		_g_.m.nextp = 0
 	}
+	_g_.cachep()
 	schedule()
 }
 
@@ -1530,6 +1532,8 @@ func allocm(_p_ *p, fn func()) *m {
 		_g_.stackguard0 = stackPreempt
 	}
 
+	_g_.cachep()
+
 	return mp
 }
 
@@ -1667,6 +1671,7 @@ func oneNewExtraM() {
 	// "real" goroutine until needm grabs it.
 	casgstatus(gp, _Gidle, _Gdead)
 	gp.m = mp
+	gp.cachep()
 	mp.curg = gp
 	mp.lockedInt++
 	mp.lockedg.set(gp)
@@ -1956,6 +1961,7 @@ retry:
 		_g_.m.helpgc = 0
 		_g_.m.mcache = nil
 		_g_.m.p = 0
+		_g_.cachep()
 		goto retry
 	}
 	acquirep(_g_.m.nextp.ptr())
@@ -2176,7 +2182,9 @@ func execute(gp *g, inheritTime bool) {
 		_g_.m.p.ptr().schedtick++
 	}
 	_g_.m.curg = gp
+	_g_.cachep()
 	gp.m = _g_.m
+	gp.cachep()
 
 	// Check whether the profiler needs to be turned on or off.
 	hz := sched.profilehz
@@ -2665,6 +2673,7 @@ func goexit0(gp *g) {
 		atomic.Xadd(&sched.ngsys, -1)
 	}
 	gp.m = nil
+	gp.cachep()
 	locked := gp.lockedm != 0
 	gp.lockedm = 0
 	_g_.m.lockedg = 0
@@ -2959,6 +2968,7 @@ func exitsyscall(dummy int32) {
 			_g_.stackguard0 = _g_.stack.lo + _StackGuard
 		}
 		_g_.throwsplit = false
+		_g_.cachep()
 		return
 	}
 
@@ -3004,6 +3014,7 @@ func exitsyscallfast() bool {
 	if sched.stopwait == freezeStopWait {
 		_g_.m.mcache = nil
 		_g_.m.p = 0
+		_g_.cachep()
 		return false
 	}
 
@@ -3018,6 +3029,7 @@ func exitsyscallfast() bool {
 	oldp := _g_.m.p.ptr()
 	_g_.m.mcache = nil
 	_g_.m.p = 0
+	_g_.cachep()
 	if sched.pidle != 0 {
 		var ok bool
 		systemstack(func() {
@@ -3988,6 +4000,7 @@ func procresize(nprocs int32) *p {
 			_g_.m.p.ptr().m = 0
 		}
 		_g_.m.p = 0
+		_g_.cachep()
 		_g_.m.mcache = nil
 		p := allp[0]
 		p.m = 0
@@ -4058,6 +4071,7 @@ func acquirep1(_p_ *p) {
 	}
 	_g_.m.p.set(_p_)
 	_p_.m.set(_g_.m)
+	_g_.cachep()
 	_p_.status = _Prunning
 }
 
@@ -4077,6 +4091,7 @@ func releasep() *p {
 		traceProcStop(_g_.m.p.ptr())
 	}
 	_g_.m.p = 0
+	_g_.cachep()
 	_g_.m.mcache = nil
 	_p_.m = 0
 	_p_.status = _Pidle

@@ -191,6 +191,7 @@ func init() {
 //
 //go:nosplit
 func newdefer(siz int32) *_defer {
+	checkGMP("newdefer")
 	var d *_defer
 	sc := deferclass(uintptr(siz))
 	gp := getg()
@@ -229,6 +230,23 @@ func newdefer(siz int32) *_defer {
 	return d
 }
 
+func checkGMP(where string) {
+	g := getg()
+	if g.m.p == g.p {
+		return
+	}
+	gmpid := int32(-1)
+	if pp := g.m.p.ptr(); pp != nil {
+		gmpid = pp.id
+	}
+	gpid := int32(-1)
+	if pp := g.p.ptr(); pp != nil {
+		gpid = pp.id
+	}
+	print(where, ": g=", g.goid, " isUserG=", g.m.g0 != g.m.curg, " m=", g.m.id, " g.m.p=", gmpid, " g.p=", gpid, "\n")
+	schedtrace(true)
+}
+
 // Free the given defer.
 // The defer cannot be used after this call.
 //
@@ -247,6 +265,7 @@ func freedefer(d *_defer) {
 	if sc >= uintptr(len(p{}.deferpool)) {
 		return
 	}
+	checkGMP("freedefer")
 	pp := getg().m.p.ptr()
 	if len(pp.deferpool[sc]) == cap(pp.deferpool[sc]) {
 		// Transfer half of local cache to the central cache.
