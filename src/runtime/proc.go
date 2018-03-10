@@ -594,6 +594,7 @@ func ready(gp *g, traceskip int, next bool) {
 
 	// Mark runnable.
 	_g_ := getg()
+	_g_.waitreason = 0
 	_g_.m.locks++ // disable preemption because it can be holding p in a local var
 	if status&^_Gscan != _Gwaiting {
 		dumpgstatus(gp)
