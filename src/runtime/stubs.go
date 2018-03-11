@@ -268,6 +268,13 @@ func return0()
 
 // in asm_*.s
 // not called directly; definitions here supply type information for traceback.
+func call8eq(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
+func call8(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
+func call16eq(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
+func call16(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
+func call24eq(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
+func call24(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
+func call32eq(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
 func call32(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
 func call64(typ, fn, arg unsafe.Pointer, n, retoffset uint32)
 func call128(typ, fn, arg unsafe.Pointer, n, retoffset uint32)

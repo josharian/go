@@ -500,12 +500,25 @@ TEXT runtime·morestack_noctxt(SB),NOSPLIT,$0
 	JMP	AX
 // Note: can't just "JMP NAME(SB)" - bad inlining results.
 
+#define DISPATCH_WITH_EQ(NAME,NAMEEQ,MAXSIZE)		\
+	CMPQ	CX, $MAXSIZE;		\
+	JNE	3(PC); \
+	MOVQ	$NAMEEQ(SB), AX;		\
+	JMP	AX;	\
+	JA	3(PC);			\
+	MOVQ	$NAME(SB), AX;		\
+	JMP	AX
+// Note: can't just "JMP NAME(SB)" - bad inlining results.
+
 TEXT reflect·call(SB), NOSPLIT, $0-0
 	JMP	·reflectcall(SB)
 
 TEXT ·reflectcall(SB), NOSPLIT, $0-32
 	MOVLQZX argsize+24(FP), CX
-	DISPATCH(runtime·call32, 32)
+	DISPATCH_WITH_EQ(runtime·call8, runtime·call8eq, 8)
+	DISPATCH_WITH_EQ(runtime·call16, runtime·call16eq, 8)
+	DISPATCH_WITH_EQ(runtime·call24, runtime·call24eq, 8)
+	DISPATCH_WITH_EQ(runtime·call32, runtime·call32eq, 8)
 	DISPATCH(runtime·call64, 64)
 	DISPATCH(runtime·call128, 128)
 	DISPATCH(runtime·call256, 256)
@@ -558,6 +571,7 @@ TEXT NAME(SB), WRAPPER, $MAXSIZE-32;		\
 	CALL	callRet<>(SB);			\
 	RET
 
+
 // callRet copies return values back at the end of call*. This is a
 // separate function so it can allocate stack space for the arguments
 // to reflectcallmove. It does not follow the Go ABI; it expects its
@@ -571,6 +585,9 @@ TEXT callRet<>(SB), NOSPLIT, $32-0
 	CALL	runtime·reflectcallmove(SB)
 	RET
 
+CALLFN(·call8, 8)
+CALLFN(·call16, 16)
+CALLFN(·call24, 24)
 CALLFN(·call32, 32)
 CALLFN(·call64, 64)
 CALLFN(·call128, 128)
@@ -597,6 +614,112 @@ CALLFN(·call134217728, 134217728)
 CALLFN(·call268435456, 268435456)
 CALLFN(·call536870912, 536870912)
 CALLFN(·call1073741824, 1073741824)
+
+
+TEXT ·call8eq(SB), WRAPPER, $8-32
+	NO_LOCAL_POINTERS
+	// copy arguments to stack
+	MOVQ	argptr+16(FP), SI
+	MOVLQZX argsize+24(FP), CX
+	MOVQ	(SI), DI
+	MOVQ	DI, (SP)
+	// call function
+	MOVQ	f+8(FP), DX
+	PCDATA  $PCDATA_StackMapIndex, $0
+	CALL	(DX)
+	// copy return values back
+	MOVQ	argtype+0(FP), DX
+	MOVQ	argptr+16(FP), DI
+	MOVLQZX	argsize+24(FP), CX
+	MOVLQZX	retoffset+28(FP), BX
+	MOVQ	SP, SI
+	ADDQ	BX, DI
+	ADDQ	BX, SI
+	SUBQ	BX, CX
+	CALL	callRet<>(SB)
+	RET
+
+TEXT ·call16eq(SB), WRAPPER, $16-32
+	NO_LOCAL_POINTERS
+	// copy arguments to stack
+	MOVQ	argptr+16(FP), SI
+	MOVLQZX argsize+24(FP), CX
+	MOVQ	(SI), DI
+	MOVQ	DI, (SP)
+	MOVQ	8(SI), DI
+	MOVQ	DI, 8(SP)
+	// call function
+	MOVQ	f+8(FP), DX
+	PCDATA  $PCDATA_StackMapIndex, $0
+	CALL	(DX)
+	// copy return values back
+	MOVQ	argtype+0(FP), DX
+	MOVQ	argptr+16(FP), DI
+	MOVLQZX	argsize+24(FP), CX
+	MOVLQZX	retoffset+28(FP), BX
+	MOVQ	SP, SI
+	ADDQ	BX, DI
+	ADDQ	BX, SI
+	SUBQ	BX, CX
+	CALL	callRet<>(SB)
+	RET
+
+TEXT ·call24eq(SB), WRAPPER, $24-32
+	NO_LOCAL_POINTERS
+	// copy arguments to stack
+	MOVQ	argptr+16(FP), SI
+	MOVLQZX argsize+24(FP), CX
+	MOVQ	(SI), DI
+	MOVQ	DI, (SP)
+	MOVQ	8(SI), DI
+	MOVQ	DI, 8(SP)
+	MOVQ	16(SI), DI
+	MOVQ	DI, 16(SP)
+	// call function
+	MOVQ	f+8(FP), DX
+	PCDATA  $PCDATA_StackMapIndex, $0
+	CALL	(DX)
+	// copy return values back
+	MOVQ	argtype+0(FP), DX
+	MOVQ	argptr+16(FP), DI
+	MOVLQZX	argsize+24(FP), CX
+	MOVLQZX	retoffset+28(FP), BX
+	MOVQ	SP, SI
+	ADDQ	BX, DI
+	ADDQ	BX, SI
+	SUBQ	BX, CX
+	CALL	callRet<>(SB)
+	RET
+
+TEXT ·call32eq(SB), WRAPPER, $32-32
+	NO_LOCAL_POINTERS
+	// copy arguments to stack
+	MOVQ	argptr+16(FP), SI
+	MOVLQZX argsize+24(FP), CX
+	MOVQ	(SI), DI
+	MOVQ	DI, (SP)
+	MOVQ	8(SI), DI
+	MOVQ	DI, 8(SP)
+	MOVQ	16(SI), DI
+	MOVQ	DI, 16(SP)
+	MOVQ	24(SI), DI
+	MOVQ	DI, 24(SP)
+	// call function
+	MOVQ	f+8(FP), DX
+	PCDATA  $PCDATA_StackMapIndex, $0
+	CALL	(DX)
+	// copy return values back
+	MOVQ	argtype+0(FP), DX
+	MOVQ	argptr+16(FP), DI
+	MOVLQZX	argsize+24(FP), CX
+	MOVLQZX	retoffset+28(FP), BX
+	MOVQ	SP, SI
+	ADDQ	BX, DI
+	ADDQ	BX, SI
+	SUBQ	BX, CX
+	CALL	callRet<>(SB)
+	RET
+
 
 TEXT runtime·procyield(SB),NOSPLIT,$0-0
 	MOVL	cycles+0(FP), AX
