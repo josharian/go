@@ -28,6 +28,10 @@ TEXT callRet<>(SB), NOSPLIT, $32-0
 	RET
 
 TEXT ·reflectcall(SB), NOSPLIT, $0-32
+	NO_LOCAL_POINTERS
+	// load arguments into registers, used by the various call functions
+	MOVQ	f+8(FP), DX
+	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	CMPQ	CX, $32
 	JA	3(PC)
@@ -139,13 +143,10 @@ TEXT ·reflectcall(SB), NOSPLIT, $0-32
 
 TEXT ·call32(SB), WRAPPER, $32-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -162,13 +163,10 @@ TEXT ·call32(SB), WRAPPER, $32-32
 
 TEXT ·call64(SB), WRAPPER, $64-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -185,13 +183,10 @@ TEXT ·call64(SB), WRAPPER, $64-32
 
 TEXT ·call128(SB), WRAPPER, $128-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -208,13 +203,10 @@ TEXT ·call128(SB), WRAPPER, $128-32
 
 TEXT ·call256(SB), WRAPPER, $256-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -231,13 +223,10 @@ TEXT ·call256(SB), WRAPPER, $256-32
 
 TEXT ·call512(SB), WRAPPER, $512-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -254,13 +243,10 @@ TEXT ·call512(SB), WRAPPER, $512-32
 
 TEXT ·call1024(SB), WRAPPER, $1024-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -277,13 +263,10 @@ TEXT ·call1024(SB), WRAPPER, $1024-32
 
 TEXT ·call2048(SB), WRAPPER, $2048-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -300,13 +283,10 @@ TEXT ·call2048(SB), WRAPPER, $2048-32
 
 TEXT ·call4096(SB), WRAPPER, $4096-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -323,13 +303,10 @@ TEXT ·call4096(SB), WRAPPER, $4096-32
 
 TEXT ·call8192(SB), WRAPPER, $8192-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -346,13 +323,10 @@ TEXT ·call8192(SB), WRAPPER, $8192-32
 
 TEXT ·call16384(SB), WRAPPER, $16384-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -369,13 +343,10 @@ TEXT ·call16384(SB), WRAPPER, $16384-32
 
 TEXT ·call32768(SB), WRAPPER, $32768-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -392,13 +363,10 @@ TEXT ·call32768(SB), WRAPPER, $32768-32
 
 TEXT ·call65536(SB), WRAPPER, $65536-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -415,13 +383,10 @@ TEXT ·call65536(SB), WRAPPER, $65536-32
 
 TEXT ·call131072(SB), WRAPPER, $131072-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -438,13 +403,10 @@ TEXT ·call131072(SB), WRAPPER, $131072-32
 
 TEXT ·call262144(SB), WRAPPER, $262144-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -461,13 +423,10 @@ TEXT ·call262144(SB), WRAPPER, $262144-32
 
 TEXT ·call524288(SB), WRAPPER, $524288-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -484,13 +443,10 @@ TEXT ·call524288(SB), WRAPPER, $524288-32
 
 TEXT ·call1048576(SB), WRAPPER, $1048576-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -507,13 +463,10 @@ TEXT ·call1048576(SB), WRAPPER, $1048576-32
 
 TEXT ·call2097152(SB), WRAPPER, $2097152-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -530,13 +483,10 @@ TEXT ·call2097152(SB), WRAPPER, $2097152-32
 
 TEXT ·call4194304(SB), WRAPPER, $4194304-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -553,13 +503,10 @@ TEXT ·call4194304(SB), WRAPPER, $4194304-32
 
 TEXT ·call8388608(SB), WRAPPER, $8388608-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -576,13 +523,10 @@ TEXT ·call8388608(SB), WRAPPER, $8388608-32
 
 TEXT ·call16777216(SB), WRAPPER, $16777216-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -599,13 +543,10 @@ TEXT ·call16777216(SB), WRAPPER, $16777216-32
 
 TEXT ·call33554432(SB), WRAPPER, $33554432-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -622,13 +563,10 @@ TEXT ·call33554432(SB), WRAPPER, $33554432-32
 
 TEXT ·call67108864(SB), WRAPPER, $67108864-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -645,13 +583,10 @@ TEXT ·call67108864(SB), WRAPPER, $67108864-32
 
 TEXT ·call134217728(SB), WRAPPER, $134217728-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -668,13 +603,10 @@ TEXT ·call134217728(SB), WRAPPER, $134217728-32
 
 TEXT ·call268435456(SB), WRAPPER, $268435456-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -691,13 +623,10 @@ TEXT ·call268435456(SB), WRAPPER, $268435456-32
 
 TEXT ·call536870912(SB), WRAPPER, $536870912-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back
@@ -714,13 +643,10 @@ TEXT ·call536870912(SB), WRAPPER, $536870912-32
 
 TEXT ·call1073741824(SB), WRAPPER, $1073741824-32
 	NO_LOCAL_POINTERS
-	// copy arguments to stack
-	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 	MOVQ	SP, DI
 	REP;MOVSB
 	// call function
-	MOVQ	f+8(FP), DX
 	PCDATA  $PCDATA_StackMapIndex, $0
 	CALL	(DX)
 	// copy return values back

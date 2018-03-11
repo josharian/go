@@ -68,6 +68,10 @@ TEXT callRet<>(SB), NOSPLIT, $32-0
 	// Implement reflectcall, which dispatches to the appropriate call function.
 	buf.WriteString(`
 TEXT ·reflectcall(SB), NOSPLIT, $0-32
+	NO_LOCAL_POINTERS
+	// load arguments into registers, used by the various call functions
+	MOVQ	f+8(FP), DX
+	MOVQ	argptr+16(FP), SI
 	MOVLQZX argsize+24(FP), CX
 `)
 
@@ -89,13 +93,11 @@ TEXT ·reflectcall(SB), NOSPLIT, $0-32
 	for _, sz := range sizes {
 		fmt.Fprintf(buf, "TEXT ·call%d(SB), WRAPPER, $%d-32\n", sz, sz)
 		fmt.Fprintf(buf, "	NO_LOCAL_POINTERS\n")
-		fmt.Fprintf(buf, "	// copy arguments to stack\n")
-		fmt.Fprintf(buf, "	MOVQ	argptr+16(FP), SI\n")
 		fmt.Fprintf(buf, "	MOVLQZX argsize+24(FP), CX\n")
 		fmt.Fprintf(buf, "	MOVQ	SP, DI\n")
 		fmt.Fprintf(buf, "	REP;MOVSB\n")
 		fmt.Fprintf(buf, "	// call function\n")
-		fmt.Fprintf(buf, "	MOVQ	f+8(FP), DX\n")
+		// fmt.Fprintf(buf, "	MOVQ	f+8(FP), DX\n")
 		fmt.Fprintf(buf, "	PCDATA  $PCDATA_StackMapIndex, $0\n")
 		fmt.Fprintf(buf, "	CALL	(DX)\n")
 		fmt.Fprintf(buf, "	// copy return values back\n")
