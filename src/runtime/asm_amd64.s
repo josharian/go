@@ -293,12 +293,13 @@ TEXT runtime·gosave(SB), NOSPLIT, $0-8
 	// Assert ctxt is zero. See func save.
 	MOVQ	gobuf_ctxt(AX), BX
 	TESTQ	BX, BX
-	JZ	2(PC)
-	CALL	runtime·badctxt(SB)
+	JNZ	bad
 	get_tls(CX)
 	MOVQ	g(CX), BX
 	MOVQ	BX, gobuf_g(AX)
 	RET
+bad:
+	CALL	runtime·badctxt(SB)
 
 // void gogo(Gobuf*)
 // restore state from Gobuf; longjmp
@@ -445,16 +446,12 @@ TEXT runtime·morestack(SB),NOSPLIT,$0-0
 	MOVQ	g_m(BX), BX
 	MOVQ	m_g0(BX), SI
 	CMPQ	g(CX), SI
-	JNE	3(PC)
-	CALL	runtime·badmorestackg0(SB)
-	CALL	runtime·abort(SB)
+	JEQ	badg0
 
 	// Cannot grow signal stack (m->gsignal).
 	MOVQ	m_gsignal(BX), SI
 	CMPQ	g(CX), SI
-	JNE	3(PC)
-	CALL	runtime·badmorestackgsignal(SB)
-	CALL	runtime·abort(SB)
+	JEQ	badgsignal
 
 	// Called from f.
 	// Set m->morebuf to f's caller.
@@ -482,6 +479,15 @@ TEXT runtime·morestack(SB),NOSPLIT,$0-0
 	CALL	runtime·newstack(SB)
 	CALL	runtime·abort(SB)	// crash if newstack returns
 	RET
+
+badg0:
+	CALL	runtime·badmorestackg0(SB)
+	CALL	runtime·abort(SB)
+
+badgsignal:
+	CALL	runtime·badmorestackgsignal(SB)
+	CALL	runtime·abort(SB)
+
 
 // morestack but not preserving ctxt.
 TEXT runtime·morestack_noctxt(SB),NOSPLIT,$0
