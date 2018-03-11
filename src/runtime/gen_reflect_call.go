@@ -58,97 +58,58 @@ TEXT callRet<>(SB), NOSPLIT, $32-0
 	RET
 `)
 
-	buf.WriteString(`
-#define DISPATCH(NAME,MAXSIZE)		\
-	CMPQ	CX, $MAXSIZE;		\
-	JA	3(PC);			\
-	MOVQ	$NAME(SB), AX;		\
-	JMP	AX
-// Note: can't just "JMP NAME(SB)" - bad inlining results.
+	sizes := []int{
+		32, 64, 128, 256, 512, 1024, 2048, 4096, 8192,
+		16384, 32768, 65536, 131072, 262144, 524288, 1048576,
+		2097152, 4194304, 8388608, 16777216, 33554432, 67108864,
+		134217728, 268435456, 536870912, 1073741824,
+	}
 
+	// Implement reflectcall, which dispatches to the appropriate call function.
+	buf.WriteString(`
 TEXT ·reflectcall(SB), NOSPLIT, $0-32
 	MOVLQZX argsize+24(FP), CX
-	DISPATCH(runtime·call32, 32)
-	DISPATCH(runtime·call64, 64)
-	DISPATCH(runtime·call128, 128)
-	DISPATCH(runtime·call256, 256)
-	DISPATCH(runtime·call512, 512)
-	DISPATCH(runtime·call1024, 1024)
-	DISPATCH(runtime·call2048, 2048)
-	DISPATCH(runtime·call4096, 4096)
-	DISPATCH(runtime·call8192, 8192)
-	DISPATCH(runtime·call16384, 16384)
-	DISPATCH(runtime·call32768, 32768)
-	DISPATCH(runtime·call65536, 65536)
-	DISPATCH(runtime·call131072, 131072)
-	DISPATCH(runtime·call262144, 262144)
-	DISPATCH(runtime·call524288, 524288)
-	DISPATCH(runtime·call1048576, 1048576)
-	DISPATCH(runtime·call2097152, 2097152)
-	DISPATCH(runtime·call4194304, 4194304)
-	DISPATCH(runtime·call8388608, 8388608)
-	DISPATCH(runtime·call16777216, 16777216)
-	DISPATCH(runtime·call33554432, 33554432)
-	DISPATCH(runtime·call67108864, 67108864)
-	DISPATCH(runtime·call134217728, 134217728)
-	DISPATCH(runtime·call268435456, 268435456)
-	DISPATCH(runtime·call536870912, 536870912)
-	DISPATCH(runtime·call1073741824, 1073741824)
+`)
+
+	for _, sz := range sizes {
+		fmt.Fprintf(buf, "	CMPQ	CX, $%d\n", sz)
+		fmt.Fprintf(buf, "	JA	3(PC)\n")
+		// Note: can't just "JMP NAME(SB)" - bad inlining results.
+		fmt.Fprintf(buf, "	MOVQ	$runtime·call%d(SB), AX\n", sz)
+		fmt.Fprintf(buf, "	JMP	AX\n")
+	}
+
+	buf.WriteString(`
 	MOVQ	$runtime·badreflectcall(SB), AX
 	JMP	AX
 
-#define CALLFN(NAME,MAXSIZE)			\
-TEXT NAME(SB), WRAPPER, $MAXSIZE-32;		\
-	NO_LOCAL_POINTERS;			\
-	/* copy arguments to stack */		\
-	MOVQ	argptr+16(FP), SI;		\
-	MOVLQZX argsize+24(FP), CX;		\
-	MOVQ	SP, DI;				\
-	REP;MOVSB;				\
-	/* call function */			\
-	MOVQ	f+8(FP), DX;			\
-	PCDATA  $PCDATA_StackMapIndex, $0;	\
-	CALL	(DX);				\
-	/* copy return values back */		\
-	MOVQ	argtype+0(FP), DX;		\
-	MOVQ	argptr+16(FP), DI;		\
-	MOVLQZX	argsize+24(FP), CX;		\
-	MOVLQZX	retoffset+28(FP), BX;		\
-	MOVQ	SP, SI;				\
-	ADDQ	BX, DI;				\
-	ADDQ	BX, SI;				\
-	SUBQ	BX, CX;				\
-	CALL	callRet<>(SB);			\
-	RET
-
-
-CALLFN(·call32, 32)
-CALLFN(·call64, 64)
-CALLFN(·call128, 128)
-CALLFN(·call256, 256)
-CALLFN(·call512, 512)
-CALLFN(·call1024, 1024)
-CALLFN(·call2048, 2048)
-CALLFN(·call4096, 4096)
-CALLFN(·call8192, 8192)
-CALLFN(·call16384, 16384)
-CALLFN(·call32768, 32768)
-CALLFN(·call65536, 65536)
-CALLFN(·call131072, 131072)
-CALLFN(·call262144, 262144)
-CALLFN(·call524288, 524288)
-CALLFN(·call1048576, 1048576)
-CALLFN(·call2097152, 2097152)
-CALLFN(·call4194304, 4194304)
-CALLFN(·call8388608, 8388608)
-CALLFN(·call16777216, 16777216)
-CALLFN(·call33554432, 33554432)
-CALLFN(·call67108864, 67108864)
-CALLFN(·call134217728, 134217728)
-CALLFN(·call268435456, 268435456)
-CALLFN(·call536870912, 536870912)
-CALLFN(·call1073741824, 1073741824)
 `)
+
+	// Implement the various call functions.
+	for _, sz := range sizes {
+		fmt.Fprintf(buf, "TEXT ·call%d(SB), WRAPPER, $%d-32\n", sz, sz)
+		fmt.Fprintf(buf, "	NO_LOCAL_POINTERS\n")
+		fmt.Fprintf(buf, "	// copy arguments to stack\n")
+		fmt.Fprintf(buf, "	MOVQ	argptr+16(FP), SI\n")
+		fmt.Fprintf(buf, "	MOVLQZX argsize+24(FP), CX\n")
+		fmt.Fprintf(buf, "	MOVQ	SP, DI\n")
+		fmt.Fprintf(buf, "	REP;MOVSB\n")
+		fmt.Fprintf(buf, "	// call function\n")
+		fmt.Fprintf(buf, "	MOVQ	f+8(FP), DX\n")
+		fmt.Fprintf(buf, "	PCDATA  $PCDATA_StackMapIndex, $0\n")
+		fmt.Fprintf(buf, "	CALL	(DX)\n")
+		fmt.Fprintf(buf, "	// copy return values back\n")
+		fmt.Fprintf(buf, "	MOVQ	argtype+0(FP), DX\n")
+		fmt.Fprintf(buf, "	MOVQ	argptr+16(FP), DI\n")
+		fmt.Fprintf(buf, "	MOVLQZX	argsize+24(FP), CX\n")
+		fmt.Fprintf(buf, "	MOVLQZX	retoffset+28(FP), BX\n")
+		fmt.Fprintf(buf, "	MOVQ	SP, SI\n")
+		fmt.Fprintf(buf, "	ADDQ	BX, DI\n")
+		fmt.Fprintf(buf, "	ADDQ	BX, SI\n")
+		fmt.Fprintf(buf, "	SUBQ	BX, CX\n")
+		fmt.Fprintf(buf, "	CALL	callRet<>(SB)\n")
+		fmt.Fprintf(buf, "	RET\n\n")
+	}
 
 	err := ioutil.WriteFile("reflectcall_amd64.s", buf.Bytes(), 0644)
 	if err != nil {
