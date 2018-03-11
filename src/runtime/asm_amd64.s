@@ -300,6 +300,7 @@ TEXT runtime·gosave(SB), NOSPLIT, $0-8
 	RET
 bad:
 	CALL	runtime·badctxt(SB)
+	UNDEF
 
 // void gogo(Gobuf*)
 // restore state from Gobuf; longjmp
@@ -609,7 +610,7 @@ TEXT runtime·procyield(SB),NOSPLIT,$0-0
 	MOVL	cycles+0(FP), AX
 again:
 	PAUSE
-	SUBL	$1, AX
+	DECL	AX
 	JNZ	again
 	RET
 
@@ -646,7 +647,9 @@ TEXT gosave<>(SB),NOSPLIT,$0
 	// Assert ctxt is zero. See func save.
 	MOVQ	(g_sched+gobuf_ctxt)(R8), R9
 	TESTQ	R9, R9
-	JZ	2(PC)
+	JNZ	bad
+	RET
+bad:
 	CALL	runtime·badctxt(SB)
 	RET
 
