@@ -484,7 +484,7 @@ TEXT runtime·morestack(SB),NOSPLIT,$0-0
 
 // morestack but not preserving ctxt.
 TEXT runtime·morestack_noctxt(SB),NOSPLIT,$0
-	MOVL	$0, DX
+	XORL	DX, DX
 	JMP	runtime·morestack(SB)
 
 // reflectcall: call a function with the given argument list
