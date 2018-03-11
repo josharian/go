@@ -37,7 +37,7 @@ func main() {
 	buf.WriteString(`
 // reflect.call calls a function with the given argument list.
 //   func call(argtype *_type, f *FuncVal, arg *byte, argsize, retoffset uint32)
-// We don't have variable-sized frames, so we use a small number
+// We do not have variable-sized frames, so we use a small number
 // of constant-sized-frame functions to encode a few bits of size in the PC.
 TEXT reflect·call(SB), NOSPLIT, $0-0
 	JMP	·reflectcall(SB)
