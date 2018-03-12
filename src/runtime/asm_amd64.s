@@ -1404,6 +1404,8 @@ TEXT runtime·addmoduledata(SB),NOSPLIT,$0-0
 // It clobbers FLAGS. It does not clobber any general-purpose registers,
 // but may clobber others (e.g., SSE registers).
 TEXT runtime·gcWriteBarrier(SB),NOSPLIT,$120
+	CMPQ	AX, (DI)
+	JEQ	ret
 	// Save the registers clobbered by the fast path. This is slightly
 	// faster than having the caller spill these.
 	MOVQ	R14, 104(SP)
@@ -1431,11 +1433,12 @@ TEXT runtime·gcWriteBarrier(SB),NOSPLIT,$120
 	MOVQ	R13, -8(R14)	// Record *slot
 	// Is the buffer full? (flags set in CMPQ above)
 	JEQ	flush
-ret:
+write:
 	MOVQ	104(SP), R14
 	MOVQ	112(SP), R13
 	// Do the write.
 	MOVQ	AX, (DI)
+ret:
 	RET
 
 flush:
@@ -1484,4 +1487,4 @@ flush:
 	MOVQ	80(SP), R11
 	MOVQ	88(SP), R12
 	MOVQ	96(SP), R15
-	JMP	ret
+	JMP	write
