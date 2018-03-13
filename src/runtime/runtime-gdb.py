@@ -438,6 +438,7 @@ class GoroutinesCmd(gdb.Command):
 	def invoke(self, _arg, _from_tty):
 		# args = gdb.string_to_argv(arg)
 		vp = gdb.lookup_type('void').pointer()
+		allgs = []  # accumulate list of g's
 		for ptr in SliceValue(gdb.parse_and_eval("'runtime.allgs'")):
 			if ptr['atomicstatus'] == G_DEAD:
 				continue
@@ -449,7 +450,14 @@ class GoroutinesCmd(gdb.Command):
 			blk = gdb.block_for_pc(pc)
 			status = int(ptr['atomicstatus'])
 			st = sts.get(status, "unknown(%d)" % status)
-			print(s, ptr['goid'], "{0:8s}".format(st), blk.function)
+			goid = int(ptr['goid'].cast(gdb.lookup_type('uint64_t')))
+			allgs.append((goid, (s, "{0:8s}".format(st), blk.function)))
+		# sort by goid
+		allgs.sort(key=lambda x: x[0])
+		# find max width of formatted goid
+		width = len("{0}".format(allgs[-1][0]))
+		for g in allgs:
+			print(g[1][0], "{0:>{1}}".format(g[0], width), g[1][1], g[1][2])
 
 
 def find_goroutine(goid):
