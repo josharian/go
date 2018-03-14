@@ -462,6 +462,7 @@ def find_goroutine(goid):
 
 	@return tuple (gdb.Value, gdb.Value)
 	"""
+	print("find goroutine", goid)
 	vp = gdb.lookup_type('void').pointer()
 	for ptr in SliceValue(gdb.parse_and_eval("'runtime.allgs'")):
 		if ptr['atomicstatus'] == G_DEAD:
@@ -473,30 +474,47 @@ def find_goroutine(goid):
 	# Get the goroutine's saved state.
 	pc, sp = ptr['sched']['pc'], ptr['sched']['sp']
 	status = ptr['atomicstatus']&~G_SCAN
+	print("sched sp", sp, "pc", pc, "sched", ptr['sched'])
+	print("status", status, "IS?", G_RUNNING, G_SYSCALL)
 	# Goroutine is not running nor in syscall, so use the info in goroutine
 	if status != G_RUNNING and status != G_SYSCALL:
+		print("early exit 1", pc.cast(vp), sp.cast(vp))
+		pcint = pc_to_int(pc)
+		blk = gdb.block_for_pc(pcint)
+		print("blk", blk)
+		print("func", blk.function, "super", blk.superblock)
+		print("isvalid", blk.is_valid())
+		print("range", hex(blk.start), hex(blk.end))
 		return pc.cast(vp), sp.cast(vp)
 
 	# If the goroutine is in a syscall, use syscallpc/sp.
 	pc, sp = ptr['syscallpc'], ptr['syscallsp']
 	if sp != 0:
+		print("early exit 2")
 		return pc.cast(vp), sp.cast(vp)
 	# Otherwise, the goroutine is running, so it doesn't have
 	# saved scheduler state. Find G's OS thread.
 	m = ptr['m']
 	if m == 0:
+		print("early exit 3")
 		return None, None
 	for thr in gdb.selected_inferior().threads():
 		if thr.ptid[1] == m['procid']:
 			break
 	else:
+		print("early exit 3")
 		return None, None
 	# Get scheduler state from the G's OS thread state.
+	print("early exit 4")
 	curthr = gdb.selected_thread()
 	try:
+		print("about to switch threads")
 		thr.switch()
+		print("switched threads")
 		pc = gdb.parse_and_eval('$pc')
+		print("found pc", pc)
 		sp = gdb.parse_and_eval('$sp')
+		print("found sp", sp)
 	finally:
 		curthr.switch()
 	return pc.cast(vp), sp.cast(vp)
@@ -526,9 +544,13 @@ class GoroutineCmd(gdb.Command):
 			return
 		pc = pc_to_int(pc)
 		save_frame = gdb.selected_frame()
+		print("saving sp")
 		gdb.parse_and_eval('$save_sp = $sp')
+		print("saving pc")
 		gdb.parse_and_eval('$save_pc = $pc')
+		print("adjusting sp/pc to", str(sp), str(pc))
 		gdb.parse_and_eval('$sp = {0}'.format(str(sp)))
+		print("adjusting2 sp/pc to", str(sp), str(pc))
 		gdb.parse_and_eval('$pc = {0}'.format(str(pc)))
 		try:
 			gdb.execute(cmd)
