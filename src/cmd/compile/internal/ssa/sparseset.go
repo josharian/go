@@ -12,7 +12,7 @@ import "strconv"
 type sparseSet struct {
 	dense []ID
 	// exactly one of the sparse slices will be non-nil
-	sparse8  []uint8
+	sparse8  *[256]uint8
 	sparse16 []uint16
 	sparse32 []int32
 }
@@ -21,7 +21,7 @@ type sparseSet struct {
 // integers between 0 and n-1
 func newSparseSet(n int) *sparseSet {
 	if n < 1<<8 {
-		return &sparseSet{dense: nil, sparse8: make([]uint8, n)}
+		return &sparseSet{dense: nil, sparse8: new([256]uint8)}
 	}
 	if n < 1<<16 {
 		return &sparseSet{dense: nil, sparse16: make([]uint16, n)}
@@ -31,7 +31,7 @@ func newSparseSet(n int) *sparseSet {
 
 func (s *sparseSet) cap() int {
 	if s.sparse8 != nil {
-		return len(s.sparse8)
+		return 256
 	}
 	if s.sparse16 != nil {
 		return len(s.sparse16)
