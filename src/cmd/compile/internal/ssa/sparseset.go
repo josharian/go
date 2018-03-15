@@ -20,13 +20,18 @@ type sparseSet struct {
 // newSparseSet returns a sparseSet that can represent
 // integers between 0 and n-1
 func newSparseSet(n int) *sparseSet {
+	densecap := 64
+	if n < densecap {
+		densecap = n
+	}
+	dense := make([]ID, 0, densecap)
 	if n < 1<<8 {
-		return &sparseSet{dense: nil, sparse8: new([256]uint8)}
+		return &sparseSet{dense: dense, sparse8: new([256]uint8)}
 	}
 	if n < 1<<16 {
-		return &sparseSet{dense: nil, sparse16: make([]uint16, n)}
+		return &sparseSet{dense: dense, sparse16: make([]uint16, n)}
 	}
-	return &sparseSet{dense: nil, sparse32: make([]int32, n)}
+	return &sparseSet{dense: dense, sparse32: make([]int32, n)}
 }
 
 func (s *sparseSet) cap() int {
