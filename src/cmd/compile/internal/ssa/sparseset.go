@@ -43,6 +43,10 @@ func (s *sparseSet) size() int {
 	return len(s.dense)
 }
 
+func (s *sparseSet) cap2() int {
+	return cap(s.dense)
+}
+
 func (s *sparseSet) contains(x ID) bool {
 	i := s.sparseAt(x)
 	return i < len(s.dense) && s.dense[i] == x

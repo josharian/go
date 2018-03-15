@@ -84,13 +84,38 @@ func (f *Func) NumValues() int {
 
 // newSparseSet returns a sparse set that can store at least up to n integers.
 func (f *Func) newSparseSet(n int) *sparseSet {
+	var best *sparseSet
+	var bestidx int
 	for i, scr := range f.Cache.scrSparseSet {
-		if scr != nil && scr.cap() >= n {
-			f.Cache.scrSparseSet[i] = nil
-			scr.clear()
-			return scr
+		if scr == nil || scr.cap() < n {
+			continue
+		}
+		if best == nil {
+			best = scr
+			bestidx = i
+			continue
+		}
+		switch {
+		case best.cap() < scr.cap():
+			// goal is lowest cap
+		case best.cap() == scr.cap():
+			// if equal, go for higher cap2
+			if scr.cap2() > best.cap2() {
+				best = scr
+				bestidx = i
+			}
+		default:
+			best = scr
+			bestidx = i
 		}
 	}
+
+	if best != nil {
+		f.Cache.scrSparseSet[bestidx] = nil
+		best.clear()
+		return best
+	}
+
 	return newSparseSet(n)
 }
 
