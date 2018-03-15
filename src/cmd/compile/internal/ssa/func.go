@@ -95,19 +95,23 @@ func (f *Func) newSparseSet(n int) *sparseSet {
 			bestidx = i
 			continue
 		}
-		switch {
-		case best.cap() < scr.cap():
-			// goal is lowest cap
-		case best.cap() == scr.cap():
-			// if equal, go for higher cap2
-			if scr.cap2() > best.cap2() {
-				best = scr
-				bestidx = i
-			}
-		default:
+		if scr.cap2() > best.cap2() {
 			best = scr
 			bestidx = i
 		}
+		// switch {
+		// case best.cap() < scr.cap():
+		// 	// goal is lowest cap
+		// case best.cap() == scr.cap():
+		// 	// if equal, go for higher cap2
+		// 	if scr.cap2() > best.cap2() {
+		// 		best = scr
+		// 		bestidx = i
+		// 	}
+		// default:
+		// 	best = scr
+		// 	bestidx = i
+		// }
 	}
 
 	if best != nil {
