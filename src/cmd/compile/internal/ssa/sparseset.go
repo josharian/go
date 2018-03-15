@@ -4,7 +4,9 @@
 
 package ssa
 
-import "strconv"
+import (
+	"strconv"
+)
 
 // from http://research.swtch.com/sparse
 // in turn, from Briggs and Torczon
@@ -20,11 +22,12 @@ type sparseSet struct {
 // newSparseSet returns a sparseSet that can represent
 // integers between 0 and n-1
 func newSparseSet(n int) *sparseSet {
-	densecap := 64
-	if n < densecap {
-		densecap = n
-	}
-	dense := make([]ID, 0, densecap)
+	// densecap := 64
+	// if n < densecap {
+	// 	densecap = n
+	// }
+	// dense := make([]ID, 0, densecap)
+	var dense []ID
 	if n < 1<<8 {
 		return &sparseSet{dense: dense, sparse8: new([256]uint8)}
 	}

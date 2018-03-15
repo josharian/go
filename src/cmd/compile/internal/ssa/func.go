@@ -97,6 +97,7 @@ func (f *Func) newSparseSet(n int) *sparseSet {
 // retSparseSet returns a sparse set to the config's cache of sparse
 // sets to be reused by f.newSparseSet.
 func (f *Func) retSparseSet(ss *sparseSet) {
+	fmt.Println(cap(ss.dense), ss.cap())
 	for i, scr := range f.Cache.scrSparseSet {
 		if scr == nil {
 			f.Cache.scrSparseSet[i] = ss
