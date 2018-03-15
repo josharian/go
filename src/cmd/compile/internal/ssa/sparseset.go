@@ -77,3 +77,14 @@ func (s *sparseSet) clear() {
 func (s *sparseSet) contents() []ID {
 	return s.dense
 }
+
+func (s *sparseSet) sparseAt(x int) int {
+	return int(s.sparse[x])
+}
+
+func (s *sparseSet) setSparseAt(x int, v int) {
+	if int(int32(v)) != v {
+		panic("index too large")
+	}
+	s.sparse[x] = int32(v)
+}
