@@ -86,7 +86,7 @@ func (f *Func) NumValues() int {
 func (f *Func) newSparseSet(n int) *sparseSet {
 	var bestidx int
 	var best *sparseSet
-	// maxcap := -1
+	maxcap := -1
 	for i, scr := range f.Cache.scrSparse {
 		if scr != nil && scr.cap() >= n {
 			if best == nil || scr.cap() < best.cap() {
@@ -97,15 +97,26 @@ func (f *Func) newSparseSet(n int) *sparseSet {
 			// scr.clear()
 			// return scr
 		}
-		// if scr != nil && scr.cap() > maxcap {
-		// 	maxcap = scr.cap()
-		// }
+		if scr != nil && scr.cap() > maxcap {
+			maxcap = scr.cap()
+		}
 	}
-	// fmt.Println("want", n, "maxcap", maxcap)
 	if best != nil {
 		f.Cache.scrSparse[bestidx] = nil
 		best.clear()
 		return best
+	}
+	if maxcap != -1 {
+		over := (10 * n) / maxcap
+		// fmt.Println("want", n, "maxcap", maxcap)
+		fmt.Println("pctover", over, "n", 100*(n/100))
+	}
+	switch {
+	case n < 100:
+		n *= 2
+	case n < 1000:
+		n *= 4
+		n /= 3
 	}
 	return newSparseSet(n)
 }
