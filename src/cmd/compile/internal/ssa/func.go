@@ -91,6 +91,15 @@ func (f *Func) newSparseSet(n int) *sparseSet {
 			return scr
 		}
 	}
+	switch {
+	case n < 256:
+	case n < 1024:
+		n *= 4
+		n /= 3
+	default:
+		n *= 11
+		n /= 10
+	}
 	return newSparseSet(n)
 }
 
