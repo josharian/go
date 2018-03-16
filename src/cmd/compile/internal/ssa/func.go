@@ -84,25 +84,21 @@ func (f *Func) NumValues() int {
 
 // newSparseSet returns a sparse set that can store at least up to n integers.
 func (f *Func) newSparseSet(n int) *sparseSet {
-	for i, scr := range f.Cache.scrSparseSet {
-		if scr != nil && scr.cap() >= n {
-			f.Cache.scrSparseSet[i] = nil
-			scr.clear()
-			return scr
-		}
+	var s *sparseSet
+	if x := len(f.Cache.scrSparseSet); x > 0 {
+		s = f.Cache.scrSparseSet[x-1]
+		f.Cache.scrSparseSet = f.Cache.scrSparseSet[:x-1]
+		s.clear()
+	} else {
+		s = new(sparseSet)
 	}
-	return newSparseSet(n)
+	s.grow(n)
+	return s
 }
 
 // retSparseSet returns a sparse set to the config's cache of sparse
 // sets to be reused by f.newSparseSet.
 func (f *Func) retSparseSet(ss *sparseSet) {
-	for i, scr := range f.Cache.scrSparseSet {
-		if scr == nil {
-			f.Cache.scrSparseSet[i] = ss
-			return
-		}
-	}
 	f.Cache.scrSparseSet = append(f.Cache.scrSparseSet, ss)
 }
 

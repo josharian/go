@@ -12,14 +12,13 @@ type sparseSet struct {
 	sparse []int32
 }
 
-// newSparseSet returns a sparseSet that can represent
-// integers between 0 and n-1
-func newSparseSet(n int) *sparseSet {
-	return &sparseSet{dense: nil, sparse: make([]int32, n)}
-}
-
-func (s *sparseSet) cap() int {
-	return len(s.sparse)
+// TODO: rename to resize, document that it loses data
+func (s *sparseSet) grow(n int) {
+	if cap(s.sparse) >= n {
+		s.sparse = s.sparse[:n]
+		return
+	}
+	s.sparse = make([]int32, n) // TODO: optimize
 }
 
 func (s *sparseSet) size() int {

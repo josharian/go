@@ -365,7 +365,8 @@ func memCheck(f *Func) {
 
 	// Compute live memory at the end of each block.
 	lastmem := make([]*Value, f.NumBlocks())
-	ss := newSparseSet(f.NumValues())
+	ss := new(sparseSet)
+	ss.grow(f.NumValues())
 	for _, b := range f.Blocks {
 		// Mark overwritten memory values. Those are args of other
 		// ops that generate memory values.

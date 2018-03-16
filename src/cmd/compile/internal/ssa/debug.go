@@ -243,7 +243,8 @@ func (state *debugState) initializeCache(f *Func, numVars, numSlots int) {
 	}
 
 	// A relatively small slice, but used many times as the return from processValue.
-	state.changedVars = newSparseSet(numVars)
+	state.changedVars = new(sparseSet)
+	state.changedVars.grow(numVars)
 
 	// A pending entry per user variable, with space to track each of its pieces.
 	numPieces := 0
