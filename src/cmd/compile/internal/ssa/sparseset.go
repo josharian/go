@@ -9,12 +9,8 @@ package ssa
 
 type sparseSet struct {
 	dense  []ID
-	sparse []*sparseChunk
+	sparse []ID
 }
-
-type sparseChunk [128]int32
-
-const sparseChunkLen = ID(len(sparseChunk{}))
 
 // newSparseSet returns a sparseSet that can represent
 // integers between 0 and n-1.
@@ -27,9 +23,8 @@ func newSparseSet(n int) *sparseSet {
 
 // grow increases the size of s to accommodate integers in [0, n).
 func (s *sparseSet) grow(n int) {
-	nchunks := int((ID(n) + sparseChunkLen - 1) / sparseChunkLen)
-	for len(s.sparse) < nchunks {
-		s.sparse = append(s.sparse, new(sparseChunk))
+	for len(s.sparse) < n {
+		s.sparse = append(s.sparse, 0)
 	}
 }
 
@@ -90,15 +85,13 @@ func (s *sparseSet) contents() []ID {
 }
 
 func (s *sparseSet) sparseAt(x ID) int {
-	chunk, off := x/sparseChunkLen, x%sparseChunkLen
-	return int(s.sparse[chunk][off])
+	return int(s.sparse[x])
 }
 
 func (s *sparseSet) setSparseAt(x ID, v int) {
-	u := int32(v)
+	u := ID(v)
 	if int(u) != v {
 		panic("setSparseAt overflow")
 	}
-	chunk, off := x/sparseChunkLen, x%sparseChunkLen
-	s.sparse[chunk][off] = u
+	s.sparse[x] = u
 }
