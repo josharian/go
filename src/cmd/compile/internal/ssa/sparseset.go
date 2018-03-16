@@ -12,7 +12,7 @@ type sparseSet struct {
 	sparse []*sparseChunk
 }
 
-type sparseChunk [128]int32
+type sparseChunk [1024]int32
 
 const sparseChunkLen = ID(len(sparseChunk{}))
 
