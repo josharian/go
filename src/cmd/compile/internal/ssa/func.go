@@ -85,11 +85,17 @@ func (f *Func) NumValues() int {
 // newSparseSet returns a sparse set that can store at least up to n integers.
 func (f *Func) newSparseSet(n int) *sparseSet {
 	for i, scr := range f.Cache.scrSparseSet {
-		if scr != nil && scr.cap() >= n {
+		if scr != nil {
 			f.Cache.scrSparseSet[i] = nil
 			scr.clear()
+			scr.grow(n)
 			return scr
 		}
+		// if scr != nil && scr.cap() >= n {
+		// 	f.Cache.scrSparseSet[i] = nil
+		// 	scr.clear()
+		// 	return scr
+		// }
 	}
 	return newSparseSet(n)
 }
