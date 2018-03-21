@@ -894,18 +894,48 @@ func step(p []byte, pc *uintptr, val *int32, first bool) (newp []byte, ok bool) 
 }
 
 // readvarint reads a varint from p.
+// func readvarint(p []byte) (read uint32, val uint32) {
+// 	var v, shift, n uint32
+// 	for {
+// 		b := p[n]
+// 		n++
+// 		v |= uint32(b&0x7F) << (shift & 31)
+// 		if b&0x80 == 0 {
+// 			break
+// 		}
+// 		shift += 7
+// 	}
+// 	return n, v
+// }
+
 func readvarint(p []byte) (read uint32, val uint32) {
-	var v, shift, n uint32
-	for {
-		b := p[n]
-		n++
-		v |= uint32(b&0x7F) << (shift & 31)
-		if b&0x80 == 0 {
-			break
-		}
-		shift += 7
+	b := p[0]
+	val |= uint32(b & 0x7F)
+	if int8(b) > 0 {
+		return 1, val
 	}
-	return n, v
+
+	b = p[1]
+	val |= uint32(b&0x7F) << 7
+	if int8(b) > 0 {
+		return 2, val
+	}
+
+	b = p[2]
+	val |= uint32(b&0x7F) << 14
+	if int8(b) > 0 {
+		return 3, val
+	}
+
+	b = p[3]
+	val |= uint32(b&0x7F) << 21
+	if int8(b) > 0 {
+		return 4, val
+	}
+
+	b = p[4]
+	val |= uint32(b&0x7F) << 28
+	return 5, val
 }
 
 type stackmap struct {
