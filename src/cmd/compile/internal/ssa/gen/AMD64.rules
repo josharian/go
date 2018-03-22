@@ -938,27 +938,17 @@
 (LEAQ4 [c] {s} x (SHLQconst [1] y)) -> (LEAQ8 [c] {s} x y)
 
 // reverse ordering of compare instruction
-(SETL (InvertFlags x)) -> (SETG x)
-(SETG (InvertFlags x)) -> (SETL x)
-(SETB (InvertFlags x)) -> (SETA x)
-(SETA (InvertFlags x)) -> (SETB x)
-(SETLE (InvertFlags x)) -> (SETGE x)
-(SETGE (InvertFlags x)) -> (SETLE x)
-(SETBE (InvertFlags x)) -> (SETAE x)
-(SETAE (InvertFlags x)) -> (SETBE x)
-(SETEQ (InvertFlags x)) -> (SETEQ x)
-(SETNE (InvertFlags x)) -> (SETNE x)
+(SET(L|G)   (InvertFlags x)) -> (SET(G|L)   x)
+(SET(B|A)   (InvertFlags x)) -> (SET(A|B)   x)
+(SET(LE|GE) (InvertFlags x)) -> (SET(GE|LE) x)
+(SET(BE|AE) (InvertFlags x)) -> (SET(AE|BE) x)
+(SET(EQ|NE) (InvertFlags x)) -> (SET(EQ|NE) x)
 
-(SETLmem [off] {sym} ptr (InvertFlags x) mem) -> (SETGmem [off] {sym} ptr x mem)
-(SETGmem [off] {sym} ptr (InvertFlags x) mem) -> (SETLmem [off] {sym} ptr x mem)
-(SETBmem [off] {sym} ptr (InvertFlags x) mem) -> (SETAmem [off] {sym} ptr x mem)
-(SETAmem [off] {sym} ptr (InvertFlags x) mem) -> (SETBmem [off] {sym} ptr x mem)
-(SETLEmem [off] {sym} ptr (InvertFlags x) mem) -> (SETGEmem [off] {sym} ptr x mem)
-(SETGEmem [off] {sym} ptr (InvertFlags x) mem) -> (SETLEmem [off] {sym} ptr x mem)
-(SETBEmem [off] {sym} ptr (InvertFlags x) mem) -> (SETAEmem [off] {sym} ptr x mem)
-(SETAEmem [off] {sym} ptr (InvertFlags x) mem) -> (SETBEmem [off] {sym} ptr x mem)
-(SETEQmem [off] {sym} ptr (InvertFlags x) mem) -> (SETEQmem [off] {sym} ptr x mem)
-(SETNEmem [off] {sym} ptr (InvertFlags x) mem) -> (SETNEmem [off] {sym} ptr x mem)
+(SET(L|G)mem   [off] {sym} ptr (InvertFlags x) mem) -> (SET(G|L)mem   [off] {sym} ptr x mem)
+(SET(B|A)mem   [off] {sym} ptr (InvertFlags x) mem) -> (SET(A|B)mem   [off] {sym} ptr x mem)
+(SET(LE|GE)mem [off] {sym} ptr (InvertFlags x) mem) -> (SET(GE|LE)mem [off] {sym} ptr x mem)
+(SET(BE|AE)mem [off] {sym} ptr (InvertFlags x) mem) -> (SET(AE|BE)mem [off] {sym} ptr x mem)
+(SET(EQ|NE)mem [off] {sym} ptr (InvertFlags x) mem) -> (SET(NE|EQ)mem [off] {sym} ptr x mem)
 
 // sign extended loads
 // Note: The combined instruction must end up in the same block
