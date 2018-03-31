@@ -67,7 +67,11 @@ func tracebackdefers(gp *g, callback func(*stkframe, unsafe.Pointer) bool, v uns
 			}
 			frame.fn = f
 			frame.argp = uintptr(deferArgs(d))
-			frame.arglen, frame.argmap = getArgInfo(&frame, f, true, fn)
+			var ok bool
+			frame.arglen, ok = getArgInfoFast(f, true)
+			if !ok {
+				frame.arglen, frame.argmap = getArgInfo(&frame, f, true, fn)
+			}
 		}
 		frame.continpc = frame.pc
 		if !callback((*stkframe)(noescape(unsafe.Pointer(&frame))), v) {
@@ -279,7 +283,11 @@ func gentraceback(pc0, sp0, lr0 uintptr, gp *g, skip int, pcbuf *uintptr, max in
 		// metadata recorded by f's caller.
 		if callback != nil || printing {
 			frame.argp = frame.fp + sys.MinFrameSize
-			frame.arglen, frame.argmap = getArgInfo(&frame, f, callback != nil, nil)
+			var ok bool
+			frame.arglen, ok = getArgInfoFast(f, callback != nil)
+			if !ok {
+				frame.arglen, frame.argmap = getArgInfo(&frame, f, callback != nil, nil)
+			}
 		}
 
 		// Determine frame's 'continuation PC', where it can continue.
@@ -544,6 +552,10 @@ func gentraceback(pc0, sp0, lr0 uintptr, gp *g, skip int, pcbuf *uintptr, max in
 type reflectMethodValue struct {
 	fn    uintptr
 	stack *bitvector // args bitmap
+}
+
+func getArgInfoFast(f funcInfo, needArgMap bool) (arglen uintptr, ok bool) {
+	return uintptr(f.args), !(needArgMap && f.args == _ArgsSizeUnknown)
 }
 
 // getArgInfo returns the argument frame information for a call to f
