@@ -911,10 +911,6 @@ func step(p []byte, pc *uintptr, val *int32, first bool) (newp []byte, ok bool) 
 func readvarint(p []byte) (read uint32, val uint32) {
 	b := p[0]
 	val |= uint32(b & 0x7F)
-	if int8(b) > 0 {
-		return 1, val
-	}
-
 	b = p[1]
 	val |= uint32(b&0x7F) << 7
 	if int8(b) > 0 {
