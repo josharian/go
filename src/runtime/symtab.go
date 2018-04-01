@@ -916,10 +916,10 @@ type stackmap struct {
 
 //go:nowritebarrier
 func stackmapdata(stkmap *stackmap, n int32) bitvector {
-	if n < 0 || n >= stkmap.n {
-		throw("stackmapdata: index out of range")
-	}
-	return bitvector{stkmap.nbit, (*byte)(add(unsafe.Pointer(&stkmap.bytedata), uintptr(n*((stkmap.nbit+7)>>3))))}
+	// if n < 0 || n >= stkmap.n {
+	// 	throw("stackmapdata: index out of range")
+	// }
+	return bitvector{stkmap.nbit, addb(&stkmap.bytedata[0], uintptr(n*((stkmap.nbit+7)>>3)))}
 }
 
 // inlinedCall is the encoding of entries in the FUNCDATA_InlTree table.
