@@ -544,30 +544,20 @@ type bitvector struct {
 	bytedata *uint8
 }
 
-type gobitvector struct {
-	n        uintptr
-	bytedata []uint8
-}
-
-func gobv(bv bitvector) gobitvector {
-	return gobitvector{
-		uintptr(bv.n),
-		(*[1 << 30]byte)(unsafe.Pointer(bv.bytedata))[:(bv.n+7)/8],
-	}
-}
-
-func ptrbit(bv *gobitvector, i uintptr) uint8 {
-	return (bv.bytedata[i/8] >> (i % 8)) & 1
+// TODO: ensure inlining
+// TODO: return bool?
+func (bv *bitvector) ptrbit(i uintptr) uint8 {
+	b := *(addb(bv.bytedata, i/8))
+	return (b >> (i % 8)) & 1
 }
 
 // bv describes the memory starting at address scanp.
 // Adjust any pointers contained therein.
 func adjustpointers(scanp unsafe.Pointer, cbv *bitvector, adjinfo *adjustinfo, f funcInfo) {
-	bv := gobv(*cbv)
 	minp := adjinfo.old.lo
 	maxp := adjinfo.old.hi
 	delta := adjinfo.delta
-	num := bv.n
+	num := uintptr(cbv.n)
 	// If this frame might contain channel receive slots, use CAS
 	// to adjust pointers. If the slot hasn't been received into
 	// yet, it may contain stack pointers and a concurrent send
@@ -576,9 +566,9 @@ func adjustpointers(scanp unsafe.Pointer, cbv *bitvector, adjinfo *adjustinfo, f
 	useCAS := uintptr(scanp) < adjinfo.sghi
 	for i := uintptr(0); i < num; i++ {
 		if stackDebug >= 4 {
-			print("        ", add(scanp, i*sys.PtrSize), ":", ptrnames[ptrbit(&bv, i)], ":", hex(*(*uintptr)(add(scanp, i*sys.PtrSize))), " # ", i, " ", bv.bytedata[i/8], "\n")
+			print("        ", add(scanp, i*sys.PtrSize), ":", ptrnames[cbv.ptrbit(i)], ":", hex(*(*uintptr)(add(scanp, i*sys.PtrSize))), " # ", i, " " /*bv.bytedata[i/8]*/, 0 /* TODO */, "\n")
 		}
-		if ptrbit(&bv, i) != 1 {
+		if cbv.ptrbit(i) != 1 {
 			continue
 		}
 		pp := (*uintptr)(add(scanp, i*sys.PtrSize))
