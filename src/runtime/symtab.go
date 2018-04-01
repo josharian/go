@@ -755,8 +755,9 @@ func pcvalue(f funcInfo, off int32, targetpc uintptr, cache *pcvalueCache, stric
 			// a recursive stack's cycle is slightly
 			// larger than the cache.
 			if cache != nil {
-				ci := fastrandn(uint32(len(cache.entries)))
-				cache.entries[ci] = pcvalueCacheEnt{
+				ci := fastrand() % uint32(len(cache.entries))
+				cache.entries[ci] = cache.entries[0]
+				cache.entries[0] = pcvalueCacheEnt{
 					targetpc: targetpc,
 					off:      off,
 					val:      val,
