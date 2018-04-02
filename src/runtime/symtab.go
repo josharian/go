@@ -696,7 +696,7 @@ func findfunc(pc uintptr) funcInfo {
 }
 
 type pcvalueCache struct {
-	entries [16]pcvalueCacheEnt
+	entries [2][8]pcvalueCacheEnt
 }
 
 type pcvalueCacheEnt struct {
@@ -719,13 +719,14 @@ func pcvalue(f funcInfo, off int32, targetpc uintptr, cache *pcvalueCache, stric
 	// cheaper than doing the hashing for a less associative
 	// cache.
 	if cache != nil {
-		for i := range cache.entries {
+		x := (targetpc >> 4) & 1
+		for i := range cache.entries[x] {
 			// We check off first because we're more
 			// likely to have multiple entries with
 			// different offsets for the same targetpc
 			// than the other way around, so we'll usually
 			// fail in the first clause.
-			ent := &cache.entries[i]
+			ent := &cache.entries[x][i]
 			if ent.off == off && ent.targetpc == targetpc {
 				return ent.val
 			}
@@ -755,9 +756,10 @@ func pcvalue(f funcInfo, off int32, targetpc uintptr, cache *pcvalueCache, stric
 			// a recursive stack's cycle is slightly
 			// larger than the cache.
 			if cache != nil {
-				ci := fastrand() % uint32(len(cache.entries))
-				cache.entries[ci] = cache.entries[0]
-				cache.entries[0] = pcvalueCacheEnt{
+				x := (targetpc >> 4) & 1
+				ci := fastrand() % uint32(len(cache.entries[x]))
+				cache.entries[x][ci] = cache.entries[x][0]
+				cache.entries[x][0] = pcvalueCacheEnt{
 					targetpc: targetpc,
 					off:      off,
 					val:      val,
