@@ -655,6 +655,9 @@ func adjustframe(frame *stkframe, arg unsafe.Pointer) bool {
 		} else if stackDebug >= 3 {
 			print("      no locals to adjust\n")
 		}
+		if bv.n > 0 {
+			adjustpointers(unsafe.Pointer(frame.varp-size), bv, adjinfo, f)
+		}
 	}
 
 	// Adjust saved base pointer if there is one.
