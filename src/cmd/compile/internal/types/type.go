@@ -222,7 +222,8 @@ type Func struct {
 	// Argwid is the total width of the function receiver, params, and results.
 	// It gets calculated via a temporary TFUNCARGS type.
 	// Note that TFUNC's Width is Widthptr.
-	Argwid int64
+	Argwid    int64
+	PtrArgwid int64
 
 	Outnamed bool
 }
@@ -888,6 +889,13 @@ func (t *Type) WidthCalculated() bool {
 func (t *Type) ArgWidth() int64 {
 	t.wantEtype(TFUNC)
 	return t.Extra.(*Func).Argwid
+}
+
+// ArgWidth returns the total aligned argument size for a function.
+// It includes the receiver, parameters, and results.
+func (t *Type) PtrArgWidth() int64 {
+	t.wantEtype(TFUNC)
+	return t.Extra.(*Func).PtrArgwid
 }
 
 func (t *Type) Size() int64 {
