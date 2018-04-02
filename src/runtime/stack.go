@@ -546,14 +546,14 @@ type bitvector struct {
 
 // TODO: ensure inlining
 // TODO: return bool?
-func (bv *bitvector) ptrbit(i uintptr) uint8 {
+func (bv bitvector) ptrbit(i uintptr) uint8 {
 	b := *(addb(bv.bytedata, i/8))
 	return (b >> (i % 8)) & 1
 }
 
 // bv describes the memory starting at address scanp.
 // Adjust any pointers contained therein.
-func adjustpointers(scanp unsafe.Pointer, cbv *bitvector, adjinfo *adjustinfo, f funcInfo) {
+func adjustpointers(scanp unsafe.Pointer, cbv bitvector, adjinfo *adjustinfo, f funcInfo) {
 	minp := adjinfo.old.lo
 	maxp := adjinfo.old.hi
 	delta := adjinfo.delta
@@ -651,7 +651,7 @@ func adjustframe(frame *stkframe, arg unsafe.Pointer) bool {
 			if stackDebug >= 3 {
 				print("      locals ", pcdata, "/", stackmap.n, " ", size/sys.PtrSize, " words ", bv.bytedata, "\n")
 			}
-			adjustpointers(unsafe.Pointer(frame.varp-size), &bv, adjinfo, f)
+			adjustpointers(unsafe.Pointer(frame.varp-size), bv, adjinfo, f)
 		} else if stackDebug >= 3 {
 			print("      no locals to adjust\n")
 		}
@@ -702,7 +702,7 @@ func adjustframe(frame *stkframe, arg unsafe.Pointer) bool {
 			print("      args\n")
 		}
 		if bv.n > 0 {
-			adjustpointers(unsafe.Pointer(frame.argp), &bv, adjinfo, funcInfo{})
+			adjustpointers(unsafe.Pointer(frame.argp), bv, adjinfo, funcInfo{})
 		}
 	}
 	return true
