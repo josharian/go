@@ -355,8 +355,32 @@ func dowidth(t *types.Type) {
 	case TFUNCARGS:
 		t1 := t.FuncArgs()
 		w = widstruct(t1, t1.Recvs(), 0, 0)
+		pa := int64(0)
+		// TODO: make more precise--instead of adding f.Type.Width, add the final location of a pointer in f.Type
+		for _, f := range t1.Recvs().FieldSlice() {
+			if f.Type.HasHeapPointer() {
+				t1.Extra.(*types.Func).PtrArgwid = f.Offset + f.Type.Width
+				pa = w
+			}
+		}
 		w = widstruct(t1, t1.Params(), w, Widthreg)
+		for _, f := range t1.Params().FieldSlice() {
+			if f.Type.HasHeapPointer() {
+				t1.Extra.(*types.Func).PtrArgwid = f.Offset + f.Type.Width
+				pa = w
+			}
+		}
 		w = widstruct(t1, t1.Results(), w, Widthreg)
+		for _, f := range t1.Results().FieldSlice() {
+			if f.Type.HasHeapPointer() {
+				t1.Extra.(*types.Func).PtrArgwid = f.Offset + f.Type.Width
+				pa = w
+			}
+		}
+		// if pa != t1.Extra.(*types.Func).PtrArgwid {
+		// 	fmt.Println("OPT2", t1, pa, "->", t1.Extra.(*types.Func).PtrArgwid)
+		// }
+		_ = pa
 		t1.Extra.(*types.Func).Argwid = w
 		if w%int64(Widthreg) != 0 {
 			Warn("bad type %v %d\n", t1, w)

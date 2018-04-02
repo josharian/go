@@ -368,7 +368,9 @@ func onebitwalktype1(t *types.Type, off int64, bv bvec) {
 		if off&int64(Widthptr-1) != 0 {
 			Fatalf("onebitwalktype1: invalid alignment, %v", t)
 		}
-		bv.Set(int32(off / int64(Widthptr))) // pointer
+		if !t.IsPtr() || !t.Elem().NotInHeap() {
+			bv.Set(int32(off / int64(Widthptr))) // pointer
+		}
 
 	case TSTRING:
 		// struct { byte *str; intgo len; }
@@ -433,7 +435,10 @@ func (lv *Liveness) localWords() int32 {
 
 // argWords returns the number of words of in and out arguments.
 func (lv *Liveness) argWords() int32 {
-	return int32(lv.fn.Type.ArgWidth() / int64(Widthptr))
+	// if lv.fn.Type.PtrArgWidth() != lv.fn.Type.ArgWidth() {
+	// 	fmt.Println("OPT", lv.fn.funcname(), lv.fn.Type.ArgWidth(), "->", lv.fn.Type.PtrArgWidth())
+	// }
+	return int32(lv.fn.Type.PtrArgWidth() / int64(Widthptr))
 }
 
 // Generates live pointer value maps for arguments and local variables. The
