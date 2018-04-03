@@ -136,6 +136,9 @@ func makeClasses() []class {
 			classes[len(classes)-1].size = size
 			continue
 		}
+		if size == 32 {
+			continue
+		}
 		classes = append(classes, class{size: size, npages: npages})
 	}
 
@@ -157,7 +160,7 @@ func makeClasses() []class {
 		}
 	}
 
-	if len(classes) != 67 {
+	if len(classes) != 66 {
 		panic("number of size classes has changed")
 	}
 
