@@ -711,6 +711,10 @@
 (OffPtr (OffPtr p [b]) [a]) -> (OffPtr p [a+b])
 (OffPtr p [0]) && v.Type.Compare(p.Type) == types.CMPeq -> p
 
+// 
+(OffPtr [x] (AddPtr <t> (OffPtr [y] p) n)) -> (OffPtr [x+y] (AddPtr <t> p n))
+(AddPtr <u> (OffPtr <t> [c] q) x) && u.Compare(t) == types.CMPeq -> (OffPtr <t> [c] (AddPtr <t> q x))
+
 // indexing operations
 // Note: bounds check has already been done
 (PtrIndex <t> ptr idx) && config.PtrSize == 4 -> (AddPtr ptr (Mul32 <typ.Int> idx (Const32 <typ.Int> [t.Elem().Size()])))

@@ -661,8 +661,8 @@ func clobberIfDead(v *Value) bool {
 // new ones.  Make the rule of interest also conditional on
 //     noteRule("note to self: rule of interest matched")
 // and that message will print when the rule matches.
-func noteRule(s string) bool {
-	fmt.Println(s)
+func noteRule(s string, v *Value) bool {
+	fmt.Println(s, v.Block.Func.Name)
 	return true
 }
 

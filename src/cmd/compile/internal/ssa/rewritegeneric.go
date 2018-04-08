@@ -4427,6 +4427,8 @@ func rewriteValuegeneric_OpAdd8_30(v *Value) bool {
 	return false
 }
 func rewriteValuegeneric_OpAddPtr_0(v *Value) bool {
+	b := v.Block
+	_ = b
 	// match: (AddPtr <t> x (Const64 [c]))
 	// cond:
 	// result: (OffPtr <t> x [c])
@@ -4461,6 +4463,32 @@ func rewriteValuegeneric_OpAddPtr_0(v *Value) bool {
 		v.Type = t
 		v.AuxInt = c
 		v.AddArg(x)
+		return true
+	}
+	// match: (AddPtr <u> (OffPtr <t> [c] q) x)
+	// cond: u.Compare(t) == types.CMPeq
+	// result: (OffPtr <t> [c] (AddPtr <t> q x))
+	for {
+		u := v.Type
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpOffPtr {
+			break
+		}
+		t := v_0.Type
+		c := v_0.AuxInt
+		q := v_0.Args[0]
+		x := v.Args[1]
+		if !(u.Compare(t) == types.CMPeq) {
+			break
+		}
+		v.reset(OpOffPtr)
+		v.Type = t
+		v.AuxInt = c
+		v0 := b.NewValue0(v.Pos, OpAddPtr, t)
+		v0.AddArg(q)
+		v0.AddArg(x)
+		v.AddArg(v0)
 		return true
 	}
 	return false
@@ -22171,6 +22199,8 @@ func rewriteValuegeneric_OpNot_40(v *Value) bool {
 	return false
 }
 func rewriteValuegeneric_OpOffPtr_0(v *Value) bool {
+	b := v.Block
+	_ = b
 	// match: (OffPtr (OffPtr p [b]) [a])
 	// cond:
 	// result: (OffPtr p [a+b])
@@ -22201,6 +22231,32 @@ func rewriteValuegeneric_OpOffPtr_0(v *Value) bool {
 		v.reset(OpCopy)
 		v.Type = p.Type
 		v.AddArg(p)
+		return true
+	}
+	// match: (OffPtr [x] (AddPtr <t> (OffPtr [y] p) n))
+	// cond:
+	// result: (OffPtr [x+y] (AddPtr <t> p n))
+	for {
+		x := v.AuxInt
+		v_0 := v.Args[0]
+		if v_0.Op != OpAddPtr {
+			break
+		}
+		t := v_0.Type
+		_ = v_0.Args[1]
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpOffPtr {
+			break
+		}
+		y := v_0_0.AuxInt
+		p := v_0_0.Args[0]
+		n := v_0.Args[1]
+		v.reset(OpOffPtr)
+		v.AuxInt = x + y
+		v0 := b.NewValue0(v.Pos, OpAddPtr, t)
+		v0.AddArg(p)
+		v0.AddArg(n)
+		v.AddArg(v0)
 		return true
 	}
 	return false
