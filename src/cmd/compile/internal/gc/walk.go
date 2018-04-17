@@ -409,10 +409,6 @@ func convFuncName(from, to *types.Type) string {
 				return "convT2E32"
 			case from.Size() == 8 && from.Align == types.Types[TUINT64].Align && !types.Haspointers(from):
 				return "convT2E64"
-			case from.IsString():
-				return "convT2Estring"
-			case from.IsSlice():
-				return "convT2Eslice"
 			case !types.Haspointers(from):
 				return "convT2Enoptr"
 			}
@@ -425,10 +421,6 @@ func convFuncName(from, to *types.Type) string {
 				return "convT2I32"
 			case from.Size() == 8 && from.Align == types.Types[TUINT64].Align && !types.Haspointers(from):
 				return "convT2I64"
-			case from.IsString():
-				return "convT2Istring"
-			case from.IsSlice():
-				return "convT2Islice"
 			case !types.Haspointers(from):
 				return "convT2Inoptr"
 			}
@@ -898,6 +890,9 @@ opswitch:
 			zerobase = newname(Runtimepkg.Lookup("zerobase"))
 			zerobase.SetClass(PEXTERN)
 			zerobase.Type = types.Types[TUINTPTR]
+			zeroval = newname(Runtimepkg.Lookup("zeroVal"))
+			zeroval.SetClass(PEXTERN)
+			zeroval.Type = types.NewArray(types.Types[TUINT8], 1024)
 		}
 
 		// Optimize convT2{E,I} for many cases in which T is not pointer-shaped,
@@ -936,6 +931,58 @@ opswitch:
 			l.Type = n.Type
 			l.SetTypecheck(n.Typecheck())
 			n = l
+			break
+		}
+
+		// Inline converting a slice or string v of type T to an interface I.
+		// var x *T
+		// if v is zero {
+		//   x = &runtime.zeroVal
+		// } else {
+		//   x = newobject(T)
+		//   *x = v
+		// }
+		// result: iface{T-as-I or T, x}
+		if n.Left.Type.IsString() || n.Left.Type.IsSlice() {
+			x := temp(n.Left.Type.PtrTo())
+			z := nod(OAS, x, nodnil())
+			z = typecheck(z, Etop)
+			init.Append(z)
+
+			n.Left = cheapexpr(n.Left, init)
+			var cond *Node
+			if n.Left.Type.IsString() {
+				// string: check len(v) == 0
+				cond = nod(OEQ, nod(OLEN, n.Left, nil), nodintconst(0))
+			} else {
+				// slice: check v == nil
+				cond = nod(OEQ, n.Left, nodnil())
+			}
+			nif := nod(OIF, cond, nil)
+
+			zv := nod(OCONVNOP, nod(OADDR, zeroval, nil), nil)
+			zv.Type = x.Type
+			nif.Nbody.Set1(
+				nod(OAS, x, zv),
+			)
+			nif.Rlist.Set2(
+				nod(OAS, x, callnew(n.Left.Type)),
+				nod(OAS, nod(OIND, x, nil), n.Left),
+			)
+			nif = typecheck(nif, Etop)
+			init.Append(nif)
+
+			var t *Node
+			if n.Type.IsEmptyInterface() {
+				t = typename(n.Left.Type)
+			} else {
+				t = itabname(n.Left.Type, n.Type)
+			}
+
+			e := nod(OEFACE, t, x)
+			e.Type = n.Type // assign type manually, typecheck doesn't understand OEFACE.
+			e.SetTypecheck(1)
+			n = e
 			break
 		}
 

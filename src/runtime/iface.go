@@ -351,44 +351,6 @@ func convT2E64(t *_type, elem unsafe.Pointer) (e eface) {
 	return
 }
 
-func convT2Estring(t *_type, elem unsafe.Pointer) (e eface) {
-	if raceenabled {
-		raceReadObjectPC(t, elem, getcallerpc(), funcPC(convT2Estring))
-	}
-	if msanenabled {
-		msanread(elem, t.size)
-	}
-	var x unsafe.Pointer
-	if *(*string)(elem) == "" {
-		x = unsafe.Pointer(&zeroVal[0])
-	} else {
-		x = mallocgc(t.size, t, true)
-		*(*string)(x) = *(*string)(elem)
-	}
-	e._type = t
-	e.data = x
-	return
-}
-
-func convT2Eslice(t *_type, elem unsafe.Pointer) (e eface) {
-	if raceenabled {
-		raceReadObjectPC(t, elem, getcallerpc(), funcPC(convT2Eslice))
-	}
-	if msanenabled {
-		msanread(elem, t.size)
-	}
-	var x unsafe.Pointer
-	if v := *(*slice)(elem); uintptr(v.array) == 0 {
-		x = unsafe.Pointer(&zeroVal[0])
-	} else {
-		x = mallocgc(t.size, t, true)
-		*(*slice)(x) = *(*slice)(elem)
-	}
-	e._type = t
-	e.data = x
-	return
-}
-
 func convT2Enoptr(t *_type, elem unsafe.Pointer) (e eface) {
 	if raceenabled {
 		raceReadObjectPC(t, elem, getcallerpc(), funcPC(convT2Enoptr))
@@ -472,46 +434,6 @@ func convT2I64(tab *itab, elem unsafe.Pointer) (i iface) {
 	} else {
 		x = mallocgc(8, t, false)
 		*(*uint64)(x) = *(*uint64)(elem)
-	}
-	i.tab = tab
-	i.data = x
-	return
-}
-
-func convT2Istring(tab *itab, elem unsafe.Pointer) (i iface) {
-	t := tab._type
-	if raceenabled {
-		raceReadObjectPC(t, elem, getcallerpc(), funcPC(convT2Istring))
-	}
-	if msanenabled {
-		msanread(elem, t.size)
-	}
-	var x unsafe.Pointer
-	if *(*string)(elem) == "" {
-		x = unsafe.Pointer(&zeroVal[0])
-	} else {
-		x = mallocgc(t.size, t, true)
-		*(*string)(x) = *(*string)(elem)
-	}
-	i.tab = tab
-	i.data = x
-	return
-}
-
-func convT2Islice(tab *itab, elem unsafe.Pointer) (i iface) {
-	t := tab._type
-	if raceenabled {
-		raceReadObjectPC(t, elem, getcallerpc(), funcPC(convT2Islice))
-	}
-	if msanenabled {
-		msanread(elem, t.size)
-	}
-	var x unsafe.Pointer
-	if v := *(*slice)(elem); uintptr(v.array) == 0 {
-		x = unsafe.Pointer(&zeroVal[0])
-	} else {
-		x = mallocgc(t.size, t, true)
-		*(*slice)(x) = *(*slice)(elem)
 	}
 	i.tab = tab
 	i.data = x

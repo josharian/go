@@ -275,7 +275,8 @@ var thearch Arch
 
 var (
 	staticbytes,
-	zerobase *Node
+	zerobase,
+	zeroval *Node
 
 	Newproc,
 	Deferproc,
