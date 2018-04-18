@@ -308,6 +308,8 @@ var (
 	Udiv,
 	writeBarrier *obj.LSym
 
+	newobjectNoClr *obj.LSym
+
 	// GO386=387
 	ControlWord64trunc,
 	ControlWord32 *obj.LSym

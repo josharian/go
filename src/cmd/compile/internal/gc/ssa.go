@@ -84,6 +84,8 @@ func initssaconfig() {
 	Udiv = sysfunc("udiv")
 	writeBarrier = sysfunc("writeBarrier")
 
+	newobjectNoClr = sysfunc("newobjectNoClr")
+
 	// GO386=387 runtime functions
 	ControlWord64trunc = sysfunc("controlWord64trunc")
 	ControlWord32 = sysfunc("controlWord32")
@@ -5499,6 +5501,8 @@ func (e *ssafn) Syslook(name string) *obj.LSym {
 		return typedmemmove
 	case "typedmemclr":
 		return typedmemclr
+	case "newobjectNoClr":
+		return newobjectNoClr
 	}
 	Fatalf("unknown Syslook func %v", name)
 	return nil

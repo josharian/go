@@ -335,7 +335,8 @@ var passes = [...]pass{
 	{name: "early deadcode", fn: deadcode}, // remove generated dead code to avoid doing pointless work during opt
 	{name: "short circuit", fn: shortcircuit},
 	{name: "decompose user", fn: decomposeUser, required: true},
-	{name: "opt", fn: opt, required: true},               // TODO: split required rules and optimizing rules
+	{name: "opt", fn: opt, required: true}, // TODO: split required rules and optimizing rules
+	{name: "rtcall", fn: rtcall},
 	{name: "zero arg cse", fn: zcse, required: true},     // required to merge OpSB values
 	{name: "opt deadcode", fn: deadcode, required: true}, // remove any blocks orphaned during opt
 	{name: "generic cse", fn: cse},

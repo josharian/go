@@ -1022,6 +1022,10 @@ func newobject(typ *_type) unsafe.Pointer {
 	return mallocgc(typ.size, typ, true)
 }
 
+func newobjectNoClr(typ *_type) unsafe.Pointer {
+	return mallocgc(typ.size, typ, false)
+}
+
 //go:linkname reflect_unsafe_New reflect.unsafe_New
 func reflect_unsafe_New(typ *_type) unsafe.Pointer {
 	return mallocgc(typ.size, typ, true)
