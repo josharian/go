@@ -743,15 +743,14 @@ func typefmt(t *types.Type, flag FmtFlag, mode fmtMode, depth int) string {
 
 	case TINTER:
 		if t.IsEmptyInterface() {
-			return "interface {}"
+			return "interface{}"
 		}
 		buf := make([]byte, 0, 64)
-		buf = append(buf, "interface {"...)
+		buf = append(buf, "interface{"...)
 		for i, f := range t.Fields().Slice() {
 			if i != 0 {
-				buf = append(buf, ';')
+				buf = append(buf, ';', ' ')
 			}
-			buf = append(buf, ' ')
 			switch {
 			case f.Sym == nil:
 				// Check first that a symbol is defined for this type.
@@ -763,9 +762,6 @@ func typefmt(t *types.Type, flag FmtFlag, mode fmtMode, depth int) string {
 				buf = append(buf, sconv(f.Sym, FmtUnsigned, mode)...)
 			}
 			buf = append(buf, tconv(f.Type, FmtShort, mode, depth)...)
-		}
-		if t.NumFields() != 0 {
-			buf = append(buf, ' ')
 		}
 		buf = append(buf, '}')
 		return string(buf)
@@ -835,16 +831,12 @@ func typefmt(t *types.Type, flag FmtFlag, mode fmtMode, depth int) string {
 			}
 			buf = append(buf, ')')
 		} else {
-			buf = append(buf, "struct {"...)
+			buf = append(buf, "struct{"...)
 			for i, f := range t.Fields().Slice() {
 				if i != 0 {
-					buf = append(buf, ';')
+					buf = append(buf, ';', ' ')
 				}
-				buf = append(buf, ' ')
 				buf = append(buf, fldconv(f, FmtLong, mode, depth)...)
-			}
-			if t.NumFields() != 0 {
-				buf = append(buf, ' ')
 			}
 			buf = append(buf, '}')
 		}
