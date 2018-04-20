@@ -563,9 +563,40 @@ func NewField() *Field {
 	}
 }
 
+type substCacheKey struct {
+	t    *Type
+	args [4]*Type
+}
+
+var substCache = make(map[substCacheKey]*Type)
+
 // SubstAny walks t, replacing instances of "any" with successive
 // elements removed from types.  It returns the substituted type.
 func SubstAny(t *Type, types *[]*Type) *Type {
+	// fmt.Println("SubstAny", t, *types)
+	if t == nil {
+		return nil
+	}
+
+	key := substCacheKey{t: t}
+	if len(*types) > len(key.args) {
+		Fatalf("substCacheKey args too short, please increase it")
+	}
+	copy(key.args[:], *types)
+
+	if res, ok := substCache[key]; ok {
+		// fmt.Println("CACHE HIT")
+		*types = nil
+		return res
+	}
+
+	// fmt.Println("CACHE MISS")
+	t = substAny(t, types)
+	substCache[key] = t
+	return t
+}
+
+func substAny(t *Type, types *[]*Type) *Type {
 	if t == nil {
 		return nil
 	}
@@ -582,36 +613,36 @@ func SubstAny(t *Type, types *[]*Type) *Type {
 		*types = (*types)[1:]
 
 	case TPTR32, TPTR64:
-		elem := SubstAny(t.Elem(), types)
+		elem := substAny(t.Elem(), types)
 		if elem != t.Elem() {
 			t = t.copy()
 			t.Extra = Ptr{Elem: elem}
 		}
 
 	case TARRAY:
-		elem := SubstAny(t.Elem(), types)
+		elem := substAny(t.Elem(), types)
 		if elem != t.Elem() {
 			t = t.copy()
 			t.Extra.(*Array).Elem = elem
 		}
 
 	case TSLICE:
-		elem := SubstAny(t.Elem(), types)
+		elem := substAny(t.Elem(), types)
 		if elem != t.Elem() {
 			t = t.copy()
 			t.Extra = Slice{Elem: elem}
 		}
 
 	case TCHAN:
-		elem := SubstAny(t.Elem(), types)
+		elem := substAny(t.Elem(), types)
 		if elem != t.Elem() {
 			t = t.copy()
 			t.Extra.(*Chan).Elem = elem
 		}
 
 	case TMAP:
-		key := SubstAny(t.Key(), types)
-		val := SubstAny(t.Val(), types)
+		key := substAny(t.Key(), types)
+		val := substAny(t.Val(), types)
 		if key != t.Key() || val != t.Val() {
 			t = t.copy()
 			t.Extra.(*Map).Key = key
@@ -619,9 +650,9 @@ func SubstAny(t *Type, types *[]*Type) *Type {
 		}
 
 	case TFUNC:
-		recvs := SubstAny(t.Recvs(), types)
-		params := SubstAny(t.Params(), types)
-		results := SubstAny(t.Results(), types)
+		recvs := substAny(t.Recvs(), types)
+		params := substAny(t.Params(), types)
+		results := substAny(t.Results(), types)
 		if recvs != t.Recvs() || params != t.Params() || results != t.Results() {
 			t = t.copy()
 			t.FuncType().Receiver = recvs
@@ -633,7 +664,7 @@ func SubstAny(t *Type, types *[]*Type) *Type {
 		fields := t.FieldSlice()
 		var nfs []*Field
 		for i, f := range fields {
-			nft := SubstAny(f.Type, types)
+			nft := substAny(f.Type, types)
 			if nft == f.Type {
 				continue
 			}
