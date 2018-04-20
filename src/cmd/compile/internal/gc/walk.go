@@ -728,6 +728,13 @@ opswitch:
 			if r.Type.Elem().NotInHeap() {
 				yyerror("%v is go:notinheap; heap allocation disallowed", r.Type.Elem())
 			}
+
+			// Convert append([]T{}, a...) to append([]T(nil), a...).
+			// This is equivalent and generates better code.
+			if s := r.List.First(); s.Op == OSLICELIT && s.List.Len() == 0 {
+				r.List.SetFirst(conv(nodnil(), s.Type))
+			}
+
 			if r.Isddd() {
 				r = appendslice(r, init) // also works for append(slice, string).
 			} else {
