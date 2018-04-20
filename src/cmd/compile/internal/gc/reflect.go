@@ -860,8 +860,10 @@ func dcommontype(lsym *obj.LSym, t *types.Type) int {
 	// share storage. This is a cheap way to reduce the
 	// amount of space taken up by reflect strings.
 	if !strings.HasPrefix(p, "*") {
-		p = "*" + p
-		tflag |= tflagExtraStar
+		if !strings.HasPrefix(p, "func(") {
+			p = "*" + p
+			tflag |= tflagExtraStar
+		}
 		if t.Sym != nil {
 			exported = types.IsExported(t.Sym.Name)
 		}
