@@ -424,9 +424,19 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		initplan(r)
 		// Init slice.
 		bound := r.Right.Int64()
-		ta := types.NewArray(r.Type.Elem(), bound)
-		a := staticname(ta)
-		inittemps[r] = a
+		var a *Node
+		if bound > 0 {
+			ta := types.NewArray(r.Type.Elem(), bound)
+			a = staticname(ta)
+			inittemps[r] = a
+		} else {
+			if zerobase == nil {
+				zerobase = newname(Runtimepkg.Lookup("zerobase"))
+				zerobase.SetClass(PEXTERN)
+				zerobase.Type = types.Types[TUINTPTR]
+			}
+			a = zerobase
+		}
 		n := l.copy()
 		n.Xoffset = l.Xoffset + int64(array_array)
 		gdata(n, nod(OADDR, a, nil), Widthptr)
@@ -435,6 +445,9 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		n.Xoffset = l.Xoffset + int64(array_cap)
 		gdata(n, r.Right, Widthptr)
 
+		if bound == 0 {
+			return true
+		}
 		// Fall through to init underlying array.
 		l = a
 		fallthrough
@@ -640,7 +653,8 @@ func getdyn(n *Node, top bool) initGenType {
 func isStaticCompositeLiteral(n *Node) bool {
 	switch n.Op {
 	case OSLICELIT:
-		return false
+		// fmt.Println("isStaticCompositeLiteral slicelit", n, n.Right)
+		return n.Right.Int64() == 0 // empty slices are representable statically as {runtime.zerobase, 0, 0}
 	case OARRAYLIT:
 		for _, r := range n.List.Slice() {
 			if r.Op == OKEY {
@@ -795,6 +809,27 @@ func slicelit(ctxt initContext, n *Node, var_ *Node, init *Nodes) {
 		nam.Xoffset += int64(array_cap) - int64(array_nel)
 		gdata(&nam, &v, Widthptr)
 
+		return
+	}
+
+	// If we're making an empty slice, just use {runtime.zerobase, 0, 0}.
+	if n.Right.Int64() == 0 {
+		// fmt.Println("SLICELIT EMPTY", n, "VAR", var_)
+		if zerobase == nil {
+			zerobase = newname(Runtimepkg.Lookup("zerobase"))
+			zerobase.SetClass(PEXTERN)
+			zerobase.Type = types.Types[TUINTPTR]
+		}
+		// var_ = typecheck(var_, Erv)
+		// var_ = walkexpr(var_, init)
+		empty := nod(OEMPTYSLICE, nil, nil)
+		empty.Type = n.Type
+		empty.SetTypecheck(1)
+		a := nod(OAS, var_, empty)
+		// a = typecheck(a, Etop)
+		// a = orderStmtInPlace(a)
+		// a = walkstmt(a)
+		init.Append(a)
 		return
 	}
 

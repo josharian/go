@@ -1652,6 +1652,19 @@ func (s *state) expr(n *Node) *ssa.Value {
 			s.Fatalf("unhandled OLITERAL %v", n.Val().Ctype())
 			return nil
 		}
+	case OEMPTYSLICE:
+		if zerobase == nil {
+			zerobase = newname(Runtimepkg.Lookup("zerobase"))
+			zerobase.SetClass(PEXTERN)
+			zerobase.Type = types.Types[TUINTPTR]
+		}
+		// p := s.newValue1(ssa.OpSlicePtr, n.Type.Elem().PtrTo(), s.addr(zerobase, true))
+		// l := s.newValue1(ssa.OpSliceLen, types.Types[TINT], s.constInt(types.Types[TINT], 0))
+		// c := s.newValue1(ssa.OpSliceCap, types.Types[TINT], s.constInt(types.Types[TINT], 0))
+		p := s.addr(zerobase, true)
+		l := s.constInt(types.Types[TINT], 0)
+		c := s.constInt(types.Types[TINT], 0)
+		return s.newValue3(ssa.OpSliceMake, n.Type, p, l, c)
 	case OCONVNOP:
 		to := n.Type
 		from := n.Left.Type

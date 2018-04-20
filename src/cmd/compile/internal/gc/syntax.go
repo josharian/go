@@ -617,6 +617,7 @@ const (
 	OSTRUCTLIT       // Type{List} (composite literal, Type is struct)
 	OARRAYLIT        // Type{List} (composite literal, Type is array)
 	OSLICELIT        // Type{List} (composite literal, Type is slice)
+	OEMPTYSLICE      // []T{}
 	OPTRLIT          // &Left (left is composite literal)
 	OCONV            // Type(Left) (type conversion)
 	OCONVIFACE       // Type(Left) (type conversion, to interface)
