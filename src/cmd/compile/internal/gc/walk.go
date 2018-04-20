@@ -2937,6 +2937,12 @@ func addstr(n *Node, init *Nodes) *Node {
 //
 // l2 is allowed to be a string.
 func appendslice(n *Node, init *Nodes) *Node {
+	// Convert append([]T{}, l2...) to append([]T(nil), l2...).
+	// This is equivalent and generates better code.
+	if s := n.List.First(); s.Op == OSLICELIT && s.List.Len() == 0 {
+		n.List.SetFirst(conv(nodnil(), s.Type))
+	}
+
 	walkexprlistsafe(n.List.Slice(), init)
 
 	// walkexprlistsafe will leave OINDEX (s[n]) alone if both s
