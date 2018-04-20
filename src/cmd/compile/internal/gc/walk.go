@@ -10,6 +10,7 @@ import (
 	"cmd/internal/sys"
 	"encoding/binary"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -2893,28 +2894,74 @@ func addstr(n *Node, init *Nodes) *Node {
 		args = append(args, conv(n2, types.Types[TSTRING]))
 	}
 
-	var fn string
-	if c <= 5 {
-		// small numbers of strings use direct runtime helpers.
-		// note: orderexpr knows this cutoff too.
-		fn = fmt.Sprintf("concatstring%d", c)
-	} else {
-		// large numbers of strings are passed to the runtime as a slice.
-		fn = "concatstrings"
+	if os.Getenv("J") != "" && c == 2 {
+		fmt.Println("C", Isconst(args[1], CTSTR), Isconst(args[2], CTSTR))
+	}
+	var r *Node
+	if c == 2 && Isconst(args[1], CTSTR) {
+		// var res string
+		// if arg2 == "" {
+		//   res = arg1
+		// } else {
+		//   res.ptr = mallocgc(len(arg1)+len(arg2), nil, false)
+		//   memmove(res.ptr, arg1.ptr, len(arg1)) // TODO: optimize by writing bytes inline if small
+		//   memmove(res.ptr+len(arg1), arg2.ptr, len(arg2))
+		//   res.len = len(arg1)+len(arg2)
+		// }
+		r = temp(types.Types[TSTRING])
+		init.Append(nod(OAS, r, nodstr("")))
+		nif := nod(OIF, nod(OEQ, args[2], nodstr("")), nil)
+		init.Append(nif)
+		nif.Nbody.Set1(nod(OAS, r, args[1]))
+		memmove := syslook("memmove")
+		memmove = substArgTypes(memmove, types.Types[TUINT8], types.Types[TUINT8])
+		nif.Rlist.Set([]*Node{
+			nod(OAS,
+				nod(OSPTR, r, nil),
+				mkcall("rawmem", types.Types[TUINT8].PtrTo(), init, conv(nod(OLEN, args[2], nil), types.Types[TUINTPTR])),
+			),
+			mkcall1(memmove, nil, init,
+				nod(OSPTR, r, nil),
+				nod(OSPTR, args[1], nil),
+				nod(OLEN, args[1], nil),
+			),
+			mkcall1(memmove, nil, init,
+				nod(OADD, nod(OSPTR, r, nil), nod(OLEN, args[1], nil)),
+				nod(OSPTR, args[2], nil),
+				nod(OLEN, args[2], nil),
+			),
+			nod(OAS,
+				nod(OLEN, r, nil),
+				nod(OADD, nod(OLEN, args[1], nil), nod(OLEN, args[2], nil)),
+			),
+		})
+		nif = typecheck(nif, Etop)
+		nif = walkexpr(nif, init)
 
-		t := types.NewSlice(types.Types[TSTRING])
-		slice := nod(OCOMPLIT, nil, typenod(t))
-		if prealloc[n] != nil {
-			prealloc[slice] = prealloc[n]
+	} else {
+		var fn string
+		if c <= 5 {
+			// small numbers of strings use direct runtime helpers.
+			// note: orderexpr knows this cutoff too.
+			fn = fmt.Sprintf("concatstring%d", c)
+		} else {
+			// large numbers of strings are passed to the runtime as a slice.
+			fn = "concatstrings"
+
+			t := types.NewSlice(types.Types[TSTRING])
+			slice := nod(OCOMPLIT, nil, typenod(t))
+			if prealloc[n] != nil {
+				prealloc[slice] = prealloc[n]
+			}
+			slice.List.Set(args[1:]) // skip buf arg
+			args = []*Node{buf, slice}
+			slice.Esc = EscNone
 		}
-		slice.List.Set(args[1:]) // skip buf arg
-		args = []*Node{buf, slice}
-		slice.Esc = EscNone
+		cat := syslook(fn)
+		r = nod(OCALL, cat, nil)
+		r.List.Set(args)
 	}
 
-	cat := syslook(fn)
-	r := nod(OCALL, cat, nil)
-	r.List.Set(args)
 	r = typecheck(r, Erv)
 	r = walkexpr(r, init)
 	r.Type = n.Type

@@ -15,6 +15,7 @@ package runtime
 import "unsafe"
 
 func newobject(typ *byte) *any
+func rawmem(size uintptr) *uint8
 func panicindex()
 func panicslice()
 func panicdivide()
