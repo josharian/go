@@ -424,9 +424,20 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		initplan(r)
 		// Init slice.
 		bound := r.Right.Int64()
-		ta := types.NewArray(r.Type.Elem(), bound)
-		a := staticname(ta)
-		inittemps[r] = a
+		var a *Node
+		if bound > 0 {
+			ta := types.NewArray(r.Type.Elem(), bound)
+			a = staticname(ta)
+			inittemps[r] = a
+		} else {
+			// Empty slice: []T{}
+			if zerobase == nil {
+				zerobase = newname(Runtimepkg.Lookup("zerobase"))
+				zerobase.SetClass(PEXTERN)
+				zerobase.Type = types.Types[TUINTPTR]
+			}
+			a = zerobase
+		}
 		n := l.copy()
 		n.Xoffset = l.Xoffset + int64(array_array)
 		gdata(n, nod(OADDR, a, nil), Widthptr)
@@ -435,7 +446,10 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 		n.Xoffset = l.Xoffset + int64(array_cap)
 		gdata(n, r.Right, Widthptr)
 
-		// Fall through to init underlying array.
+		if bound == 0 {
+			return true
+		}
+		// Non-empty slice; fall through to init underlying array.
 		l = a
 		fallthrough
 
@@ -640,7 +654,7 @@ func getdyn(n *Node, top bool) initGenType {
 func isStaticCompositeLiteral(n *Node) bool {
 	switch n.Op {
 	case OSLICELIT:
-		return false
+		return n.Right.Int64() == 0 // empty slices are representable statically as {runtime.zerobase, 0, 0}
 	case OARRAYLIT:
 		for _, r := range n.List.Slice() {
 			if r.Op == OKEY {
