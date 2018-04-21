@@ -2981,6 +2981,7 @@ func appendslice(n *Node, init *Nodes) *Node {
 	nif.Left.Right.Type = types.Types[TUINT]
 
 	// instantiate growslice(Type*, []any, int) []any
+	// TODO: check elem type size, inline when size == 0, remove from growslice runtime func. do elsewhere too. and in package reflect too? :/
 	fn := syslook("growslice")
 	fn = substArgTypes(fn, s.Type.Elem(), s.Type.Elem())
 
