@@ -1038,6 +1038,11 @@ func newarray(typ *_type, n int) unsafe.Pointer {
 	return mallocgc(typ.size*uintptr(n), typ, true)
 }
 
+// newarraypremul allocates an array of elements of type typ with total size totsiz.
+func newarraypremul(typ *_type, totsiz uintptr) unsafe.Pointer {
+	return mallocgc(totsiz, typ, true)
+}
+
 //go:linkname reflect_unsafe_NewArray reflect.unsafe_NewArray
 func reflect_unsafe_NewArray(typ *_type, n int) unsafe.Pointer {
 	return newarray(typ, n)
