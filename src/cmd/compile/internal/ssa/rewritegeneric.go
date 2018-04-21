@@ -18766,6 +18766,36 @@ func rewriteValuegeneric_OpNilCheck_0(v *Value) bool {
 		v.reset(OpInvalid)
 		return true
 	}
+	// match: (NilCheck (Load (OffPtr [c] (SP)) (StaticCall {sym} _)) _)
+	// cond: isSameSym(sym, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize() + config.RegSize + config.PtrSize && warnRule(fe.Debug_checknil() && v.Pos.Line() > 1, v, "removed nil check")
+	// result: (Invalid)
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpLoad {
+			break
+		}
+		_ = v_0.Args[1]
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpOffPtr {
+			break
+		}
+		c := v_0_0.AuxInt
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpSP {
+			break
+		}
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpStaticCall {
+			break
+		}
+		sym := v_0_1.Aux
+		if !(isSameSym(sym, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize()+config.RegSize+config.PtrSize && warnRule(fe.Debug_checknil() && v.Pos.Line() > 1, v, "removed nil check")) {
+			break
+		}
+		v.reset(OpInvalid)
+		return true
+	}
 	// match: (NilCheck (OffPtr (Load (OffPtr [c] (SP)) (StaticCall {sym} _))) _)
 	// cond: isSameSym(sym, "runtime.newobject") && c == config.ctxt.FixedFrameSize() + config.RegSize && warnRule(fe.Debug_checknil() && v.Pos.Line() > 1, v, "removed nil check")
 	// result: (Invalid)
@@ -18795,6 +18825,40 @@ func rewriteValuegeneric_OpNilCheck_0(v *Value) bool {
 		}
 		sym := v_0_0_1.Aux
 		if !(isSameSym(sym, "runtime.newobject") && c == config.ctxt.FixedFrameSize()+config.RegSize && warnRule(fe.Debug_checknil() && v.Pos.Line() > 1, v, "removed nil check")) {
+			break
+		}
+		v.reset(OpInvalid)
+		return true
+	}
+	// match: (NilCheck (OffPtr (Load (OffPtr [c] (SP)) (StaticCall {sym} _))) _)
+	// cond: isSameSym(sym, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize() + config.RegSize + config.PtrSize && warnRule(fe.Debug_checknil() && v.Pos.Line() > 1, v, "removed nil check")
+	// result: (Invalid)
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpOffPtr {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpLoad {
+			break
+		}
+		_ = v_0_0.Args[1]
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpOffPtr {
+			break
+		}
+		c := v_0_0_0.AuxInt
+		v_0_0_0_0 := v_0_0_0.Args[0]
+		if v_0_0_0_0.Op != OpSP {
+			break
+		}
+		v_0_0_1 := v_0_0.Args[1]
+		if v_0_0_1.Op != OpStaticCall {
+			break
+		}
+		sym := v_0_0_1.Aux
+		if !(isSameSym(sym, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize()+config.RegSize+config.PtrSize && warnRule(fe.Debug_checknil() && v.Pos.Line() > 1, v, "removed nil check")) {
 			break
 		}
 		v.reset(OpInvalid)
@@ -25442,6 +25506,38 @@ func rewriteValuegeneric_OpStore_10(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	// match: (Store (Load (OffPtr [c] (SP)) mem) x mem)
+	// cond: isConstZero(x) && mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize() + config.RegSize + config.PtrSize
+	// result: mem
+	for {
+		_ = v.Args[2]
+		v_0 := v.Args[0]
+		if v_0.Op != OpLoad {
+			break
+		}
+		_ = v_0.Args[1]
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpOffPtr {
+			break
+		}
+		c := v_0_0.AuxInt
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpSP {
+			break
+		}
+		mem := v_0.Args[1]
+		x := v.Args[1]
+		if mem != v.Args[2] {
+			break
+		}
+		if !(isConstZero(x) && mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize()+config.RegSize+config.PtrSize) {
+			break
+		}
+		v.reset(OpCopy)
+		v.Type = mem.Type
+		v.AddArg(mem)
+		return true
+	}
 	// match: (Store (OffPtr (Load (OffPtr [c] (SP)) mem)) x mem)
 	// cond: isConstZero(x) && mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newobject") && c == config.ctxt.FixedFrameSize() + config.RegSize
 	// result: mem
@@ -25471,6 +25567,42 @@ func rewriteValuegeneric_OpStore_10(v *Value) bool {
 			break
 		}
 		if !(isConstZero(x) && mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newobject") && c == config.ctxt.FixedFrameSize()+config.RegSize) {
+			break
+		}
+		v.reset(OpCopy)
+		v.Type = mem.Type
+		v.AddArg(mem)
+		return true
+	}
+	// match: (Store (OffPtr (Load (OffPtr [c] (SP)) mem)) x mem)
+	// cond: isConstZero(x) && mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize() + config.RegSize + config.PtrSize
+	// result: mem
+	for {
+		_ = v.Args[2]
+		v_0 := v.Args[0]
+		if v_0.Op != OpOffPtr {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpLoad {
+			break
+		}
+		_ = v_0_0.Args[1]
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpOffPtr {
+			break
+		}
+		c := v_0_0_0.AuxInt
+		v_0_0_0_0 := v_0_0_0.Args[0]
+		if v_0_0_0_0.Op != OpSP {
+			break
+		}
+		mem := v_0_0.Args[1]
+		x := v.Args[1]
+		if mem != v.Args[2] {
+			break
+		}
+		if !(isConstZero(x) && mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize()+config.RegSize+config.PtrSize) {
 			break
 		}
 		v.reset(OpCopy)
@@ -29700,6 +29832,37 @@ func rewriteValuegeneric_OpZero_0(v *Value) bool {
 			break
 		}
 		if !(mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newobject") && c == config.ctxt.FixedFrameSize()+config.RegSize) {
+			break
+		}
+		v.reset(OpCopy)
+		v.Type = mem.Type
+		v.AddArg(mem)
+		return true
+	}
+	// match: (Zero (Load (OffPtr [c] (SP)) mem) mem)
+	// cond: mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize() + config.RegSize + config.PtrSize
+	// result: mem
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpLoad {
+			break
+		}
+		_ = v_0.Args[1]
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpOffPtr {
+			break
+		}
+		c := v_0_0.AuxInt
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpSP {
+			break
+		}
+		mem := v_0.Args[1]
+		if mem != v.Args[1] {
+			break
+		}
+		if !(mem.Op == OpStaticCall && isSameSym(mem.Aux, "runtime.newarraypremul") && c == config.ctxt.FixedFrameSize()+config.RegSize+config.PtrSize) {
 			break
 		}
 		v.reset(OpCopy)
