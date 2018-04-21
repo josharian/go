@@ -474,6 +474,14 @@ func (n name) pkgPath() string {
 // typelinksinit scans the types from extra modules and builds the
 // moduledata typemap used to de-duplicate type pointers.
 func typelinksinit() {
+	for _, tl := range firstmoduledata.typelinks {
+		// println("test", tl)
+		var t *_type
+		t = (*_type)(unsafe.Pointer(firstmoduledata.types + uintptr(tl)))
+		// if t.kind&kindMask == kindInterface {
+		println("testx", t.string())
+		// }
+	}
 	if firstmoduledata.next == nil {
 		return
 	}

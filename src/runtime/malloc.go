@@ -1022,6 +1022,16 @@ func newobject(typ *_type) unsafe.Pointer {
 	return mallocgc(typ.size, typ, true)
 }
 
+//ago:linkname typenameInterface atype.interface{}
+// var typenameInterface *_type
+
+// func newinterface() unsafe.Pointer {
+// 	// println("NI", typenameInterface)
+// 	// println("NI", &typenameInterface)
+// 	// println("NI", typenameInterface.string())
+// 	return mallocgc(sys.PtrSize*2, typenameInterface, true)
+// }
+
 //go:linkname reflect_unsafe_New reflect.unsafe_New
 func reflect_unsafe_New(typ *_type) unsafe.Pointer {
 	return mallocgc(typ.size, typ, true)

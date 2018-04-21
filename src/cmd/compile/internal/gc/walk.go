@@ -2220,6 +2220,15 @@ func callnew(t *types.Type) *Node {
 		a.Type = t.PtrTo()
 		return a
 	}
+	if t.IsEmptyInterface() && false {
+		fmt.Println(typesymname(t))
+		fn := syslook("newinterface")
+		fn = substArgTypes(fn, t)
+		v := mkcall1(fn, types.NewPtr(t), nil)
+		v.SetNonNil(true)
+		return v
+	}
+	// fmt.Println(typesymname(t))
 	fn := syslook("newobject")
 	fn = substArgTypes(fn, t)
 	v := mkcall1(fn, types.NewPtr(t), nil, typename(t))
