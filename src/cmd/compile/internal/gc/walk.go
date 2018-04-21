@@ -2219,9 +2219,13 @@ func callnew(t *types.Type) *Node {
 		yyerror("%v is go:notinheap; heap allocation disallowed", t)
 	}
 	dowidth(t)
+	in := t
+	if t.IsArray() && t.NumElem() == 1 {
+		in = t.Elem()
+	}
 	fn := syslook("newobject")
 	fn = substArgTypes(fn, t)
-	v := mkcall1(fn, types.NewPtr(t), nil, typename(t))
+	v := mkcall1(fn, types.NewPtr(t), nil, typename(in))
 	v.SetNonNil(true)
 	return v
 }
