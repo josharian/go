@@ -3579,6 +3579,68 @@ func rewriteValueAMD64_OpAMD64ANDQmem_0(v *Value) bool {
 func rewriteValueAMD64_OpAMD64BSFQ_0(v *Value) bool {
 	b := v.Block
 	_ = b
+	// match: (BSFQ (BTSQconst [32] (BTSLconst <t> [ 8] (MOVBQZX x))))
+	// cond:
+	// result: (BSFL (BTSLconst <t> [ 8] x))
+	for {
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64BTSQconst {
+			break
+		}
+		if v_0.AuxInt != 32 {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAMD64BTSLconst {
+			break
+		}
+		t := v_0_0.Type
+		if v_0_0.AuxInt != 8 {
+			break
+		}
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpAMD64MOVBQZX {
+			break
+		}
+		x := v_0_0_0.Args[0]
+		v.reset(OpAMD64BSFL)
+		v0 := b.NewValue0(v.Pos, OpAMD64BTSLconst, t)
+		v0.AuxInt = 8
+		v0.AddArg(x)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (BSFQ (BTSQconst [32] (BTSLconst <t> [16] (MOVWQZX x))))
+	// cond:
+	// result: (BSFL (BTSLconst <t> [16] x))
+	for {
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64BTSQconst {
+			break
+		}
+		if v_0.AuxInt != 32 {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAMD64BTSLconst {
+			break
+		}
+		t := v_0_0.Type
+		if v_0_0.AuxInt != 16 {
+			break
+		}
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpAMD64MOVWQZX {
+			break
+		}
+		x := v_0_0_0.Args[0]
+		v.reset(OpAMD64BSFL)
+		v0 := b.NewValue0(v.Pos, OpAMD64BTSLconst, t)
+		v0.AuxInt = 16
+		v0.AddArg(x)
+		v.AddArg(v0)
+		return true
+	}
 	// match: (BSFQ (ORQconst <t> [1<<8] (MOVBQZX x)))
 	// cond:
 	// result: (BSFQ (ORQconst <t> [1<<8] x))
@@ -53215,15 +53277,13 @@ func rewriteValueAMD64_OpCtz32_0(v *Value) bool {
 	_ = typ
 	// match: (Ctz32 x)
 	// cond:
-	// result: (Select0 (BSFQ (ORQ <typ.UInt64> (MOVQconst [1<<32]) x)))
+	// result: (Select0 (BSFQ (BTSQconst <typ.UInt64> [32] x)))
 	for {
 		x := v.Args[0]
 		v.reset(OpSelect0)
 		v0 := b.NewValue0(v.Pos, OpAMD64BSFQ, types.NewTuple(typ.UInt64, types.TypeFlags))
-		v1 := b.NewValue0(v.Pos, OpAMD64ORQ, typ.UInt64)
-		v2 := b.NewValue0(v.Pos, OpAMD64MOVQconst, typ.UInt64)
-		v2.AuxInt = 1 << 32
-		v1.AddArg(v2)
+		v1 := b.NewValue0(v.Pos, OpAMD64BTSQconst, typ.UInt64)
+		v1.AuxInt = 32
 		v1.AddArg(x)
 		v0.AddArg(v1)
 		v.AddArg(v0)

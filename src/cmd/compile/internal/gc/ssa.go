@@ -3080,7 +3080,7 @@ func init() {
 			y := s.newValue2(ssa.OpOr32, types.Types[TUINT32], x, c)
 			return s.newValue1(ssa.OpCtz32, types.Types[TINT], y)
 		},
-		sys.ARM, sys.MIPS)
+		sys.AMD64, sys.ARM, sys.MIPS)
 	addF("math/bits", "TrailingZeros16",
 		func(s *state, n *Node, args []*ssa.Value) *ssa.Value {
 			x := s.newValue1(ssa.OpZeroExt16to64, types.Types[TUINT64], args[0])
@@ -3088,7 +3088,7 @@ func init() {
 			y := s.newValue2(ssa.OpOr64, types.Types[TUINT64], x, c)
 			return s.newValue1(ssa.OpCtz64, types.Types[TINT], y)
 		},
-		sys.AMD64, sys.ARM64, sys.S390X)
+		sys.ARM64, sys.S390X)
 	addF("math/bits", "TrailingZeros8",
 		func(s *state, n *Node, args []*ssa.Value) *ssa.Value {
 			x := s.newValue1(ssa.OpZeroExt8to32, types.Types[TUINT32], args[0])
@@ -3096,7 +3096,7 @@ func init() {
 			y := s.newValue2(ssa.OpOr32, types.Types[TUINT32], x, c)
 			return s.newValue1(ssa.OpCtz32, types.Types[TINT], y)
 		},
-		sys.ARM, sys.MIPS)
+		sys.AMD64, sys.ARM, sys.MIPS)
 	addF("math/bits", "TrailingZeros8",
 		func(s *state, n *Node, args []*ssa.Value) *ssa.Value {
 			x := s.newValue1(ssa.OpZeroExt8to64, types.Types[TUINT64], args[0])
@@ -3104,7 +3104,7 @@ func init() {
 			y := s.newValue2(ssa.OpOr64, types.Types[TUINT64], x, c)
 			return s.newValue1(ssa.OpCtz64, types.Types[TINT], y)
 		},
-		sys.AMD64, sys.ARM64, sys.S390X)
+		sys.ARM64, sys.S390X)
 	alias("math/bits", "ReverseBytes64", "runtime/internal/sys", "Bswap64", all...)
 	alias("math/bits", "ReverseBytes32", "runtime/internal/sys", "Bswap32", all...)
 	// ReverseBytes inlines correctly, no need to intrinsify it.
