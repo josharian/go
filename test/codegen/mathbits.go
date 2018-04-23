@@ -37,7 +37,7 @@ func LeadingZeros32(n uint32) int {
 }
 
 func LeadingZeros16(n uint16) int {
-	// amd64:"BSRQ"
+	// amd64:"BSRL"
 	// s390x:"FLOGR"
 	// arm:"CLZ" arm64:"CLZ"
 	// mips:"CLZ"
@@ -81,7 +81,7 @@ func Len32(n uint32) int {
 }
 
 func Len16(n uint16) int {
-	// amd64:"BSRQ"
+	// amd64:"BSRL"
 	// s390x:"FLOGR"
 	// arm:"CLZ" arm64:"CLZ"
 	// mips:"CLZ"
