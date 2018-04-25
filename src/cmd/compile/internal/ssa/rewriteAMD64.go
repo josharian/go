@@ -3,10 +3,12 @@
 
 package ssa
 
-import "math"
-import "cmd/internal/obj"
-import "cmd/internal/objabi"
-import "cmd/compile/internal/types"
+import (
+	"cmd/compile/internal/types"
+	"cmd/internal/obj"
+	"cmd/internal/objabi"
+	"math"
+)
 
 var _ = math.MinInt8  // in case not otherwise used
 var _ = obj.ANOP      // in case not otherwise used
@@ -14,6 +16,40 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValueAMD64(v *Value) bool {
+	if v.Op == OpAMD64MOVQstore {
+		return rewriteValueAMD64_OpAMD64MOVQstore_0(v)
+	}
+	if v.Op == OpAMD64LEAQ {
+		return rewriteValueAMD64_OpAMD64LEAQ_0(v)
+	}
+	if v.Op == OpAMD64ADDQconst {
+		return rewriteValueAMD64_OpAMD64ADDQconst_0(v) || rewriteValueAMD64_OpAMD64ADDQconst_10(v)
+	}
+
+	// 10.93% 5139772 MOVQstore
+	//  8.49% 3992761 LEAQ
+	//  7.55% 3547468 ADDQconst
+	//  6.90% 3242024 MOVQload
+	//  6.64% 3121103 OpInvalid
+	//  5.32% 2502503 TESTB
+	//  4.08% 1918086 CALLstatic
+	//  3.81% 1788978 Phi
+	//  2.81% 1320390 MOVQconst
+	//  2.67% 1255765 Store
+	//  2.65% 1243660 OffPtr
+	//  2.06% 969470 VarDef
+	//  1.90% 894351 MOVLconst
+	//  1.88% 882377 Load
+	//  1.79% 840995 SETNE
+	//  1.39% 651918 LoweredNilCheck
+	//  1.33% 626871 MOVQstoreconst
+	//  1.21% 570829 Arg
+	//  1.20% 565224 SETEQ
+	//  1.16% 545039 InvertFlags
+	//  1.11% 524091 CMPQ
+
+	// fmt.Println(v.Op)
+
 	switch v.Op {
 	case OpAMD64ADDL:
 		return rewriteValueAMD64_OpAMD64ADDL_0(v) || rewriteValueAMD64_OpAMD64ADDL_10(v)
