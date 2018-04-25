@@ -3,10 +3,12 @@
 
 package ssa
 
-import "math"
-import "cmd/internal/obj"
-import "cmd/internal/objabi"
-import "cmd/compile/internal/types"
+import (
+	"cmd/compile/internal/types"
+	"cmd/internal/obj"
+	"cmd/internal/objabi"
+	"math"
+)
 
 var _ = math.MinInt8  // in case not otherwise used
 var _ = obj.ANOP      // in case not otherwise used
@@ -14,6 +16,35 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValuegeneric(v *Value) bool {
+	if v.Op == OpOffPtr {
+		return rewriteValuegeneric_OpOffPtr_0(v)
+	}
+	if v.Op == OpStore {
+		return rewriteValuegeneric_OpStore_0(v) || rewriteValuegeneric_OpStore_10(v)
+	}
+	if v.Op == OpLoad {
+		return rewriteValuegeneric_OpLoad_0(v) || rewriteValuegeneric_OpLoad_10(v)
+	}
+
+	// 17.09% 7993424 OffPtr
+	// 14.95% 6991245 Store
+	// 12.68% 5930275 Load
+	//  6.16% 2879560 StaticCall
+	//  5.54% 2591592 NilCheck
+	//  5.23% 2446257 Const64
+	//  4.21% 1969938 Addr
+	//  2.79% 1305837 Phi
+	//  2.17% 1013076 IsInBounds
+	//  1.85% 865404 VarDef
+	//  1.60% 749047 SliceLen
+	//  1.30% 609493 SlicePtr
+	//  1.27% 591967 SliceMake
+	//  1.24% 577983 Copy
+	//  1.09% 508904 AddPtr
+	//  1.07% 500220 Arg
+
+	// fmt.Println(v.Op)
+
 	switch v.Op {
 	case OpAdd16:
 		return rewriteValuegeneric_OpAdd16_0(v) || rewriteValuegeneric_OpAdd16_10(v) || rewriteValuegeneric_OpAdd16_20(v) || rewriteValuegeneric_OpAdd16_30(v)
