@@ -431,11 +431,6 @@ func staticassign(l *Node, r *Node, out *[]*Node) bool {
 			inittemps[r] = a
 		} else {
 			// Empty slice: []T{}
-			if zerobase == nil {
-				zerobase = newname(Runtimepkg.Lookup("zerobase"))
-				zerobase.SetClass(PEXTERN)
-				zerobase.Type = types.Types[TUINTPTR]
-			}
 			a = zerobase
 		}
 		n := l.copy()
@@ -809,6 +804,14 @@ func slicelit(ctxt initContext, n *Node, var_ *Node, init *Nodes) {
 		nam.Xoffset += int64(array_cap) - int64(array_nel)
 		gdata(&nam, &v, Widthptr)
 
+		return
+	}
+
+	// If we're making an empty slice, just use {runtime.zerobase, 0, 0}.
+	if n.Right.Int64() == 0 {
+		a := nod(OAS, var_, n)
+		a = typecheck(a, Etop)
+		init.Append(a)
 		return
 	}
 

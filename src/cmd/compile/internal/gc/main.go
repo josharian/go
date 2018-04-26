@@ -454,6 +454,11 @@ func Main(archInit func(*Arch)) {
 
 	initUniverse()
 
+	// TODO: DOC
+	zerobase = newname(Runtimepkg.Lookup("zerobase"))
+	zerobase.SetClass(PEXTERN)
+	zerobase.Type = types.Types[TUINTPTR]
+
 	dclcontext = PEXTERN
 	nerrors = 0
 

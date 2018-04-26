@@ -798,7 +798,7 @@ func (s *state) stmt(n *Node) {
 		rhs := n.Right
 		if rhs != nil {
 			switch rhs.Op {
-			case OSTRUCTLIT, OARRAYLIT, OSLICELIT:
+			case OSTRUCTLIT, OARRAYLIT:
 				// All literals with nonzero fields have already been
 				// rewritten during walk. Any that remain are just T{}
 				// or equivalents. Use the zero value.
@@ -806,6 +806,16 @@ func (s *state) stmt(n *Node) {
 					Fatalf("literal with nonzero value in SSA: %v", rhs)
 				}
 				rhs = nil
+			case OSLICELIT:
+				// Allow empty slices through.
+				// All other literals with nonzero fields have been handled,
+				// as with OSTRUCTLIT and OARRAYLIT.
+				if rhs.Right.Int64() != 0 {
+					if !isZero(rhs) {
+						Fatalf("literal with nonzero value in SSA: %v", rhs)
+					}
+					rhs = nil
+				}
 			case OAPPEND:
 				// Check whether we're writing the result of an append back to the same slice.
 				// If so, we handle it specially to avoid write barriers on the fast
@@ -2276,6 +2286,16 @@ func (s *state) expr(n *Node) *ssa.Value {
 			Fatalf("literal with nonzero value in SSA: %v", n)
 		}
 		return s.zeroVal(n.Type)
+
+	case OSLICELIT:
+		if n.Right.Int64() != 0 {
+			Fatalf("non-empty slice literal in SSA: %v", n)
+		}
+		// Empty slice: {runtime.zerobase, 0, 0}
+		p := s.addr(zerobase, true)
+		l := s.constInt(types.Types[TINT], 0)
+		c := s.constInt(types.Types[TINT], 0)
+		return s.newValue3(ssa.OpSliceMake, n.Type, p, l, c)
 
 	default:
 		s.Fatalf("unhandled expr %v", n.Op)

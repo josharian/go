@@ -895,9 +895,6 @@ opswitch:
 			staticbytes = newname(Runtimepkg.Lookup("staticbytes"))
 			staticbytes.SetClass(PEXTERN)
 			staticbytes.Type = types.NewArray(types.Types[TUINT8], 256)
-			zerobase = newname(Runtimepkg.Lookup("zerobase"))
-			zerobase.SetClass(PEXTERN)
-			zerobase.Type = types.Types[TUINTPTR]
 		}
 
 		// Optimize convT2{E,I} for many cases in which T is not pointer-shaped,
