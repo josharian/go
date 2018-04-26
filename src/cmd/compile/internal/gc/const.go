@@ -43,7 +43,7 @@ func (v Val) Ctype() Ctype {
 		panic("not reached")
 	case nil:
 		return 0
-	case *NilVal:
+	case NilVal:
 		return CTNIL
 	case bool:
 		return CTBOOL
@@ -69,7 +69,7 @@ func eqval(a, b Val) bool {
 	default:
 		Fatalf("unexpected Ctype for %T", a.U)
 		panic("not reached")
-	case *NilVal:
+	case NilVal:
 		return true
 	case bool:
 		y := b.U.(bool)
@@ -97,7 +97,7 @@ func (v Val) Interface() interface{} {
 	default:
 		Fatalf("unexpected Interface for %T", v.U)
 		panic("not reached")
-	case *NilVal:
+	case NilVal:
 		return nil
 	case bool, string:
 		return x
@@ -570,7 +570,7 @@ func tostr(v Val) Val {
 		}
 		v.U = string(i)
 
-	case *NilVal:
+	case NilVal:
 		// Can happen because of string([]byte(nil)).
 		v.U = ""
 	}

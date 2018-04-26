@@ -815,7 +815,7 @@ func (p *importer) value(typ *types.Type) (x Val) {
 		p.formatErrorf("unknown constant (importing package with errors)")
 
 	case nilTag:
-		x.U = new(NilVal)
+		x.U = NilVal{}
 
 	default:
 		p.formatErrorf("unexpected value tag %d", tag)

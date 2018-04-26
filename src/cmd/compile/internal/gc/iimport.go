@@ -351,7 +351,7 @@ func (p *importReader) value() (typ *types.Type, v Val) {
 
 	switch constTypeOf(typ) {
 	case CTNIL:
-		v.U = &NilVal{}
+		v.U = NilVal{}
 	case CTBOOL:
 		v.U = p.bool()
 	case CTSTR:

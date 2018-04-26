@@ -1305,7 +1305,7 @@ func isZero(n *Node) bool {
 		default:
 			Dump("unexpected literal", n)
 			Fatalf("isZero")
-		case *NilVal:
+		case NilVal:
 			return true
 		case string:
 			return u == ""

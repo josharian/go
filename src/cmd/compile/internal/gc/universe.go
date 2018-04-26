@@ -157,7 +157,7 @@ func lexinit() {
 	types.Types[TNIL] = types.New(TNIL)
 	s = builtinpkg.Lookup("nil")
 	var v Val
-	v.U = new(NilVal)
+	v.U = NilVal{}
 	s.Def = asTypesNode(nodlit(v))
 	asNode(s.Def).Sym = s
 	asNode(s.Def).Name = new(Name)

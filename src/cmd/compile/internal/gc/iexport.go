@@ -769,7 +769,7 @@ func (w *exportWriter) value(typ *types.Type, v Val) {
 	switch constTypeOf(typ) {
 	case CTNIL:
 		// Only one value; nothing to encode.
-		_ = v.U.(*NilVal)
+		_ = v.U.(NilVal)
 	case CTBOOL:
 		w.bool(v.U.(bool))
 	case CTSTR:

@@ -389,7 +389,7 @@ func nodfltconst(v *Mpflt) *Node {
 }
 
 func nodnil() *Node {
-	return nodlit(Val{new(NilVal)})
+	return nodlit(Val{NilVal{}})
 }
 
 func nodbool(b bool) *Node {

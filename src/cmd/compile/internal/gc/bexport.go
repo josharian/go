@@ -1064,7 +1064,7 @@ func (p *exporter) value(x Val) {
 		p.tag(stringTag)
 		p.string(x)
 
-	case *NilVal:
+	case NilVal:
 		// not a constant but used in exported function bodies
 		p.tag(nilTag)
 

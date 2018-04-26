@@ -1609,7 +1609,7 @@ func (s *state) expr(n *Node) *ssa.Value {
 			return s.entryNewValue0A(ssa.OpConstString, n.Type, u)
 		case bool:
 			return s.constBool(u)
-		case *NilVal:
+		case NilVal:
 			t := n.Type
 			switch {
 			case t.IsSlice():

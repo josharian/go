@@ -566,7 +566,7 @@ func (v Val) vconv(s fmt.State, flag FmtFlag) {
 	case bool:
 		fmt.Fprint(s, u)
 
-	case *NilVal:
+	case NilVal:
 		fmt.Fprint(s, "nil")
 
 	default:
