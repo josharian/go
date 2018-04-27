@@ -16,6 +16,7 @@
 package rand
 
 import "sync"
+import "sync/atomic"
 
 // A Source represents a source of uniformly-distributed
 // pseudo-random int64 values in the range [0, 1<<63).
@@ -282,7 +283,55 @@ func read(p []byte, int63 func() int64, readVal *int64, readPos *int8) (n int, e
  * Top-level convenience functions
  */
 
-var globalRand = New(&lockedSource{src: NewSource(1).(Source64)})
+var globalRand = New(NewSource(1).(Source64))
+var globalRandCheck int32
+
+var parallelized int32
+
+// getGlobalRand returns a threadsafe *Rand without blocking.
+// If called sequentially, it will return the default globalRand;
+// if called concurrently, it will return separate threadsafe instances of *Rand
+// that are not mutually locked
+func getGlobalRand() *Rand {
+	if p := atomic.LoadInt32(&parallelized); p == 1 {
+		// defer to the parallelized implementation
+		return parallelizedGetGlobalRand()
+	}
+
+	locked := atomic.AddInt32(&globalRandCheck, 1)
+	defer atomic.AddInt32(&globalRandCheck, -1)
+	if locked != 1 {
+		// getGlobalRand is being invoked by multiple functions in parallel
+		parallelizeGlobalRandOnce.Do(parallelizeGlobalRand)
+	}
+	return globalRand
+}
+
+var parallelizeGlobalRandOnce sync.Once
+
+func parallelizeGlobalRand() {
+	atomic.AddInt32(&parallelized, 1)
+}
+
+var parGlobalRandSeedPool = sync.Pool{
+	New: func() interface{} {
+		// only use the global *Rand instance
+		// (which has a shared lock)
+		// to seed new, independent instances which can be reused
+		seed := globalRand.Int63()
+		return New(NewSource(seed).(Source64))
+	},
+}
+
+func parallelizedGetGlobalRand() *Rand {
+	return parGlobalRandSeedPool.Get().(*Rand)
+}
+
+func replaceRand(r *Rand) {
+	if r != globalRand {
+		parGlobalRandSeedPool.Put(r)
+	}
+}
 
 // Seed uses the provided seed value to initialize the default Source to a
 // deterministic state. If Seed is not called, the generator behaves as
@@ -293,59 +342,123 @@ func Seed(seed int64) { globalRand.Seed(seed) }
 
 // Int63 returns a non-negative pseudo-random 63-bit integer as an int64
 // from the default Source.
-func Int63() int64 { return globalRand.Int63() }
+func Int63() int64 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Int63()
+	return val
+}
 
 // Uint32 returns a pseudo-random 32-bit value as a uint32
 // from the default Source.
-func Uint32() uint32 { return globalRand.Uint32() }
+func Uint32() uint32 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Uint32()
+	return val
+}
 
 // Uint64 returns a pseudo-random 64-bit value as a uint64
 // from the default Source.
-func Uint64() uint64 { return globalRand.Uint64() }
+func Uint64() uint64 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Uint64()
+	return val
+}
 
 // Int31 returns a non-negative pseudo-random 31-bit integer as an int32
 // from the default Source.
-func Int31() int32 { return globalRand.Int31() }
+func Int31() int32 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Int31()
+	return val
+}
 
 // Int returns a non-negative pseudo-random int from the default Source.
-func Int() int { return globalRand.Int() }
+func Int() int {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Int()
+	return val
+}
 
 // Int63n returns, as an int64, a non-negative pseudo-random number in [0,n)
 // from the default Source.
 // It panics if n <= 0.
-func Int63n(n int64) int64 { return globalRand.Int63n(n) }
+func Int63n(n int64) int64 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Int63n(n)
+	return val
+}
 
 // Int31n returns, as an int32, a non-negative pseudo-random number in [0,n)
 // from the default Source.
 // It panics if n <= 0.
-func Int31n(n int32) int32 { return globalRand.Int31n(n) }
+func Int31n(n int32) int32 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Int31n(n)
+	return val
+}
 
 // Intn returns, as an int, a non-negative pseudo-random number in [0,n)
 // from the default Source.
 // It panics if n <= 0.
-func Intn(n int) int { return globalRand.Intn(n) }
+func Intn(n int) int {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Intn(n)
+	return val
+}
 
 // Float64 returns, as a float64, a pseudo-random number in [0.0,1.0)
 // from the default Source.
-func Float64() float64 { return globalRand.Float64() }
+func Float64() float64 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Float64()
+	return val
+}
 
 // Float32 returns, as a float32, a pseudo-random number in [0.0,1.0)
 // from the default Source.
-func Float32() float32 { return globalRand.Float32() }
+func Float32() float32 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Float32()
+	return val
+}
 
 // Perm returns, as a slice of n ints, a pseudo-random permutation of the integers [0,n)
 // from the default Source.
-func Perm(n int) []int { return globalRand.Perm(n) }
+func Perm(n int) []int {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.Perm(n)
+	return val
+}
 
 // Shuffle pseudo-randomizes the order of elements using the default Source.
 // n is the number of elements. Shuffle panics if n < 0.
 // swap swaps the elements with indexes i and j.
-func Shuffle(n int, swap func(i, j int)) { globalRand.Shuffle(n, swap) }
+func Shuffle(n int, swap func(i, j int)) {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	r.Shuffle(n, swap)
+}
 
 // Read generates len(p) random bytes from the default Source and
 // writes them into p. It always returns len(p) and a nil error.
 // Read, unlike the Rand.Read method, is safe for concurrent use.
-func Read(p []byte) (n int, err error) { return globalRand.Read(p) }
+func Read(p []byte) (n int, err error) {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	n, err = r.Read(p)
+	return n, err
+}
 
 // NormFloat64 returns a normally distributed float64 in the range
 // [-math.MaxFloat64, +math.MaxFloat64] with
@@ -356,7 +469,12 @@ func Read(p []byte) (n int, err error) { return globalRand.Read(p) }
 //
 //  sample = NormFloat64() * desiredStdDev + desiredMean
 //
-func NormFloat64() float64 { return globalRand.NormFloat64() }
+func NormFloat64() float64 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.NormFloat64()
+	return val
+}
 
 // ExpFloat64 returns an exponentially distributed float64 in the range
 // (0, +math.MaxFloat64] with an exponential distribution whose rate parameter
@@ -366,7 +484,12 @@ func NormFloat64() float64 { return globalRand.NormFloat64() }
 //
 //  sample = ExpFloat64() / desiredRateParameter
 //
-func ExpFloat64() float64 { return globalRand.ExpFloat64() }
+func ExpFloat64() float64 {
+	r := getGlobalRand()
+	defer replaceRand(r)
+	val := r.ExpFloat64()
+	return val
+}
 
 type lockedSource struct {
 	lk  sync.Mutex
