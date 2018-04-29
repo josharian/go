@@ -1092,27 +1092,21 @@ func scanblock(b0, n0 uintptr, ptrmask *uint8, gcw *gcWork) {
 	// due to one of the throws below shows the original block
 	// base and extent.
 	b := b0
-	n := n0
+	n := n0 / sys.PtrSize
 
-	for i := uintptr(0); i < n; {
-		// Find bits for the next word.
-		bits := uint32(*addb(ptrmask, i/(sys.PtrSize*8)))
-		if bits == 0 {
-			i += sys.PtrSize * 8
-			continue
-		}
-		for j := 0; j < 8 && i < n; j++ {
-			if bits&1 != 0 {
-				// Same work as in scanobject; see comments there.
-				obj := *(*uintptr)(unsafe.Pointer(b + i))
-				if obj != 0 {
-					if obj, span, objIndex := findObject(obj, b, i); obj != 0 {
-						greyobject(obj, b, i, span, gcw, objIndex)
-					}
-				}
+	for i := uintptr(0); i < n; i += 8 {
+		// Iterate over set bits for the next word.
+		for bits := *addb(ptrmask, i/8); bits != 0; bits &= bits - 1 {
+			j := uintptr(sys.Ctz8(bits))
+			// Same work as in scanobject; see comments there.
+			off := (i + j) * sys.PtrSize
+			obj := *(*uintptr)(unsafe.Pointer(b + off))
+			if obj == 0 {
+				continue
 			}
-			bits >>= 1
-			i += sys.PtrSize
+			if obj, span, objIndex := findObject(obj, b, off); obj != 0 {
+				greyobject(obj, b, off, span, gcw, objIndex)
+			}
 		}
 	}
 }
