@@ -2017,12 +2017,12 @@ func getgcmask(ep interface{}) (mask []byte) {
 				return
 			}
 			bv := stackmapdata(stkmap, pcdata)
-			size := uintptr(bv.n) * sys.PtrSize
-			n := (*ptrtype)(unsafe.Pointer(t)).elem.size
-			mask = make([]byte, n/sys.PtrSize)
-			for i := uintptr(0); i < n; i += sys.PtrSize {
-				off := (uintptr(p) + i - frame.varp + size) / sys.PtrSize
-				mask[i/sys.PtrSize] = bv.ptrbit(off)
+			n := (*ptrtype)(unsafe.Pointer(t)).elem.size / sys.PtrSize
+			mask = make([]byte, n)
+			off := uintptr(bv.n) + (uintptr(p)-frame.varp)/sys.PtrSize
+			for i := range mask {
+				off++
+				mask[i] = bv.ptrbit(off)
 			}
 		}
 		return
