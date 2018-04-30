@@ -5,24 +5,27 @@
 package gc
 
 const (
-	wordBits  = 32
+
+	// uintSize = 32 << (^uint(0) >> 32 & 1) // 32 or 64
+
+	wordBits  = 64
 	wordMask  = wordBits - 1
-	wordShift = 5
+	wordShift = 6
 )
 
 // A bvec is a bit vector.
 type bvec struct {
-	n int32    // number of bits in vector
-	b []uint32 // words holding bits
+	n int32  // number of bits in vector
+	b []uint // words holding bits
 }
 
 func bvalloc(n int32) bvec {
 	nword := (n + wordBits - 1) / wordBits
-	return bvec{n, make([]uint32, nword)}
+	return bvec{n, make([]uint, nword)}
 }
 
 type bulkBvec struct {
-	words []uint32
+	words []uint
 	nbit  int32
 	nword int32
 }
@@ -30,11 +33,11 @@ type bulkBvec struct {
 func bvbulkalloc(nbit int32, count int32) bulkBvec {
 	nword := (nbit + wordBits - 1) / wordBits
 	size := int64(nword) * int64(count)
-	if int64(int32(size*4)) != size*4 {
-		Fatalf("bvbulkalloc too big: nbit=%d count=%d nword=%d size=%d", nbit, count, nword, size)
-	}
+	// if int64(int32(size*4)) != size*4 {
+	// 	Fatalf("bvbulkalloc too big: nbit=%d count=%d nword=%d size=%d", nbit, count, nword, size)
+	// }
 	return bulkBvec{
-		words: make([]uint32, size),
+		words: make([]uint, size),
 		nbit:  nbit,
 		nword: nword,
 	}
@@ -66,7 +69,7 @@ func (bv bvec) Get(i int32) bool {
 	if i < 0 || i >= bv.n {
 		Fatalf("bvget: index %d is out of bounds with length %d\n", i, bv.n)
 	}
-	mask := uint32(1 << uint(i%wordBits))
+	mask := uint(1 << uint(i%wordBits))
 	return bv.b[i>>wordShift]&mask != 0
 }
 
@@ -74,7 +77,7 @@ func (bv bvec) Set(i int32) {
 	if i < 0 || i >= bv.n {
 		Fatalf("bvset: index %d is out of bounds with length %d\n", i, bv.n)
 	}
-	mask := uint32(1 << uint(i%wordBits))
+	mask := uint(1 << uint(i%wordBits))
 	bv.b[i/wordBits] |= mask
 }
 
@@ -82,7 +85,7 @@ func (bv bvec) Unset(i int32) {
 	if i < 0 || i >= bv.n {
 		Fatalf("bvunset: index %d is out of bounds with length %d\n", i, bv.n)
 	}
-	mask := uint32(1 << uint(i%wordBits))
+	mask := uint(1 << uint(i%wordBits))
 	bv.b[i/wordBits] &^= mask
 }
 

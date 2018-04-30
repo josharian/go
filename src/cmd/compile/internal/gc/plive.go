@@ -938,7 +938,7 @@ const (
 	Hp = 16777619
 )
 
-func hashbitmap(h uint32, bv bvec) uint32 {
+func hashbitmap(h uint, bv bvec) uint {
 	n := int((bv.n + 31) / 32)
 	for i := 0; i < n; i++ {
 		w := bv.b[i]
@@ -990,7 +990,7 @@ func (lv *Liveness) compact() {
 	// If already seen, record earlier index in remap.
 Outer:
 	for i, live := range lv.livevars {
-		h := hashbitmap(H0, live) % uint32(tablesize)
+		h := hashbitmap(H0, live) % uint(tablesize)
 
 		for {
 			j := table[h]
@@ -1004,7 +1004,7 @@ Outer:
 			}
 
 			h++
-			if h == uint32(tablesize) {
+			if h == uint(tablesize) {
 				h = 0
 			}
 		}
