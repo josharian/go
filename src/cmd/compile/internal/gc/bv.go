@@ -150,6 +150,10 @@ func (dst bvec) And(src1, src2 bvec) {
 
 // difference
 func (dst bvec) AndNot(src1, src2 bvec) {
+	if len(src1.b) == 0 {
+		return
+	}
+	_, _ = dst.b[len(src1.b)-1], src2.b[len(src1.b)-1] // hoist bounds checks out of the loop
 	for i, x := range src1.b {
 		dst.b[i] = x &^ src2.b[i]
 	}
