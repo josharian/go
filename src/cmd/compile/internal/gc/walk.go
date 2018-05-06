@@ -624,7 +624,7 @@ opswitch:
 		}
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
-		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), 0, init)
+		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
 		n.List.Set(reorder1(ll))
 
 	case OCALLFUNC:
@@ -657,7 +657,7 @@ opswitch:
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
 
-		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), 0, init)
+		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
 		n.List.Set(reorder1(ll))
 
 	case OCALLMETH:
@@ -667,8 +667,8 @@ opswitch:
 		}
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
-		ll := ascompatte(n, false, t.Recvs(), []*Node{n.Left.Left}, 0, init)
-		lr := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), 0, init)
+		ll := ascompatte(n, false, t.Recvs(), []*Node{n.Left.Left}, init)
+		lr := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
 		ll = append(ll, lr...)
 		n.Left.Left = nil
 		updateHasCall(n.Left)
@@ -1874,7 +1874,7 @@ func ascompatet(nl Nodes, nr *types.Type) []*Node {
 			l = tmp
 		}
 
-		a := nod(OAS, l, nodarg(r, 0))
+		a := nod(OAS, l, nodarg(r))
 		a = convas(a, &nn)
 		updateHasCall(a)
 		if a.HasCall() {
@@ -1891,21 +1891,12 @@ func ascompatet(nl Nodes, nr *types.Type) []*Node {
 // which is either the entire function argument or result struct (t is a  struct *types.Type)
 // or a specific argument (t is a *types.Field within a struct *types.Type).
 //
-// If fp is 0, the node is for use by a caller invoking the given
+// The node is for use by a caller invoking the given
 // function, preparing the arguments before the call
 // or retrieving the results after the call.
 // In this case, the node will correspond to an outgoing argument
 // slot like 8(SP).
-//
-// If fp is 1, the node is for use by the function itself
-// (the callee), to retrieve its arguments or write its results.
-// In this case the node will be an ONAME with an appropriate
-// type and offset.
-func nodarg(t interface{}, fp int) *Node {
-	if fp != 0 {
-		Fatalf("bad fp: %v", fp)
-	}
-
+func nodarg(t interface{}) *Node {
 	var n *Node
 
 	switch t := t.(type) {
@@ -1982,12 +1973,12 @@ func mkdotargslice(typ *types.Type, args []*Node, init *Nodes, ddd *Node) *Node 
 // a type list. called in
 //	return expr-list
 //	func(expr-list)
-func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, fp int, init *Nodes) []*Node {
+func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Nodes) []*Node {
 	// f(g()) where g has multiple return values
 	if len(rhs) == 1 && rhs[0].Type.IsFuncArgStruct() {
 		// optimization - can do block copy
 		if eqtypenoname(rhs[0].Type, lhs) {
-			nl := nodarg(lhs, fp)
+			nl := nodarg(lhs)
 			nr := nod(OCONVNOP, rhs[0], nil)
 			nr.Type = nl.Type
 			n := convas(nod(OAS, nl, nr), init)
@@ -2025,7 +2016,7 @@ func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, fp int, in
 			nr = rhs[i]
 		}
 
-		a := nod(OAS, nodarg(nl, fp), nr)
+		a := nod(OAS, nodarg(nl), nr)
 		a = convas(a, init)
 		a.SetTypecheck(1)
 		nn = append(nn, a)
