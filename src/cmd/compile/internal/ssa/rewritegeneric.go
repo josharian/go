@@ -98,17 +98,17 @@ func rewriteValuegeneric(v *Value) bool {
 	case OpDiv8u:
 		return rewriteValuegeneric_OpDiv8u_0(v)
 	case OpEq16:
-		return rewriteValuegeneric_OpEq16_0(v)
+		return rewriteValuegeneric_OpEq16_0(v) || rewriteValuegeneric_OpEq16_10(v)
 	case OpEq32:
-		return rewriteValuegeneric_OpEq32_0(v)
+		return rewriteValuegeneric_OpEq32_0(v) || rewriteValuegeneric_OpEq32_10(v)
 	case OpEq32F:
 		return rewriteValuegeneric_OpEq32F_0(v)
 	case OpEq64:
-		return rewriteValuegeneric_OpEq64_0(v)
+		return rewriteValuegeneric_OpEq64_0(v) || rewriteValuegeneric_OpEq64_10(v)
 	case OpEq64F:
 		return rewriteValuegeneric_OpEq64F_0(v)
 	case OpEq8:
-		return rewriteValuegeneric_OpEq8_0(v)
+		return rewriteValuegeneric_OpEq8_0(v) || rewriteValuegeneric_OpEq8_10(v)
 	case OpEqB:
 		return rewriteValuegeneric_OpEqB_0(v)
 	case OpEqInter:
@@ -9451,6 +9451,251 @@ func rewriteValuegeneric_OpEq16_0(v *Value) bool {
 		v.AuxInt = b2i(c == d)
 		return true
 	}
+	// match: (Eq16 z:(Const16 [0]) (Sub16 x (Mul16 <t> d:(Div16 x (Const16 [c])) (Const16 <t> [c]))))
+	// cond: d.Uses == 1
+	// result: (Eq16 z (Mod16u <t.ToUnsigned()> x (Const16 <t> [c])))
+	for {
+		_ = v.Args[1]
+		z := v.Args[0]
+		if z.Op != OpConst16 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpSub16 {
+			break
+		}
+		_ = v_1.Args[1]
+		x := v_1.Args[0]
+		v_1_1 := v_1.Args[1]
+		if v_1_1.Op != OpMul16 {
+			break
+		}
+		t := v_1_1.Type
+		_ = v_1_1.Args[1]
+		d := v_1_1.Args[0]
+		if d.Op != OpDiv16 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst16 {
+			break
+		}
+		c := d_1.AuxInt
+		v_1_1_1 := v_1_1.Args[1]
+		if v_1_1_1.Op != OpConst16 {
+			break
+		}
+		if v_1_1_1.Type != t {
+			break
+		}
+		if v_1_1_1.AuxInt != c {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq16)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod16u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst16, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Eq16 z:(Const16 [0]) (Sub16 x (Mul16 <t> (Const16 <t> [c]) d:(Div16 x (Const16 [c])))))
+	// cond: d.Uses == 1
+	// result: (Eq16 z (Mod16u <t.ToUnsigned()> x (Const16 <t> [c])))
+	for {
+		_ = v.Args[1]
+		z := v.Args[0]
+		if z.Op != OpConst16 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpSub16 {
+			break
+		}
+		_ = v_1.Args[1]
+		x := v_1.Args[0]
+		v_1_1 := v_1.Args[1]
+		if v_1_1.Op != OpMul16 {
+			break
+		}
+		t := v_1_1.Type
+		_ = v_1_1.Args[1]
+		v_1_1_0 := v_1_1.Args[0]
+		if v_1_1_0.Op != OpConst16 {
+			break
+		}
+		if v_1_1_0.Type != t {
+			break
+		}
+		c := v_1_1_0.AuxInt
+		d := v_1_1.Args[1]
+		if d.Op != OpDiv16 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst16 {
+			break
+		}
+		if d_1.AuxInt != c {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq16)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod16u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst16, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Eq16 (Sub16 x (Mul16 <t> d:(Div16 x (Const16 [c])) (Const16 <t> [c]))) z:(Const16 [0]))
+	// cond: d.Uses == 1
+	// result: (Eq16 z (Mod16u <t.ToUnsigned()> x (Const16 <t> [c])))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpSub16 {
+			break
+		}
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpMul16 {
+			break
+		}
+		t := v_0_1.Type
+		_ = v_0_1.Args[1]
+		d := v_0_1.Args[0]
+		if d.Op != OpDiv16 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst16 {
+			break
+		}
+		c := d_1.AuxInt
+		v_0_1_1 := v_0_1.Args[1]
+		if v_0_1_1.Op != OpConst16 {
+			break
+		}
+		if v_0_1_1.Type != t {
+			break
+		}
+		if v_0_1_1.AuxInt != c {
+			break
+		}
+		z := v.Args[1]
+		if z.Op != OpConst16 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq16)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod16u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst16, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	return false
+}
+func rewriteValuegeneric_OpEq16_10(v *Value) bool {
+	b := v.Block
+	_ = b
+	// match: (Eq16 (Sub16 x (Mul16 <t> (Const16 <t> [c]) d:(Div16 x (Const16 [c])))) z:(Const16 [0]))
+	// cond: d.Uses == 1
+	// result: (Eq16 z (Mod16u <t.ToUnsigned()> x (Const16 <t> [c])))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpSub16 {
+			break
+		}
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpMul16 {
+			break
+		}
+		t := v_0_1.Type
+		_ = v_0_1.Args[1]
+		v_0_1_0 := v_0_1.Args[0]
+		if v_0_1_0.Op != OpConst16 {
+			break
+		}
+		if v_0_1_0.Type != t {
+			break
+		}
+		c := v_0_1_0.AuxInt
+		d := v_0_1.Args[1]
+		if d.Op != OpDiv16 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst16 {
+			break
+		}
+		if d_1.AuxInt != c {
+			break
+		}
+		z := v.Args[1]
+		if z.Op != OpConst16 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq16)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod16u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst16, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
 	// match: (Eq16 s:(Sub16 x y) (Const16 [0]))
 	// cond: s.Uses == 1
 	// result: (Eq16 x y)
@@ -9687,6 +9932,251 @@ func rewriteValuegeneric_OpEq32_0(v *Value) bool {
 		c := v_1.AuxInt
 		v.reset(OpConstBool)
 		v.AuxInt = b2i(c == d)
+		return true
+	}
+	// match: (Eq32 z:(Const32 [0]) (Sub32 x (Mul32 <t> d:(Div32 x (Const32 [c])) (Const32 <t> [c]))))
+	// cond: d.Uses == 1
+	// result: (Eq32 z (Mod32u <t.ToUnsigned()> x (Const32 <t> [c])))
+	for {
+		_ = v.Args[1]
+		z := v.Args[0]
+		if z.Op != OpConst32 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpSub32 {
+			break
+		}
+		_ = v_1.Args[1]
+		x := v_1.Args[0]
+		v_1_1 := v_1.Args[1]
+		if v_1_1.Op != OpMul32 {
+			break
+		}
+		t := v_1_1.Type
+		_ = v_1_1.Args[1]
+		d := v_1_1.Args[0]
+		if d.Op != OpDiv32 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst32 {
+			break
+		}
+		c := d_1.AuxInt
+		v_1_1_1 := v_1_1.Args[1]
+		if v_1_1_1.Op != OpConst32 {
+			break
+		}
+		if v_1_1_1.Type != t {
+			break
+		}
+		if v_1_1_1.AuxInt != c {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq32)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod32u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst32, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Eq32 z:(Const32 [0]) (Sub32 x (Mul32 <t> (Const32 <t> [c]) d:(Div32 x (Const32 [c])))))
+	// cond: d.Uses == 1
+	// result: (Eq32 z (Mod32u <t.ToUnsigned()> x (Const32 <t> [c])))
+	for {
+		_ = v.Args[1]
+		z := v.Args[0]
+		if z.Op != OpConst32 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpSub32 {
+			break
+		}
+		_ = v_1.Args[1]
+		x := v_1.Args[0]
+		v_1_1 := v_1.Args[1]
+		if v_1_1.Op != OpMul32 {
+			break
+		}
+		t := v_1_1.Type
+		_ = v_1_1.Args[1]
+		v_1_1_0 := v_1_1.Args[0]
+		if v_1_1_0.Op != OpConst32 {
+			break
+		}
+		if v_1_1_0.Type != t {
+			break
+		}
+		c := v_1_1_0.AuxInt
+		d := v_1_1.Args[1]
+		if d.Op != OpDiv32 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst32 {
+			break
+		}
+		if d_1.AuxInt != c {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq32)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod32u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst32, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Eq32 (Sub32 x (Mul32 <t> d:(Div32 x (Const32 [c])) (Const32 <t> [c]))) z:(Const32 [0]))
+	// cond: d.Uses == 1
+	// result: (Eq32 z (Mod32u <t.ToUnsigned()> x (Const32 <t> [c])))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpSub32 {
+			break
+		}
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpMul32 {
+			break
+		}
+		t := v_0_1.Type
+		_ = v_0_1.Args[1]
+		d := v_0_1.Args[0]
+		if d.Op != OpDiv32 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst32 {
+			break
+		}
+		c := d_1.AuxInt
+		v_0_1_1 := v_0_1.Args[1]
+		if v_0_1_1.Op != OpConst32 {
+			break
+		}
+		if v_0_1_1.Type != t {
+			break
+		}
+		if v_0_1_1.AuxInt != c {
+			break
+		}
+		z := v.Args[1]
+		if z.Op != OpConst32 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq32)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod32u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst32, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	return false
+}
+func rewriteValuegeneric_OpEq32_10(v *Value) bool {
+	b := v.Block
+	_ = b
+	// match: (Eq32 (Sub32 x (Mul32 <t> (Const32 <t> [c]) d:(Div32 x (Const32 [c])))) z:(Const32 [0]))
+	// cond: d.Uses == 1
+	// result: (Eq32 z (Mod32u <t.ToUnsigned()> x (Const32 <t> [c])))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpSub32 {
+			break
+		}
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpMul32 {
+			break
+		}
+		t := v_0_1.Type
+		_ = v_0_1.Args[1]
+		v_0_1_0 := v_0_1.Args[0]
+		if v_0_1_0.Op != OpConst32 {
+			break
+		}
+		if v_0_1_0.Type != t {
+			break
+		}
+		c := v_0_1_0.AuxInt
+		d := v_0_1.Args[1]
+		if d.Op != OpDiv32 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst32 {
+			break
+		}
+		if d_1.AuxInt != c {
+			break
+		}
+		z := v.Args[1]
+		if z.Op != OpConst32 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq32)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod32u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst32, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
 		return true
 	}
 	// match: (Eq32 s:(Sub32 x y) (Const32 [0]))
@@ -9968,6 +10458,251 @@ func rewriteValuegeneric_OpEq64_0(v *Value) bool {
 		v.AuxInt = b2i(c == d)
 		return true
 	}
+	// match: (Eq64 z:(Const64 [0]) (Sub64 x (Mul64 <t> d:(Div64 x (Const64 [c])) (Const64 <t> [c]))))
+	// cond: d.Uses == 1
+	// result: (Eq64 z (Mod64u <t.ToUnsigned()> x (Const64 <t> [c])))
+	for {
+		_ = v.Args[1]
+		z := v.Args[0]
+		if z.Op != OpConst64 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpSub64 {
+			break
+		}
+		_ = v_1.Args[1]
+		x := v_1.Args[0]
+		v_1_1 := v_1.Args[1]
+		if v_1_1.Op != OpMul64 {
+			break
+		}
+		t := v_1_1.Type
+		_ = v_1_1.Args[1]
+		d := v_1_1.Args[0]
+		if d.Op != OpDiv64 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst64 {
+			break
+		}
+		c := d_1.AuxInt
+		v_1_1_1 := v_1_1.Args[1]
+		if v_1_1_1.Op != OpConst64 {
+			break
+		}
+		if v_1_1_1.Type != t {
+			break
+		}
+		if v_1_1_1.AuxInt != c {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq64)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod64u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst64, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Eq64 z:(Const64 [0]) (Sub64 x (Mul64 <t> (Const64 <t> [c]) d:(Div64 x (Const64 [c])))))
+	// cond: d.Uses == 1
+	// result: (Eq64 z (Mod64u <t.ToUnsigned()> x (Const64 <t> [c])))
+	for {
+		_ = v.Args[1]
+		z := v.Args[0]
+		if z.Op != OpConst64 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpSub64 {
+			break
+		}
+		_ = v_1.Args[1]
+		x := v_1.Args[0]
+		v_1_1 := v_1.Args[1]
+		if v_1_1.Op != OpMul64 {
+			break
+		}
+		t := v_1_1.Type
+		_ = v_1_1.Args[1]
+		v_1_1_0 := v_1_1.Args[0]
+		if v_1_1_0.Op != OpConst64 {
+			break
+		}
+		if v_1_1_0.Type != t {
+			break
+		}
+		c := v_1_1_0.AuxInt
+		d := v_1_1.Args[1]
+		if d.Op != OpDiv64 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst64 {
+			break
+		}
+		if d_1.AuxInt != c {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq64)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod64u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst64, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Eq64 (Sub64 x (Mul64 <t> d:(Div64 x (Const64 [c])) (Const64 <t> [c]))) z:(Const64 [0]))
+	// cond: d.Uses == 1
+	// result: (Eq64 z (Mod64u <t.ToUnsigned()> x (Const64 <t> [c])))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpSub64 {
+			break
+		}
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpMul64 {
+			break
+		}
+		t := v_0_1.Type
+		_ = v_0_1.Args[1]
+		d := v_0_1.Args[0]
+		if d.Op != OpDiv64 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst64 {
+			break
+		}
+		c := d_1.AuxInt
+		v_0_1_1 := v_0_1.Args[1]
+		if v_0_1_1.Op != OpConst64 {
+			break
+		}
+		if v_0_1_1.Type != t {
+			break
+		}
+		if v_0_1_1.AuxInt != c {
+			break
+		}
+		z := v.Args[1]
+		if z.Op != OpConst64 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq64)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod64u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst64, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	return false
+}
+func rewriteValuegeneric_OpEq64_10(v *Value) bool {
+	b := v.Block
+	_ = b
+	// match: (Eq64 (Sub64 x (Mul64 <t> (Const64 <t> [c]) d:(Div64 x (Const64 [c])))) z:(Const64 [0]))
+	// cond: d.Uses == 1
+	// result: (Eq64 z (Mod64u <t.ToUnsigned()> x (Const64 <t> [c])))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpSub64 {
+			break
+		}
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpMul64 {
+			break
+		}
+		t := v_0_1.Type
+		_ = v_0_1.Args[1]
+		v_0_1_0 := v_0_1.Args[0]
+		if v_0_1_0.Op != OpConst64 {
+			break
+		}
+		if v_0_1_0.Type != t {
+			break
+		}
+		c := v_0_1_0.AuxInt
+		d := v_0_1.Args[1]
+		if d.Op != OpDiv64 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst64 {
+			break
+		}
+		if d_1.AuxInt != c {
+			break
+		}
+		z := v.Args[1]
+		if z.Op != OpConst64 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq64)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod64u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst64, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
 	// match: (Eq64 s:(Sub64 x y) (Const64 [0]))
 	// cond: s.Uses == 1
 	// result: (Eq64 x y)
@@ -10245,6 +10980,251 @@ func rewriteValuegeneric_OpEq8_0(v *Value) bool {
 		c := v_1.AuxInt
 		v.reset(OpConstBool)
 		v.AuxInt = b2i(c == d)
+		return true
+	}
+	// match: (Eq8 z:(Const8 [0]) (Sub8 x (Mul8 <t> d:(Div8 x (Const8 [c])) (Const8 <t> [c]))))
+	// cond: d.Uses == 1
+	// result: (Eq8 z (Mod8u <t.ToUnsigned()> x (Const8 <t> [c])))
+	for {
+		_ = v.Args[1]
+		z := v.Args[0]
+		if z.Op != OpConst8 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpSub8 {
+			break
+		}
+		_ = v_1.Args[1]
+		x := v_1.Args[0]
+		v_1_1 := v_1.Args[1]
+		if v_1_1.Op != OpMul8 {
+			break
+		}
+		t := v_1_1.Type
+		_ = v_1_1.Args[1]
+		d := v_1_1.Args[0]
+		if d.Op != OpDiv8 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst8 {
+			break
+		}
+		c := d_1.AuxInt
+		v_1_1_1 := v_1_1.Args[1]
+		if v_1_1_1.Op != OpConst8 {
+			break
+		}
+		if v_1_1_1.Type != t {
+			break
+		}
+		if v_1_1_1.AuxInt != c {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq8)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod8u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst8, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Eq8 z:(Const8 [0]) (Sub8 x (Mul8 <t> (Const8 <t> [c]) d:(Div8 x (Const8 [c])))))
+	// cond: d.Uses == 1
+	// result: (Eq8 z (Mod8u <t.ToUnsigned()> x (Const8 <t> [c])))
+	for {
+		_ = v.Args[1]
+		z := v.Args[0]
+		if z.Op != OpConst8 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		v_1 := v.Args[1]
+		if v_1.Op != OpSub8 {
+			break
+		}
+		_ = v_1.Args[1]
+		x := v_1.Args[0]
+		v_1_1 := v_1.Args[1]
+		if v_1_1.Op != OpMul8 {
+			break
+		}
+		t := v_1_1.Type
+		_ = v_1_1.Args[1]
+		v_1_1_0 := v_1_1.Args[0]
+		if v_1_1_0.Op != OpConst8 {
+			break
+		}
+		if v_1_1_0.Type != t {
+			break
+		}
+		c := v_1_1_0.AuxInt
+		d := v_1_1.Args[1]
+		if d.Op != OpDiv8 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst8 {
+			break
+		}
+		if d_1.AuxInt != c {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq8)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod8u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst8, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Eq8 (Sub8 x (Mul8 <t> d:(Div8 x (Const8 [c])) (Const8 <t> [c]))) z:(Const8 [0]))
+	// cond: d.Uses == 1
+	// result: (Eq8 z (Mod8u <t.ToUnsigned()> x (Const8 <t> [c])))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpSub8 {
+			break
+		}
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpMul8 {
+			break
+		}
+		t := v_0_1.Type
+		_ = v_0_1.Args[1]
+		d := v_0_1.Args[0]
+		if d.Op != OpDiv8 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst8 {
+			break
+		}
+		c := d_1.AuxInt
+		v_0_1_1 := v_0_1.Args[1]
+		if v_0_1_1.Op != OpConst8 {
+			break
+		}
+		if v_0_1_1.Type != t {
+			break
+		}
+		if v_0_1_1.AuxInt != c {
+			break
+		}
+		z := v.Args[1]
+		if z.Op != OpConst8 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq8)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod8u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst8, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	return false
+}
+func rewriteValuegeneric_OpEq8_10(v *Value) bool {
+	b := v.Block
+	_ = b
+	// match: (Eq8 (Sub8 x (Mul8 <t> (Const8 <t> [c]) d:(Div8 x (Const8 [c])))) z:(Const8 [0]))
+	// cond: d.Uses == 1
+	// result: (Eq8 z (Mod8u <t.ToUnsigned()> x (Const8 <t> [c])))
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpSub8 {
+			break
+		}
+		_ = v_0.Args[1]
+		x := v_0.Args[0]
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpMul8 {
+			break
+		}
+		t := v_0_1.Type
+		_ = v_0_1.Args[1]
+		v_0_1_0 := v_0_1.Args[0]
+		if v_0_1_0.Op != OpConst8 {
+			break
+		}
+		if v_0_1_0.Type != t {
+			break
+		}
+		c := v_0_1_0.AuxInt
+		d := v_0_1.Args[1]
+		if d.Op != OpDiv8 {
+			break
+		}
+		_ = d.Args[1]
+		if x != d.Args[0] {
+			break
+		}
+		d_1 := d.Args[1]
+		if d_1.Op != OpConst8 {
+			break
+		}
+		if d_1.AuxInt != c {
+			break
+		}
+		z := v.Args[1]
+		if z.Op != OpConst8 {
+			break
+		}
+		if z.AuxInt != 0 {
+			break
+		}
+		if !(d.Uses == 1) {
+			break
+		}
+		v.reset(OpEq8)
+		v.AddArg(z)
+		v0 := b.NewValue0(v.Pos, OpMod8u, t.ToUnsigned())
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpConst8, t)
+		v1.AuxInt = c
+		v0.AddArg(v1)
+		v.AddArg(v0)
 		return true
 	}
 	// match: (Eq8 s:(Sub8 x y) (Const8 [0]))
