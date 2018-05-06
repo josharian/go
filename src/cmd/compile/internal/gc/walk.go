@@ -1902,6 +1902,17 @@ func ascompatet(nl Nodes, nr *types.Type) []*Node {
 // In this case the node will be an ONAME with an appropriate
 // type and offset.
 func nodarg(t interface{}, fp int) *Node {
+	if fp == 1 {
+		expect := asNode(t.(*types.Field).Nname)
+		if expect.isParamHeapCopy() {
+			expect = expect.Name.Param.Stackcopy
+		}
+		return expect
+	}
+	if fp != 0 {
+		Fatalf("bad fp: %v", fp)
+	}
+
 	var n *Node
 
 	switch t := t.(type) {
@@ -1927,37 +1938,6 @@ func nodarg(t interface{}, fp int) *Node {
 		n.Xoffset = first.Offset
 
 	case *types.Field:
-		if fp == 1 {
-			// NOTE(rsc): This should be using t.Nname directly,
-			// except in the case where t.Nname.Sym is the blank symbol and
-			// so the assignment would be discarded during code generation.
-			// In that case we need to make a new node, and there is no harm
-			// in optimization passes to doing so. But otherwise we should
-			// definitely be using the actual declaration and not a newly built node.
-			// The extra Fatalf checks here are verifying that this is the case,
-			// without changing the actual logic (at time of writing, it's getting
-			// toward time for the Go 1.7 beta).
-			// At some quieter time (assuming we've never seen these Fatalfs happen)
-			// we could change this code to use "expect" directly.
-			expect := asNode(t.Nname)
-			if expect.isParamHeapCopy() {
-				expect = expect.Name.Param.Stackcopy
-			}
-
-			for _, n := range Curfn.Func.Dcl {
-				if (n.Class() == PPARAM || n.Class() == PPARAMOUT) && !t.Sym.IsBlank() && n.Sym == t.Sym {
-					if n != expect {
-						Fatalf("nodarg: unexpected node: %v (%p %v) vs %v (%p %v)", n, n, n.Op, asNode(t.Nname), asNode(t.Nname), asNode(t.Nname).Op)
-					}
-					return n
-				}
-			}
-
-			if !expect.Sym.IsBlank() {
-				Fatalf("nodarg: did not find node in dcl list: %v", expect)
-			}
-		}
-
 		// Build fake name for individual variable.
 		// This is safe because if there was a real declared name
 		// we'd have used it above.
@@ -1975,10 +1955,6 @@ func nodarg(t interface{}, fp int) *Node {
 	// discarded during code generation.
 	if n.isBlank() {
 		n.Sym = lookup("__")
-	}
-
-	if fp != 0 {
-		Fatalf("bad fp: %v", fp)
 	}
 
 	// preparing arguments for call
