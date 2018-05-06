@@ -2036,19 +2036,15 @@ func ascompatteRet(lhs *types.Type, rhs []*Node, init *Nodes) []*Node {
 	// then assign the remaining arguments as a slice.
 	var nn []*Node
 	for i, nl := range lhs.FieldSlice() {
-		nr := rhs[i]
-
 		nname := asNode(nl.Nname)
 		if nname.isParamHeapCopy() {
 			nname = nname.Name.Param.Stackcopy
 		}
-
-		a := nod(OAS, nname, nr)
+		a := nod(OAS, nname, rhs[i])
 		a = convas(a, init)
 		a.SetTypecheck(1)
 		nn = append(nn, a)
 	}
-
 	return nn
 }
 
@@ -2650,18 +2646,15 @@ func paramstoheap(params *types.Type) []*Node {
 // The generated code is added to Curfn's Enter list.
 func zeroResults() {
 	for _, f := range Curfn.Type.Results().Fields().Slice() {
-		if v := asNode(f.Nname); v != nil && v.Name.Param.Heapaddr != nil {
+		v := asNode(f.Nname)
+		if v != nil && v.Name.Param.Heapaddr != nil {
 			// The local which points to the return value is the
 			// thing that needs zeroing. This is already handled
 			// by a Needzero annotation in plive.go:livenessepilogue.
 			continue
 		}
 		// Zero the stack location containing f.
-		nname := asNode(f.Nname)
-		if nname.isParamHeapCopy() {
-			nname = nname.Name.Param.Stackcopy
-		}
-		Curfn.Func.Enter.Append(nodl(Curfn.Pos, OAS, nname, nil))
+		Curfn.Func.Enter.Append(nodl(Curfn.Pos, OAS, v, nil))
 	}
 }
 
