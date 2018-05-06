@@ -1950,13 +1950,6 @@ func nodarg(t interface{}, fp int) *Node {
 		n.Orig = asNode(t.Nname)
 	}
 
-	// Rewrite argument named _ to __,
-	// or else the assignment to _ will be
-	// discarded during code generation.
-	if n.isBlank() {
-		n.Sym = lookup("__")
-	}
-
 	// preparing arguments for call
 	n.Op = OINDREGSP
 	n.Xoffset += Ctxt.FixedFrameSize()
