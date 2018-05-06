@@ -127,7 +127,7 @@ func (b *Writer) addLine(flushed bool) {
 		// abandon it and make a new one.
 		if n := len(b.lines); n >= 2 {
 			if prev := len(b.lines[n-2]); prev > cap(b.lines[n-1]) {
-				b.lines[n-1] = make([]cell, 0, prev)
+				b.lines[n-1] = append([]cell(nil), make([]cell, prev)...)[:0]
 			}
 		}
 	}
