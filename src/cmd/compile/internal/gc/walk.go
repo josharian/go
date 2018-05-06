@@ -327,8 +327,20 @@ func walkstmt(n *Node) *Node {
 			break
 		}
 
-		ll := ascompatteRet(Curfn.Type.Results(), n.List.Slice(), &n.Ninit)
-		n.List.Set(ll)
+		// For each parameter (LHS), assign its corresponding argument (RHS).
+		lhs := Curfn.Type.Results()
+		rhs := n.List.Slice()
+		n.List.Set(nil)
+		for i, nl := range lhs.FieldSlice() {
+			nname := asNode(nl.Nname)
+			if nname.isParamHeapCopy() {
+				nname = nname.Name.Param.Stackcopy
+			}
+			a := nod(OAS, nname, rhs[i])
+			a = convas(a, &n.Ninit)
+			a.SetTypecheck(1)
+			n.List.Append(a)
+		}
 
 	case ORETJMP:
 		break
@@ -2022,29 +2034,6 @@ func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Node
 		nn = append(nn, a)
 	}
 
-	return nn
-}
-
-// check assign expression list to
-// a type list. called in
-//	return expr-list
-//	func(expr-list)
-func ascompatteRet(lhs *types.Type, rhs []*Node, init *Nodes) []*Node {
-	// For each parameter (LHS), assign its corresponding argument (RHS).
-	// If there's a ... parameter (which is only valid as the final
-	// parameter) and this is not a ... call expression,
-	// then assign the remaining arguments as a slice.
-	var nn []*Node
-	for i, nl := range lhs.FieldSlice() {
-		nname := asNode(nl.Nname)
-		if nname.isParamHeapCopy() {
-			nname = nname.Name.Param.Stackcopy
-		}
-		a := nod(OAS, nname, rhs[i])
-		a = convas(a, init)
-		a.SetTypecheck(1)
-		nn = append(nn, a)
-	}
 	return nn
 }
 
