@@ -35,34 +35,6 @@ func TestRoundDown10(t *testing.T) {
 	}
 }
 
-var roundUpTests = []struct {
-	v, expected int
-}{
-	{0, 1},
-	{1, 1},
-	{2, 2},
-	{3, 3},
-	{5, 5},
-	{9, 10},
-	{999, 1000},
-	{1000, 1000},
-	{1400, 2000},
-	{1700, 2000},
-	{2700, 3000},
-	{4999, 5000},
-	{5000, 5000},
-	{5001, 10000},
-}
-
-func TestRoundUp(t *testing.T) {
-	for _, tt := range roundUpTests {
-		actual := testing.RoundUp(tt.v)
-		if tt.expected != actual {
-			t.Errorf("roundUp(%d): expected %d, actual %d", tt.v, tt.expected, actual)
-		}
-	}
-}
-
 func TestRunParallel(t *testing.T) {
 	testing.Benchmark(func(b *testing.B) {
 		procs := uint32(0)

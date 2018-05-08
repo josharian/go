@@ -119,11 +119,11 @@ func (b *B) ReportAllocs() {
 	b.showAllocResult = true
 }
 
-func (b *B) nsPerOp() int64 {
+func (b *B) nsPerOp() float64 {
 	if b.N <= 0 {
-		return 0
+		panic("non-positive b.N")
 	}
-	return b.duration.Nanoseconds() / int64(b.N)
+	return float64(b.duration.Nanoseconds()) / float64(b.N)
 }
 
 // runN runs a single benchmark for the specified number of iterations.
@@ -176,23 +176,6 @@ func roundDown10(n int) int {
 		result *= 10
 	}
 	return result
-}
-
-// roundUp rounds x up to a number of the form [1eX, 2eX, 3eX, 5eX].
-func roundUp(n int) int {
-	base := roundDown10(n)
-	switch {
-	case n <= base:
-		return base
-	case n <= (2 * base):
-		return 2 * base
-	case n <= (3 * base):
-		return 3 * base
-	case n <= (5 * base):
-		return 5 * base
-	default:
-		return 10 * base
-	}
 }
 
 // run1 runs the first iteration of benchFunc. It returns whether more
@@ -279,14 +262,12 @@ func (b *B) launch() {
 		// Predict required iterations.
 		n = int(d.Nanoseconds())
 		if nsop := b.nsPerOp(); nsop != 0 {
-			n /= int(nsop)
+			n = int(float64(n) / nsop)
 		}
 		// Run more iterations than we think we'll need (1.2x).
 		// Don't grow too fast in case we had timing errors previously.
 		// Be sure to run at least one more than last time.
 		n = max(min(n+n/5, 100*last), last+1)
-		// Round up to something easy to read.
-		n = roundUp(n)
 		b.runN(n)
 	}
 	b.result = BenchmarkResult{b.N, b.duration, b.bytes, b.netAllocs, b.netBytes}
