@@ -1905,43 +1905,17 @@ func ascompatet(nl Nodes, nr *types.Type) []*Node {
 // or retrieving the results after the call.
 // In this case, the node will correspond to an outgoing argument
 // slot like 8(SP).
-func nodarg(t interface{}) *Node {
-	var n *Node
-
-	switch t := t.(type) {
-	default:
-		Fatalf("bad nodarg %T(%v)", t, t)
-
-	case *types.Type:
-		// Entire argument struct, not just one arg
-		if !t.IsFuncArgStruct() {
-			Fatalf("nodarg: bad type %v", t)
-		}
-
-		// Build fake variable name for whole arg struct.
-		n = newname(lookup(".args"))
-		n.Type = t
-		first := t.Field(0)
-		if first == nil {
-			Fatalf("nodarg: bad struct")
-		}
-		if first.Offset == BADWIDTH {
-			Fatalf("nodarg: offset not computed for %v", t)
-		}
-		n.Xoffset = first.Offset
-
-	case *types.Field:
-		// Build fake name for individual variable.
-		// This is safe because if there was a real declared name
-		// we'd have used it above.
-		n = newname(lookup("__"))
-		n.Type = t.Type
-		if t.Offset == BADWIDTH {
-			Fatalf("nodarg: offset not computed for %v", t)
-		}
-		n.Xoffset = t.Offset
-		n.Orig = asNode(t.Nname)
+func nodarg(f *types.Field) *Node {
+	// Build fake name for individual variable.
+	// This is safe because if there was a real declared name
+	// we'd have used it above.
+	n := newname(lookup("__"))
+	n.Type = f.Type
+	if f.Offset == BADWIDTH {
+		Fatalf("nodarg: offset not computed for %v", f)
 	}
+	n.Xoffset = f.Offset
+	n.Orig = asNode(f.Nname)
 
 	// preparing arguments for call
 	n.Op = OINDREGSP
