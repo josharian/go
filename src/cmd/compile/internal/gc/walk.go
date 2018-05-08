@@ -1985,33 +1985,8 @@ func mkdotargslice(typ *types.Type, args []*Node, init *Nodes, ddd *Node) *Node 
 // a type list. called in
 //	func(expr-list)
 func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Nodes) []*Node {
-	// f(g()) where g has multiple return values
 	if len(rhs) == 1 && rhs[0].Type.IsFuncArgStruct() {
-		// optimization - can do block copy
-		if eqtypenoname(rhs[0].Type, lhs) {
-			nl := nodarg(lhs)
-			nr := nod(OCONVNOP, rhs[0], nil)
-			nr.Type = nl.Type
-			n := convas(nod(OAS, nl, nr), init)
-			n.SetTypecheck(1)
-			return []*Node{n}
-		}
-
-		// conversions involved.
-		// copy into temporaries.
-		var tmps []*Node
-		for _, nr := range rhs[0].Type.FieldSlice() {
-			tmps = append(tmps, temp(nr.Type))
-		}
-
-		a := nod(OAS2, nil, nil)
-		a.List.Set(tmps)
-		a.Rlist.Set(rhs)
-		a = typecheck(a, Etop)
-		a = walkstmt(a)
-		init.Append(a)
-
-		rhs = tmps
+		Fatalf("ascompatte: order (copyRet) did not eliminate IsFuncArgStruct")
 	}
 
 	// For each parameter (LHS), assign its corresponding argument (RHS).
