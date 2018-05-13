@@ -1974,7 +1974,6 @@ func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Node
 		}
 
 		a := nod(OAS, nodarg(nl), nr)
-		a = convas(a, init)
 		a.SetTypecheck(1)
 		nn = append(nn, a)
 	}
