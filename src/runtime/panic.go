@@ -275,8 +275,8 @@ func freedefer(d *_defer) {
 			// The loop above doesn't quite guarantee it in isolation,
 			// in the case in which the len/cap is 0 or 1.
 			// Since we're in the slow path, be defensive.
-			pp.deferpool[sc] = append(pp.deferpool[sc], nil)
-			pp.deferpool[sc] = pp.deferpool[sc][:len(pp.deferpool[sc])-1]
+			// pp.deferpool[sc] = append(pp.deferpool[sc], nil)
+			// pp.deferpool[sc] = pp.deferpool[sc][:len(pp.deferpool[sc])-1]
 		})
 	}
 
