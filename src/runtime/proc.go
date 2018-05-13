@@ -226,9 +226,12 @@ func main() {
 	}
 }
 
+var wb, wbe, wbz uint64
+
 // os_beforeExit is called from os.Exit(0).
 //go:linkname os_beforeExit os.runtime_beforeExit
 func os_beforeExit() {
+	println("WB", wb, wbe, wbz)
 	if raceenabled {
 		racefini()
 	}

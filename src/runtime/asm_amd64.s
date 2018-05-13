@@ -1383,6 +1383,24 @@ TEXT runtime·gcWriteBarrier(SB),NOSPLIT,$120
 	// faster than having the caller spill these.
 	MOVQ	R14, 104(SP)
 	MOVQ	R13, 112(SP)
+
+      MOVQ    $1, R13
+      CMPQ    AX, $0
+      JNE     testeq
+      LOCK; XADDQ R13, runtime·wbz(SB)
+      JMP record
+
+testeq:
+      MOVQ    $1, R13
+      CMPQ    AX, (DI)
+      JNE     record
+      LOCK; XADDQ R13, runtime·wbe(SB)
+
+record:
+      MOVQ    $1, R13
+      LOCK; XADDQ R13, runtime·wb(SB)
+
+
 	// TODO: Consider passing g.m.p in as an argument so they can be shared
 	// across a sequence of write barriers.
 	get_tls(R13)
