@@ -335,12 +335,42 @@ func round(o int64, r int64) int64 {
 	return (o + r - 1) &^ (r - 1)
 }
 
+func phiArgs(v *Value, seen map[*Value]bool, vv []*Value) []*Value {
+	if seen == nil {
+		seen = make(map[*Value]bool)
+	}
+	if seen[v] {
+		return nil
+	}
+	seen[v] = true
+	if v.Op != OpPhi {
+		return append(vv, v)
+	}
+	var add []*Value
+	for _, a := range v.Args {
+		add = append(add, phiArgs(a, seen, vv)...)
+	}
+	return append(vv, add...)
+}
+
 // IsStackAddr returns whether v is known to be an address of a stack slot
 func IsStackAddr(v *Value) bool {
 	for v.Op == OpOffPtr || v.Op == OpAddPtr || v.Op == OpPtrIndex || v.Op == OpCopy {
 		v = v.Args[0]
 	}
 	switch v.Op {
+	case OpPhi:
+		for _, a := range phiArgs(v, nil, nil) {
+			// if a.Op == OpPhi {
+			// 	return false // TODO: fix
+			// }
+			// fmt.Println("ARG", a.LongString())
+			if !IsStackAddr(a) {
+				return false
+			}
+		}
+		fmt.Println("OPT", v.LongString())
+		return true
 	case OpSP:
 		return true
 	case OpAddr:
