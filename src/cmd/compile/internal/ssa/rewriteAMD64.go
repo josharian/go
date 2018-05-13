@@ -60901,14 +60901,34 @@ func rewriteValueAMD64_OpZero_20(v *Value) bool {
 	typ := &b.Func.Config.Types
 	_ = typ
 	// match: (Zero [s] destptr mem)
-	// cond: s > 64 && s <= 1024 && s%16 == 0 && !config.noDuffDevice
+	// cond: s > 64 && s <= 128 && s%16 == 0 && !config.noDuffDevice
+	// result: (DUFFZEROSMALL [s] destptr (MOVOconst [0]) mem)
+	for {
+		s := v.AuxInt
+		_ = v.Args[1]
+		destptr := v.Args[0]
+		mem := v.Args[1]
+		if !(s > 64 && s <= 128 && s%16 == 0 && !config.noDuffDevice) {
+			break
+		}
+		v.reset(OpAMD64DUFFZEROSMALL)
+		v.AuxInt = s
+		v.AddArg(destptr)
+		v0 := b.NewValue0(v.Pos, OpAMD64MOVOconst, types.TypeInt128)
+		v0.AuxInt = 0
+		v.AddArg(v0)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (Zero [s] destptr mem)
+	// cond: s > 128 && s <= 1024 && s%16 == 0 && !config.noDuffDevice
 	// result: (DUFFZERO [s] destptr (MOVOconst [0]) mem)
 	for {
 		s := v.AuxInt
 		_ = v.Args[1]
 		destptr := v.Args[0]
 		mem := v.Args[1]
-		if !(s > 64 && s <= 1024 && s%16 == 0 && !config.noDuffDevice) {
+		if !(s > 128 && s <= 1024 && s%16 == 0 && !config.noDuffDevice) {
 			break
 		}
 		v.reset(OpAMD64DUFFZERO)

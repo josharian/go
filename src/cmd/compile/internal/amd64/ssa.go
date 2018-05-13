@@ -7,6 +7,7 @@ package amd64
 import (
 	"fmt"
 	"math"
+	"os"
 
 	"cmd/compile/internal/gc"
 	"cmd/compile/internal/ssa"
@@ -128,6 +129,15 @@ func duffAdj(size int64) int64 {
 	return x
 }
 
+func duffSmallStart(size int64) int64 {
+	x, _ := duffSmall(size)
+	return x
+}
+func duffSmallAdj(size int64) int64 {
+	_, x := duffSmall(size)
+	return x
+}
+
 // duff returns the offset (from duffzero, in bytes) and pointer adjust (in bytes)
 // required to use the duffzero mechanism for a block of the given size.
 func duff(size int64) (int64, int64) {
@@ -145,6 +155,27 @@ func duff(size int64) (int64, int64) {
 		adj -= dzClearStep * (dzBlockLen - steps)
 	}
 	return off, adj
+}
+
+// duff returns the offset (from duffzero, in bytes) and pointer adjust (in bytes)
+// required to use the duffzero mechanism for a block of the given size.
+func duffSmall(size int64) (int64, int64) {
+	if size < 32 || size > 1024 || size%dzClearStep != 0 {
+		panic("bad duffzero size")
+	}
+	steps := size / dzClearStep
+	return (8 - steps) * dzLeaqSize, size - 64
+	// steps = 8 - steps
+	// blocks := steps / dzBlockLen
+	// steps %= dzBlockLen
+	// off := dzBlockSize * (dzBlocks - blocks)
+	// var adj int64
+	// if steps != 0 {
+	// 	off -= dzLeaqSize
+	// 	off -= dzMovSize * steps
+	// 	adj -= dzClearStep * (dzBlockLen - steps)
+	// }
+	// return off, adj
 }
 
 func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
@@ -821,8 +852,30 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 			v.Fatalf("input[0] and output not in same register %s", v.LongString())
 		}
 	case ssa.OpAMD64DUFFZERO:
+		if os.Getenv("J") != "" {
+			fmt.Printf("DUFF ZERO %v\n", v.AuxInt)
+		}
 		off := duffStart(v.AuxInt)
 		adj := duffAdj(v.AuxInt)
+		var p *obj.Prog
+		if adj != 0 {
+			p = s.Prog(x86.ALEAQ)
+			p.From.Type = obj.TYPE_MEM
+			p.From.Offset = adj
+			p.From.Reg = x86.REG_DI
+			p.To.Type = obj.TYPE_REG
+			p.To.Reg = x86.REG_DI
+		}
+		p = s.Prog(obj.ADUFFZERO)
+		p.To.Type = obj.TYPE_ADDR
+		p.To.Sym = gc.Duffzero
+		p.To.Offset = off
+	case ssa.OpAMD64DUFFZEROSMALL:
+		if os.Getenv("J") != "" {
+			fmt.Printf("DUFF ZERO SMALL %v\n", v.AuxInt)
+		}
+		off := duffSmallStart(v.AuxInt)
+		adj := duffSmallAdj(v.AuxInt)
 		var p *obj.Prog
 		if adj != 0 {
 			p = s.Prog(x86.ALEAQ)

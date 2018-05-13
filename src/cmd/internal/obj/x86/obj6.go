@@ -315,7 +315,7 @@ func rewriteToUseGot(ctxt *obj.Link, p *obj.Prog, newprog obj.ProgAlloc) {
 		}
 	}
 
-	if p.As == obj.ADUFFCOPY || p.As == obj.ADUFFZERO {
+	if p.As == obj.ADUFFCOPY || p.As == obj.ADUFFZERO || p.As == obj.ADUFFZEROSMALL {
 		//     ADUFFxxx $offset
 		// becomes
 		//     $MOV runtime.duffxxx@GOT, $reg
@@ -324,10 +324,13 @@ func rewriteToUseGot(ctxt *obj.Link, p *obj.Prog, newprog obj.ProgAlloc) {
 		// (we use LEAx rather than ADDx because ADDx clobbers
 		// flags and duffzero on 386 does not otherwise do so).
 		var sym *obj.LSym
-		if p.As == obj.ADUFFZERO {
+		switch p.As {
+		case obj.ADUFFZERO:
 			sym = ctxt.Lookup("runtime.duffzero")
-		} else {
+		case obj.ADUFFCOPY:
 			sym = ctxt.Lookup("runtime.duffcopy")
+		case obj.ADUFFZEROSMALL:
+			sym = ctxt.Lookup("runtime.duffzerosmall")
 		}
 		offset := p.To.Offset
 		p.As = mov
@@ -605,7 +608,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 
 	hasCall := false
 	for q := p; q != nil; q = q.Link {
-		if q.As == obj.ACALL || q.As == obj.ADUFFCOPY || q.As == obj.ADUFFZERO {
+		if q.As == obj.ACALL || q.As == obj.ADUFFCOPY || q.As == obj.ADUFFZERO || q.As == obj.ADUFFZEROSMALL {
 			hasCall = true
 			break
 		}
@@ -654,7 +657,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 					break LeafSearch
 				}
 				fallthrough
-			case obj.ADUFFCOPY, obj.ADUFFZERO:
+			case obj.ADUFFCOPY, obj.ADUFFZERO, obj.ADUFFZEROSMALL:
 				if autoffset >= objabi.StackSmall-8 {
 					leaf = false
 					break LeafSearch

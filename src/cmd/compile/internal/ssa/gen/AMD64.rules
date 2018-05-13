@@ -368,9 +368,14 @@
 			(MOVOstore (OffPtr <destptr.Type> destptr [16]) (MOVOconst [0])
 				(MOVOstore destptr (MOVOconst [0]) mem))))
 
+// Small-ish zeroing uses a duff device.
+(Zero [s] destptr mem)
+	&& s > 64 && s <= 128 && s%16 == 0 && !config.noDuffDevice ->
+	(DUFFZEROSMALL [s] destptr (MOVOconst [0]) mem)
+
 // Medium zeroing uses a duff device.
 (Zero [s] destptr mem)
-	&& s > 64 && s <= 1024 && s%16 == 0 && !config.noDuffDevice ->
+	&& s > 128 && s <= 1024 && s%16 == 0 && !config.noDuffDevice ->
 	(DUFFZERO [s] destptr (MOVOconst [0]) mem)
 
 // Large zeroing uses REP STOSQ.

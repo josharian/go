@@ -572,6 +572,22 @@ func init() {
 		},
 		{name: "MOVOconst", reg: regInfo{nil, 0, []regMask{fp}}, typ: "Int128", aux: "Int128", rematerializeable: true},
 
+		// arg0 = pointer to start of memory to zero
+		// arg1 = value to store (will always be zero)
+		// arg2 = mem
+		// auxint = # of bytes to zero
+		// returns mem
+		{
+			name:      "DUFFZEROSMALL",
+			aux:       "Int64",
+			argLength: 3,
+			reg: regInfo{
+				inputs:   []regMask{buildReg("DI"), buildReg("X0")},
+				clobbers: buildReg("DI"),
+			},
+			faultOnNilArg0: true,
+		},
+
 		// arg0 = address of memory to zero
 		// arg1 = # of 8-byte words to zero
 		// arg2 = value to store (will always be zero)

@@ -1998,6 +1998,7 @@ var optab =
 	{obj.APCDATA, ypcdata, Px, [23]uint8{0, 0}},
 	{obj.ADUFFCOPY, yduff, Px, [23]uint8{0xe8}},
 	{obj.ADUFFZERO, yduff, Px, [23]uint8{0xe8}},
+	{obj.ADUFFZEROSMALL, yduff, Px, [23]uint8{0xe8}},
 
 	// AVX2 gather instructions.
 	// Added as a part of VSIB support implementation,

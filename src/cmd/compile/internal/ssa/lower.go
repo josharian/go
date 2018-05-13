@@ -4,6 +4,8 @@
 
 package ssa
 
+import "strconv"
+
 // convert to machine-dependent ops
 func lower(f *Func) {
 	// repeat rewrites until we find no more rewrites
@@ -29,7 +31,7 @@ func checkLower(f *Func) {
 					continue // ok not to lower
 				}
 			}
-			s := "not lowered: " + v.String() + ", " + v.Op.String() + " " + v.Type.SimpleString()
+			s := "not lowered: " + v.String() + ", " + v.Op.String() + " " + v.Type.SimpleString() + " <" + strconv.FormatInt(v.AuxInt, 10) + "> "
 			for _, a := range v.Args {
 				s += " " + a.Type.SimpleString()
 			}
