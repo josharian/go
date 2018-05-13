@@ -1927,11 +1927,6 @@ func nodarg(f *types.Field) *Node {
 
 // package all the arguments that match a ... T parameter into a []T.
 func mkdotargslice(typ *types.Type, args []*Node, init *Nodes, ddd *Node) *Node {
-	esc := uint16(EscUnknown)
-	if ddd != nil {
-		esc = ddd.Esc
-	}
-
 	if len(args) == 0 {
 		n := nodnil()
 		n.Type = typ
@@ -1943,7 +1938,10 @@ func mkdotargslice(typ *types.Type, args []*Node, init *Nodes, ddd *Node) *Node 
 		prealloc[n] = prealloc[ddd] // temporary to use
 	}
 	n.List.Set(args)
-	n.Esc = esc
+	n.Esc = uint16(EscUnknown)
+	if ddd != nil {
+		n.Esc = ddd.Esc
+	}
 	n = typecheck(n, Erv)
 	if n.Type == nil {
 		Fatalf("mkdotargslice: typecheck failed")
