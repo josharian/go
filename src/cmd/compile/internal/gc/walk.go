@@ -1958,20 +1958,20 @@ func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Node
 		Fatalf("ascompatte: order (copyRet) did not eliminate IsFuncArgStruct")
 	}
 
-	// For each parameter (LHS), assign its corresponding argument (RHS).
 	// If there's a ... parameter (which is only valid as the final
 	// parameter) and this is not a ... call expression,
 	// then assign the remaining arguments as a slice.
+	if nf := lhs.NumFields(); nf > 0 {
+		if last := lhs.Field(nf - 1); last.Isddd() && !isddd {
+			slice := mkdotargslice(last.Type, rhs[nf-1:], init, call.Right)
+			rhs = append(rhs[:nf-1], slice)
+		}
+	}
+
+	// For each parameter (LHS), assign its corresponding argument (RHS).
 	var nn []*Node
 	for i, nl := range lhs.FieldSlice() {
-		var nr *Node
-		if nl.Isddd() && !isddd {
-			nr = mkdotargslice(nl.Type, rhs[i:], init, call.Right)
-		} else {
-			nr = rhs[i]
-		}
-
-		a := nod(OAS, nodarg(nl), nr)
+		a := nod(OAS, nodarg(nl), rhs[i])
 		a.SetTypecheck(1)
 		nn = append(nn, a)
 	}
