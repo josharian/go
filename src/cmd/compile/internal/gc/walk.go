@@ -2232,8 +2232,6 @@ func reorder1(all []*Node) (temps []*Node, args []*Node) {
 		}
 	}
 
-	// fmt.Println("reorder1 A", funcCalls, linestr(all[0].Pos), all)
-
 	var g []*Node // fncalls assigned to tempnames
 	var f *Node   // last fncall assigned to stack
 	var r []*Node // non fncalls and tempnames assigned to stack
@@ -2269,9 +2267,6 @@ func reorder1(all []*Node) (temps []*Node, args []*Node) {
 		r = append([]*Node{f}, r...)
 	}
 	return g, r
-	// g = append(g, r...)
-	// fmt.Println("reorder1 B", g)
-	// return g
 }
 
 // from ascompat[ee]
