@@ -1002,7 +1002,9 @@ func calcHasCall(n *Node) bool {
 		OIND, ODOTPTR, ODOTTYPE, ODIV, OMOD:
 		// These ops might panic, make sure they are done
 		// before we start marshaling args for a call. See issue 16760.
-		return true
+		if !n.Bounded() {
+			return true
+		}
 
 	// When using soft-float, these ops might be rewritten to function calls
 	// so we ensure they are evaluated first.
