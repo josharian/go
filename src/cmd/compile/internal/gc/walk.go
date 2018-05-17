@@ -2266,7 +2266,7 @@ func reorder1(all []*Node) (temps []*Node, args []*Node) {
 	}
 
 	if f != nil {
-		g = append(g, f)
+		r = append([]*Node{f}, r...)
 	}
 	return g, r
 	// g = append(g, r...)
