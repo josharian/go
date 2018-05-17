@@ -113,7 +113,11 @@ func paramoutheap(fn *Node) bool {
 // n must be a defer or go node that has already been walked.
 func adjustargs(n *Node, adjust int) {
 	callfunc := n.Left
-	for _, arg := range callfunc.List.Slice() {
+	// TODO: better
+	var ss []*Node
+	ss = append(ss, callfunc.List.Slice()...)
+	ss = append(ss, callfunc.Rlist.Slice()...)
+	for _, arg := range ss {
 		if arg.Op != OAS {
 			Fatalf("call arg not assignment")
 		}
@@ -631,13 +635,16 @@ opswitch:
 	case OCALLINTER:
 		usemethod(n)
 		t := n.Left.Type
-		if n.List.Len() != 0 && n.List.First().Op == OAS {
+		if (n.List.Len() != 0 && n.List.First().Op == OAS) || n.Rlist.Len() != 0 {
 			break
 		}
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
+		walkexprlist(n.Rlist.Slice(), init)
 		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
-		n.List.Set(reorder1(ll))
+		temps, args := reorder1(ll)
+		n.List.Set(temps)
+		n.Rlist.Set(args)
 
 	case OCALLFUNC:
 		if n.Left.Op == OCLOSURE {
@@ -662,29 +669,37 @@ opswitch:
 		}
 
 		t := n.Left.Type
-		if n.List.Len() != 0 && n.List.First().Op == OAS {
+		if (n.List.Len() != 0 && n.List.First().Op == OAS) || n.Rlist.Len() != 0 {
 			break
 		}
 
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
+		walkexprlist(n.Rlist.Slice(), init)
 
+		// fmt.Println("CALLFUNC", linestr(n.Pos), n.List.Slice(), "///", n.Rlist.Slice())
 		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
-		n.List.Set(reorder1(ll))
+		temps, args := reorder1(ll)
+		// fmt.Println("AFTER", linestr(n.Pos), "TEMPS", temps, "ARGS", args)
+		n.List.Set(temps)
+		n.Rlist.Set(args)
 
 	case OCALLMETH:
 		t := n.Left.Type
-		if n.List.Len() != 0 && n.List.First().Op == OAS {
+		if (n.List.Len() != 0 && n.List.First().Op == OAS) || n.Rlist.Len() != 0 {
 			break
 		}
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
+		walkexprlist(n.Rlist.Slice(), init)
 		ll := ascompatte(n, false, t.Recvs(), []*Node{n.Left.Left}, init)
 		lr := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
 		ll = append(ll, lr...)
 		n.Left.Left = nil
 		updateHasCall(n.Left)
-		n.List.Set(reorder1(ll))
+		temps, args := reorder1(ll)
+		n.List.Set(temps)
+		n.Rlist.Set(args)
 
 	case OAS, OASOP:
 		init.AppendNodes(&n.Ninit)
@@ -2198,7 +2213,7 @@ func convas(n *Node, init *Nodes) *Node {
 // if there is exactly one function expr,
 // then it is done first. otherwise must
 // make temp variables
-func reorder1(all []*Node) []*Node {
+func reorder1(all []*Node) (temps []*Node, args []*Node) {
 	// When instrumenting, force all arguments into temporary
 	// variables to prevent instrumentation calls from clobbering
 	// arguments already on the stack.
@@ -2206,7 +2221,7 @@ func reorder1(all []*Node) []*Node {
 	funcCalls := 0
 	if !instrumenting {
 		if len(all) == 1 {
-			return all
+			return nil, all
 		}
 
 		for _, n := range all {
@@ -2216,9 +2231,11 @@ func reorder1(all []*Node) []*Node {
 			}
 		}
 		if funcCalls == 0 {
-			return all
+			return nil, all
 		}
 	}
+
+	// fmt.Println("reorder1 A", funcCalls, linestr(all[0].Pos), all)
 
 	var g []*Node // fncalls assigned to tempnames
 	var f *Node   // last fncall assigned to stack
@@ -2254,7 +2271,10 @@ func reorder1(all []*Node) []*Node {
 	if f != nil {
 		g = append(g, f)
 	}
-	return append(g, r...)
+	return g, r
+	// g = append(g, r...)
+	// fmt.Println("reorder1 B", g)
+	// return g
 }
 
 // from ascompat[ee]
