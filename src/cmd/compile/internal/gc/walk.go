@@ -132,9 +132,6 @@ func adjustargs(n *Node, adjust int) {
 			Fatalf("call argument store does not use OINDREGSP")
 		}
 
-		// can't really check this in machine-indep code.
-		//if(lhs->val.u.reg != D_SP)
-		//      Fatalf("call arg assign not indreg(SP)")
 		lhs.Xoffset += int64(adjust)
 	}
 }
