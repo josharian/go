@@ -3408,7 +3408,11 @@ func (s *state) intrinsicArgs(n *Node) []*ssa.Value {
 	// TODO: when walk goes away someday, this code can go away also.
 	var args []callArg
 	temps := map[*Node]*ssa.Value{}
-	for _, a := range n.List.Slice() {
+	// TODO: better
+	var ss []*Node
+	ss = append(ss, n.List.Slice()...)
+	ss = append(ss, n.Rlist.Slice()...)
+	for _, a := range ss {
 		if a.Op != OAS {
 			s.Fatalf("non-assignment as a function argument %v", a.Op)
 		}
@@ -3501,6 +3505,7 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 	// +widthptr for interface calls).
 	// For OCALLMETH, the receiver is set in these statements.
 	s.stmtList(n.List)
+	s.stmtList(n.Rlist)
 
 	// Set receiver (for interface calls)
 	if rcvr != nil {
