@@ -1963,7 +1963,12 @@ func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Node
 	// then assign the remaining arguments as a slice.
 	if nf := lhs.NumFields(); nf > 0 {
 		if last := lhs.Field(nf - 1); last.Isddd() && !isddd {
-			slice := mkdotargslice(last.Type, rhs[nf-1:], init, call.Right)
+			tail := rhs[nf-1:]
+			slice := mkdotargslice(last.Type, tail, init, call.Right)
+			// Allow immediate GC.
+			for i := range tail {
+				tail[i] = nil
+			}
 			rhs = append(rhs[:nf-1], slice)
 		}
 	}
