@@ -113,11 +113,7 @@ func paramoutheap(fn *Node) bool {
 // n must be a defer or go node that has already been walked.
 func adjustargs(n *Node, adjust int) {
 	callfunc := n.Left
-	// TODO: better
-	var ss []*Node
-	ss = append(ss, callfunc.List.Slice()...)
-	ss = append(ss, callfunc.Rlist.Slice()...)
-	for _, arg := range ss {
+	for _, arg := range callfunc.Rlist.Slice() {
 		if arg.Op != OAS {
 			Fatalf("call arg not assignment")
 		}
