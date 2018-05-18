@@ -3408,34 +3408,36 @@ func (s *state) intrinsicArgs(n *Node) []*ssa.Value {
 	// TODO: when walk goes away someday, this code can go away also.
 	var args []callArg
 	temps := map[*Node]*ssa.Value{}
-	// TODO: better
-	var ss []*Node
-	ss = append(ss, n.List.Slice()...)
-	ss = append(ss, n.Rlist.Slice()...)
-	for _, a := range ss {
+	for _, a := range n.List.Slice() {
 		if a.Op != OAS {
-			s.Fatalf("non-assignment as a function argument %v", a.Op)
+			s.Fatalf("non-assignment as a temp function argument %v", a.Op)
 		}
 		l, r := a.Left, a.Right
-		switch l.Op {
-		case ONAME:
-			// Evaluate and store to "temporary".
-			// Walk ensures these temporaries are dead outside of n.
-			temps[l] = s.expr(r)
-		case OINDREGSP:
-			// Store a value to an argument slot.
-			var v *ssa.Value
-			if x, ok := temps[r]; ok {
-				// This is a previously computed temporary.
-				v = x
-			} else {
-				// This is an explicit value; evaluate it.
-				v = s.expr(r)
-			}
-			args = append(args, callArg{l.Xoffset, v})
-		default:
-			s.Fatalf("function argument assignment target not allowed: %v", l.Op)
+		if l.Op != ONAME {
+			s.Fatalf("non-ONAME temp function argument %v", a.Op)
 		}
+		// Evaluate and store to "temporary".
+		// Walk ensures these temporaries are dead outside of n.
+		temps[l] = s.expr(r)
+	}
+	for _, a := range n.Rlist.Slice() {
+		if a.Op != OAS {
+			s.Fatalf("non-assignment as an arg function argument %v", a.Op)
+		}
+		l, r := a.Left, a.Right
+		if l.Op != OINDREGSP {
+			s.Fatalf("non-OINDREGSP arg function argument %v", a.Op)
+		}
+		// Store a value to an argument slot.
+		var v *ssa.Value
+		if x, ok := temps[r]; ok {
+			// This is a previously computed temporary.
+			v = x
+		} else {
+			// This is an explicit value; evaluate it.
+			v = s.expr(r)
+		}
+		args = append(args, callArg{l.Xoffset, v})
 	}
 	sort.Sort(byOffset(args))
 	res := make([]*ssa.Value, len(args))
