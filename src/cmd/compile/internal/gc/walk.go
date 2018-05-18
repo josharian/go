@@ -2263,7 +2263,7 @@ func reorder1(all []*Node) (temps []*Node, args []*Node) {
 		r = append([]*Node{f}, r...)
 	}
 	for _, x := range g {
-		if x.Left.Op == OINDREGSP {
+		if x.Left.Op != ONAME {
 			Fatalf("reorder1 bad temp", x)
 		}
 	}
