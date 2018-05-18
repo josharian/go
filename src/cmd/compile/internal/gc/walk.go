@@ -2266,6 +2266,16 @@ func reorder1(all []*Node) (temps []*Node, args []*Node) {
 	if f != nil {
 		r = append([]*Node{f}, r...)
 	}
+	for _, x := range g {
+		if x.Left.Op == OINDREGSP {
+			Fatalf("reorder1 bad temp", x)
+		}
+	}
+	for _, x := range r {
+		if x.Left.Op != OINDREGSP {
+			Fatalf("reorder1 bad arg", x)
+		}
+	}
 	return g, r
 }
 
