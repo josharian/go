@@ -635,9 +635,9 @@ opswitch:
 		walkexprlist(n.List.Slice(), init)
 		walkexprlist(n.Rlist.Slice(), init)
 		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
-		temps, args := reorder1(ll)
+		temps := reorder1(ll)
 		n.List.Set(temps)
-		n.Rlist.Set(args)
+		n.Rlist.Set(ll)
 
 	case OCALLFUNC:
 		if n.Left.Op == OCLOSURE {
@@ -671,9 +671,9 @@ opswitch:
 		walkexprlist(n.Rlist.Slice(), init)
 
 		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
-		temps, args := reorder1(ll)
+		temps := reorder1(ll)
 		n.List.Set(temps)
-		n.Rlist.Set(args)
+		n.Rlist.Set(ll)
 
 	case OCALLMETH:
 		t := n.Left.Type
@@ -688,9 +688,9 @@ opswitch:
 		ll = append(ll, lr...)
 		n.Left.Left = nil
 		updateHasCall(n.Left)
-		temps, args := reorder1(ll)
+		temps := reorder1(ll)
 		n.List.Set(temps)
-		n.Rlist.Set(args)
+		n.Rlist.Set(ll)
 
 	case OAS, OASOP:
 		init.AppendNodes(&n.Ninit)
@@ -2204,74 +2204,22 @@ func convas(n *Node, init *Nodes) *Node {
 // if there is exactly one function expr,
 // then it is done first. otherwise must
 // make temp variables
-func reorder1(all []*Node) (temps []*Node, args []*Node) {
+func reorder1(all []*Node) (temps []*Node) {
 	// When instrumenting, force all arguments into temporary
 	// variables to prevent instrumentation calls from clobbering
 	// arguments already on the stack.
-
-	// funcCalls := 0
-	// if !instrumenting {
-	// if len(all) == 1 {
-	// 	return nil, all
-	// }
-
-	// for _, n := range all {
-	// updateHasCall(n)
-	// if n.HasCall() {
-	// 	funcCalls++
-	// }
-	// }
-	// if funcCalls == 0 {
-	// 	return nil, all
-	// }
-	// }
-
-	var g []*Node // fncalls assigned to tempnames
-	// var f *Node   // last fncall assigned to stack
-	var r []*Node // non fncalls and tempnames assigned to stack
-	// d := 0
 	for _, n := range all {
-		if !instrumenting {
-			updateHasCall(n)
-			if !n.HasCall() {
-				r = append(r, n)
-				continue
-			}
-
-			// d++
-			// if d == funcCalls {
-			// 	f = n
-			// 	continue
-			// }
-		}
-
-		// make assignment of fncall to tempname
-		a := temp(n.Right.Type)
-
-		a = nod(OAS, a, n.Right)
-		g = append(g, a)
-
-		// put normal arg assignment on list
-		// with fncall replaced by tempname
-		n.Right = a.Left
-
-		r = append(r, n)
-	}
-
-	// if f != nil {
-	// 	r = append([]*Node{f}, r...)
-	// }
-	for _, x := range g {
-		if x.Left.Op != ONAME {
-			Fatalf("reorder1 bad temp", x)
+		updateHasCall(n)
+		if instrumenting || n.HasCall() {
+			// make assignment of fncall to tempname
+			a := temp(n.Right.Type)
+			a = nod(OAS, a, n.Right)
+			temps = append(temps, a)
+			// replace arg with temp
+			n.Right = a.Left
 		}
 	}
-	for _, x := range r {
-		if x.Left.Op != OINDREGSP {
-			Fatalf("reorder1 bad arg", x)
-		}
-	}
-	return g, r
+	return temps
 }
 
 // from ascompat[ee]
