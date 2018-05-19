@@ -670,10 +670,8 @@ opswitch:
 		walkexprlist(n.List.Slice(), init)
 		walkexprlist(n.Rlist.Slice(), init)
 
-		// fmt.Println("CALLFUNC", linestr(n.Pos), n.List.Slice(), "///", n.Rlist.Slice())
 		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
 		temps, args := reorder1(ll)
-		// fmt.Println("AFTER", linestr(n.Pos), "TEMPS", temps, "ARGS", args)
 		n.List.Set(temps)
 		n.Rlist.Set(args)
 
