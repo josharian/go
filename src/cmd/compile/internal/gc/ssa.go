@@ -3507,6 +3507,25 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 	// +widthptr for interface calls).
 	// For OCALLMETH, the receiver is set in these statements.
 	s.stmtList(n.List)
+
+	t := n.Left.Type
+	off := Ctxt.FixedFrameSize()
+	if k != callNormal {
+		off += 2 * int64(Widthptr)
+	}
+	args := n.Rlist.Slice()
+	if n.Op == OCALLMETH {
+		if args[0].Left.Xoffset != off+t.Recvs().Field(0).Offset {
+			Fatalf("bad recv")
+		}
+		args = args[1:]
+	}
+	for i, n := range args {
+		if n.Left.Xoffset != off+t.Params().Field(i).Offset {
+			Fatalf("bad arg")
+		}
+	}
+
 	s.stmtList(n.Rlist)
 
 	// Set receiver (for interface calls)
