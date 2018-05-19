@@ -2209,39 +2209,40 @@ func reorder1(all []*Node) (temps []*Node, args []*Node) {
 	// variables to prevent instrumentation calls from clobbering
 	// arguments already on the stack.
 
-	funcCalls := 0
-	if !instrumenting {
-		if len(all) == 1 {
-			return nil, all
-		}
+	// funcCalls := 0
+	// if !instrumenting {
+	// if len(all) == 1 {
+	// 	return nil, all
+	// }
 
-		for _, n := range all {
-			updateHasCall(n)
-			if n.HasCall() {
-				funcCalls++
-			}
-		}
-		if funcCalls == 0 {
-			return nil, all
-		}
-	}
+	// for _, n := range all {
+	// updateHasCall(n)
+	// if n.HasCall() {
+	// 	funcCalls++
+	// }
+	// }
+	// if funcCalls == 0 {
+	// 	return nil, all
+	// }
+	// }
 
 	var g []*Node // fncalls assigned to tempnames
-	var f *Node   // last fncall assigned to stack
+	// var f *Node   // last fncall assigned to stack
 	var r []*Node // non fncalls and tempnames assigned to stack
-	d := 0
+	// d := 0
 	for _, n := range all {
 		if !instrumenting {
+			updateHasCall(n)
 			if !n.HasCall() {
 				r = append(r, n)
 				continue
 			}
 
-			d++
-			if d == funcCalls {
-				f = n
-				continue
-			}
+			// d++
+			// if d == funcCalls {
+			// 	f = n
+			// 	continue
+			// }
 		}
 
 		// make assignment of fncall to tempname
@@ -2257,9 +2258,9 @@ func reorder1(all []*Node) (temps []*Node, args []*Node) {
 		r = append(r, n)
 	}
 
-	if f != nil {
-		r = append([]*Node{f}, r...)
-	}
+	// if f != nil {
+	// 	r = append([]*Node{f}, r...)
+	// }
 	for _, x := range g {
 		if x.Left.Op != ONAME {
 			Fatalf("reorder1 bad temp", x)
