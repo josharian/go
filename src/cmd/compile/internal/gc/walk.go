@@ -109,29 +109,6 @@ func paramoutheap(fn *Node) bool {
 	return false
 }
 
-// adds "adjust" to all the argument locations for the call n.
-// n must be a defer or go node that has already been walked.
-func adjustargs(n *Node, adjust int) {
-	callfunc := n.Left
-	for _, arg := range callfunc.Rlist.Slice() {
-		if arg.Op != OAS {
-			Fatalf("call arg not assignment")
-		}
-		lhs := arg.Left
-		if lhs.Op == ONAME {
-			// This is a temporary introduced by reorder1.
-			// The real store to the stack appears later in the arg list.
-			continue
-		}
-
-		if lhs.Op != OINDREGSP {
-			Fatalf("call argument store does not use OINDREGSP")
-		}
-
-		lhs.Xoffset += int64(adjust)
-	}
-}
-
 // The result of walkstmt MUST be assigned back to n, e.g.
 // 	n.Left = walkstmt(n.Left)
 func walkstmt(n *Node) *Node {
@@ -259,9 +236,6 @@ func walkstmt(n *Node) *Node {
 		default:
 			n.Left = walkexpr(n.Left, &n.Ninit)
 		}
-
-		// make room for size & fn arguments.
-		adjustargs(n, 2*Widthptr)
 
 	case OFOR, OFORUNTIL:
 		if n.Left != nil {
@@ -1980,11 +1954,12 @@ func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Node
 	}
 
 	// For each parameter (LHS), assign its corresponding argument (RHS).
-	var nn []*Node
-	for i, nl := range lhs.FieldSlice() {
-		a := nod(OAS, nodarg(nl), rhs[i])
+	nn := make([]*Node, len(rhs))
+	for i, n := range rhs {
+		sp := nod(OINDREGSP, nil, nil)
+		a := nod(OAS, sp, n)
 		a.SetTypecheck(1)
-		nn = append(nn, a)
+		nn[i] = a
 	}
 
 	return nn

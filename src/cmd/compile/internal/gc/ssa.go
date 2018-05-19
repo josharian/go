@@ -3515,15 +3515,15 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 	}
 	args := n.Rlist.Slice()
 	if n.Op == OCALLMETH {
-		if args[0].Left.Xoffset != off+t.Recvs().Field(0).Offset {
-			Fatalf("bad recv")
-		}
+		f := t.Recvs().Field(0)
+		args[0].Left.Xoffset = off + f.Offset
+		args[0].Left.Type = f.Type
 		args = args[1:]
 	}
 	for i, n := range args {
-		if n.Left.Xoffset != off+t.Params().Field(i).Offset {
-			Fatalf("bad arg")
-		}
+		f := t.Params().Field(i)
+		n.Left.Xoffset = off + f.Offset
+		n.Left.Type = f.Type
 	}
 
 	s.stmtList(n.Rlist)
