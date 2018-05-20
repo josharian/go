@@ -3516,17 +3516,19 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 	args := n.Rlist.Slice()
 	if n.Op == OCALLMETH {
 		f := t.Recvs().Field(0)
-		args[0].Left.Xoffset = off + f.Offset
-		args[0].Left.Type = f.Type
+		s.storeArg(args[0].Right, f.Type, off+f.Offset)
+		// args[0].Left.Xoffset = off + f.Offset
+		// args[0].Left.Type = f.Type
 		args = args[1:]
 	}
 	for i, n := range args {
 		f := t.Params().Field(i)
-		n.Left.Xoffset = off + f.Offset
-		n.Left.Type = f.Type
+		s.storeArg(n.Right, f.Type, off+f.Offset)
+		// n.Left.Xoffset = off + f.Offset
+		// n.Left.Type = f.Type
 	}
 
-	s.stmtList(n.Rlist)
+	// s.stmtList(n.Rlist)
 
 	// Set receiver (for interface calls)
 	if rcvr != nil {
@@ -4029,6 +4031,45 @@ func (s *state) storeTypePtrs(t *types.Type, left, right *ssa.Value) {
 	default:
 		s.Fatalf("bad write barrier type %v", t)
 	}
+}
+
+func (s *state) storeArg(n *Node, t *types.Type, off int64) {
+	if n != nil {
+		switch n.Op {
+		case OSTRUCTLIT, OARRAYLIT, OSLICELIT:
+			// All literals with nonzero fields have already been
+			// rewritten during walk. Any that remain are just T{}
+			// or equivalents. Use the zero value.
+			if !isZero(n) {
+				Fatalf("literal with nonzero value in SSA: %v", n)
+			}
+			n = nil
+		}
+	}
+
+	pt := types.NewPtr(t)
+	addr := s.constOffPtrSP(pt, off)
+
+	if !canSSAType(t) {
+		// arg is in memory; zero or move it into place
+		if n == nil {
+			s.zero(t, addr)
+		} else {
+			a := s.addr(n, false)
+			s.move(t, addr, a)
+		}
+		return
+	}
+
+	// arg is an SSA Value; store it
+	var a *ssa.Value
+	if n == nil {
+		a = s.zeroVal(t)
+	} else {
+		a = s.expr(n)
+	}
+	// Treat as a store.
+	s.storeType(t, addr, a, 0, true) // todo: false instead
 }
 
 // slice computes the slice v[i:j:k] and returns ptr, len, and cap of result.
