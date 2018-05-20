@@ -4034,42 +4034,17 @@ func (s *state) storeTypePtrs(t *types.Type, left, right *ssa.Value) {
 }
 
 func (s *state) storeArg(n *Node, t *types.Type, off int64) {
-	if n != nil {
-		switch n.Op {
-		case OSTRUCTLIT, OARRAYLIT, OSLICELIT:
-			// All literals with nonzero fields have already been
-			// rewritten during walk. Any that remain are just T{}
-			// or equivalents. Use the zero value.
-			if !isZero(n) {
-				Fatalf("literal with nonzero value in SSA: %v", n)
-			}
-			n = nil
-		}
-	}
-
 	pt := types.NewPtr(t)
-	addr := s.constOffPtrSP(pt, off)
+	sp := s.constOffPtrSP(pt, off)
 
 	if !canSSAType(t) {
-		// arg is in memory; zero or move it into place
-		if n == nil {
-			s.zero(t, addr)
-		} else {
-			a := s.addr(n, false)
-			s.move(t, addr, a)
-		}
+		a := s.addr(n, false)
+		s.move(t, sp, a)
 		return
 	}
 
-	// arg is an SSA Value; store it
-	var a *ssa.Value
-	if n == nil {
-		a = s.zeroVal(t)
-	} else {
-		a = s.expr(n)
-	}
-	// Treat as a store.
-	s.storeType(t, addr, a, 0, true) // todo: false instead
+	a := s.expr(n)
+	s.storeType(t, sp, a, 0, true) // TODO: false instead?
 }
 
 // slice computes the slice v[i:j:k] and returns ptr, len, and cap of result.
