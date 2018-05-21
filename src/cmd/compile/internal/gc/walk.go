@@ -599,12 +599,12 @@ opswitch:
 	case OCLOSUREVAR, OCFUNC:
 		n.SetAddable(true)
 
-	case OCALLINTER:
-		usemethod(n)
-		walkParams(n, init)
+	case OCALLINTER, OCALLFUNC, OCALLMETH:
+		if n.Op == OCALLINTER {
+			usemethod(n)
+		}
 
-	case OCALLFUNC:
-		if n.Left.Op == OCLOSURE {
+		if n.Op == OCALLFUNC && n.Left.Op == OCLOSURE {
 			// Transform direct call of a closure to call of a normal function.
 			// transformclosure already did all preparation work.
 
@@ -625,9 +625,6 @@ opswitch:
 			}
 		}
 
-		walkParams(n, init)
-
-	case OCALLMETH:
 		walkParams(n, init)
 
 	case OAS, OASOP:
