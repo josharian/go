@@ -629,8 +629,6 @@ opswitch:
 
 	case OCALLMETH:
 		walkParams(n, init)
-		n.Left.Left = nil
-		updateHasCall(n.Left)
 
 	case OAS, OASOP:
 		init.AppendNodes(&n.Ninit)
@@ -1925,6 +1923,7 @@ func walkParams(n *Node, init *Nodes) {
 	if n.Op == OCALLMETH {
 		withRecv := make([]*Node, len(args)+1)
 		withRecv[0] = n.Left.Left
+		n.Left.Left = nil
 		copy(withRecv[1:], args)
 		args = withRecv
 	}
