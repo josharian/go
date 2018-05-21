@@ -3502,12 +3502,15 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 	dowidth(fn.Type)
 	stksize := fn.Type.ArgWidth() // includes receiver
 
-	// Run all argument assignments. The arg slots have already
-	// been offset by the appropriate amount (+2*widthptr for go/defer,
-	// +widthptr for interface calls).
-	// For OCALLMETH, the receiver is set in these statements.
+	// Run all assignments of temps.
+	// The temps are introduced to avoid overwriting argument
+	// slots when arguments themselves require function calls.
 	s.stmtList(n.List)
 
+	// Store arguments to stack, including receiver for method calls.
+	// TODO(josharian): consider re-ordering this stack construction
+	// so that the final temp from n.List gets written to the stack first.
+	// This will allow elimination of the temp in some cases.
 	t := n.Left.Type
 	off := Ctxt.FixedFrameSize()
 	if k != callNormal {
@@ -3517,18 +3520,12 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 	if n.Op == OCALLMETH {
 		f := t.Recvs().Field(0)
 		s.storeArg(args[0].Right, f.Type, off+f.Offset)
-		// args[0].Left.Xoffset = off + f.Offset
-		// args[0].Left.Type = f.Type
 		args = args[1:]
 	}
 	for i, n := range args {
 		f := t.Params().Field(i)
 		s.storeArg(n.Right, f.Type, off+f.Offset)
-		// n.Left.Xoffset = off + f.Offset
-		// n.Left.Type = f.Type
 	}
-
-	// s.stmtList(n.Rlist)
 
 	// Set receiver (for interface calls)
 	if rcvr != nil {
