@@ -602,7 +602,7 @@ opswitch:
 	case OCALLINTER:
 		usemethod(n)
 		t := n.Left.Type
-		if (n.List.Len() != 0 && n.List.First().Op == OAS) || n.Rlist.Len() != 0 {
+		if n.Rlist.Len() != 0 {
 			break
 		}
 		n.Left = walkexpr(n.Left, init)
@@ -636,7 +636,7 @@ opswitch:
 		}
 
 		t := n.Left.Type
-		if (n.List.Len() != 0 && n.List.First().Op == OAS) || n.Rlist.Len() != 0 {
+		if n.Rlist.Len() != 0 {
 			break
 		}
 
@@ -651,7 +651,7 @@ opswitch:
 
 	case OCALLMETH:
 		t := n.Left.Type
-		if (n.List.Len() != 0 && n.List.First().Op == OAS) || n.Rlist.Len() != 0 {
+		if n.Rlist.Len() != 0 {
 			break
 		}
 		n.Left = walkexpr(n.Left, init)
@@ -1953,16 +1953,7 @@ func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Node
 		}
 	}
 
-	// For each parameter (LHS), assign its corresponding argument (RHS).
-	nn := make([]*Node, len(rhs))
-	for i, n := range rhs {
-		sp := nod(OINDREGSP, nil, nil)
-		a := nod(OAS, sp, n)
-		a.SetTypecheck(1)
-		nn[i] = a
-	}
-
-	return nn
+	return rhs
 }
 
 // generate code for print
@@ -2183,15 +2174,15 @@ func reorder1(all []*Node) (temps []*Node) {
 	// When instrumenting, force all arguments into temporary
 	// variables to prevent instrumentation calls from clobbering
 	// arguments already on the stack.
-	for _, n := range all {
+	for i, n := range all {
 		updateHasCall(n)
 		if instrumenting || n.HasCall() {
 			// make assignment of fncall to tempname
-			a := temp(n.Right.Type)
-			a = nod(OAS, a, n.Right)
+			tmp := temp(n.Type)
+			a := nod(OAS, tmp, n)
 			temps = append(temps, a)
 			// replace arg with temp
-			n.Right = a.Left
+			all[i] = tmp
 		}
 	}
 	return temps
