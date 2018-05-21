@@ -1900,7 +1900,6 @@ func walkParams(n *Node, init *Nodes) {
 	}
 	n.Left = walkexpr(n.Left, init)
 	walkexprlist(n.List.Slice(), init)
-	walkexprlist(n.Rlist.Slice(), init) // TODO: delete?
 
 	params := n.Left.Type.Params()
 	args := n.List.Slice()
