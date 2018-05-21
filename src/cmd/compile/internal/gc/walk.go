@@ -1934,10 +1934,6 @@ func mkdotargslice(typ *types.Type, args []*Node, init *Nodes, ddd *Node) *Node 
 // a type list. called in
 //	func(expr-list)
 func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Nodes) []*Node {
-	if len(rhs) == 1 && rhs[0].Type.IsFuncArgStruct() {
-		Fatalf("ascompatte: order (copyRet) did not eliminate IsFuncArgStruct")
-	}
-
 	// If there's a ... parameter (which is only valid as the final
 	// parameter) and this is not a ... call expression,
 	// then assign the remaining arguments as a slice.
