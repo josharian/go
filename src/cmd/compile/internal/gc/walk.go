@@ -1929,7 +1929,23 @@ func walkParams(n *Node, init *Nodes) {
 		args = withRecv
 	}
 
-	temps := reorder1(args)
+	// For any argument whose evaluation might require a function call,
+	// store that argument into a temporary variable,
+	// to prevent that calls from clobbering arguments already on the stack.
+	// When instrumenting, all arguments might require function calls.
+	var temps []*Node
+	for i, arg := range args {
+		updateHasCall(arg)
+		if instrumenting || arg.HasCall() {
+			// make assignment of fncall to tempname
+			tmp := temp(arg.Type)
+			a := nod(OAS, tmp, arg)
+			temps = append(temps, a)
+			// replace arg with temp
+			args[i] = tmp
+		}
+	}
+
 	n.List.Set(temps)
 	n.Rlist.Set(args)
 }
@@ -2140,30 +2156,6 @@ func convas(n *Node, init *Nodes) *Node {
 	dowidth(n.Right.Type)
 
 	return n
-}
-
-// from ascompat[te]
-// evaluating actual function arguments.
-//	f(a,b)
-// if there is exactly one function expr,
-// then it is done first. otherwise must
-// make temp variables
-func reorder1(all []*Node) (temps []*Node) {
-	// When instrumenting, force all arguments into temporary
-	// variables to prevent instrumentation calls from clobbering
-	// arguments already on the stack.
-	for i, n := range all {
-		updateHasCall(n)
-		if instrumenting || n.HasCall() {
-			// make assignment of fncall to tempname
-			tmp := temp(n.Type)
-			a := nod(OAS, tmp, n)
-			temps = append(temps, a)
-			// replace arg with temp
-			all[i] = tmp
-		}
-	}
-	return temps
 }
 
 // from ascompat[ee]
