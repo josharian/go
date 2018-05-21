@@ -601,12 +601,6 @@ opswitch:
 
 	case OCALLINTER:
 		usemethod(n)
-		if n.Rlist.Len() != 0 {
-			break
-		}
-		n.Left = walkexpr(n.Left, init)
-		walkexprlist(n.List.Slice(), init)
-		walkexprlist(n.Rlist.Slice(), init)
 		walkParams(n, init)
 
 	case OCALLFUNC:
@@ -631,22 +625,9 @@ opswitch:
 			}
 		}
 
-		if n.Rlist.Len() != 0 {
-			break
-		}
-
-		n.Left = walkexpr(n.Left, init)
-		walkexprlist(n.List.Slice(), init)
-		walkexprlist(n.Rlist.Slice(), init)
 		walkParams(n, init)
 
 	case OCALLMETH:
-		if n.Rlist.Len() != 0 {
-			break
-		}
-		n.Left = walkexpr(n.Left, init)
-		walkexprlist(n.List.Slice(), init)
-		walkexprlist(n.Rlist.Slice(), init)
 		walkParams(n, init)
 		n.Left.Left = nil
 		updateHasCall(n.Left)
@@ -1916,6 +1897,13 @@ func mkdotargslice(typ *types.Type, args []*Node, init *Nodes, ddd *Node) *Node 
 }
 
 func walkParams(n *Node, init *Nodes) {
+	if n.Rlist.Len() != 0 {
+		return // already walked
+	}
+	n.Left = walkexpr(n.Left, init)
+	walkexprlist(n.List.Slice(), init)
+	walkexprlist(n.Rlist.Slice(), init) // TODO: delete?
+
 	params := n.Left.Type.Params()
 	args := n.List.Slice()
 	// If there's a ... parameter (which is only valid as the final
