@@ -69,6 +69,55 @@ func (v *Value) String() string {
 	return fmt.Sprintf("v%d", v.ID)
 }
 
+// PtrString prints v, which is presumed to be a pointer, in an easy-to-read form.
+// It is helpful for debugging and development; please do not delete.
+func (v *Value) PtrString() string {
+	var off int64
+	var base string
+	var add string
+loop:
+	for {
+		switch v.Op {
+		case OpOffPtr:
+			off += v.AuxInt
+			v = v.Args[0]
+		case OpAddPtr:
+			add += v.Args[1].String() + "+"
+			v = v.Args[0]
+		case OpSB:
+			base = "SB"
+			break loop
+		case OpSP:
+			base = "SP"
+			break loop
+		case OpAddr:
+			aux := fmt.Sprint(v.Aux)
+			aux = strings.TrimPrefix(aux, `"".`)
+			base = fmt.Sprintf("&%v(%v)", aux, v.Args[0].Op)
+			break loop
+		case OpArg:
+			if v.AuxInt != 0 {
+				base = fmt.Sprintf("(arg:%v+%d)(SP)", v.Aux, v.AuxInt)
+				break loop
+			}
+			base = fmt.Sprintf("(arg:%v)(SP)", v.Aux)
+			break loop
+		case OpConvert:
+			v = v.Args[0]
+		default:
+			base = "<" + v.Op.String() + ">"
+			break loop
+		}
+	}
+	if off > 0 {
+		return fmt.Sprintf("%d+%s%s", off, add, base)
+	}
+	if len(add) != 0 {
+		return fmt.Sprintf("%s%s", add, base)
+	}
+	return base
+}
+
 func (v *Value) AuxInt8() int8 {
 	if opcodeTable[v.Op].auxType != auxInt8 {
 		v.Fatalf("op %s doesn't have an int8 aux field", v.Op)
