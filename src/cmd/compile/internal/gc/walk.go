@@ -601,17 +601,13 @@ opswitch:
 
 	case OCALLINTER:
 		usemethod(n)
-		t := n.Left.Type
 		if n.Rlist.Len() != 0 {
 			break
 		}
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
 		walkexprlist(n.Rlist.Slice(), init)
-		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
-		temps := reorder1(ll)
-		n.List.Set(temps)
-		n.Rlist.Set(ll)
+		walkParams(n, init)
 
 	case OCALLFUNC:
 		if n.Left.Op == OCLOSURE {
@@ -635,7 +631,6 @@ opswitch:
 			}
 		}
 
-		t := n.Left.Type
 		if n.Rlist.Len() != 0 {
 			break
 		}
@@ -643,28 +638,18 @@ opswitch:
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
 		walkexprlist(n.Rlist.Slice(), init)
-
-		ll := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
-		temps := reorder1(ll)
-		n.List.Set(temps)
-		n.Rlist.Set(ll)
+		walkParams(n, init)
 
 	case OCALLMETH:
-		t := n.Left.Type
 		if n.Rlist.Len() != 0 {
 			break
 		}
 		n.Left = walkexpr(n.Left, init)
 		walkexprlist(n.List.Slice(), init)
 		walkexprlist(n.Rlist.Slice(), init)
-		ll := ascompatte(n, false, t.Recvs(), []*Node{n.Left.Left}, init)
-		lr := ascompatte(n, n.Isddd(), t.Params(), n.List.Slice(), init)
-		ll = append(ll, lr...)
+		walkParams(n, init)
 		n.Left.Left = nil
 		updateHasCall(n.Left)
-		temps := reorder1(ll)
-		n.List.Set(temps)
-		n.Rlist.Set(ll)
 
 	case OAS, OASOP:
 		init.AppendNodes(&n.Ninit)
@@ -1930,26 +1915,35 @@ func mkdotargslice(typ *types.Type, args []*Node, init *Nodes, ddd *Node) *Node 
 	return n
 }
 
-// check assign expression list to
-// a type list. called in
-//	func(expr-list)
-func ascompatte(call *Node, isddd bool, lhs *types.Type, rhs []*Node, init *Nodes) []*Node {
+func walkParams(n *Node, init *Nodes) {
+	params := n.Left.Type.Params()
+	args := n.List.Slice()
 	// If there's a ... parameter (which is only valid as the final
 	// parameter) and this is not a ... call expression,
 	// then assign the remaining arguments as a slice.
-	if nf := lhs.NumFields(); nf > 0 {
-		if last := lhs.Field(nf - 1); last.Isddd() && !isddd {
-			tail := rhs[nf-1:]
-			slice := mkdotargslice(last.Type, tail, init, call.Right)
+	if nf := params.NumFields(); nf > 0 {
+		if last := params.Field(nf - 1); last.Isddd() && !n.Isddd() {
+			tail := args[nf-1:]
+			slice := mkdotargslice(last.Type, tail, init, n.Right)
 			// Allow immediate GC.
 			for i := range tail {
 				tail[i] = nil
 			}
-			rhs = append(rhs[:nf-1], slice)
+			args = append(args[:nf-1], slice)
 		}
 	}
 
-	return rhs
+	// If this is a method call, add the receiver at the beginning of the args.
+	if n.Op == OCALLMETH {
+		withRecv := make([]*Node, len(args)+1)
+		withRecv[0] = n.Left.Left
+		copy(withRecv[1:], args)
+		args = withRecv
+	}
+
+	temps := reorder1(args)
+	n.List.Set(temps)
+	n.Rlist.Set(args)
 }
 
 // generate code for print
