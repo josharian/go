@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"html"
 	"os"
-	"sort"
 
 	"cmd/compile/internal/ssa"
 	"cmd/compile/internal/types"
@@ -3386,27 +3385,9 @@ func (s *state) intrinsicCall(n *Node) *ssa.Value {
 	return v
 }
 
-type callArg struct {
-	offset int64
-	v      *ssa.Value
-}
-type byOffset []callArg
-
-func (x byOffset) Len() int      { return len(x) }
-func (x byOffset) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
-func (x byOffset) Less(i, j int) bool {
-	return x[i].offset < x[j].offset
-}
-
 // intrinsicArgs extracts args from n, evaluates them to SSA values, and returns them.
 func (s *state) intrinsicArgs(n *Node) []*ssa.Value {
-	// This code is complicated because of how walk transforms calls. For a call node,
-	// each entry in n.List is either an assignment to OINDREGSP which actually
-	// stores an arg, or an assignment to a temporary which computes an arg
-	// which is later assigned.
-	// The args can also be out of order.
-	// TODO: when walk goes away someday, this code can go away also.
-	var args []callArg
+	// Construct map of temps; see comments in s.call about the structure of n.
 	temps := map[*Node]*ssa.Value{}
 	for _, a := range n.List.Slice() {
 		if a.Op != OAS {
@@ -3420,31 +3401,18 @@ func (s *state) intrinsicArgs(n *Node) []*ssa.Value {
 		// Walk ensures these temporaries are dead outside of n.
 		temps[l] = s.expr(r)
 	}
-	for _, a := range n.Rlist.Slice() {
-		if a.Op != OAS {
-			s.Fatalf("non-assignment as an arg function argument %v", a.Op)
-		}
-		l, r := a.Left, a.Right
-		if l.Op != OINDREGSP {
-			s.Fatalf("non-OINDREGSP arg function argument %v", a.Op)
-		}
+	args := make([]*ssa.Value, n.Rlist.Len())
+	for i, n := range n.Rlist.Slice() {
 		// Store a value to an argument slot.
-		var v *ssa.Value
-		if x, ok := temps[r]; ok {
+		if x, ok := temps[n]; ok {
 			// This is a previously computed temporary.
-			v = x
-		} else {
-			// This is an explicit value; evaluate it.
-			v = s.expr(r)
+			args[i] = x
+			continue
 		}
-		args = append(args, callArg{l.Xoffset, v})
+		// This is an explicit value; evaluate it.
+		args[i] = s.expr(n)
 	}
-	sort.Sort(byOffset(args))
-	res := make([]*ssa.Value, len(args))
-	for i, a := range args {
-		res[i] = a.v
-	}
-	return res
+	return args
 }
 
 // Calls the function n using the specified call type.
@@ -3519,12 +3487,12 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 	args := n.Rlist.Slice()
 	if n.Op == OCALLMETH {
 		f := t.Recvs().Field(0)
-		s.storeArg(args[0].Right, f.Type, off+f.Offset)
+		s.storeArg(args[0], f.Type, off+f.Offset)
 		args = args[1:]
 	}
 	for i, n := range args {
 		f := t.Params().Field(i)
-		s.storeArg(n.Right, f.Type, off+f.Offset)
+		s.storeArg(n, f.Type, off+f.Offset)
 	}
 
 	// Set receiver (for interface calls)
