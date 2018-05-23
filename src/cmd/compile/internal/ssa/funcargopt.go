@@ -27,6 +27,7 @@ func funcArgOpt(f *Func) {
 
 			// Chase the memory chain of Stores/Moves that set up the arguments.
 			var origmem *Value
+			var firstmem *Value
 			mem := v.MemoryArg()
 			prevoff := int64(-1)
 			for mem.Op == OpStore || mem.Op == OpMove {
@@ -35,10 +36,11 @@ func funcArgOpt(f *Func) {
 					break
 				}
 				// TODO: can this be strengthed? Is it always right?
-				if prevoff != -1 && prevoff < ptr.AuxInt {
+				if prevoff != -1 && prevoff <= ptr.AuxInt {
 					f.Fatalf("arg stores out of order in %v: %d < %d", v.Aux, prevoff, ptr.AuxInt)
 				}
 				prevoff = ptr.AuxInt
+				firstmem = mem
 				mem = mem.MemoryArg()
 				if ptr.AuxInt == 0 {
 					// Reached beginning of argument stores.
@@ -57,6 +59,7 @@ func funcArgOpt(f *Func) {
 			buf := new(bytes.Buffer)
 			fmt.Fprintln(buf, "---", v.Op, v.Aux, v.AuxInt, "origmem=", origmem)
 
+			var target *Value
 			mem = v.MemoryArg()
 			for mem.Op == OpStore || mem.Op == OpMove {
 				if mem == origmem {
@@ -73,15 +76,25 @@ func funcArgOpt(f *Func) {
 				// 	fmt.Fprintln(buf, "\tMOVE", mem.Args[1].LongString(), "TO", ptr.AuxInt, "(SP)")
 				// }
 
-				if arg.Op == OpLoad && arg.MemoryArg() == origmem {
+				if arg.Op == OpLoad && arg.MemoryArg() == origmem && mem.Op == OpStore {
 					// TODO: OpLoad is for OpStore; what about OpMove??
 					fmt.Fprintln(buf, "\tusing origmem", origmem.Op.String(), "LOAD FROM PTR", arg.Args[0].LongString(), "TO STORE TO PTR", mem.Args[0].LongString())
+					target = mem
+					// break
 				}
 
 				// fmt.Fprintln(buf, "\t", mem.LongString(), "@@", ptr.AuxInt, " (", t.Size(), t.Alignment(), ")")
 				mem = mem.MemoryArg()
 			}
-			fmt.Println(buf.String())
+			if target != nil {
+				// rewrite store order
+				// TODO don't reorder if firstmem == target (or does it matter?)
+				fmt.Fprintln(buf, "target=", target.LongString(), "first=", firstmem.LongString())
+				target.Args[0], firstmem.Args[0] = firstmem.Args[0], target.Args[0]
+				target.Args[1], firstmem.Args[1] = firstmem.Args[1], target.Args[1]
+				target.Type, firstmem.Type = firstmem.Type, target.Type
+				fmt.Println(buf.String())
+			}
 
 			/*
 				if mem.Op == OpInitMem {
