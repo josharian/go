@@ -3479,42 +3479,36 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 	// TODO(josharian): consider re-ordering this stack construction
 	// so that the final temp from n.List gets written to the stack first.
 	// This will allow elimination of the temp in some cases.
-	t := n.Left.Type
-	off := Ctxt.FixedFrameSize()
-	if k != callNormal {
-		off += 2 * int64(Widthptr)
-	}
-	args := n.Rlist.Slice()
-	if n.Op == OCALLMETH {
-		f := t.Recvs().Field(0)
-		s.storeArg(args[0], f.Type, off+f.Offset)
-		args = args[1:]
-	}
-	for i, n := range args {
-		f := t.Params().Field(i)
-		s.storeArg(n, f.Type, off+f.Offset)
-	}
-
-	// Set receiver (for interface calls)
-	if rcvr != nil {
-		argStart := Ctxt.FixedFrameSize()
-		if k != callNormal {
-			argStart += int64(2 * Widthptr)
-		}
-		addr := s.constOffPtrSP(s.f.Config.Types.UintptrPtr, argStart)
-		s.store(types.Types[TUINTPTR], addr, rcvr)
-	}
-
+	argStart := Ctxt.FixedFrameSize()
 	// Defer/go args
 	if k != callNormal {
 		// Write argsize and closure (args to Newproc/Deferproc).
-		argStart := Ctxt.FixedFrameSize()
 		argsize := s.constInt32(types.Types[TUINT32], int32(stksize))
 		addr := s.constOffPtrSP(s.f.Config.Types.UInt32Ptr, argStart)
 		s.store(types.Types[TUINT32], addr, argsize)
 		addr = s.constOffPtrSP(s.f.Config.Types.UintptrPtr, argStart+int64(Widthptr))
 		s.store(types.Types[TUINTPTR], addr, closure)
 		stksize += 2 * int64(Widthptr)
+		argStart += 2 * int64(Widthptr)
+	}
+
+	// Set receiver (for interface calls).
+	if rcvr != nil {
+		addr := s.constOffPtrSP(s.f.Config.Types.UintptrPtr, argStart)
+		s.store(types.Types[TUINTPTR], addr, rcvr)
+	}
+
+	// Write args.
+	t := n.Left.Type
+	args := n.Rlist.Slice()
+	if n.Op == OCALLMETH {
+		f := t.Recvs().Field(0)
+		s.storeArg(args[0], f.Type, argStart+f.Offset)
+		args = args[1:]
+	}
+	for i, n := range args {
+		f := t.Params().Field(i)
+		s.storeArg(n, f.Type, argStart+f.Offset)
 	}
 
 	// call target
