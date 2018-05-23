@@ -4,10 +4,6 @@
 
 package ssa
 
-import (
-	"fmt"
-)
-
 // funcArgOpt alters the order in which function arguments
 // are written to the stack to minimize spills.
 func funcArgOpt(f *Func) {
@@ -23,7 +19,7 @@ func funcArgOpt(f *Func) {
 			default:
 				continue
 			}
-			fmt.Println("---", v.Op, v.Aux, v.AuxInt)
+			// fmt.Println("---", v.Op, v.Aux, v.AuxInt)
 			mem := v.MemoryArg()
 			prevoff := int64(-1)
 			for mem.Op == OpStore || mem.Op == OpMove {
@@ -44,7 +40,7 @@ func funcArgOpt(f *Func) {
 				if ptr.AuxInt == 0 {
 					// Reached beginning of argument stores.
 					// What is mem now?
-					fmt.Println(mem.LongString())
+					// fmt.Println(mem.LongString())
 				}
 			}
 			// fmt.Println()
