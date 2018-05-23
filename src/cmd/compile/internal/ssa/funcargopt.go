@@ -4,6 +4,11 @@
 
 package ssa
 
+import (
+	"bytes"
+	"fmt"
+)
+
 // funcArgOpt alters the order in which function arguments
 // are written to the stack to minimize spills.
 func funcArgOpt(f *Func) {
@@ -19,19 +24,17 @@ func funcArgOpt(f *Func) {
 			default:
 				continue
 			}
-			// fmt.Println("---", v.Op, v.Aux, v.AuxInt)
+
+			// Chase the memory chain of Stores/Moves that set up the arguments.
+			var origmem *Value
 			mem := v.MemoryArg()
 			prevoff := int64(-1)
 			for mem.Op == OpStore || mem.Op == OpMove {
 				ptr := mem.Args[0]
-				if ptr.Op != OpOffPtr {
+				if ptr.Op != OpOffPtr || ptr.Args[0].Op != OpSP {
 					break
 				}
-				if ptr.Args[0].Op != OpSP {
-					break
-				}
-				// t := mem.Aux.(*types.Type)
-				// fmt.Println("\t", ptr.AuxInt, " (", t.Size(), t.Alignment(), ")")
+				// TODO: can this be strengthed? Is it always right?
 				if prevoff != -1 && prevoff < ptr.AuxInt {
 					f.Fatalf("arg stores out of order in %v: %d < %d", v.Aux, prevoff, ptr.AuxInt)
 				}
@@ -40,10 +43,45 @@ func funcArgOpt(f *Func) {
 				if ptr.AuxInt == 0 {
 					// Reached beginning of argument stores.
 					// What is mem now?
-					// fmt.Println(mem.LongString())
+					origmem = mem
+					break
 				}
 			}
-			// fmt.Println()
+
+			if origmem == nil { //|| (origmem.Op != OpStaticCall && origmem != OpInterCall && origmem.Op != OpClosureCall) {
+				// origmem == nil happens when making a function call that takes no arguments.
+				// And if we're not potentially loading the results
+				continue
+			}
+
+			buf := new(bytes.Buffer)
+			fmt.Fprintln(buf, "---", v.Op, v.Aux, v.AuxInt, "origmem=", origmem)
+
+			mem = v.MemoryArg()
+			for mem.Op == OpStore || mem.Op == OpMove {
+				if mem == origmem {
+					break
+				}
+				arg := mem.Args[1]
+
+				// if mem.Op == OpStore {
+				// 	// Write down the value being stored.
+				// 	fmt.Fprintln(buf, "\tSTORE", mem.Args[1].LongString(), "TO", ptr.AuxInt, "(SP)")
+				// } else {
+				// 	// Write down the source of the value being moved.
+				// 	// OpMove
+				// 	fmt.Fprintln(buf, "\tMOVE", mem.Args[1].LongString(), "TO", ptr.AuxInt, "(SP)")
+				// }
+
+				if arg.Op == OpLoad && arg.MemoryArg() == origmem {
+					// TODO: OpLoad is for OpStore; what about OpMove??
+					fmt.Fprintln(buf, "\tusing origmem", origmem.Op.String(), "LOAD FROM PTR", arg.Args[0].LongString(), "TO STORE TO PTR", mem.Args[0].LongString())
+				}
+
+				// fmt.Fprintln(buf, "\t", mem.LongString(), "@@", ptr.AuxInt, " (", t.Size(), t.Alignment(), ")")
+				mem = mem.MemoryArg()
+			}
+			fmt.Println(buf.String())
 
 			/*
 				if mem.Op == OpInitMem {
