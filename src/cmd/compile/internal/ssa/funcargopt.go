@@ -12,6 +12,7 @@ import (
 // funcArgOpt alters the order in which function arguments
 // are written to the stack to minimize spills.
 func funcArgOpt(f *Func) {
+	return
 	for _, b := range f.Blocks {
 		for _, v := range b.Values {
 			// Ignore OpClosureCall.
