@@ -356,6 +356,12 @@ func isSameSym(sym interface{}, name string) bool {
 	return ok && s.String() == name
 }
 
+// isAutoTmp reports whether a is an autotmp gc.Node.
+func isAutoTmp(a interface{}) bool {
+	n, ok := a.(GCNode)
+	return ok && n.IsAutoTmp()
+}
+
 // nlz returns the number of leading zeros.
 func nlz(x int64) int64 {
 	return int64(bits.LeadingZeros64(uint64(x)))
