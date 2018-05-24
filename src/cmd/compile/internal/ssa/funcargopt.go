@@ -13,8 +13,24 @@ import (
 // are written to the stack to minimize spills.
 func funcArgOpt(f *Func) {
 	return
+
 	for _, b := range f.Blocks {
 		for _, v := range b.Values {
+			if v.Op == OpMove {
+				srcmem := v.MemoryArg()
+				srcptr := v.Args[0]
+				if srcmem.Op == OpMove {
+					for srcptr.Op == OpOffPtr {
+						srcptr = srcptr.Args[0]
+					}
+					fmt.Println("FROM", srcmem.LongString(), "TO", v.LongString(), "SRCPTR", srcptr.LongString())
+				}
+			}
+
+			// {name: "Move", argLength: 3, typ: "Mem", aux: "TypSize"}, // arg0=destptr, arg1=srcptr, arg2=mem, auxint=size, aux=type.  Returns memory.
+
+			continue
+
 			// Ignore OpClosureCall.
 			// Closures always take two arguments,
 			// a function pointer and a data pointer,
