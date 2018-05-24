@@ -17273,6 +17273,36 @@ func rewriteValuegeneric_OpMove_20(v *Value) bool {
 		v.AddArg(v1)
 		return true
 	}
+	// match: (Move {t1} [s1] dst tmp1 midmem:(Move {t2} [s2] tmp2 src mem))
+	// cond: s1 == s2 && midmem.Uses == 1 && t1.(*types.Type).Compare(t2.(*types.Type)) == types.CMPeq && isSamePtr(tmp1, tmp2) && tmp1.Aux.(GCNode).IsAutoTmp() && noteRule("OPT")
+	// result: (Move {t1} [s1] dst src mem)
+	for {
+		s1 := v.AuxInt
+		t1 := v.Aux
+		_ = v.Args[2]
+		dst := v.Args[0]
+		tmp1 := v.Args[1]
+		midmem := v.Args[2]
+		if midmem.Op != OpMove {
+			break
+		}
+		s2 := midmem.AuxInt
+		t2 := midmem.Aux
+		_ = midmem.Args[2]
+		tmp2 := midmem.Args[0]
+		src := midmem.Args[1]
+		mem := midmem.Args[2]
+		if !(s1 == s2 && midmem.Uses == 1 && t1.(*types.Type).Compare(t2.(*types.Type)) == types.CMPeq && isSamePtr(tmp1, tmp2) && tmp1.Aux.(GCNode).IsAutoTmp() && noteRule("OPT")) {
+			break
+		}
+		v.reset(OpMove)
+		v.AuxInt = s1
+		v.Aux = t1
+		v.AddArg(dst)
+		v.AddArg(src)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValuegeneric_OpMul16_0(v *Value) bool {

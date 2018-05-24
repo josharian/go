@@ -1783,3 +1783,12 @@
 			(Store {t4} (OffPtr <tt4> [o4] dst) d3
 				(Store {t5} (OffPtr <tt5> [o5] dst) d4
 					(Zero {t1} [n] dst mem)))))
+
+// Skip moving through an autotmp.
+(Move {t1} [s1] dst tmp1 midmem:(Move {t2} [s2] tmp2 src mem))
+	&& s1 == s2
+	&& midmem.Uses == 1
+ 	&& t1.(*types.Type).Compare(t2.(*types.Type)) == types.CMPeq
+	&& isSamePtr(tmp1, tmp2) && tmp1.Aux.(GCNode).IsAutoTmp() // TODO: IsSynthetic instead?
+	&& noteRule("OPT")
+	-> (Move {t1} [s1] dst src mem)
