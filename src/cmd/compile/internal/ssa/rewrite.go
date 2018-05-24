@@ -5,6 +5,7 @@
 package ssa
 
 import (
+	"bytes"
 	"cmd/compile/internal/types"
 	"cmd/internal/obj"
 	"cmd/internal/src"
@@ -17,6 +18,40 @@ import (
 )
 
 func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
+	x := true
+	if f.Name == "(*sparseFileReader).LogicalRemaining" && x {
+		for _, b := range f.Blocks {
+			for _, v := range b.Values {
+				buf := new(bytes.Buffer)
+				p := false
+				mv := v
+				for mv.Op == OpMove {
+					fmt.Fprintf(buf, "\tMV %s\n", mv.LongString())
+					p = true
+					mv = mv.MemoryArg()
+				}
+				if p {
+					fmt.Fprintln(buf, "---")
+					fmt.Println(buf.String())
+				}
+				// if v.Op == OpMove {
+				// 	srcmem := v.MemoryArg()
+				// 	srcptr := v.Args[0]
+				// 	if srcmem.Op == OpMove {
+				// 		for srcptr.Op == OpOffPtr {
+				// 			srcptr = srcptr.Args[0]
+				// 		}
+				// 		fmt.Println("FROM", srcmem.LongString(), "TO", v.LongString(), "SRCPTR", srcptr.LongString())
+				// 	}
+				// }
+
+				// Move from arg1 into arg0
+
+				// {name: "Move", argLength: 3, typ: "Mem", aux: "TypSize"}, // arg0=destptr, arg1=srcptr, arg2=mem, auxint=size, aux=type.  Returns memory.
+				x = false
+			}
+		}
+	}
 	// repeat rewrites until we find no more rewrites
 	pendingLines := f.cachedLineStarts // Holds statement boundaries that need to be moved to a new value/block
 	pendingLines.clear()
