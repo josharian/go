@@ -19,7 +19,7 @@ import (
 
 func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
 	x := true
-	if f.Name == "(*sparseFileReader).LogicalRemaining" && x {
+	if false && f.Name == "(*sparseFileReader).LogicalRemaining" && x {
 		for _, b := range f.Blocks {
 			for _, v := range b.Values {
 				buf := new(bytes.Buffer)

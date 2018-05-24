@@ -17274,7 +17274,7 @@ func rewriteValuegeneric_OpMove_20(v *Value) bool {
 		return true
 	}
 	// match: (Move {t1} [s1] dst tmp1 midmem:(Move {t2} [s2] tmp2 src mem))
-	// cond: s1 == s2 && midmem.Uses == 1 && t1.(*types.Type).Compare(t2.(*types.Type)) == types.CMPeq && isSamePtr(tmp1, tmp2) && tmp1.Aux.(GCNode).IsAutoTmp() && noteRule("OPT")
+	// cond: s1 == s2 && midmem.Uses == 1 && t1.(*types.Type).Compare(t2.(*types.Type)) == types.CMPeq && isSamePtr(tmp1, tmp2) && tmp1.Aux.(GCNode).IsAutoTmp()
 	// result: (Move {t1} [s1] dst src mem)
 	for {
 		s1 := v.AuxInt
@@ -17292,7 +17292,7 @@ func rewriteValuegeneric_OpMove_20(v *Value) bool {
 		tmp2 := midmem.Args[0]
 		src := midmem.Args[1]
 		mem := midmem.Args[2]
-		if !(s1 == s2 && midmem.Uses == 1 && t1.(*types.Type).Compare(t2.(*types.Type)) == types.CMPeq && isSamePtr(tmp1, tmp2) && tmp1.Aux.(GCNode).IsAutoTmp() && noteRule("OPT")) {
+		if !(s1 == s2 && midmem.Uses == 1 && t1.(*types.Type).Compare(t2.(*types.Type)) == types.CMPeq && isSamePtr(tmp1, tmp2) && tmp1.Aux.(GCNode).IsAutoTmp()) {
 			break
 		}
 		v.reset(OpMove)
