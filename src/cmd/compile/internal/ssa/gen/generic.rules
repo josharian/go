@@ -1190,6 +1190,8 @@
 // All other mods by constants, do A%B = A-(A/B*B).
 // This implements % with two * and a bunch of ancillary ops.
 // One of the * is free if the user's code also computes A/B.
+// Disable the ModNNu rewrites for the earlier generic rewrite pass (called "opt"),
+// so that the IsInBounds ModNNu optimizations have an opportunity to fire.
 (Mod8   <t> x (Const8  [c])) && x.Op != OpConst8  && (c > 0 || c == -1<<7)
   -> (Sub8  x (Mul8  <t> (Div8   <t> x (Const8  <t> [c])) (Const8  <t> [c])))
 (Mod16  <t> x (Const16 [c])) && x.Op != OpConst16 && (c > 0 || c == -1<<15)
@@ -1198,13 +1200,13 @@
   -> (Sub32 x (Mul32 <t> (Div32  <t> x (Const32 <t> [c])) (Const32 <t> [c])))
 (Mod64  <t> x (Const64 [c])) && x.Op != OpConst64 && (c > 0 || c == -1<<63)
   -> (Sub64 x (Mul64 <t> (Div64  <t> x (Const64 <t> [c])) (Const64 <t> [c])))
-(Mod8u  <t> x (Const8  [c])) && x.Op != OpConst8  && c > 0 && umagicOK(8 ,c)
+(Mod8u  <t> x (Const8  [c])) && x.Op != OpConst8  && c > 0 && v.Block.Func.pass.name != "opt" && umagicOK(8 ,c)
   -> (Sub8  x (Mul8  <t> (Div8u  <t> x (Const8  <t> [c])) (Const8  <t> [c])))
-(Mod16u <t> x (Const16 [c])) && x.Op != OpConst16 && c > 0 && umagicOK(16,c)
+(Mod16u <t> x (Const16 [c])) && x.Op != OpConst16 && c > 0 && v.Block.Func.pass.name != "opt" && umagicOK(16,c)
   -> (Sub16 x (Mul16 <t> (Div16u <t> x (Const16 <t> [c])) (Const16 <t> [c])))
-(Mod32u <t> x (Const32 [c])) && x.Op != OpConst32 && c > 0 && umagicOK(32,c)
+(Mod32u <t> x (Const32 [c])) && x.Op != OpConst32 && c > 0 && v.Block.Func.pass.name != "opt" && umagicOK(32,c)
   -> (Sub32 x (Mul32 <t> (Div32u <t> x (Const32 <t> [c])) (Const32 <t> [c])))
-(Mod64u <t> x (Const64 [c])) && x.Op != OpConst64 && c > 0 && umagicOK(64,c)
+(Mod64u <t> x (Const64 [c])) && x.Op != OpConst64 && c > 0 && v.Block.Func.pass.name != "opt" && umagicOK(64,c)
   -> (Sub64 x (Mul64 <t> (Div64u <t> x (Const64 <t> [c])) (Const64 <t> [c])))
 
 (Eq(8|16|32|64)  s:(Sub(8|16|32|64) x y) (Const(8|16|32|64) [0])) && s.Uses == 1 -> (Eq(8|16|32|64)  x y)
