@@ -12188,8 +12188,8 @@ func rewriteValuegeneric_OpIsInBounds_20(v *Value) bool {
 		v.AuxInt = b2i(0 <= c && c < d)
 		return true
 	}
-	// match: (IsInBounds (Mod32u _ y) y)
-	// cond:
+	// match: (IsInBounds (Mod32u _ (Const32 [c])) (Const32 [d]))
+	// cond: uint32(c) == uint32(d)
 	// result: (ConstBool [1])
 	for {
 		_ = v.Args[1]
@@ -12198,16 +12198,25 @@ func rewriteValuegeneric_OpIsInBounds_20(v *Value) bool {
 			break
 		}
 		_ = v_0.Args[1]
-		y := v_0.Args[1]
-		if y != v.Args[1] {
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpConst32 {
+			break
+		}
+		c := v_0_1.AuxInt
+		v_1 := v.Args[1]
+		if v_1.Op != OpConst32 {
+			break
+		}
+		d := v_1.AuxInt
+		if !(uint32(c) == uint32(d)) {
 			break
 		}
 		v.reset(OpConstBool)
 		v.AuxInt = 1
 		return true
 	}
-	// match: (IsInBounds (Mod64u _ y) y)
-	// cond:
+	// match: (IsInBounds (Mod64u _ (Const64 [c])) (Const64 [d]))
+	// cond: uint64(c) == uint64(d)
 	// result: (ConstBool [1])
 	for {
 		_ = v.Args[1]
@@ -12216,14 +12225,57 @@ func rewriteValuegeneric_OpIsInBounds_20(v *Value) bool {
 			break
 		}
 		_ = v_0.Args[1]
-		y := v_0.Args[1]
-		if y != v.Args[1] {
+		v_0_1 := v_0.Args[1]
+		if v_0_1.Op != OpConst64 {
+			break
+		}
+		c := v_0_1.AuxInt
+		v_1 := v.Args[1]
+		if v_1.Op != OpConst64 {
+			break
+		}
+		d := v_1.AuxInt
+		if !(uint64(c) == uint64(d)) {
 			break
 		}
 		v.reset(OpConstBool)
 		v.AuxInt = 1
 		return true
 	}
+	// match: (IsInBounds (ZeroExt32to64 (Mod32u _ (Const32 [c]))) (Const64 [d]))
+	// cond: uint64(uint32(c)) == uint64(d)
+	// result: (ConstBool [1])
+	for {
+		_ = v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpZeroExt32to64 {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpMod32u {
+			break
+		}
+		_ = v_0_0.Args[1]
+		v_0_0_1 := v_0_0.Args[1]
+		if v_0_0_1.Op != OpConst32 {
+			break
+		}
+		c := v_0_0_1.AuxInt
+		v_1 := v.Args[1]
+		if v_1.Op != OpConst64 {
+			break
+		}
+		d := v_1.AuxInt
+		if !(uint64(uint32(c)) == uint64(d)) {
+			break
+		}
+		v.reset(OpConstBool)
+		v.AuxInt = 1
+		return true
+	}
+	return false
+}
+func rewriteValuegeneric_OpIsInBounds_30(v *Value) bool {
 	// match: (IsInBounds (ZeroExt8to64 (Rsh8Ux64 _ (Const64 [c]))) (Const64 [d]))
 	// cond: 0 < c && c < 8 && 1<<uint( 8-c)-1 < d
 	// result: (ConstBool [1])
@@ -12255,9 +12307,6 @@ func rewriteValuegeneric_OpIsInBounds_20(v *Value) bool {
 		v.AuxInt = 1
 		return true
 	}
-	return false
-}
-func rewriteValuegeneric_OpIsInBounds_30(v *Value) bool {
 	// match: (IsInBounds (ZeroExt8to32 (Rsh8Ux64 _ (Const64 [c]))) (Const32 [d]))
 	// cond: 0 < c && c < 8 && 1<<uint( 8-c)-1 < d
 	// result: (ConstBool [1])
