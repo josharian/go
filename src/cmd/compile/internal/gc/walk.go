@@ -569,11 +569,11 @@ opswitch:
 	case OLSH, ORSH:
 		n.Left = walkexpr(n.Left, init)
 		n.Right = walkexpr(n.Right, init)
-		t := n.Left.Type
-		n.SetBounded(bounded(n.Right, 8*t.Width))
-		if Debug['m'] != 0 && n.Bounded() && !Isconst(n.Right, CTINT) {
-			Warn("shift bounds check elided")
-		}
+		// t := n.Left.Type
+		// n.SetBounded(bounded(n.Right, 8*t.Width))
+		// if Debug['m'] != 0 && n.Bounded() && !Isconst(n.Right, CTINT) {
+		// 	Warn("shift bounds check elided")
+		// }
 
 	case OCOMPLEX:
 		// Use results from call expression as arguments for complex.
@@ -1088,42 +1088,42 @@ opswitch:
 
 		// save the original node for bounds checking elision.
 		// If it was a ODIV/OMOD walk might rewrite it.
-		r := n.Right
+		// r := n.Right
 
 		n.Right = walkexpr(n.Right, init)
 
 		// if range of type cannot exceed static array bound,
 		// disable bounds check.
-		if n.Bounded() {
-			break
-		}
-		t := n.Left.Type
-		if t != nil && t.IsPtr() {
-			t = t.Elem()
-		}
-		if t.IsArray() {
-			n.SetBounded(bounded(r, t.NumElem()))
-			if Debug['m'] != 0 && n.Bounded() && !Isconst(n.Right, CTINT) {
-				Warn("index bounds check elided")
-			}
-			if smallintconst(n.Right) && !n.Bounded() {
-				yyerror("index out of bounds")
-			}
-		} else if Isconst(n.Left, CTSTR) {
-			n.SetBounded(bounded(r, int64(len(n.Left.Val().U.(string)))))
-			if Debug['m'] != 0 && n.Bounded() && !Isconst(n.Right, CTINT) {
-				Warn("index bounds check elided")
-			}
-			if smallintconst(n.Right) && !n.Bounded() {
-				yyerror("index out of bounds")
-			}
-		}
+		// if n.Bounded() {
+		// 	break
+		// }
+		// t := n.Left.Type
+		// if t != nil && t.IsPtr() {
+		// 	t = t.Elem()
+		// }
+		// if t.IsArray() {
+		// 	n.SetBounded(bounded(r, t.NumElem()))
+		// 	if Debug['m'] != 0 && n.Bounded() && !Isconst(n.Right, CTINT) {
+		// 		Warn("index bounds check elided")
+		// 	}
+		// 	if smallintconst(n.Right) && !n.Bounded() {
+		// 		fmt.Println("index out of bounds")
+		// 	}
+		// } else if Isconst(n.Left, CTSTR) {
+		// 	n.SetBounded(bounded(r, int64(len(n.Left.Val().U.(string)))))
+		// 	if Debug['m'] != 0 && n.Bounded() && !Isconst(n.Right, CTINT) {
+		// 		Warn("index bounds check elided")
+		// 	}
+		// 	if smallintconst(n.Right) && !n.Bounded() {
+		// 		fmt.Println("index out of bounds")
+		// 	}
+		// }
 
-		if Isconst(n.Right, CTINT) {
-			if n.Right.Val().U.(*Mpint).CmpInt64(0) < 0 || n.Right.Val().U.(*Mpint).Cmp(maxintval[TINT]) > 0 {
-				yyerror("index out of bounds")
-			}
-		}
+		// if Isconst(n.Right, CTINT) {
+		// 	if n.Right.Val().U.(*Mpint).CmpInt64(0) < 0 || n.Right.Val().U.(*Mpint).Cmp(maxintval[TINT]) > 0 {
+		// 		fmt.Println("index out of bounds")
+		// 	}
+		// }
 
 	case OINDEXMAP:
 		// Replace m[k] with *map{access1,assign}(maptype, m, &k)
@@ -3780,6 +3780,7 @@ func walkinrange(n *Node, init *Nodes) *Node {
 
 // return 1 if integer n must be in range [0, max), 0 otherwise
 func bounded(n *Node, max int64) bool {
+	return false
 	if n.Type == nil || !n.Type.IsInteger() {
 		return false
 	}
