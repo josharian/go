@@ -112,6 +112,7 @@ var Debug [256]int
 var debugstr string
 
 var Debug_checknil int
+var Debug_bce int
 var Debug_typeassert int
 
 var localpkg *types.Pkg // package being compiled
