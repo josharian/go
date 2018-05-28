@@ -405,6 +405,7 @@ func (s *state) Fatalf(msg string, args ...interface{}) {
 }
 func (s *state) Warnl(pos src.XPos, msg string, args ...interface{}) { s.f.Warnl(pos, msg, args...) }
 func (s *state) Debug_checknil() bool                                { return s.f.Frontend().Debug_checknil() }
+func (s *state) Debug_bce() bool                                     { return s.f.Frontend().Debug_bce() }
 
 var (
 	// dummy node for the memory variable
@@ -5798,9 +5799,8 @@ func (e *ssafn) Warnl(pos src.XPos, fmt_ string, args ...interface{}) {
 	Warnl(pos, fmt_, args...)
 }
 
-func (e *ssafn) Debug_checknil() bool {
-	return Debug_checknil != 0
-}
+func (e *ssafn) Debug_checknil() bool { return Debug_checknil != 0 }
+func (e *ssafn) Debug_bce() bool      { return Debug_bce != 0 }
 
 func (e *ssafn) UseWriteBarrier() bool {
 	return use_writebarrier

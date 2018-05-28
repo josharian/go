@@ -71,6 +71,7 @@ var debugtab = []struct {
 	{"dclstack", "run internal dclstack check", &debug_dclstack},
 	{"gcprog", "print dump of GC programs", &Debug_gcprog},
 	{"nil", "print information about nil checks", &Debug_checknil},
+	{"bce", "print information about eliminated bounds checks", &Debug_bce},
 	{"panic", "do not hide any compiler panic", &Debug_panic},
 	{"slice", "print information about slice compilation", &Debug_slice},
 	{"typeassert", "print information about type assertion inlining", &Debug_typeassert},
