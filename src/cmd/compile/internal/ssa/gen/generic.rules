@@ -206,10 +206,17 @@
 (IsInBounds                (And64 (Const64 [c]) _)  (Const64 [d])) && 0 <= c && c < d -> (ConstBool [1])
 (IsInBounds (Const32 [c]) (Const32 [d])) -> (ConstBool [b2i(0 <= c && c < d)])
 (IsInBounds (Const64 [c]) (Const64 [d])) -> (ConstBool [b2i(0 <= c && c < d)])
-// (Mod64u x y) is always between 0 (inclusive) and y (exclusive).
-(IsInBounds                (Mod32u _ (Const32 [c]))  (Const32 [d])) &&        uint32(c)  == uint32(d) -> (ConstBool [1])
-(IsInBounds                (Mod64u _ (Const64 [c]))  (Const64 [d])) &&        uint64(c)  == uint64(d) -> (ConstBool [1])
-(IsInBounds (ZeroExt32to64 (Mod32u _ (Const32 [c]))) (Const64 [d])) && uint64(uint32(c)) == uint64(d) -> (ConstBool [1])
+// (ModNNu x y) is always between 0 (inclusive) and y (exclusive).
+(IsInBounds (ZeroExt8to64  (Mod8u  _ (Const8  [c]))) (Const64 [d])) && 0 < c && uint64( uint8(c)) <= uint64(d) -> (ConstBool [1])
+(IsInBounds (ZeroExt8to32  (Mod8u  _ (Const8  [c]))) (Const32 [d])) && 0 < c && uint32( uint8(c)) <= uint32(d) -> (ConstBool [1])
+(IsInBounds (ZeroExt8to16  (Mod8u  _ (Const8  [c]))) (Const16 [d])) && 0 < c && uint16( uint8(c)) <= uint16(d) -> (ConstBool [1])
+(IsInBounds                (Mod8u  _ (Const8  [c]))   (Const8 [d])) && 0 < c &&         uint8(c)  <=  uint8(d) -> (ConstBool [1])
+(IsInBounds (ZeroExt16to64 (Mod16u _ (Const16 [c]))) (Const64 [d])) && 0 < c && uint64(uint16(c)) <= uint64(d) -> (ConstBool [1])
+(IsInBounds (ZeroExt16to32 (Mod16u _ (Const16 [c]))) (Const32 [d])) && 0 < c && uint32(uint16(c)) <= uint32(d) -> (ConstBool [1])
+(IsInBounds                (Mod16u _ (Const16 [c]))  (Const16 [d])) && 0 < c &&        uint16(c)  <= uint16(d) -> (ConstBool [1])
+(IsInBounds (ZeroExt32to64 (Mod32u _ (Const32 [c]))) (Const64 [d])) && 0 < c && uint64(uint32(c)) <= uint64(d) -> (ConstBool [1])
+(IsInBounds                (Mod32u _ (Const32 [c]))  (Const32 [d])) && 0 < c &&        uint32(c)  <= uint32(d) -> (ConstBool [1])
+(IsInBounds                (Mod64u _ (Const64 [c]))  (Const64 [d])) && 0 < c &&        uint64(c)  <= uint64(d) -> (ConstBool [1])
 // Right shifting an unsigned number limits its value.
 (IsInBounds (ZeroExt8to64  (Rsh8Ux64  _ (Const64 [c]))) (Const64 [d])) && 0 < c && c <  8 && 1<<uint( 8-c)-1 < d -> (ConstBool [1])
 (IsInBounds (ZeroExt8to32  (Rsh8Ux64  _ (Const64 [c]))) (Const32 [d])) && 0 < c && c <  8 && 1<<uint( 8-c)-1 < d -> (ConstBool [1])
