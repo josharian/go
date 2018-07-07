@@ -336,6 +336,7 @@ func hashfor(t *types.Type) *Node {
 		sym = Runtimepkg.Lookup("c128hash")
 	default:
 		sym = typesymprefix(".hash", t)
+		recordType(t)
 	}
 
 	n := newname(sym)

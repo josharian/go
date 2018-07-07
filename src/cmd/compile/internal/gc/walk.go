@@ -3375,6 +3375,7 @@ func eqfor(t *types.Type) (n *Node, needsize bool) {
 		return n, true
 	case ASPECIAL:
 		sym := typesymprefix(".eq", t)
+		recordType(t)
 		n := newname(sym)
 		n.SetClass(PFUNC)
 		n.Type = functype(nil, []*Node{

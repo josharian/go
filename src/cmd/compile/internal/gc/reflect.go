@@ -974,6 +974,13 @@ func typenamesym(t *types.Type) *types.Sym {
 	return s
 }
 
+// recordType adds t to the list of types inspected for alg generation and reflection information.
+func recordType(t *types.Type) {
+	signatsetmu.Lock()
+	addsignat(t)
+	signatsetmu.Unlock()
+}
+
 func typename(t *types.Type) *Node {
 	s := typenamesym(t)
 	if s.Def == nil {
