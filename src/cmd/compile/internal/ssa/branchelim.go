@@ -18,6 +18,7 @@ package ssa
 // where the intermediate blocks are mostly empty (with no side-effects);
 // rewrite Phis in the postdominator as CondSelects.
 func branchelim(f *Func) {
+	return
 	// FIXME: add support for lowering CondSelects on more architectures
 	switch f.Config.arch {
 	case "arm64", "amd64":
