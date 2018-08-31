@@ -5481,6 +5481,34 @@ func genssa(f *ssa.Func, pp *Progs) {
 
 	f.HTMLWriter.Close()
 	f.HTMLWriter = nil
+
+	// TODO: count actual instructions on non-panic blocks
+	// (ignore TEXT, AFUNCDATA, PCDATA, END, everything in panic-post-dominated blocks)
+	inlcost := s.pp.pc
+	// TODO: Where should we actually make this decision??
+	// TODO: log with -m, -m -m
+	if os.Getenv("J") != "" {
+		switch {
+		case s.pp.curfn.Func.Nname.Func.Inl != nil:
+			fmt.Println("INL", f.Name, inlcost, s.pp.curfn.Func.Nname.Func.Inl.Cost)
+		case s.pp.curfn.Func.Nname.Func.MaybeInl != nil:
+			fmt.Println("MNL", f.Name, inlcost, s.pp.curfn.Func.Nname.Func.MaybeInl.Cost)
+		default:
+			fmt.Println("UNK", f.Name)
+		}
+	}
+	if inlcost < 100 {
+		if os.Getenv("J") != "" {
+			fmt.Println("ACCEPT", f.Name)
+		}
+		s.pp.curfn.Func.SSAInlCost = s.pp.pc
+	} else {
+		if os.Getenv("J") != "" {
+			fmt.Println("REJECT", f.Name)
+		}
+		s.pp.curfn.Func.MaybeInl = nil
+		s.pp.curfn.Func.Inl = nil
+	}
 }
 
 func defframe(s *SSAGenState, e *ssafn) {

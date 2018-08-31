@@ -483,7 +483,10 @@ type Func struct {
 	Nname      *Node
 	lsym       *obj.LSym
 
-	Inl *Inline
+	Inl      *Inline
+	MaybeInl *Inline
+
+	SSAInlCost int64
 
 	Label int32 // largest auto-generated label in this function
 

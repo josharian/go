@@ -197,7 +197,17 @@ func caninl(fn *Node) {
 		reason = visitor.reason
 		return
 	}
+
+	// hack, TODO, check for better way to link method nodes back to the thing with the ->inl
+	// this is so export can find the body of a method
+	fn.Type.FuncType().Nname = asTypesNode(n)
+
 	if visitor.budget < 0 {
+		n.Func.MaybeInl = &Inline{
+			Cost: inlineMaxBudget - visitor.budget,
+			Dcl:  inlcopylist(pruneUnusedAutos(n.Name.Defn.Func.Dcl, &visitor)),
+			Body: inlcopylist(fn.Nbody.Slice()),
+		}
 		reason = fmt.Sprintf("function too complex: cost %d exceeds budget %d", inlineMaxBudget-visitor.budget, inlineMaxBudget)
 		return
 	}
@@ -207,10 +217,6 @@ func caninl(fn *Node) {
 		Dcl:  inlcopylist(pruneUnusedAutos(n.Name.Defn.Func.Dcl, &visitor)),
 		Body: inlcopylist(fn.Nbody.Slice()),
 	}
-
-	// hack, TODO, check for better way to link method nodes back to the thing with the ->inl
-	// this is so export can find the body of a method
-	fn.Type.FuncType().Nname = asTypesNode(n)
 
 	if Debug['m'] > 1 {
 		fmt.Printf("%v: can inline %#v as: %#v { %#v }\n", fn.Line(), n, fn.Type, asNodes(n.Func.Inl.Body))
@@ -231,7 +237,7 @@ func inlFlood(n *Node) {
 	if n.Func == nil {
 		Fatalf("inlFlood: missing Func on %v", n)
 	}
-	if n.Func.Inl == nil {
+	if n.Func.Inl == nil && n.Func.MaybeInl == nil {
 		return
 	}
 
@@ -242,7 +248,11 @@ func inlFlood(n *Node) {
 
 	typecheckinl(n)
 
-	inspectList(asNodes(n.Func.Inl.Body), func(n *Node) bool {
+	inl := n.Func.Inl
+	if inl == nil {
+		inl = n.Func.MaybeInl
+	}
+	inspectList(asNodes(inl.Body), func(n *Node) bool {
 		switch n.Op {
 		case ONAME:
 			// Mark any referenced global variables or

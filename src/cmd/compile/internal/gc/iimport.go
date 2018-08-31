@@ -50,7 +50,11 @@ func expandDecl(n *Node) {
 }
 
 func expandInline(fn *Node) {
-	if fn.Func.Inl.Body != nil {
+	inl := fn.Func.Inl
+	if inl == nil {
+		inl = fn.Func.MaybeInl
+	}
+	if inl.Body != nil {
 		return
 	}
 
@@ -696,7 +700,11 @@ func (r *importReader) linkname(s *types.Sym) {
 }
 
 func (r *importReader) doInline(n *Node) {
-	if len(n.Func.Inl.Body) != 0 {
+	inl := n.Func.Inl
+	if inl == nil {
+		inl = n.Func.MaybeInl
+	}
+	if len(inl.Body) != 0 {
 		Fatalf("%v already has inline body", n)
 	}
 
@@ -712,15 +720,15 @@ func (r *importReader) doInline(n *Node) {
 		// functions).
 		body = []*Node{}
 	}
-	n.Func.Inl.Body = body
+	inl.Body = body
 
 	importlist = append(importlist, n)
 
 	if Debug['E'] > 0 && Debug['m'] > 2 {
 		if Debug['m'] > 3 {
-			fmt.Printf("inl body for %v %#v: %+v\n", n, n.Type, asNodes(n.Func.Inl.Body))
+			fmt.Printf("inl body for %v %#v: %+v\n", n, n.Type, asNodes(inl.Body))
 		} else {
-			fmt.Printf("inl body for %v %#v: %v\n", n, n.Type, asNodes(n.Func.Inl.Body))
+			fmt.Printf("inl body for %v %#v: %v\n", n, n.Type, asNodes(inl.Body))
 		}
 	}
 }

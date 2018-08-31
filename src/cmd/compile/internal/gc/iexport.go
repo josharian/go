@@ -501,7 +501,11 @@ func (p *iexporter) doInline(f *Node) {
 	w := p.newWriter()
 	w.setPkg(fnpkg(f), false)
 
-	w.stmtList(asNodes(f.Func.Inl.Body))
+	inl := f.Func.Inl
+	if inl == nil {
+		inl = f.Func.MaybeInl
+	}
+	w.stmtList(asNodes(inl.Body))
 
 	p.inlineIndex[f] = w.flush()
 }
@@ -946,8 +950,12 @@ func (w *exportWriter) funcExt(n *Node) {
 	}
 
 	// Inline body.
-	if n.Func.Inl != nil {
-		w.uint64(1 + uint64(n.Func.Inl.Cost))
+	if n.Func.Inl != nil || n.Func.MaybeInl != nil {
+		inl := n.Func.Inl
+		if inl == nil {
+			inl = n.Func.MaybeInl
+		}
+		w.uint64(1 + uint64(inl.Cost))
 		if n.Func.ExportInline() {
 			w.p.doInline(n)
 		}
