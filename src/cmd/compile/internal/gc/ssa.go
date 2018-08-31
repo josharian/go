@@ -5497,7 +5497,7 @@ func genssa(f *ssa.Func, pp *Progs) {
 			fmt.Println("UNK", f.Name)
 		}
 	}
-	if inlcost < 100 {
+	if inlcost < 50 {
 		if os.Getenv("J") != "" {
 			fmt.Println("ACCEPT", f.Name)
 		}
