@@ -835,13 +835,13 @@ func methodSymSuffix(recv *types.Type, msym *types.Sym, suffix string) *types.Sy
 		rpkg = rsym.Pkg
 	}
 
-	var b bytes.Buffer
+	b := bytes.NewBuffer(make([]byte, 0, 64))
 	if recv.IsPtr() {
 		// The parentheses aren't really necessary, but
 		// they're pretty traditional at this point.
-		fmt.Fprintf(&b, "(%-S)", recv)
+		fmt.Fprintf(b, "(%-S)", recv)
 	} else {
-		fmt.Fprintf(&b, "%-S", recv)
+		fmt.Fprintf(b, "%-S", recv)
 	}
 
 	// A particular receiver type may have multiple non-exported
