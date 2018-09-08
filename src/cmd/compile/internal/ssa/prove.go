@@ -1147,6 +1147,21 @@ func simplifyBlock(sdom SparseTree, ft *factsTable, b *Block) {
 					b.Func.Warnl(v.Pos, "Proved %v bounded", v.Op)
 				}
 			}
+		case OpZeroExt32to64:
+			if trunc := v.Args[0]; trunc.Op == OpTrunc64to32 {
+				orig := trunc.Args[0]
+				lim, ok := ft.limits[orig.ID]
+				if !ok {
+					continue
+				}
+				if lim.umax < (1<<32) || (lim.max < (1<<31) && ft.isNonNegative(orig)) {
+					if b.Func.pass.debug > 0 {
+						b.Func.Warnl(v.Pos, "Proved %v bounded", v.Op)
+					}
+					v.reset(OpCopy)
+					v.AddArg(orig)
+				}
+			}
 		}
 	}
 
