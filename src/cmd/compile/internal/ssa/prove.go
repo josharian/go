@@ -1076,6 +1076,7 @@ func addLocalInductiveFacts(ft *factsTable, b *Block) {
 }
 
 var ctzNonZeroOp = map[Op]Op{OpCtz8: OpCtz8NonZero, OpCtz16: OpCtz16NonZero, OpCtz32: OpCtz32NonZero, OpCtz64: OpCtz64NonZero}
+var signExtToZeroExt = map[Op]Op{OpSignExt8to16: OpZeroExt8to16, OpSignExt8to32: OpZeroExt8to32, OpSignExt8to64: OpZeroExt8to64, OpSignExt16to32: OpZeroExt16to32, OpSignExt16to64: OpZeroExt16to64, OpSignExt32to64: OpZeroExt32to64}
 
 // simplifyBlock simplifies some constant values in b and evaluates
 // branches to non-uniquely dominated successors of b.
@@ -1146,6 +1147,14 @@ func simplifyBlock(sdom SparseTree, ft *factsTable, b *Block) {
 				if b.Func.pass.debug > 0 {
 					b.Func.Warnl(v.Pos, "Proved %v bounded", v.Op)
 				}
+			}
+
+		case OpSignExt8to16, OpSignExt8to32, OpSignExt8to64,
+			OpSignExt16to32, OpSignExt16to64, OpSignExt32to64:
+			// fmt.Println("?", v.Args[0].LongString())
+			if w := v.Args[0]; ft.isNonNegative(w) {
+				// fmt.Println("OPT", v.LongString())
+				v.Op = signExtToZeroExt[v.Op]
 			}
 		}
 	}
