@@ -486,6 +486,8 @@ type p struct {
 	deferpool    [5][]*_defer // pool of available defer structs of different sizes (see panic.go)
 	deferpoolbuf [5][32]*_defer
 
+	strings [16]string // interned strings
+
 	// Cache of goroutine ids, amortizes accesses to runtime·sched.goidgen.
 	goidcache    uint64
 	goidcacheend uint64

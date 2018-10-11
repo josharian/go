@@ -96,14 +96,29 @@ func slicebytetostring(buf *tmpBuf, b []byte) (str string) {
 	}
 
 	var p unsafe.Pointer
+	var dst *string
 	if buf != nil && len(b) <= len(buf) {
 		p = unsafe.Pointer(buf)
 	} else {
+		if len(b) < 64 {
+			curp := getg().m.p.ptr()
+			for _, s := range &curp.strings {
+				if string(b) == s {
+					// println("HIT")
+					return s
+				}
+			}
+			dst = &curp.strings[fastrand()%uint32(len(curp.strings))]
+		}
 		p = mallocgc(uintptr(len(b)), nil, false)
 	}
 	stringStructOf(&str).str = p
 	stringStructOf(&str).len = len(b)
 	memmove(p, (*(*slice)(unsafe.Pointer(&b))).array, uintptr(len(b)))
+	if dst != nil {
+		// println("STORE")
+		*dst = str
+	}
 	return
 }
 
