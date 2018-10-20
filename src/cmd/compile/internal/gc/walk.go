@@ -1657,6 +1657,7 @@ func ascompatee(op Op, nl, nr []*Node, init *Nodes) []*Node {
 
 // fncall reports whether assigning an rvalue of type rt to an lvalue l might involve a function call.
 func fncall(l *Node, rt *types.Type) bool {
+	return true
 	if l.HasCall() || l.Op == OINDEXMAP {
 		return true
 	}
