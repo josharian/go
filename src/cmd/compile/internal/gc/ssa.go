@@ -648,6 +648,14 @@ func (s *state) constInt(t *types.Type, c int64) *ssa.Value {
 	}
 	return s.constInt32(t, int32(c))
 }
+
+func (s *state) newOffPtr(t *types.Type, off int64, ptr *ssa.Value) *ssa.Value {
+	if off == 0 && t.Compare(ptr.Type) == types.CMPeq {
+		return ptr
+	}
+	return s.curBlock.NewValue1I(s.peekPos(), ssa.OpOffPtr, t, off, ptr)
+}
+
 func (s *state) constOffPtrSP(t *types.Type, c int64) *ssa.Value {
 	return s.f.ConstOffPtrSP(t, c, s.sp)
 }
@@ -2227,7 +2235,7 @@ func (s *state) expr(n *Node) *ssa.Value {
 
 	case ODOTPTR:
 		p := s.exprPtr(n.Left, false, n.Pos)
-		p = s.newValue1I(ssa.OpOffPtr, types.NewPtr(n.Type), n.Xoffset, p)
+		p = s.newOffPtr(types.NewPtr(n.Type), n.Xoffset, p)
 		return s.load(n.Type, p)
 
 	case OINDEX:
@@ -2249,7 +2257,7 @@ func (s *state) expr(n *Node) *ssa.Value {
 			ptrtyp := s.f.Config.Types.BytePtr
 			ptr := s.newValue1(ssa.OpStringPtr, ptrtyp, a)
 			if Isconst(n.Right, CTINT) {
-				ptr = s.newValue1I(ssa.OpOffPtr, ptrtyp, n.Right.Int64(), ptr)
+				ptr = s.newOffPtr(ptrtyp, n.Right.Int64(), ptr)
 			} else {
 				ptr = s.newValue2(ssa.OpAddPtr, ptrtyp, ptr, i)
 			}
@@ -2473,7 +2481,7 @@ func (s *state) append(n *Node, inplace bool) *ssa.Value {
 			// Tell liveness we're about to build a new slice
 			s.vars[&memVar] = s.newValue1A(ssa.OpVarDef, types.TypeMem, sn, s.mem())
 		}
-		capaddr := s.newValue1I(ssa.OpOffPtr, s.f.Config.Types.IntPtr, int64(array_cap), addr)
+		capaddr := s.newOffPtr(s.f.Config.Types.IntPtr, int64(array_cap), addr)
 		s.store(types.Types[TINT], capaddr, r[2])
 		s.store(pt, addr, r[0])
 		// load the value we just stored to avoid having to spill it
@@ -2494,7 +2502,7 @@ func (s *state) append(n *Node, inplace bool) *ssa.Value {
 	if inplace {
 		l = s.variable(&lenVar, types.Types[TINT]) // generates phi for len
 		nl = s.newValue2(s.ssaOp(OADD, types.Types[TINT]), types.Types[TINT], l, s.constInt(types.Types[TINT], nargs))
-		lenaddr := s.newValue1I(ssa.OpOffPtr, s.f.Config.Types.IntPtr, int64(array_nel), addr)
+		lenaddr := s.newOffPtr(s.f.Config.Types.IntPtr, int64(array_nel), addr)
 		s.store(types.Types[TINT], lenaddr, nl)
 	}
 
@@ -3677,7 +3685,7 @@ func (s *state) call(n *Node, k callKind) *ssa.Value {
 		itab := s.newValue1(ssa.OpITab, types.Types[TUINTPTR], i)
 		s.nilCheck(itab)
 		itabidx := fn.Xoffset + 2*int64(Widthptr) + 8 // offset of fun field in runtime.itab
-		itab = s.newValue1I(ssa.OpOffPtr, s.f.Config.Types.UintptrPtr, itabidx, itab)
+		itab = s.newOffPtr(s.f.Config.Types.UintptrPtr, itabidx, itab)
 		if k == callNormal {
 			codeptr = s.load(types.Types[TUINTPTR], itab)
 		} else {
@@ -3858,12 +3866,12 @@ func (s *state) addr(n *Node, bounded bool) *ssa.Value {
 		return s.exprPtr(n.Left, bounded, n.Pos)
 	case ODOT:
 		p := s.addr(n.Left, bounded)
-		return s.newValue1I(ssa.OpOffPtr, t, n.Xoffset, p)
+		return s.newOffPtr(t, n.Xoffset, p)
 	case ODOTPTR:
 		p := s.exprPtr(n.Left, bounded, n.Pos)
-		return s.newValue1I(ssa.OpOffPtr, t, n.Xoffset, p)
+		return s.newOffPtr(t, n.Xoffset, p)
 	case OCLOSUREVAR:
-		return s.newValue1I(ssa.OpOffPtr, t, n.Xoffset,
+		return s.newOffPtr(t, n.Xoffset,
 			s.entryNewValue0(ssa.OpGetClosurePtr, s.f.Config.Types.BytePtr))
 	case OCONVNOP:
 		addr := s.addr(n.Left, bounded)
@@ -4138,17 +4146,17 @@ func (s *state) storeTypeScalars(t *types.Type, left, right *ssa.Value, skip ski
 			return
 		}
 		len := s.newValue1(ssa.OpStringLen, types.Types[TINT], right)
-		lenAddr := s.newValue1I(ssa.OpOffPtr, s.f.Config.Types.IntPtr, s.config.PtrSize, left)
+		lenAddr := s.newOffPtr(s.f.Config.Types.IntPtr, s.config.PtrSize, left)
 		s.store(types.Types[TINT], lenAddr, len)
 	case t.IsSlice():
 		if skip&skipLen == 0 {
 			len := s.newValue1(ssa.OpSliceLen, types.Types[TINT], right)
-			lenAddr := s.newValue1I(ssa.OpOffPtr, s.f.Config.Types.IntPtr, s.config.PtrSize, left)
+			lenAddr := s.newOffPtr(s.f.Config.Types.IntPtr, s.config.PtrSize, left)
 			s.store(types.Types[TINT], lenAddr, len)
 		}
 		if skip&skipCap == 0 {
 			cap := s.newValue1(ssa.OpSliceCap, types.Types[TINT], right)
-			capAddr := s.newValue1I(ssa.OpOffPtr, s.f.Config.Types.IntPtr, 2*s.config.PtrSize, left)
+			capAddr := s.newOffPtr(s.f.Config.Types.IntPtr, 2*s.config.PtrSize, left)
 			s.store(types.Types[TINT], capAddr, cap)
 		}
 	case t.IsInterface():
@@ -4159,7 +4167,7 @@ func (s *state) storeTypeScalars(t *types.Type, left, right *ssa.Value, skip ski
 		n := t.NumFields()
 		for i := 0; i < n; i++ {
 			ft := t.FieldType(i)
-			addr := s.newValue1I(ssa.OpOffPtr, ft.PtrTo(), t.FieldOff(i), left)
+			addr := s.newOffPtr(ft.PtrTo(), t.FieldOff(i), left)
 			val := s.newValue1I(ssa.OpStructSelect, ft, int64(i), right)
 			s.storeTypeScalars(ft, addr, val, 0)
 		}
@@ -4187,7 +4195,7 @@ func (s *state) storeTypePtrs(t *types.Type, left, right *ssa.Value) {
 	case t.IsInterface():
 		// itab field is treated as a scalar.
 		idata := s.newValue1(ssa.OpIData, s.f.Config.Types.BytePtr, right)
-		idataAddr := s.newValue1I(ssa.OpOffPtr, s.f.Config.Types.BytePtrPtr, s.config.PtrSize, left)
+		idataAddr := s.newOffPtr(s.f.Config.Types.BytePtrPtr, s.config.PtrSize, left)
 		s.store(s.f.Config.Types.BytePtr, idataAddr, idata)
 	case t.IsStruct():
 		n := t.NumFields()
@@ -4196,7 +4204,7 @@ func (s *state) storeTypePtrs(t *types.Type, left, right *ssa.Value) {
 			if !types.Haspointers(ft) {
 				continue
 			}
-			addr := s.newValue1I(ssa.OpOffPtr, ft.PtrTo(), t.FieldOff(i), left)
+			addr := s.newOffPtr(ft.PtrTo(), t.FieldOff(i), left)
 			val := s.newValue1I(ssa.OpStructSelect, ft, int64(i), right)
 			s.storeTypePtrs(ft, addr, val)
 		}
@@ -4518,7 +4526,7 @@ func (s *state) referenceTypeBuiltin(n *Node, x *ssa.Value) *ssa.Value {
 		s.vars[n] = s.load(lenType, x)
 	case OCAP:
 		// capacity is stored in the second word for chan
-		sw := s.newValue1I(ssa.OpOffPtr, lenType.PtrTo(), lenType.Width, x)
+		sw := s.newOffPtr(lenType.PtrTo(), lenType.Width, x)
 		s.vars[n] = s.load(lenType, sw)
 	default:
 		s.Fatalf("op must be OLEN or OCAP")
@@ -4681,7 +4689,7 @@ func (s *state) dottype(n *Node, commaok bool) (res, resok *ssa.Value) {
 					return
 				}
 				// Load type out of itab, build interface with existing idata.
-				off := s.newValue1I(ssa.OpOffPtr, byteptr, int64(Widthptr), itab)
+				off := s.newOffPtr(byteptr, int64(Widthptr), itab)
 				typ := s.load(byteptr, off)
 				idata := s.newValue1(ssa.OpIData, n.Type, iface)
 				res = s.newValue2(ssa.OpIMake, n.Type, typ, idata)
@@ -4691,7 +4699,7 @@ func (s *state) dottype(n *Node, commaok bool) (res, resok *ssa.Value) {
 			s.startBlock(bOk)
 			// nonempty -> empty
 			// Need to load type from itab
-			off := s.newValue1I(ssa.OpOffPtr, byteptr, int64(Widthptr), itab)
+			off := s.newOffPtr(byteptr, int64(Widthptr), itab)
 			s.vars[&typVar] = s.load(byteptr, off)
 			s.endBlock()
 
