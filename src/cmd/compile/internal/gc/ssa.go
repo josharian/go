@@ -2227,7 +2227,9 @@ func (s *state) expr(n *Node) *ssa.Value {
 
 	case ODOTPTR:
 		p := s.exprPtr(n.Left, false, n.Pos)
-		p = s.newValue1I(ssa.OpOffPtr, types.NewPtr(n.Type), n.Xoffset, p)
+		if n.Xoffset != 0 {
+			p = s.newValue1I(ssa.OpOffPtr, types.NewPtr(n.Type), n.Xoffset, p)
+		}
 		return s.load(n.Type, p)
 
 	case OINDEX:
@@ -2249,7 +2251,9 @@ func (s *state) expr(n *Node) *ssa.Value {
 			ptrtyp := s.f.Config.Types.BytePtr
 			ptr := s.newValue1(ssa.OpStringPtr, ptrtyp, a)
 			if Isconst(n.Right, CTINT) {
-				ptr = s.newValue1I(ssa.OpOffPtr, ptrtyp, n.Right.Int64(), ptr)
+				if n.Right.Int64() != 0 {
+					ptr = s.newValue1I(ssa.OpOffPtr, ptrtyp, n.Right.Int64(), ptr)
+				}
 			} else {
 				ptr = s.newValue2(ssa.OpAddPtr, ptrtyp, ptr, i)
 			}
@@ -2522,7 +2526,7 @@ func (s *state) append(n *Node, inplace bool) *ssa.Value {
 	}
 	p2 := s.newValue2(ssa.OpPtrIndex, pt, p, l)
 	for i, arg := range args {
-		addr := s.newValue2(ssa.OpPtrIndex, pt, p2, s.constInt(types.Types[TINT], int64(i)))
+		addr := s.newValue1I(ssa.OpOffPtr, pt, int64(i)*pt.Elem().Size(), p2)
 		if arg.store {
 			s.storeType(et, addr, arg.v, 0, true)
 		} else {
@@ -3858,13 +3862,22 @@ func (s *state) addr(n *Node, bounded bool) *ssa.Value {
 		return s.exprPtr(n.Left, bounded, n.Pos)
 	case ODOT:
 		p := s.addr(n.Left, bounded)
-		return s.newValue1I(ssa.OpOffPtr, t, n.Xoffset, p)
+		if n.Xoffset != 0 {
+			p = s.newValue1I(ssa.OpOffPtr, t, n.Xoffset, p)
+		}
+		return p
 	case ODOTPTR:
 		p := s.exprPtr(n.Left, bounded, n.Pos)
-		return s.newValue1I(ssa.OpOffPtr, t, n.Xoffset, p)
+		if n.Xoffset != 0 {
+			p = s.newValue1I(ssa.OpOffPtr, t, n.Xoffset, p)
+		}
+		return p
 	case OCLOSUREVAR:
-		return s.newValue1I(ssa.OpOffPtr, t, n.Xoffset,
-			s.entryNewValue0(ssa.OpGetClosurePtr, s.f.Config.Types.BytePtr))
+		p := s.entryNewValue0(ssa.OpGetClosurePtr, s.f.Config.Types.BytePtr)
+		if n.Xoffset != 0 {
+			p = s.newValue1I(ssa.OpOffPtr, t, n.Xoffset, p)
+		}
+		return p
 	case OCONVNOP:
 		addr := s.addr(n.Left, bounded)
 		return s.newValue1(ssa.OpCopy, t, addr) // ensure that addr has the right type
@@ -4159,7 +4172,10 @@ func (s *state) storeTypeScalars(t *types.Type, left, right *ssa.Value, skip ski
 		n := t.NumFields()
 		for i := 0; i < n; i++ {
 			ft := t.FieldType(i)
-			addr := s.newValue1I(ssa.OpOffPtr, ft.PtrTo(), t.FieldOff(i), left)
+			addr := left
+			if off := t.FieldOff(i); off != 0 {
+				addr = s.newValue1I(ssa.OpOffPtr, ft.PtrTo(), off, addr)
+			}
 			val := s.newValue1I(ssa.OpStructSelect, ft, int64(i), right)
 			s.storeTypeScalars(ft, addr, val, 0)
 		}
@@ -4196,7 +4212,10 @@ func (s *state) storeTypePtrs(t *types.Type, left, right *ssa.Value) {
 			if !types.Haspointers(ft) {
 				continue
 			}
-			addr := s.newValue1I(ssa.OpOffPtr, ft.PtrTo(), t.FieldOff(i), left)
+			addr := left
+			if off := t.FieldOff(i); off != 0 {
+				addr = s.newValue1I(ssa.OpOffPtr, ft.PtrTo(), off, addr)
+			}
 			val := s.newValue1I(ssa.OpStructSelect, ft, int64(i), right)
 			s.storeTypePtrs(ft, addr, val)
 		}

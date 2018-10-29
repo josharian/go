@@ -714,7 +714,9 @@
 // indexing operations
 // Note: bounds check has already been done
 (PtrIndex <t> ptr idx) && config.PtrSize == 4 -> (AddPtr ptr (Mul32 <typ.Int> idx (Const32 <typ.Int> [t.Elem().Size()])))
-(PtrIndex <t> ptr idx) && config.PtrSize == 8 -> (AddPtr ptr (Mul64 <typ.Int> idx (Const64 <typ.Int> [t.Elem().Size()])))
+(PtrIndex     ptr (Const64 [0])) && config.PtrSize == 8 -> ptr
+(PtrIndex <t> ptr (Const64 [x])) && config.PtrSize == 8 -> (OffPtr [x * t.Elem().Size()] ptr)
+(PtrIndex <t> ptr idx)           && config.PtrSize == 8 -> (AddPtr ptr (Mul64 <typ.Int> idx (Const64 <typ.Int> [t.Elem().Size()])))
 
 // struct operations
 (StructSelect (StructMake1 x)) -> x

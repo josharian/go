@@ -24656,6 +24656,47 @@ func rewriteValuegeneric_OpPtrIndex_0(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
+	// match: (PtrIndex ptr (Const64 [0]))
+	// cond: config.PtrSize == 8
+	// result: ptr
+	for {
+		_ = v.Args[1]
+		ptr := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpConst64 {
+			break
+		}
+		if v_1.AuxInt != 0 {
+			break
+		}
+		if !(config.PtrSize == 8) {
+			break
+		}
+		v.reset(OpCopy)
+		v.Type = ptr.Type
+		v.AddArg(ptr)
+		return true
+	}
+	// match: (PtrIndex <t> ptr (Const64 [x]))
+	// cond: config.PtrSize == 8
+	// result: (OffPtr [x * t.Elem().Size()] ptr)
+	for {
+		t := v.Type
+		_ = v.Args[1]
+		ptr := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpConst64 {
+			break
+		}
+		x := v_1.AuxInt
+		if !(config.PtrSize == 8) {
+			break
+		}
+		v.reset(OpOffPtr)
+		v.AuxInt = x * t.Elem().Size()
+		v.AddArg(ptr)
+		return true
+	}
 	// match: (PtrIndex <t> ptr idx)
 	// cond: config.PtrSize == 8
 	// result: (AddPtr ptr (Mul64 <typ.Int> idx (Const64 <typ.Int> [t.Elem().Size()])))
