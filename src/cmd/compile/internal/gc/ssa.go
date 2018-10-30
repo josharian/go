@@ -1757,6 +1757,10 @@ func (s *state) expr(n *Node) *ssa.Value {
 		// Anything interesting that happens from here is a fatal.
 		x := s.expr(n.Left)
 
+		if to.Compare(from) == types.CMPeq {
+			return x
+		}
+
 		// Special case for not confusing GC and liveness.
 		// We don't want pointers accidentally classified
 		// as not-pointers or vice-versa because of copy
