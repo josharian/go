@@ -118,9 +118,9 @@ type typeInterner struct {
 }
 
 func (i *typeInterner) intern(t ast.Expr) int {
-	x := i.mktype(t)
+	x, cancse := i.mktype(t)
 	v, ok := i.hash[x]
-	if !ok {
+	if !ok || !cancse {
 		v = len(i.typs)
 		if i.hash == nil {
 			i.hash = make(map[string]int)
@@ -135,27 +135,29 @@ func (i *typeInterner) subtype(t ast.Expr) string {
 	return fmt.Sprintf("typs[%d]", i.intern(t))
 }
 
-func (i *typeInterner) mktype(t ast.Expr) string {
+// mktype generates a type expression for t.
+// cancse indicates whether it is safe for the expression to be CSE'd.
+func (i *typeInterner) mktype(t ast.Expr) (typ string, cancse bool) {
 	switch t := t.(type) {
 	case *ast.Ident:
 		switch t.Name {
 		case "byte":
-			return "types.Bytetype"
+			return "types.Bytetype", true
 		case "rune":
-			return "types.Runetype"
+			return "types.Runetype", true
 		}
-		return fmt.Sprintf("types.Types[T%s]", strings.ToUpper(t.Name))
+		return fmt.Sprintf("types.Types[T%s]", strings.ToUpper(t.Name)), true
 	case *ast.SelectorExpr:
 		if t.X.(*ast.Ident).Name != "unsafe" || t.Sel.Name != "Pointer" {
 			log.Fatalf("unhandled type: %#v", t)
 		}
-		return "types.Types[TUNSAFEPTR]"
+		return "types.Types[TUNSAFEPTR]", true
 
 	case *ast.ArrayType:
 		if t.Len == nil {
-			return fmt.Sprintf("types.NewSlice(%s)", i.subtype(t.Elt))
+			return fmt.Sprintf("types.NewSlice(%s)", i.subtype(t.Elt)), true
 		}
-		return fmt.Sprintf("types.NewArray(%s, %d)", i.subtype(t.Elt), intconst(t.Len))
+		return fmt.Sprintf("types.NewArray(%s, %d)", i.subtype(t.Elt), intconst(t.Len)), true
 	case *ast.ChanType:
 		dir := "types.Cboth"
 		switch t.Dir {
@@ -164,20 +166,20 @@ func (i *typeInterner) mktype(t ast.Expr) string {
 		case ast.RECV:
 			dir = "types.Crecv"
 		}
-		return fmt.Sprintf("types.NewChan(%s, %s)", i.subtype(t.Value), dir)
+		return fmt.Sprintf("types.NewChan(%s, %s)", i.subtype(t.Value), dir), true
 	case *ast.FuncType:
-		return fmt.Sprintf("functype(nil, %s, %s)", i.fields(t.Params, false), i.fields(t.Results, false))
+		return fmt.Sprintf("functype(nil, %s, %s)", i.fields(t.Params, false), i.fields(t.Results, false)), false
 	case *ast.InterfaceType:
 		if len(t.Methods.List) != 0 {
 			log.Fatal("non-empty interfaces unsupported")
 		}
-		return "types.Types[TINTER]"
+		return "types.Types[TINTER]", true
 	case *ast.MapType:
-		return fmt.Sprintf("types.NewMap(%s, %s)", i.subtype(t.Key), i.subtype(t.Value))
+		return fmt.Sprintf("types.NewMap(%s, %s)", i.subtype(t.Key), i.subtype(t.Value)), true
 	case *ast.StarExpr:
-		return fmt.Sprintf("types.NewPtr(%s)", i.subtype(t.X))
+		return fmt.Sprintf("types.NewPtr(%s)", i.subtype(t.X)), true
 	case *ast.StructType:
-		return fmt.Sprintf("tostruct(%s)", i.fields(t.Fields, true))
+		return fmt.Sprintf("tostruct(%s)", i.fields(t.Fields, true)), true
 
 	default:
 		log.Fatalf("unhandled type: %#v", t)
