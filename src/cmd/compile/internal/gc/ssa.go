@@ -946,6 +946,7 @@ func (s *state) stmt(n *Node) {
 		}
 
 		var r *ssa.Value
+		// fmt.Println("OAS", n)
 		deref := !canSSAType(t)
 		if deref {
 			if rhs == nil {

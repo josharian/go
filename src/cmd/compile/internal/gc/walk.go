@@ -197,7 +197,7 @@ func walkstmt(n *Node) *Node {
 				yyerror("%v escapes to heap, not allowed in runtime.", v)
 			}
 			if prealloc[v] == nil {
-				prealloc[v] = callnew(v.Type)
+				prealloc[v] = callnew(v.Type, &n.Ninit)
 			}
 			nn := nod(OAS, v.Name.Param.Heapaddr, prealloc[v])
 			nn.SetColas(true)
@@ -1152,7 +1152,7 @@ opswitch:
 			r = typecheck(r, ctxExpr)
 			n = r
 		} else {
-			n = callnew(n.Type.Elem())
+			n = callnew(n.Type.Elem(), init)
 		}
 
 	case OADDSTR:
@@ -1410,7 +1410,7 @@ opswitch:
 			if n.Esc == EscNone && len(sc) <= maxImplicitStackVarSize {
 				a = nod(OADDR, temp(t), nil)
 			} else {
-				a = callnew(t)
+				a = callnew(t, init)
 			}
 			p := temp(t.PtrTo()) // *[n]byte
 			init.Append(typecheck(nod(OAS, p, a), ctxStmt))
@@ -1939,7 +1939,7 @@ func walkprint(nn *Node, init *Nodes) *Node {
 	return r
 }
 
-func callnew(t *types.Type) *Node {
+func callnew(t *types.Type, init *Nodes) *Node {
 	if t.NotInHeap() {
 		yyerror("%v is go:notinheap; heap allocation disallowed", t)
 	}
@@ -1954,19 +1954,47 @@ func callnew(t *types.Type) *Node {
 		return typecheck(nod(OADDR, z, nil), ctxExpr)
 	}
 
+	passtype := true
 	fnname := "newobject"
-	if c := t.SoleComponent(); c != nil && c.IsString() {
-		fnname = "newstring"
+	if c := t.SoleComponent(); c != nil {
+		switch {
+		case c.IsString():
+			fnname = "newstring"
+			passtype = false
+			// case c.IsSlice():
+			// 	fnname = "newslice"
+			// 	passtype = false
+		}
+	}
+	var needszero bool
+	if !t.HasHeapPointer() && t.NumComponents(types.IgnoreBlankFields) <= 4 {
+		fnname = "newobjectNoClr"
+		needszero = true
 	}
 	fn := syslook(fnname)
 	fn = substArgTypes(fn, t)
 	var v *Node
-	if fnname == "newobject" {
+	if passtype {
 		v = mkcall1(fn, types.NewPtr(t), nil, typename(t))
 	} else {
 		v = mkcall1(fn, types.NewPtr(t), nil)
 	}
 	v.SetNonNil(true)
+	if needszero {
+		p := temp(types.NewPtr(t))
+
+		var nodes []*Node
+		nodes = append(nodes, nod(OAS, p, v))
+		nodes = append(nodes, nod(OAS, nod(ODEREF, v, nil), nil))
+		typecheckslice(nodes, ctxStmt)
+		walkstmtlist(nodes)
+		init.Append(nodes...)
+		// p = addinit(p, []*Node{v, a, z})
+		// var init Nodes
+		// p = walkexpr(p, &init)
+		// p = addinit(p, init.Slice())
+		return p
+	}
 	return v
 }
 

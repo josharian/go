@@ -1315,42 +1315,42 @@
 // nil checks just need to rewrite to something useless.
 // they will be deadcode eliminated soon afterwards.
 (NilCheck (Load (OffPtr [c] (SP)) (StaticCall {sym} _)) _)
-	&& isSameSym(sym, "runtime.newobject")
+	&& (isSameSym(sym, "runtime.newobject") || isSameSym(sym, "runtime.newobjectNoClr"))
 	&& c == config.ctxt.FixedFrameSize() + config.RegSize // offset of return value
 	&& warnRule(fe.Debug_checknil(), v, "removed nil check")
 	-> (Invalid)
 (NilCheck (OffPtr (Load (OffPtr [c] (SP)) (StaticCall {sym} _))) _)
-	&& isSameSym(sym, "runtime.newobject")
+	&& (isSameSym(sym, "runtime.newobject") || isSameSym(sym, "runtime.newobjectNoClr"))
 	&& c == config.ctxt.FixedFrameSize() + config.RegSize // offset of return value
 	&& warnRule(fe.Debug_checknil(), v, "removed nil check")
 	-> (Invalid)
 
 (Zero (Load (OffPtr [c] (SP)) mem) mem)
 	&& mem.Op == OpStaticCall
-	&& isSameSym(mem.Aux, "runtime.newstring")
+	&& (isSameSym(mem.Aux, "runtime.newstring") || isSameSym(mem.Aux, "runtime.newslice"))
 	&& c == config.ctxt.FixedFrameSize() // offset of return value
 	-> mem
 (Store (Load (OffPtr [c] (SP)) mem) x mem)
 	&& isConstZero(x)
 	&& mem.Op == OpStaticCall
-	&& isSameSym(mem.Aux, "runtime.newstring")
+	&& (isSameSym(mem.Aux, "runtime.newstring") || isSameSym(mem.Aux, "runtime.newslice"))
 	&& c == config.ctxt.FixedFrameSize()  // offset of return value
 	-> mem
 (Store (OffPtr (Load (OffPtr [c] (SP)) mem)) x mem)
 	&& isConstZero(x)
 	&& mem.Op == OpStaticCall
-	&& isSameSym(mem.Aux, "runtime.newstring")
+	&& (isSameSym(mem.Aux, "runtime.newstring") || isSameSym(mem.Aux, "runtime.newslice"))
 	&& c == config.ctxt.FixedFrameSize()  // offset of return value
 	-> mem
 // nil checks just need to rewrite to something useless.
 // they will be deadcode eliminated soon afterwards.
 (NilCheck (Load (OffPtr [c] (SP)) (StaticCall {sym} _)) _)
-	&& isSameSym(sym, "runtime.newstring")
+	&& (isSameSym(sym, "runtime.newstring") || isSameSym(sym, "runtime.newslice"))
 	&& c == config.ctxt.FixedFrameSize() // offset of return value
 	&& warnRule(fe.Debug_checknil(), v, "removed nil check")
 	-> (Invalid)
 (NilCheck (OffPtr (Load (OffPtr [c] (SP)) (StaticCall {sym} _))) _)
-	&& isSameSym(sym, "runtime.newstring")
+	&& (isSameSym(sym, "runtime.newstring") || isSameSym(sym, "runtime.newslice"))
 	&& c == config.ctxt.FixedFrameSize() // offset of return value
 	&& warnRule(fe.Debug_checknil(), v, "removed nil check")
 	-> (Invalid)
