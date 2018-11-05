@@ -1954,9 +1954,20 @@ func callnew(t *types.Type) *Node {
 		return typecheck(nod(OADDR, z, nil), ctxExpr)
 	}
 
-	fn := syslook("newobject")
+	fnname := "newobject"
+	if c := t.SoleComponent(); c != nil {
+		if c.IsString() {
+			fnname = "newstring"
+		}
+	}
+	fn := syslook(fnname)
 	fn = substArgTypes(fn, t)
-	v := mkcall1(fn, types.NewPtr(t), nil, typename(t))
+	var v *Node
+	if fnname == "newobject" {
+		v = mkcall1(fn, types.NewPtr(t), nil, typename(t))
+	} else {
+		v = mkcall1(fn, types.NewPtr(t), nil)
+	}
 	v.SetNonNil(true)
 	return v
 }
