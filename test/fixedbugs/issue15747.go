@@ -34,7 +34,7 @@ func f1(q *Q, xx []byte) interface{} { // ERROR "live at call to newobject: xx$"
 //go:noinline
 func f2(d []byte, n int) (odata, res []byte, e interface{}) { // ERROR "live at entry to f2: d$"
 	if n > len(d) {
-		return d, nil, &T{M: "hello"} // ERROR "live at call to newobject: d"
+		return d, nil, &T{M: "hello"} // ERROR "live at call to newstring: d"
 	}
 	res = d[:n]
 	odata = d[n:]
