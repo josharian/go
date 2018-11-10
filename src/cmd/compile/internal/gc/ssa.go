@@ -1201,10 +1201,6 @@ func (s *state) stmt(n *Node) {
 		}
 		s.vars[&memVar] = s.newValue1A(ssa.OpVarLive, types.TypeMem, n.Left, s.mem())
 
-	case OCHECKNIL:
-		p := s.expr(n.Left)
-		s.nilCheck(p)
-
 	case OINLMARK:
 		s.newValue1I(ssa.OpInlMark, types.TypeVoid, n.Xoffset, s.mem())
 

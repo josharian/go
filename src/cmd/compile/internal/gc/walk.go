@@ -184,7 +184,6 @@ func walkstmt(n *Node) *Node {
 		OLABEL,
 		ODCLCONST,
 		ODCLTYPE,
-		OCHECKNIL,
 		OVARDEF,
 		OVARKILL,
 		OVARLIVE:

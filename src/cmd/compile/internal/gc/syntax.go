@@ -746,7 +746,6 @@ const (
 	OSPTR       // base pointer of a slice or string.
 	OCLOSUREVAR // variable reference at beginning of closure function
 	OCFUNC      // reference to c function pointer (not go func value)
-	OCHECKNIL   // emit code to ensure pointer/interface not nil
 	OVARDEF     // variable is about to be fully initialized
 	OVARKILL    // variable is dead
 	OVARLIVE    // variable is alive
