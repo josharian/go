@@ -527,10 +527,12 @@ func walkpartialcall(n *Node, init *Nodes) *Node {
 
 		tab := nod(OITAB, n.Left, nil)
 		tab = typecheck(tab, ctxExpr)
+		ptr := convnop(convnop(tab, types.Types[TUNSAFEPTR]), types.Bytetype.PtrTo())
+		deref := nod(OAS, nblank, nod(ODEREF, ptr, nil))
+		deref = typecheck(deref, ctxStmt)
+		deref = walkexpr(deref, init)
 
-		c := nod(OCHECKNIL, tab, nil)
-		c.SetTypecheck(1)
-		init.Append(c)
+		init.Append(deref)
 	}
 
 	typ := partialCallType(n)
