@@ -507,11 +507,14 @@ opswitch:
 
 	case ODOTPTR:
 		usefield(n)
-		if n.Op == ODOTPTR && n.Left.Type.Elem().Width == 0 {
+		if n.Left.Type.Elem().Width == 0 {
 			// No actual copy will be generated, so emit an explicit nil check.
 			n.Left = cheapexpr(n.Left, init)
+			n.Left = walkexpr(n.Left, nil)
 
-			checknil(n.Left, init)
+			c := nod(OCHECKNIL, n.Left, nil)
+			c.SetTypecheck(1)
+			init.Append(c)
 		}
 
 		n.Left = walkexpr(n.Left, init)
