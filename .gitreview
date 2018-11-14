@@ -1,0 +1,3 @@
+[gerrit]
+host=go-review.googlesource.com
+project=go.git
