@@ -2546,6 +2546,7 @@ func addstr(n *Node, init *Nodes) *Node {
 	}
 
 	buf := nodnil()
+	nilbuf := true
 	if n.Esc == EscNone {
 		sz := int64(0)
 		for _, n1 := range n.List.Slice() {
@@ -2560,6 +2561,7 @@ func addstr(n *Node, init *Nodes) *Node {
 			t := types.NewArray(types.Types[TUINT8], tmpstringbufsize)
 
 			buf = nod(OADDR, temp(t), nil)
+			nilbuf = false
 		}
 	}
 
@@ -2571,6 +2573,16 @@ func addstr(n *Node, init *Nodes) *Node {
 
 	var fn string
 	if c <= 5 {
+		s := fmt.Sprint(nilbuf, " ")
+		for i := 0; i < c; i++ {
+			if Isconst(args[i+1], CTSTR) {
+				s += fmt.Sprint(len(strlit(args[i+1])))
+			} else {
+				s += "x"
+			}
+			s += " "
+		}
+		fmt.Println(s)
 		// small numbers of strings use direct runtime helpers.
 		// note: orderexpr knows this cutoff too.
 		fn = fmt.Sprintf("concatstring%d", c)
