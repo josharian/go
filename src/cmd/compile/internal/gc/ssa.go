@@ -177,7 +177,7 @@ func buildssa(fn *Node, worker int) *ssa.Func {
 
 	// Generate addresses of local declarations
 	s.decladdrs = map[*Node]*ssa.Value{}
-	for _, n := range fn.Func.Dcl {
+	for _, n := range fn.Func.Decl {
 		switch n.Class() {
 		case PPARAM, PPARAMOUT:
 			s.decladdrs[n] = s.entryNewValue2A(ssa.OpLocalAddr, types.NewPtr(n.Type), n, s.sp, s.startmem)
@@ -200,7 +200,7 @@ func buildssa(fn *Node, worker int) *ssa.Func {
 	}
 
 	// Populate SSAable arguments.
-	for _, n := range fn.Func.Dcl {
+	for _, n := range fn.Func.Decl {
 		if n.Class() == PPARAM && s.canSSA(n) {
 			v := s.newValue0A(ssa.OpArg, n.Type, n)
 			s.vars[n] = v
@@ -5004,7 +5004,7 @@ func (s byXoffset) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func emitStackObjects(e *ssafn, pp *Progs) {
 	var vars []*Node
-	for _, n := range e.curfn.Func.Dcl {
+	for _, n := range e.curfn.Func.Decl {
 		if livenessShouldTrack(n) && n.Addrtaken() {
 			vars = append(vars, n)
 		}
@@ -5275,7 +5275,7 @@ func defframe(s *SSAGenState, e *ssafn) {
 	var state uint32
 
 	// Iterate through declarations. They are sorted in decreasing Xoffset order.
-	for _, n := range e.curfn.Func.Dcl {
+	for _, n := range e.curfn.Func.Decl {
 		if !n.Name.Needzero() {
 			continue
 		}
@@ -5615,7 +5615,7 @@ func (e *ssafn) StringData(s string) interface{} {
 }
 
 func (e *ssafn) Auto(pos src.XPos, t *types.Type) ssa.GCNode {
-	n := tempAt(pos, e.curfn, t) // Note: adds new auto to e.curfn.Func.Dcl list
+	n := tempAt(pos, e.curfn, t) // Note: adds new auto to e.curfn.Func.Decl list
 	return n
 }
 
@@ -5762,7 +5762,7 @@ func (e *ssafn) splitSlot(parent *ssa.LocalSlot, suffix string, offset int64, t 
 	n.SetAddable(true)
 	n.Esc = EscNever
 	n.Name.Curfn = e.curfn
-	e.curfn.Func.Dcl = append(e.curfn.Func.Dcl, n)
+	e.curfn.Func.addDcl(n)
 	dowidth(t)
 	return ssa.LocalSlot{N: n, Type: t, Off: 0, SplitOf: parent, SplitOffset: offset}
 }

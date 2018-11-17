@@ -113,7 +113,7 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 	fn := s.curfn.Func
 
 	// Mark the PAUTO's unused.
-	for _, ln := range fn.Dcl {
+	for _, ln := range fn.Decl {
 		if ln.Class() == PAUTO {
 			ln.Name.SetUsed(false)
 		}
@@ -150,15 +150,15 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 		s.scratchFpMem = tempAt(src.NoXPos, s.curfn, types.Types[TUINT64])
 	}
 
-	sort.Sort(byStackVar(fn.Dcl))
+	sort.Sort(byStackVar(fn.Decl))
 
 	// Reassign stack offsets of the locals that are used.
-	for i, n := range fn.Dcl {
+	for i, n := range fn.Decl {
 		if n.Op != ONAME || n.Class() != PAUTO {
 			continue
 		}
 		if !n.Name.Used() {
-			fn.Dcl = fn.Dcl[:i]
+			fn.Decl = fn.Decl[:i]
 			break
 		}
 
@@ -240,7 +240,7 @@ func compile(fn *Node) {
 	// because symbols must be allocated before the parallel
 	// phase of the compiler.
 	if fn.Func.lsym != nil { // not func _(){}
-		for _, n := range fn.Func.Dcl {
+		for _, n := range fn.Func.Decl {
 			switch n.Class() {
 			case PPARAM, PPARAMOUT, PAUTO:
 				if livenessShouldTrack(n) && n.Addrtaken() {
@@ -368,7 +368,7 @@ func debuginfo(fnsym *obj.LSym, curfn interface{}) ([]dwarf.Scope, dwarf.InlCall
 
 	var automDecls []*Node
 	// Populate Automs for fn.
-	for _, n := range fn.Func.Dcl {
+	for _, n := range fn.Func.Decl {
 		if n.Op != ONAME { // might be OTYPE or OLITERAL
 			continue
 		}
@@ -378,7 +378,7 @@ func debuginfo(fnsym *obj.LSym, curfn interface{}) ([]dwarf.Scope, dwarf.InlCall
 			if !n.Name.Used() {
 				// Text == nil -> generating abstract function
 				if fnsym.Func.Text != nil {
-					Fatalf("debuginfo unused node (AllocFrame should truncate fn.Func.Dcl)")
+					Fatalf("debuginfo unused node (AllocFrame should truncate fn.Func.Decl)")
 				}
 				continue
 			}

@@ -94,11 +94,11 @@ func typecheckinl(fn *Node) {
 	Curfn = savefn
 
 	// During typechecking, declarations are added to
-	// Curfn.Func.Dcl. Move them to Inl.Dcl for consistency with
+	// Curfn.Func.Decl. Move them to Inl.Dcl for consistency with
 	// how local functions behave. (Append because typecheckinl
 	// may be called multiple times.)
-	fn.Func.Inl.Dcl = append(fn.Func.Inl.Dcl, fn.Func.Dcl...)
-	fn.Func.Dcl = nil
+	fn.Func.Inl.Dcl = append(fn.Func.Inl.Dcl, fn.Func.Decl...)
+	fn.Func.Decl = nil
 
 	lineno = lno
 }
@@ -204,7 +204,7 @@ func caninl(fn *Node) {
 
 	n.Func.Inl = &Inline{
 		Cost: inlineMaxBudget - visitor.budget,
-		Dcl:  inlcopylist(pruneUnusedAutos(n.Name.Defn.Func.Dcl, &visitor)),
+		Dcl:  inlcopylist(pruneUnusedAutos(n.Name.Defn.Func.Decl, &visitor)),
 		Body: inlcopylist(fn.Nbody.Slice()),
 	}
 
@@ -1135,7 +1135,7 @@ func inlvar(var_ *Node) *Node {
 	n.Name.Curfn = Curfn // the calling function, not the called one
 	n.SetAddrtaken(var_.Addrtaken())
 
-	Curfn.Func.Dcl = append(Curfn.Func.Dcl, n)
+	Curfn.Func.addDcl(n)
 	return n
 }
 
@@ -1146,7 +1146,7 @@ func retvar(t *types.Field, i int) *Node {
 	n.SetClass(PAUTO)
 	n.Name.SetUsed(true)
 	n.Name.Curfn = Curfn // the calling function, not the called one
-	Curfn.Func.Dcl = append(Curfn.Func.Dcl, n)
+	Curfn.Func.addDcl(n)
 	return n
 }
 
@@ -1158,7 +1158,7 @@ func argvar(t *types.Type, i int) *Node {
 	n.SetClass(PAUTO)
 	n.Name.SetUsed(true)
 	n.Name.Curfn = Curfn // the calling function, not the called one
-	Curfn.Func.Dcl = append(Curfn.Func.Dcl, n)
+	Curfn.Func.addDcl(n)
 	return n
 }
 

@@ -261,7 +261,7 @@ func transformclosure(xfunc *Node) {
 		if len(params) > 0 {
 			// Prepend params and decls.
 			f.Type.Params().SetFields(append(params, f.Type.Params().FieldSlice()...))
-			xfunc.Func.Dcl = append(decls, xfunc.Func.Dcl...)
+			xfunc.Func.Decl = append(decls, xfunc.Func.Decl...)
 		}
 
 		dowidth(f.Type)
@@ -285,7 +285,7 @@ func transformclosure(xfunc *Node) {
 			if v.Name.Byval() && v.Type.Width <= int64(2*Widthptr) {
 				// If it is a small variable captured by value, downgrade it to PAUTO.
 				v.SetClass(PAUTO)
-				xfunc.Func.Dcl = append(xfunc.Func.Dcl, v)
+				xfunc.Func.addDcl(v)
 				body = append(body, nod(OAS, v, cv))
 			} else {
 				// Declare variable holding addresses taken from closure
@@ -295,7 +295,7 @@ func transformclosure(xfunc *Node) {
 				addr.SetClass(PAUTO)
 				addr.Name.SetUsed(true)
 				addr.Name.Curfn = xfunc
-				xfunc.Func.Dcl = append(xfunc.Func.Dcl, addr)
+				xfunc.Func.addDcl(addr)
 				v.Name.Param.Heapaddr = addr
 				if v.Name.Byval() {
 					cv = nod(OADDR, cv, nil)

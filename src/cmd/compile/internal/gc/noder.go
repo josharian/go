@@ -168,7 +168,7 @@ func (p *noder) openScope(pos syntax.Pos) {
 
 	if trackScopes {
 		Curfn.Func.Parents = append(Curfn.Func.Parents, p.scope)
-		p.scopeVars = append(p.scopeVars, len(Curfn.Func.Dcl))
+		p.scopeVars = append(p.scopeVars, len(Curfn.Func.Decl))
 		p.scope = ScopeID(len(Curfn.Func.Parents))
 
 		p.markScope(pos)
@@ -182,7 +182,7 @@ func (p *noder) closeScope(pos syntax.Pos) {
 	if trackScopes {
 		scopeVars := p.scopeVars[len(p.scopeVars)-1]
 		p.scopeVars = p.scopeVars[:len(p.scopeVars)-1]
-		if scopeVars == len(Curfn.Func.Dcl) {
+		if scopeVars == len(Curfn.Func.Decl) {
 			// no variables were declared in this scope, so we can retract it.
 
 			if int(p.scope) != len(Curfn.Func.Parents) {
@@ -982,7 +982,7 @@ func (p *noder) stmtFall(stmt syntax.Stmt, fallOK bool) *Node {
 		n := p.nod(stmt, ORETURN, nil, nil)
 		n.List.Set(results)
 		if n.List.Len() == 0 && Curfn != nil {
-			for _, ln := range Curfn.Func.Dcl {
+			for _, ln := range Curfn.Func.Decl {
 				if ln.Class() == PPARAM {
 					continue
 				}

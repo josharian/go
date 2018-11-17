@@ -3612,7 +3612,7 @@ func typecheckfunc(n *Node) {
 		defer tracePrint("typecheckfunc", n)(nil)
 	}
 
-	for _, ln := range n.Func.Dcl {
+	for _, ln := range n.Func.Decl {
 		if ln.Op == ONAME && (ln.Class() == PPARAM || ln.Class() == PPARAMOUT) {
 			ln.Name.Decldepth = 1
 		}

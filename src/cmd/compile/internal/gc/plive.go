@@ -231,7 +231,7 @@ func livenessShouldTrack(n *Node) bool {
 // and a map for looking up indices by *Node.
 func getvariables(fn *Node) ([]*Node, map[*Node]int32) {
 	var vars []*Node
-	for _, n := range fn.Func.Dcl {
+	for _, n := range fn.Func.Decl {
 		if livenessShouldTrack(n) {
 			vars = append(vars, n)
 		}

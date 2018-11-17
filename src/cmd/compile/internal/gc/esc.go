@@ -559,7 +559,7 @@ func (e *EscState) escfunc(fn *Node) {
 	savefn := Curfn
 	Curfn = fn
 
-	for _, ln := range Curfn.Func.Dcl {
+	for _, ln := range Curfn.Func.Decl {
 		if ln.Op != ONAME {
 			continue
 		}
@@ -585,7 +585,7 @@ func (e *EscState) escfunc(fn *Node) {
 
 	// in a mutually recursive group we lose track of the return values
 	if e.recursive {
-		for _, ln := range Curfn.Func.Dcl {
+		for _, ln := range Curfn.Func.Decl {
 			if ln.Op == ONAME && ln.Class() == PPARAMOUT {
 				e.escflows(&e.theSink, ln, e.stepAssign(nil, ln, ln, "returned from recursive function"))
 			}
@@ -966,12 +966,12 @@ opSwitch:
 		if retList.Len() == 1 && Curfn.Type.NumResults() > 1 {
 			// OAS2FUNC in disguise
 			// esccall already done on n.List.First()
-			// tie e.nodeEscState(n.List.First()).Retval to Curfn.Func.Dcl PPARAMOUT's
+			// tie e.nodeEscState(n.List.First()).Retval to Curfn.Func.Decl PPARAMOUT's
 			retList = e.nodeEscState(n.List.First()).Retval
 		}
 
 		i := 0
-		for _, lrn := range Curfn.Func.Dcl {
+		for _, lrn := range Curfn.Func.Decl {
 			if i >= retList.Len() {
 				break
 			}
@@ -1653,7 +1653,7 @@ func (e *EscState) esccall(call *Node, parent *Node) {
 		}
 
 		sawRcvr := false
-		for _, n := range fn.Name.Defn.Func.Dcl {
+		for _, n := range fn.Name.Defn.Func.Decl {
 			switch n.Class() {
 			case PPARAM:
 				if call.Op != OCALLFUNC && !sawRcvr {
@@ -2258,9 +2258,9 @@ func moveToHeap(n *Node) {
 		// liveness and other analyses use the underlying stack slot
 		// and not the now-pseudo-variable n.
 		found := false
-		for i, d := range Curfn.Func.Dcl {
+		for i, d := range Curfn.Func.Decl {
 			if d == n {
-				Curfn.Func.Dcl[i] = stackcopy
+				Curfn.Func.Decl[i] = stackcopy
 				found = true
 				break
 			}
@@ -2273,7 +2273,7 @@ func moveToHeap(n *Node) {
 		if !found {
 			Fatalf("cannot find %v in local variable list", n)
 		}
-		Curfn.Func.Dcl = append(Curfn.Func.Dcl, n)
+		Curfn.Func.addDcl(n)
 	}
 
 	// Modify n in place so that uses of n now mean indirection of the heapaddr.

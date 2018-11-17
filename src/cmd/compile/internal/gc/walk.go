@@ -27,21 +27,21 @@ func walk(fn *Node) {
 	lno := lineno
 
 	// Final typecheck for any unused variables.
-	for i, ln := range fn.Func.Dcl {
+	for i, ln := range fn.Func.Decl {
 		if ln.Op == ONAME && (ln.Class() == PAUTO || ln.Class() == PAUTOHEAP) {
 			ln = typecheck(ln, Erv|Easgn)
-			fn.Func.Dcl[i] = ln
+			fn.Func.Decl[i] = ln
 		}
 	}
 
 	// Propagate the used flag for typeswitch variables up to the NONAME in its definition.
-	for _, ln := range fn.Func.Dcl {
+	for _, ln := range fn.Func.Decl {
 		if ln.Op == ONAME && (ln.Class() == PAUTO || ln.Class() == PAUTOHEAP) && ln.Name.Defn != nil && ln.Name.Defn.Op == OTYPESW && ln.Name.Used() {
 			ln.Name.Defn.Left.Name.SetUsed(true)
 		}
 	}
 
-	for _, ln := range fn.Func.Dcl {
+	for _, ln := range fn.Func.Decl {
 		if ln.Op != ONAME || (ln.Class() != PAUTO && ln.Class() != PAUTOHEAP) || ln.Sym.Name[0] == '&' || ln.Name.Used() {
 			continue
 		}
@@ -93,7 +93,7 @@ func samelist(a, b []*Node) bool {
 }
 
 func paramoutheap(fn *Node) bool {
-	for _, ln := range fn.Func.Dcl {
+	for _, ln := range fn.Func.Decl {
 		switch ln.Class() {
 		case PPARAMOUT:
 			if ln.isParamStackCopy() || ln.Addrtaken() {
@@ -267,7 +267,7 @@ func walkstmt(n *Node) *Node {
 			// so that reorder3 can fix up conflicts
 			var rl []*Node
 
-			for _, ln := range Curfn.Func.Dcl {
+			for _, ln := range Curfn.Func.Decl {
 				cl := ln.Class()
 				if cl == PAUTO || cl == PAUTOHEAP {
 					break

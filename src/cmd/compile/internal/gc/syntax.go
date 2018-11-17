@@ -459,7 +459,7 @@ type Func struct {
 	Enter     Nodes // for example, allocate and initialize memory for escaping parameters
 	Exit      Nodes
 	Cvars     Nodes   // closure params
-	Dcl       []*Node // autodcl for this func/closure
+	Decl      []*Node // autodcl for this func/closure
 
 	// Parents records the parent scope of each scope within a
 	// function. The root scope (0) has no parent, so the i'th
@@ -563,6 +563,14 @@ func (f *Func) setWBPos(pos src.XPos) {
 	if !f.WBPos.IsKnown() {
 		f.WBPos = pos
 	}
+}
+
+func (f *Func) addDcl(n *Node) {
+	f.Decl = append(f.Decl, n)
+}
+
+func (f *Func) addDcls(n ...*Node) {
+	f.Decl = append(f.Decl, n...)
 }
 
 //go:generate stringer -type=Op -trimprefix=O

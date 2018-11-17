@@ -63,7 +63,7 @@ func tempAt(pos src.XPos, curfn *Node, t *types.Type) *Node {
 	}
 
 	s := &types.Sym{
-		Name: autotmpname(len(curfn.Func.Dcl)),
+		Name: autotmpname(len(curfn.Func.Decl)),
 		Pkg:  localpkg,
 	}
 	n := newnamel(pos, s)
@@ -74,7 +74,7 @@ func tempAt(pos src.XPos, curfn *Node, t *types.Type) *Node {
 	n.Name.Curfn = curfn
 	n.Name.SetUsed(true)
 	n.Name.SetAutoTemp(true)
-	curfn.Func.Dcl = append(curfn.Func.Dcl, n)
+	curfn.Func.addDcl(n)
 
 	dowidth(t)
 
