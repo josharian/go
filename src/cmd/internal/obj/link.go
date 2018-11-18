@@ -613,7 +613,7 @@ type Link struct {
 	InlTree            InlTree // global inlining tree used by gc/inl.go
 	DwFixups           *DwarfFixupTable
 	Imports            []string
-	DiagFunc           func(string, ...interface{})
+	DiagFunc           func(string, ...interface{}) // TODO(josharian): accept position information
 	DiagFlush          func()
 	DebugInfo          func(fn *LSym, curfn interface{}) ([]dwarf.Scope, dwarf.InlCalls) // if non-nil, curfn is a *gc.Node
 	GenAbstractFunc    func(fn *LSym)

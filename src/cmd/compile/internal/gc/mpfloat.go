@@ -183,13 +183,13 @@ func (a *Mpflt) SetString(as string) {
 
 	f, _, err := a.Val.Parse(as, 10)
 	if err != nil {
-		yyerror("malformed constant: %s (%v)", as, err)
+		yyerrorl(lineno, "malformed constant: %s (%v)", as, err)
 		a.Val.SetFloat64(0)
 		return
 	}
 
 	if f.IsInf() {
-		yyerror("constant too large: %s", as)
+		yyerrorl(lineno, "constant too large: %s", as)
 		a.Val.SetFloat64(0)
 		return
 	}

@@ -72,7 +72,7 @@ func offmod(t *types.Type) {
 		f.Offset = int64(o)
 		o += int32(Widthptr)
 		if int64(o) >= thearch.MAXWIDTH {
-			yyerror("interface too large")
+			yyerrorl(lineno, "interface too large")
 			o = int32(Widthptr)
 		}
 	}
@@ -131,7 +131,7 @@ func widstruct(errtype *types.Type, t *types.Type, o int64, flag int) int64 {
 			maxwidth = 1<<31 - 1
 		}
 		if o >= maxwidth {
-			yyerror("type %L too large", errtype)
+			yyerrorl(lineno, "type %L too large", errtype)
 			o = 8 // small but nonzero
 		}
 	}
@@ -276,7 +276,7 @@ func dowidth(t *types.Type) {
 		t1 := t.ChanArgs()
 		dowidth(t1) // just in case
 		if t1.Elem().Width >= 1<<16 {
-			yyerror("channel element type too large (>64kB)")
+			yyerrorl(lineno, "channel element type too large (>64kB)")
 		}
 		w = 1 // anything will do
 
@@ -288,7 +288,7 @@ func dowidth(t *types.Type) {
 	case TFORW: // should have been filled in
 		if !t.Broke() {
 			t.SetBroke(true)
-			yyerror("invalid recursive type %v", t)
+			yyerrorl(lineno, "invalid recursive type %v", t)
 		}
 		w = 1 // anything will do
 
@@ -309,7 +309,7 @@ func dowidth(t *types.Type) {
 		}
 		if t.IsDDDArray() {
 			if !t.Broke() {
-				yyerror("use of [...] array outside of array literal")
+				yyerrorl(lineno, "use of [...] array outside of array literal")
 				t.SetBroke(true)
 			}
 			break
@@ -319,7 +319,7 @@ func dowidth(t *types.Type) {
 		if t.Elem().Width != 0 {
 			cap := (uint64(thearch.MAXWIDTH) - 1) / uint64(t.Elem().Width)
 			if uint64(t.NumElem()) > cap {
-				yyerror("type %L larger than address space", t)
+				yyerrorl(lineno, "type %L larger than address space", t)
 			}
 		}
 		w = t.NumElem() * t.Elem().Width
@@ -361,7 +361,7 @@ func dowidth(t *types.Type) {
 	}
 
 	if Widthptr == 4 && w != int64(int32(w)) {
-		yyerror("type %v too large", t)
+		yyerrorl(lineno, "type %v too large", t)
 	}
 
 	t.Width = w

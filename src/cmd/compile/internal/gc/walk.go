@@ -123,9 +123,9 @@ func walkstmt(n *Node) *Node {
 	switch n.Op {
 	default:
 		if n.Op == ONAME {
-			yyerror("%v is not a top level statement", n.Sym)
+			yyerrorl(lineno, "%v is not a top level statement", n.Sym)
 		} else {
-			yyerror("%v is not a top level statement", n.Op)
+			yyerrorl(lineno, "%v is not a top level statement", n.Op)
 		}
 		Dump("nottop", n)
 
@@ -194,7 +194,7 @@ func walkstmt(n *Node) *Node {
 		v := n.Left
 		if v.Class() == PAUTOHEAP {
 			if compiling_runtime {
-				yyerror("%v escapes to heap, not allowed in runtime.", v)
+				yyerrorl(lineno, "%v escapes to heap, not allowed in runtime.", v)
 			}
 			if prealloc[v] == nil {
 				prealloc[v] = callnew(v.Type)
@@ -209,7 +209,7 @@ func walkstmt(n *Node) *Node {
 		walkstmtlist(n.List.Slice())
 
 	case OXCASE:
-		yyerror("case statement out of place")
+		yyerrorl(lineno, "case statement out of place")
 		n.Op = OCASE
 		fallthrough
 
@@ -661,7 +661,7 @@ opswitch:
 			// x = append(...)
 			r := n.Right
 			if r.Type.Elem().NotInHeap() {
-				yyerror("%v is go:notinheap; heap allocation disallowed", r.Type.Elem())
+				yyerrorl(lineno, "%v is go:notinheap; heap allocation disallowed", r.Type.Elem())
 			}
 			switch {
 			case isAppendOfMake(r):
@@ -1055,7 +1055,7 @@ opswitch:
 				Warn("index bounds check elided")
 			}
 			if smallintconst(n.Right) && !n.Bounded() {
-				yyerror("index out of bounds")
+				yyerrorl(lineno, "index out of bounds")
 			}
 		} else if Isconst(n.Left, CTSTR) {
 			n.SetBounded(bounded(r, int64(len(n.Left.Val().U.(string)))))
@@ -1063,13 +1063,13 @@ opswitch:
 				Warn("index bounds check elided")
 			}
 			if smallintconst(n.Right) && !n.Bounded() {
-				yyerror("index out of bounds")
+				yyerrorl(lineno, "index out of bounds")
 			}
 		}
 
 		if Isconst(n.Right, CTINT) {
 			if n.Right.Val().U.(*Mpint).CmpInt64(0) < 0 || n.Right.Val().U.(*Mpint).Cmp(maxintval[TINT]) > 0 {
-				yyerror("index out of bounds")
+				yyerrorl(lineno, "index out of bounds")
 			}
 		}
 
@@ -1322,7 +1322,7 @@ opswitch:
 			// makeslice64, which is faster and shorter on 32 bit platforms.
 
 			if t.Elem().NotInHeap() {
-				yyerror("%v is go:notinheap; heap allocation disallowed", t.Elem())
+				yyerrorl(lineno, "%v is go:notinheap; heap allocation disallowed", t.Elem())
 			}
 
 			len, cap := l, r
@@ -1942,7 +1942,7 @@ func walkprint(nn *Node, init *Nodes) *Node {
 
 func callnew(t *types.Type) *Node {
 	if t.NotInHeap() {
-		yyerror("%v is go:notinheap; heap allocation disallowed", t)
+		yyerrorl(lineno, "%v is go:notinheap; heap allocation disallowed", t)
 	}
 	dowidth(t)
 	fn := syslook("newobject")
@@ -3772,10 +3772,10 @@ func usefield(n *Node) {
 		outer = outer.Elem()
 	}
 	if outer.Sym == nil {
-		yyerror("tracked field must be in named struct type")
+		yyerrorl(lineno, "tracked field must be in named struct type")
 	}
 	if !types.IsExported(field.Sym.Name) {
-		yyerror("tracked field must be exported (upper case)")
+		yyerrorl(lineno, "tracked field must be exported (upper case)")
 	}
 
 	sym := tracksym(outer, field)

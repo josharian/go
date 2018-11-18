@@ -257,7 +257,7 @@ func autolabel(prefix string) *types.Sym {
 
 func restrictlookup(name string, pkg *types.Pkg) *types.Sym {
 	if !types.IsExported(name) && pkg != localpkg {
-		yyerror("cannot refer to unexported name %s.%s", pkg.Name, name)
+		yyerrorl(lineno, "cannot refer to unexported name %s.%s", pkg.Name, name)
 	}
 	return pkg.Lookup(name)
 }
@@ -817,7 +817,7 @@ func assignconvfn(n *Node, t *types.Type, context func() string) *Node {
 	}
 
 	if t.Etype == TBLANK && n.Type.Etype == TNIL {
-		yyerror("use of untyped nil")
+		yyerrorl(lineno, "use of untyped nil")
 	}
 
 	old := n
@@ -849,7 +849,7 @@ func assignconvfn(n *Node, t *types.Type, context func() string) *Node {
 	op := assignop(n.Type, t, &why)
 	if op == 0 {
 		if !old.Diag() {
-			yyerror("cannot use %L as type %v in %s%s", n, t, context(), why)
+			yyerrorl(lineno, "cannot use %L as type %v in %s%s", n, t, context(), why)
 		}
 		op = OCONV
 	}
@@ -1048,7 +1048,7 @@ func badtype(op Op, tl *types.Type, tr *types.Type) {
 	}
 
 	s := fmt_
-	yyerror("illegal types for operand: %v%s", op, s)
+	yyerrorl(lineno, "illegal types for operand: %v%s", op, s)
 }
 
 // brcom returns !(op).
@@ -1334,7 +1334,7 @@ func adddot(n *Node) *Node {
 			n.Left.SetImplicit(true)
 		}
 	case ambig:
-		yyerror("ambiguous selector %v", n)
+		yyerrorl(lineno, "ambiguous selector %v", n)
 		n.Left = nil
 	}
 
@@ -1638,7 +1638,7 @@ func ifacelookdot(s *types.Sym, t *types.Type, ignorecase bool) (m *types.Field,
 	path, ambig := dotpath(s, t, &m, ignorecase)
 	if path == nil {
 		if ambig {
-			yyerror("%v.%v is ambiguous", t, s)
+			yyerrorl(lineno, "%v.%v is ambiguous", t, s)
 		}
 		return nil, false
 	}
@@ -1651,7 +1651,7 @@ func ifacelookdot(s *types.Sym, t *types.Type, ignorecase bool) (m *types.Field,
 	}
 
 	if m.Type.Etype != TFUNC || m.Type.Recv() == nil {
-		yyerror("%v.%v is a field, not a method", t, s)
+		yyerrorl(lineno, "%v.%v is a field, not a method", t, s)
 		return nil, followptr
 	}
 
@@ -1723,7 +1723,7 @@ func implements(t, iface *types.Type, m, samename **types.Field, ptr *int) bool 
 		rcvr := tm.Type.Recv().Type
 		if rcvr.IsPtr() && !t0.IsPtr() && !followptr && !isifacemethod(tm.Type) {
 			if false && Debug['r'] != 0 {
-				yyerror("interface pointer mismatch")
+				yyerrorl(lineno, "interface pointer mismatch")
 			}
 
 			*m = im
@@ -1807,40 +1807,40 @@ var reservedimports = []string{
 
 func isbadimport(path string, allowSpace bool) bool {
 	if strings.Contains(path, "\x00") {
-		yyerror("import path contains NUL")
+		yyerrorl(lineno, "import path contains NUL")
 		return true
 	}
 
 	for _, ri := range reservedimports {
 		if path == ri {
-			yyerror("import path %q is reserved and cannot be used", path)
+			yyerrorl(lineno, "import path %q is reserved and cannot be used", path)
 			return true
 		}
 	}
 
 	for _, r := range path {
 		if r == utf8.RuneError {
-			yyerror("import path contains invalid UTF-8 sequence: %q", path)
+			yyerrorl(lineno, "import path contains invalid UTF-8 sequence: %q", path)
 			return true
 		}
 
 		if r < 0x20 || r == 0x7f {
-			yyerror("import path contains control character: %q", path)
+			yyerrorl(lineno, "import path contains control character: %q", path)
 			return true
 		}
 
 		if r == '\\' {
-			yyerror("import path contains backslash; use slash: %q", path)
+			yyerrorl(lineno, "import path contains backslash; use slash: %q", path)
 			return true
 		}
 
 		if !allowSpace && unicode.IsSpace(r) {
-			yyerror("import path contains space character: %q", path)
+			yyerrorl(lineno, "import path contains space character: %q", path)
 			return true
 		}
 
 		if strings.ContainsRune("!\"#$%&'()*,:;<=>?[]^`{|}", r) {
-			yyerror("import path contains invalid character '%c': %q", r, path)
+			yyerrorl(lineno, "import path contains invalid character '%c': %q", r, path)
 			return true
 		}
 	}

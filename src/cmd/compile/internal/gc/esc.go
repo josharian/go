@@ -2207,7 +2207,7 @@ func moveToHeap(n *Node) {
 		Dump("MOVE", n)
 	}
 	if compiling_runtime {
-		yyerror("%v escapes to heap, not allowed in runtime.", n)
+		yyerrorl(lineno, "%v escapes to heap, not allowed in runtime.", n)
 	}
 	if n.Class() == PAUTOHEAP {
 		Dump("n", n)

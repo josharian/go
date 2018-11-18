@@ -82,7 +82,7 @@ func (a *Mpint) Add(b *Mpint) {
 	a.Val.Add(&a.Val, &b.Val)
 
 	if a.checkOverflow(0) {
-		yyerror("constant addition overflow")
+		yyerrorl(lineno, "constant addition overflow")
 	}
 }
 
@@ -98,7 +98,7 @@ func (a *Mpint) Sub(b *Mpint) {
 	a.Val.Sub(&a.Val, &b.Val)
 
 	if a.checkOverflow(0) {
-		yyerror("constant subtraction overflow")
+		yyerrorl(lineno, "constant subtraction overflow")
 	}
 }
 
@@ -114,7 +114,7 @@ func (a *Mpint) Mul(b *Mpint) {
 	a.Val.Mul(&a.Val, &b.Val)
 
 	if a.checkOverflow(0) {
-		yyerror("constant multiplication overflow")
+		yyerrorl(lineno, "constant multiplication overflow")
 	}
 }
 
@@ -131,7 +131,7 @@ func (a *Mpint) Quo(b *Mpint) {
 
 	if a.checkOverflow(0) {
 		// can only happen for div-0 which should be checked elsewhere
-		yyerror("constant division overflow")
+		yyerrorl(lineno, "constant division overflow")
 	}
 }
 
@@ -148,7 +148,7 @@ func (a *Mpint) Rem(b *Mpint) {
 
 	if a.checkOverflow(0) {
 		// should never happen
-		yyerror("constant modulo overflow")
+		yyerrorl(lineno, "constant modulo overflow")
 	}
 }
 
@@ -215,13 +215,13 @@ func (a *Mpint) Lsh(b *Mpint) {
 		if s < 0 {
 			msg = "invalid negative shift count"
 		}
-		yyerror("%s: %d", msg, s)
+		yyerrorl(lineno, "%s: %d", msg, s)
 		a.SetInt64(0)
 		return
 	}
 
 	if a.checkOverflow(int(s)) {
-		yyerror("constant shift overflow")
+		yyerrorl(lineno, "constant shift overflow")
 		return
 	}
 	a.Val.Lsh(&a.Val, uint(s))
@@ -238,7 +238,7 @@ func (a *Mpint) Rsh(b *Mpint) {
 
 	s := b.Int64()
 	if s < 0 {
-		yyerror("invalid negative shift count: %d", s)
+		yyerrorl(lineno, "invalid negative shift count: %d", s)
 		if a.Val.Sign() < 0 {
 			a.SetInt64(-1)
 		} else {
@@ -290,12 +290,12 @@ func (a *Mpint) SetString(as string) {
 		// - malformed octal constant
 		// - malformed decimal constant
 		// TODO(gri) use different conversion function
-		yyerror("malformed integer constant: %s", as)
+		yyerrorl(lineno, "malformed integer constant: %s", as)
 		a.Val.SetUint64(0)
 		return
 	}
 	if a.checkOverflow(0) {
-		yyerror("constant too large: %s", as)
+		yyerrorl(lineno, "constant too large: %s", as)
 	}
 }
 

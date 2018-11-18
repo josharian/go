@@ -965,7 +965,7 @@ func findpkg(name string) (file string, ok bool) {
 	// don't want to see "encoding/../encoding/base64"
 	// as different from "encoding/base64".
 	if q := path.Clean(name); q != name {
-		yyerror("non-canonical import path %q (should be %q)", name, q)
+		yyerrorl(lineno, "non-canonical import path %q (should be %q)", name, q)
 		return "", false
 	}
 
@@ -1048,12 +1048,12 @@ var myheight int
 func importfile(f *Val) *types.Pkg {
 	path_, ok := f.U.(string)
 	if !ok {
-		yyerror("import path must be a string")
+		yyerrorl(lineno, "import path must be a string")
 		return nil
 	}
 
 	if len(path_) == 0 {
-		yyerror("import path is empty")
+		yyerrorl(lineno, "import path is empty")
 		return nil
 	}
 
@@ -1066,12 +1066,12 @@ func importfile(f *Val) *types.Pkg {
 	// the main package, just as we reserve the import
 	// path "math" to identify the standard math package.
 	if path_ == "main" {
-		yyerror("cannot import \"main\"")
+		yyerrorl(lineno, "cannot import \"main\"")
 		errorexit()
 	}
 
 	if myimportpath != "" && path_ == myimportpath {
-		yyerror("import %q while compiling that package (import cycle)", path_)
+		yyerrorl(lineno, "import %q while compiling that package (import cycle)", path_)
 		errorexit()
 	}
 
@@ -1086,7 +1086,7 @@ func importfile(f *Val) *types.Pkg {
 
 	if islocalname(path_) {
 		if path_[0] == '/' {
-			yyerror("import path cannot be absolute path")
+			yyerrorl(lineno, "import path cannot be absolute path")
 			return nil
 		}
 
@@ -1103,7 +1103,7 @@ func importfile(f *Val) *types.Pkg {
 
 	file, found := findpkg(path_)
 	if !found {
-		yyerror("can't find import: %q", path_)
+		yyerrorl(lineno, "can't find import: %q", path_)
 		errorexit()
 	}
 
@@ -1116,7 +1116,7 @@ func importfile(f *Val) *types.Pkg {
 
 	imp, err := bio.Open(file)
 	if err != nil {
-		yyerror("can't open import: %q: %v", path_, err)
+		yyerrorl(lineno, "can't open import: %q: %v", path_, err)
 		errorexit()
 	}
 	defer imp.Close()
@@ -1124,7 +1124,7 @@ func importfile(f *Val) *types.Pkg {
 	// check object header
 	p, err := imp.ReadString('\n')
 	if err != nil {
-		yyerror("import %s: reading input: %v", file, err)
+		yyerrorl(lineno, "import %s: reading input: %v", file, err)
 		errorexit()
 	}
 
@@ -1132,23 +1132,23 @@ func importfile(f *Val) *types.Pkg {
 		// package export block should be first
 		sz := arsize(imp.Reader, "__.PKGDEF")
 		if sz <= 0 {
-			yyerror("import %s: not a package file", file)
+			yyerrorl(lineno, "import %s: not a package file", file)
 			errorexit()
 		}
 		p, err = imp.ReadString('\n')
 		if err != nil {
-			yyerror("import %s: reading input: %v", file, err)
+			yyerrorl(lineno, "import %s: reading input: %v", file, err)
 			errorexit()
 		}
 	}
 
 	if !strings.HasPrefix(p, "go object ") {
-		yyerror("import %s: not a go object file: %s", file, p)
+		yyerrorl(lineno, "import %s: not a go object file: %s", file, p)
 		errorexit()
 	}
 	q := fmt.Sprintf("%s %s %s %s\n", objabi.GOOS, objabi.GOARCH, objabi.Version, objabi.Expstring())
 	if p[10:] != q {
-		yyerror("import %s: object is [%s] expected [%s]", file, p[10:], q)
+		yyerrorl(lineno, "import %s: object is [%s] expected [%s]", file, p[10:], q)
 		errorexit()
 	}
 
@@ -1156,7 +1156,7 @@ func importfile(f *Val) *types.Pkg {
 	for {
 		p, err = imp.ReadString('\n')
 		if err != nil {
-			yyerror("import %s: reading input: %v", file, err)
+			yyerrorl(lineno, "import %s: reading input: %v", file, err)
 			errorexit()
 		}
 		if p == "\n" {
@@ -1199,7 +1199,7 @@ func importfile(f *Val) *types.Pkg {
 
 	switch c {
 	case '\n':
-		yyerror("cannot import %s: old export format no longer supported (recompile library)", path_)
+		yyerrorl(lineno, "cannot import %s: old export format no longer supported (recompile library)", path_)
 		return nil
 
 	case 'B':
@@ -1210,20 +1210,20 @@ func importfile(f *Val) *types.Pkg {
 
 		c, err = imp.ReadByte()
 		if err != nil {
-			yyerror("import %s: reading input: %v", file, err)
+			yyerrorl(lineno, "import %s: reading input: %v", file, err)
 			errorexit()
 		}
 
 		// Indexed format is distinguished by an 'i' byte,
 		// whereas previous export formats started with 'c', 'd', or 'v'.
 		if c != 'i' {
-			yyerror("import %s: unexpected package format byte: %v", file, c)
+			yyerrorl(lineno, "import %s: unexpected package format byte: %v", file, c)
 			errorexit()
 		}
 		iimport(importpkg, imp)
 
 	default:
-		yyerror("no import in %q", path_)
+		yyerrorl(lineno, "no import in %q", path_)
 		errorexit()
 	}
 
@@ -1255,12 +1255,12 @@ func pkgnotused(lineno src.XPos, path string, name string) {
 func mkpackage(pkgname string) {
 	if localpkg.Name == "" {
 		if pkgname == "_" {
-			yyerror("invalid package name _")
+			yyerrorl(lineno, "invalid package name _")
 		}
 		localpkg.Name = pkgname
 	} else {
 		if pkgname != localpkg.Name {
-			yyerror("package %s; expected %s", pkgname, localpkg.Name)
+			yyerrorl(lineno, "package %s; expected %s", pkgname, localpkg.Name)
 		}
 	}
 }

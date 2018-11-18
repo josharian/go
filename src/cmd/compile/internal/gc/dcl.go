@@ -170,7 +170,7 @@ func variter(vl []*Node, t *Node, el []*Node) []*Node {
 		var e *Node
 		if doexpr {
 			if len(el) == 0 {
-				yyerror("missing expression in var declaration")
+				yyerrorl(lineno, "missing expression in var declaration")
 				break
 			}
 			e = el[0]
@@ -194,7 +194,7 @@ func variter(vl []*Node, t *Node, el []*Node) []*Node {
 	}
 
 	if len(el) != 0 {
-		yyerror("extra expression in var declaration")
+		yyerrorl(lineno, "extra expression in var declaration")
 	}
 	return init
 }
@@ -367,7 +367,7 @@ func ifacedcl(n *Node) {
 	}
 
 	if n.Sym.IsBlank() {
-		yyerror("methods must have a unique non-blank name")
+		yyerrorl(lineno, "methods must have a unique non-blank name")
 	}
 }
 
@@ -519,12 +519,12 @@ func checkembeddedtype(t *types.Type) {
 	if t.Sym == nil && t.IsPtr() {
 		t = t.Elem()
 		if t.IsInterface() {
-			yyerror("embedded type cannot be a pointer to interface")
+			yyerrorl(lineno, "embedded type cannot be a pointer to interface")
 		}
 	}
 
 	if t.IsPtr() || t.IsUnsafePtr() {
-		yyerror("embedded type cannot be a pointer")
+		yyerrorl(lineno, "embedded type cannot be a pointer")
 	} else if t.Etype == TFORW && !t.ForwardType().Embedlineno.IsKnown() {
 		t.ForwardType().Embedlineno = lineno
 	}
@@ -564,7 +564,7 @@ func structfield(n *Node) *types.Field {
 	case string:
 		f.Note = u
 	default:
-		yyerror("field tag must be a string")
+		yyerrorl(lineno, "field tag must be a string")
 	case nil:
 		// no-op
 	}
@@ -658,7 +658,7 @@ func interfacefield(n *Node) *types.Field {
 	}
 
 	if n.Val().Ctype() != CTxxx {
-		yyerror("interface method cannot have annotation")
+		yyerrorl(lineno, "interface method cannot have annotation")
 	}
 
 	// MethodSpec = MethodName Signature | InterfaceTypeName .
@@ -873,7 +873,7 @@ func addmethod(msym *types.Sym, t *types.Type, local, nointerface bool) *types.F
 	// get parent type sym
 	rf := t.Recv() // ptr to this structure
 	if rf == nil {
-		yyerror("missing receiver")
+		yyerrorl(lineno, "missing receiver")
 		return nil
 	}
 
@@ -883,7 +883,7 @@ func addmethod(msym *types.Sym, t *types.Type, local, nointerface bool) *types.F
 		t := pa
 		if t != nil && t.IsPtr() {
 			if t.Sym != nil {
-				yyerror("invalid receiver type %v (%v is a pointer type)", pa, t)
+				yyerrorl(lineno, "invalid receiver type %v (%v is a pointer type)", pa, t)
 				return nil
 			}
 			t = t.Elem()
@@ -893,21 +893,21 @@ func addmethod(msym *types.Sym, t *types.Type, local, nointerface bool) *types.F
 		case t == nil || t.Broke():
 			// rely on typecheck having complained before
 		case t.Sym == nil:
-			yyerror("invalid receiver type %v (%v is not a defined type)", pa, t)
+			yyerrorl(lineno, "invalid receiver type %v (%v is not a defined type)", pa, t)
 		case t.IsPtr():
-			yyerror("invalid receiver type %v (%v is a pointer type)", pa, t)
+			yyerrorl(lineno, "invalid receiver type %v (%v is a pointer type)", pa, t)
 		case t.IsInterface():
-			yyerror("invalid receiver type %v (%v is an interface type)", pa, t)
+			yyerrorl(lineno, "invalid receiver type %v (%v is an interface type)", pa, t)
 		default:
 			// Should have picked off all the reasons above,
 			// but just in case, fall back to generic error.
-			yyerror("invalid receiver type %v (%L / %L)", pa, pa, t)
+			yyerrorl(lineno, "invalid receiver type %v (%L / %L)", pa, pa, t)
 		}
 		return nil
 	}
 
 	if local && mt.Sym.Pkg != localpkg {
-		yyerror("cannot define new methods on non-local type %v", mt)
+		yyerrorl(lineno, "cannot define new methods on non-local type %v", mt)
 		return nil
 	}
 
@@ -918,7 +918,7 @@ func addmethod(msym *types.Sym, t *types.Type, local, nointerface bool) *types.F
 	if mt.IsStruct() {
 		for _, f := range mt.Fields().Slice() {
 			if f.Sym == msym {
-				yyerror("type %v has both field and method named %v", mt, msym)
+				yyerrorl(lineno, "type %v has both field and method named %v", mt, msym)
 				f.SetBroke(true)
 				return nil
 			}
@@ -932,7 +932,7 @@ func addmethod(msym *types.Sym, t *types.Type, local, nointerface bool) *types.F
 		// types.Identical only checks that incoming and result parameters match,
 		// so explicitly check that the receiver parameters match too.
 		if !types.Identical(t, f.Type) || !types.Identical(t.Recv().Type, f.Type.Recv().Type) {
-			yyerror("method redeclared: %v.%v\n\t%v\n\t%v", mt, msym, f.Type, t)
+			yyerrorl(lineno, "method redeclared: %v.%v\n\t%v\n\t%v", mt, msym, f.Type, t)
 		}
 		return f
 	}

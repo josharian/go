@@ -378,7 +378,7 @@ func (p *noder) constDecl(decl *syntax.ConstDecl, cs *constState) []*Node {
 		cs.typ, cs.values = typ, values
 	} else {
 		if typ != nil {
-			yyerror("const declaration cannot have type without expression")
+			yyerrorl(lineno, "const declaration cannot have type without expression")
 		}
 		typ, values = cs.typ, cs.values
 	}
@@ -386,7 +386,7 @@ func (p *noder) constDecl(decl *syntax.ConstDecl, cs *constState) []*Node {
 	var nn []*Node
 	for i, n := range names {
 		if i >= len(values) {
-			yyerror("missing value in const declaration")
+			yyerrorl(lineno, "missing value in const declaration")
 			break
 		}
 		v := values[i]
@@ -405,7 +405,7 @@ func (p *noder) constDecl(decl *syntax.ConstDecl, cs *constState) []*Node {
 	}
 
 	if len(values) > len(names) {
-		yyerror("extra expression in const declaration")
+		yyerrorl(lineno, "extra expression in const declaration")
 	}
 
 	cs.iota++
@@ -426,7 +426,7 @@ func (p *noder) typeDecl(decl *syntax.TypeDecl) *Node {
 	param.Pragma = decl.Pragma
 	param.Alias = decl.Alias
 	if param.Alias && param.Pragma != 0 {
-		yyerror("cannot specify directive with type alias")
+		yyerrorl(lineno, "cannot specify directive with type alias")
 		param.Pragma = 0
 	}
 
@@ -535,9 +535,9 @@ func (p *noder) param(param *syntax.Field, dddOk, final bool) *Node {
 	// rewrite ...T parameter
 	if typ.Op == ODDD {
 		if !dddOk {
-			yyerror("cannot use ... in receiver or result parameter list")
+			yyerrorl(lineno, "cannot use ... in receiver or result parameter list")
 		} else if !final {
-			yyerror("can only use ... with final parameter in list")
+			yyerrorl(lineno, "can only use ... with final parameter in list")
 		}
 		typ.Op = OTARRAY
 		typ.Right = typ.Left
@@ -676,7 +676,7 @@ func (p *noder) expr(expr syntax.Expr) *Node {
 		if expr.Lhs != nil {
 			n.Left = p.declName(expr.Lhs)
 			if n.Left.isBlank() {
-				yyerror("invalid variable name %v in type switch", n.Left)
+				yyerrorl(lineno, "invalid variable name %v in type switch", n.Left)
 			}
 		}
 		return n
@@ -840,12 +840,12 @@ func (p *noder) packname(expr syntax.Expr) *types.Sym {
 		name := p.name(expr.X.(*syntax.Name))
 		def := asNode(name.Def)
 		if def == nil {
-			yyerror("undefined: %v", name)
+			yyerrorl(lineno, "undefined: %v", name)
 			return name
 		}
 		var pkg *types.Pkg
 		if def.Op != OPACK {
-			yyerror("%v is not a package", name)
+			yyerrorl(lineno, "%v is not a package", name)
 			pkg = localpkg
 		} else {
 			def.Name.SetUsed(true)
@@ -950,7 +950,7 @@ func (p *noder) stmtFall(stmt syntax.Stmt, fallOK bool) *Node {
 			op = OCONTINUE
 		case syntax.Fallthrough:
 			if !fallOK {
-				yyerror("fallthrough statement out of place")
+				yyerrorl(lineno, "fallthrough statement out of place")
 			}
 			op = OFALL
 		case syntax.Goto:
@@ -990,7 +990,7 @@ func (p *noder) stmtFall(stmt syntax.Stmt, fallOK bool) *Node {
 					break
 				}
 				if asNode(ln.Sym.Def) != ln {
-					yyerror("%s is shadowed during return", ln.Sym.Name)
+					yyerrorl(lineno, "%s is shadowed during return", ln.Sym.Name)
 				}
 			}
 		}
@@ -1180,10 +1180,10 @@ func (p *noder) caseClauses(clauses []*syntax.CaseClause, tswitch *Node, rbrace 
 		n.Nbody.Set(p.stmtsFall(body, true))
 		if l := n.Nbody.Len(); l > 0 && n.Nbody.Index(l-1).Op == OFALL {
 			if tswitch != nil {
-				yyerror("cannot fallthrough in type switch")
+				yyerrorl(lineno, "cannot fallthrough in type switch")
 			}
 			if i+1 == len(clauses) {
-				yyerror("cannot fallthrough final case in switch")
+				yyerrorl(lineno, "cannot fallthrough final case in switch")
 			}
 		}
 

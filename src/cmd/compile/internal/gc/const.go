@@ -280,7 +280,7 @@ func convlit1(n *Node, t *types.Type, explicit bool, reuse canReuseNode) *Node {
 			n.SetVal(toint(n.Val()))
 		}
 		if t != nil && !t.IsInteger() {
-			yyerror("invalid operation: %v (shift of type %v)", n, t)
+			yyerrorl(lineno, "invalid operation: %v (shift of type %v)", n, t)
 			t = nil
 		}
 
@@ -413,7 +413,7 @@ func convlit1(n *Node, t *types.Type, explicit bool, reuse canReuseNode) *Node {
 bad:
 	if !n.Diag() {
 		if !t.Broke() {
-			yyerror("cannot convert %L to type %v", n, t)
+			yyerrorl(lineno, "cannot convert %L to type %v", n, t)
 		}
 		n.SetDiag(true)
 	}
@@ -453,7 +453,7 @@ func toflt(v Val) Val {
 		f := newMpflt()
 		f.Set(&u.Real)
 		if u.Imag.CmpFloat64(0) != 0 {
-			yyerror("constant %v truncated to real", u.GoString())
+			yyerrorl(lineno, "constant %v truncated to real", u.GoString())
 		}
 		v.U = f
 	}
@@ -474,7 +474,7 @@ func toint(v Val) Val {
 		i := new(Mpint)
 		if !i.SetFloat(u) {
 			if i.checkOverflow(0) {
-				yyerror("integer too large")
+				yyerrorl(lineno, "integer too large")
 			} else {
 				// The value of u cannot be represented as an integer;
 				// so we need to print an error message.
@@ -488,9 +488,9 @@ func toint(v Val) Val {
 				var t big.Float
 				t.Parse(u.GoString(), 10)
 				if t.IsInt() {
-					yyerror("constant truncated to integer")
+					yyerrorl(lineno, "constant truncated to integer")
 				} else {
-					yyerror("constant %v truncated to integer", u.GoString())
+					yyerrorl(lineno, "constant %v truncated to integer", u.GoString())
 				}
 			}
 		}
@@ -499,7 +499,7 @@ func toint(v Val) Val {
 	case *Mpcplx:
 		i := new(Mpint)
 		if !i.SetFloat(&u.Real) || u.Imag.CmpFloat64(0) != 0 {
-			yyerror("constant %v truncated to integer", u.GoString())
+			yyerrorl(lineno, "constant %v truncated to integer", u.GoString())
 		}
 
 		v.U = i
@@ -546,7 +546,7 @@ func overflow(v Val, t *types.Type) bool {
 	}
 
 	if doesoverflow(v, t) {
-		yyerror("constant %v overflows %v", v, t)
+		yyerrorl(lineno, "constant %v overflows %v", v, t)
 		return true
 	}
 
@@ -782,14 +782,14 @@ Outer:
 			u.Mul(y)
 		case ODIV:
 			if y.CmpInt64(0) == 0 {
-				yyerror("division by zero")
+				yyerrorl(lineno, "division by zero")
 				u.SetOverflow()
 				break
 			}
 			u.Quo(y)
 		case OMOD:
 			if y.CmpInt64(0) == 0 {
-				yyerror("division by zero")
+				yyerrorl(lineno, "division by zero")
 				u.SetOverflow()
 				break
 			}
@@ -821,14 +821,14 @@ Outer:
 			u.Mul(y)
 		case ODIV:
 			if y.CmpFloat64(0) == 0 {
-				yyerror("division by zero")
+				yyerrorl(lineno, "division by zero")
 				u.SetFloat64(1)
 				break
 			}
 			u.Quo(y)
 		case OMOD:
 			// TODO(mdempsky): Move to typecheck.
-			yyerror("illegal constant expression: floating-point %% operation")
+			yyerrorl(lineno, "illegal constant expression: floating-point %% operation")
 		default:
 			break Outer
 		}
@@ -851,7 +851,7 @@ Outer:
 			u.Mul(y)
 		case ODIV:
 			if !u.Div(y) {
-				yyerror("complex division by zero")
+				yyerrorl(lineno, "complex division by zero")
 				u.Real.SetFloat64(1)
 				u.Imag.SetFloat64(0)
 			}
@@ -1098,7 +1098,7 @@ func defaultlitreuse(n *Node, t *types.Type, reuse canReuseNode) *Node {
 		case CTNIL:
 			lineno = lno
 			if !n.Diag() {
-				yyerror("use of untyped nil")
+				yyerrorl(lineno, "use of untyped nil")
 				n.SetDiag(true)
 			}
 
@@ -1107,7 +1107,7 @@ func defaultlitreuse(n *Node, t *types.Type, reuse canReuseNode) *Node {
 			t1 := types.Types[TSTRING]
 			n = convlit1(n, t1, false, reuse)
 		default:
-			yyerror("defaultlit: unknown literal: %v", n)
+			yyerrorl(lineno, "defaultlit: unknown literal: %v", n)
 		}
 		lineno = lno
 		return n

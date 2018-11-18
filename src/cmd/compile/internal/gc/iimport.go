@@ -79,7 +79,7 @@ type intReader struct {
 func (r *intReader) int64() int64 {
 	i, err := binary.ReadVarint(r.Reader)
 	if err != nil {
-		yyerror("import %q: read error: %v", r.pkg.Path, err)
+		yyerrorl(lineno, "import %q: read error: %v", r.pkg.Path, err)
 		errorexit()
 	}
 	return i
@@ -88,7 +88,7 @@ func (r *intReader) int64() int64 {
 func (r *intReader) uint64() uint64 {
 	i, err := binary.ReadUvarint(r.Reader)
 	if err != nil {
-		yyerror("import %q: read error: %v", r.pkg.Path, err)
+		yyerrorl(lineno, "import %q: read error: %v", r.pkg.Path, err)
 		errorexit()
 	}
 	return i
@@ -99,7 +99,7 @@ func iimport(pkg *types.Pkg, in *bio.Reader) {
 
 	version := ir.uint64()
 	if version != iexportVersion {
-		yyerror("import %q: unknown export format version %d", pkg.Path, version)
+		yyerrorl(lineno, "import %q: unknown export format version %d", pkg.Path, version)
 		errorexit()
 	}
 
@@ -111,7 +111,7 @@ func iimport(pkg *types.Pkg, in *bio.Reader) {
 	// returning individual substrings very efficiently.
 	data, err := mapFile(in.File(), in.Offset(), int64(sLen+dLen))
 	if err != nil {
-		yyerror("import %q: mapping input: %v", pkg.Path, err)
+		yyerrorl(lineno, "import %q: mapping input: %v", pkg.Path, err)
 		errorexit()
 	}
 	stringData := data[:sLen]

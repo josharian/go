@@ -23,7 +23,7 @@ func evalunsafe(n *Node) int64 {
 	case OOFFSETOF:
 		// must be a selector.
 		if n.Left.Op != OXDOT {
-			yyerror("invalid expression %v", n)
+			yyerrorl(lineno, "invalid expression %v", n)
 			return 0
 		}
 
@@ -41,10 +41,10 @@ func evalunsafe(n *Node) int64 {
 		case ODOT, ODOTPTR:
 			break
 		case OCALLPART:
-			yyerror("invalid expression %v: argument is a method value", n)
+			yyerrorl(lineno, "invalid expression %v: argument is a method value", n)
 			return 0
 		default:
-			yyerror("invalid expression %v", n)
+			yyerrorl(lineno, "invalid expression %v", n)
 			return 0
 		}
 
@@ -57,7 +57,7 @@ func evalunsafe(n *Node) int64 {
 				// but accessing f must not otherwise involve
 				// indirection via embedded pointer types.
 				if r.Left != base {
-					yyerror("invalid expression %v: selector implies indirection of embedded %v", n, r.Left)
+					yyerrorl(lineno, "invalid expression %v: selector implies indirection of embedded %v", n, r.Left)
 					return 0
 				}
 				fallthrough
