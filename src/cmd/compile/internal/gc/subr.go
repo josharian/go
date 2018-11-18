@@ -1777,6 +1777,14 @@ func ngotype(n *Node) *types.Sym {
 	return nil
 }
 
+// TODO: Method?
+func ngotypeStackVar(v *StackVar) *types.Sym {
+	if v.Type != nil {
+		return typenamesym(v.Type)
+	}
+	return nil
+}
+
 // The result of addinit MUST be assigned back to n, e.g.
 // 	n.Left = addinit(n.Left, init)
 func addinit(n *Node, init []*Node) *Node {

@@ -458,8 +458,9 @@ type Func struct {
 	Shortname *types.Sym
 	Enter     Nodes // for example, allocate and initialize memory for escaping parameters
 	Exit      Nodes
-	Cvars     Nodes   // closure params
-	Dcl       []*Node // autodcl for this func/closure
+	Cvars     Nodes       // closure params
+	Dcl       []*Node     // autodcl for this func/closure
+	StackVars []*StackVar // TODO: use a non-ptr?
 
 	// Parents records the parent scope of each scope within a
 	// function. The root scope (0) has no parent, so the i'th
@@ -497,6 +498,100 @@ type Func struct {
 	// function for go:nowritebarrierrec analysis. Only filled in
 	// if nowritebarrierrecCheck != nil.
 	nwbrCalls *[]nowritebarrierrecCallSym
+}
+
+type StackVar struct {
+	Class                 Class
+	Used                  bool
+	Needzero              bool
+	InlFormal             bool
+	AddrTaken             bool
+	InlLocal              bool
+	Xoffset               int64
+	Op                    Op
+	Type                  *types.Type
+	Sym                   *types.Sym
+	Pos                   src.XPos
+	CapturedPos           src.XPos // TODO: doc!!
+	AutoTemp              bool
+	IsOutputParamHeapAddr bool
+	IsParamHeadAddr       bool
+	LSym                  *obj.LSym
+}
+
+// IsAutoTmp indicates if n was created by the compiler as a temporary,
+// based on the setting of the .AutoTemp flag in n's Name.
+func (v *StackVar) IsAutoTmp() bool {
+	if v == nil || v.Op != ONAME {
+		return false
+	}
+	return v.AutoTemp
+}
+
+func (v *StackVar) Typ() *types.Type {
+	return v.Type
+}
+
+func (v *StackVar) String() string {
+	return "TODO WAT WAT WAT WAT WAT"
+}
+
+// TODO: dedup conversion with Node.StorageClass
+func (v *StackVar) StorageClass() ssa.StorageClass {
+	switch v.Class {
+	case PPARAM:
+		return ssa.ClassParam
+	case PPARAMOUT:
+		return ssa.ClassParamOut
+	case PAUTO:
+		return ssa.ClassAuto
+	default:
+		Fatalf("untranslatable storage class for %v: %s", v, v.Class)
+		return 0
+	}
+}
+
+func (v *StackVar) Magic() {}
+
+func (v *StackVar) IsSynthetic() bool {
+	name := v.Sym.Name
+	return name[0] == '.' || name[0] == '~'
+}
+
+func (f *Func) populateStackVars() {
+	f.StackVars = make([]*StackVar, len(f.Dcl))
+	for i, n := range f.Dcl {
+		f.StackVars[i] = n.AsStackVar()
+	}
+}
+
+func (n *Node) AsStackVar() *StackVar {
+	v := new(StackVar)
+	v.Class = n.Class()
+	v.Used = n.Name.Used()
+	v.Xoffset = n.Xoffset
+	v.Type = n.Type
+	v.Needzero = n.Name.Needzero()
+	v.Sym = n.Sym
+	v.Op = n.Op // TODO: can this really be anything but ONAME?
+	v.InlFormal = n.InlFormal()
+	v.InlLocal = n.InlLocal()
+	v.Pos = n.Pos
+	v.CapturedPos = n.Pos
+	if n.Name.Defn != nil && (n.Name.Captured() || n.Name.Byval()) {
+		v.CapturedPos = n.Name.Defn.Pos
+	}
+	v.AutoTemp = n.IsAutoTmp()
+	v.AddrTaken = n.Addrtaken()
+	v.IsOutputParamHeapAddr = n.IsOutputParamHeapAddr()
+	v.IsParamHeadAddr = n.Name != nil && n.Name.Param != nil && n.Name.Param.Heapaddr != nil
+
+	if n.Class() == PPARAM || n.Class() == PPARAMOUT {
+		v.LSym = n.Orig.Sym.Linksym()
+	} else {
+		v.LSym = n.Sym.Linksym()
+	}
+	return v
 }
 
 // An Inline holds fields used for function bodies that can be inlined.

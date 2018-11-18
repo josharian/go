@@ -49,6 +49,37 @@ func autotmpname(n int) string {
 	return types.InternString(b)
 }
 
+func autoAt(pos src.XPos, curfn *Node, t *types.Type) *Node {
+	if curfn == nil {
+		Fatalf("no curfn for tempname")
+	}
+	if curfn.Func.Closure != nil && curfn.Op == OCLOSURE {
+		Dump("tempname", curfn)
+		Fatalf("adding tempname to wrong closure function")
+	}
+	if t == nil {
+		Fatalf("tempname called with nil type")
+	}
+
+	s := &types.Sym{
+		Name: autotmpname(len(curfn.Func.Dcl)),
+		Pkg:  localpkg,
+	}
+	n := newnamel(pos, s)
+	s.Def = asTypesNode(n)
+	n.Type = t
+	n.SetClass(PAUTO)
+	n.Esc = EscNever
+	n.Name.Curfn = curfn
+	n.Name.SetUsed(true)
+	n.Name.SetAutoTemp(true)
+	curfn.Func.Dcl = append(curfn.Func.Dcl, n)
+
+	dowidth(t)
+
+	return n.Orig
+}
+
 // make a new Node off the books
 func tempAt(pos src.XPos, curfn *Node, t *types.Type) *Node {
 	if curfn == nil {

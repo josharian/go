@@ -153,7 +153,7 @@ func (s *stackAllocState) stackalloc() {
 		if v.Op != OpArg {
 			continue
 		}
-		loc := LocalSlot{N: v.Aux.(GCNode), Type: v.Type, Off: v.AuxInt}
+		loc := LocalSlot{N: v.Aux.(GCStackVar), Type: v.Type, Off: v.AuxInt}
 		if f.pass.debug > stackDebug {
 			fmt.Printf("stackalloc %s to %s\n", v, loc)
 		}

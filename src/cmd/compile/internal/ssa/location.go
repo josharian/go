@@ -59,7 +59,7 @@ func (r *Register) GCNum() int16 {
 //                           { N: len, Type: int, Off: 0, SplitOf: parent, SplitOffset: 8}
 //                           parent = &{N: s, Type: string}
 type LocalSlot struct {
-	N    GCNode      // an ONAME *gc.Node representing a stack location.
+	N    GCStackVar  // an ONAME *gc.Node representing a stack location.
 	Type *types.Type // type of slot
 	Off  int64       // offset of slot in N
 

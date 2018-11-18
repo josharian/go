@@ -134,9 +134,9 @@ type Frontend interface {
 	// StringData returns a symbol pointing to the given string's contents.
 	StringData(string) interface{} // returns *gc.Sym
 
-	// Auto returns a Node for an auto variable of the given type.
+	// Auto returns a StackVar for an auto variable of the given type.
 	// The SSA compiler uses this function to allocate space for spills.
-	Auto(src.XPos, *types.Type) GCNode
+	Auto(src.XPos, *types.Type) GCStackVar
 
 	// Given the name for a compound type, returns the name we should use
 	// for the parts of that compound type.
@@ -180,6 +180,18 @@ type GCNode interface {
 	IsSynthetic() bool
 	IsAutoTmp() bool
 	StorageClass() StorageClass
+	Unusable() // TODO: delete...all of it, really
+}
+
+// *gc.StackVar
+// TODO: move gc.StackVar to SSA package?
+type GCStackVar interface {
+	Typ() *types.Type
+	String() string
+	IsSynthetic() bool
+	IsAutoTmp() bool
+	StorageClass() StorageClass
+	Magic() // TODO: delete
 }
 
 type StorageClass uint8

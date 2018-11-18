@@ -68,17 +68,17 @@ func emitptrargsmap(fn *Node) {
 // really means, in memory, things with pointers needing zeroing at
 // the top of the stack and increasing in size.
 // Non-autos sort on offset.
-func cmpstackvarlt(a, b *Node) bool {
-	if (a.Class() == PAUTO) != (b.Class() == PAUTO) {
-		return b.Class() == PAUTO
+func cmpstackvarlt(a, b *StackVar) bool {
+	if (a.Class == PAUTO) != (b.Class == PAUTO) {
+		return b.Class == PAUTO
 	}
 
-	if a.Class() != PAUTO {
+	if a.Class != PAUTO {
 		return a.Xoffset < b.Xoffset
 	}
 
-	if a.Name.Used() != b.Name.Used() {
-		return a.Name.Used()
+	if a.Used != b.Used {
+		return a.Used
 	}
 
 	ap := types.Haspointers(a.Type)
@@ -87,8 +87,8 @@ func cmpstackvarlt(a, b *Node) bool {
 		return ap
 	}
 
-	ap = a.Name.Needzero()
-	bp = b.Name.Needzero()
+	ap = a.Needzero
+	bp = b.Needzero
 	if ap != bp {
 		return ap
 	}
@@ -100,8 +100,8 @@ func cmpstackvarlt(a, b *Node) bool {
 	return a.Sym.Name < b.Sym.Name
 }
 
-// byStackvar implements sort.Interface for []*Node using cmpstackvarlt.
-type byStackVar []*Node
+// byStackvar implements sort.Interface for []*StackVar using cmpstackvarlt.
+type byStackVar []*StackVar
 
 func (s byStackVar) Len() int           { return len(s) }
 func (s byStackVar) Less(i, j int) bool { return cmpstackvarlt(s[i], s[j]) }
@@ -113,30 +113,30 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 	fn := s.curfn.Func
 
 	// Mark the PAUTO's unused.
-	for _, ln := range fn.Dcl {
-		if ln.Class() == PAUTO {
-			ln.Name.SetUsed(false)
+	for _, v := range fn.StackVars {
+		if v.Class == PAUTO {
+			v.Used = false
 		}
 	}
 
 	for _, l := range f.RegAlloc {
 		if ls, ok := l.(ssa.LocalSlot); ok {
-			ls.N.(*Node).Name.SetUsed(true)
+			ls.N.(*StackVar).Used = true
 		}
 	}
 
 	scratchUsed := false
 	for _, b := range f.Blocks {
 		for _, v := range b.Values {
-			if n, ok := v.Aux.(*Node); ok {
-				switch n.Class() {
+			if n, ok := v.Aux.(*StackVar); ok {
+				switch n.Class {
 				case PPARAM, PPARAMOUT:
 					// Don't modify nodfp; it is a global.
-					if n != nodfp {
-						n.Name.SetUsed(true)
-					}
+					// if n != nodfp {
+					n.Used = true
+					// }
 				case PAUTO:
-					n.Name.SetUsed(true)
+					n.Used = true
 				}
 			}
 			if !scratchUsed {
@@ -147,18 +147,18 @@ func (s *ssafn) AllocFrame(f *ssa.Func) {
 	}
 
 	if f.Config.NeedsFpScratch && scratchUsed {
-		s.scratchFpMem = tempAt(src.NoXPos, s.curfn, types.Types[TUINT64])
+		s.scratchFpMem = autoAt(src.NoXPos, s.curfn, types.Types[TUINT64])
 	}
 
-	sort.Sort(byStackVar(fn.Dcl))
+	sort.Sort(byStackVar(fn.StackVars))
 
 	// Reassign stack offsets of the locals that are used.
-	for i, n := range fn.Dcl {
-		if n.Op != ONAME || n.Class() != PAUTO {
+	for i, n := range fn.StackVars {
+		if n.Op != ONAME || n.Class != PAUTO {
 			continue
 		}
-		if !n.Name.Used() {
-			fn.Dcl = fn.Dcl[:i]
+		if !n.Used {
+			fn.StackVars = fn.StackVars[:i]
 			break
 		}
 
@@ -243,7 +243,7 @@ func compile(fn *Node) {
 		for _, n := range fn.Func.Dcl {
 			switch n.Class() {
 			case PPARAM, PPARAMOUT, PAUTO:
-				if livenessShouldTrack(n) && n.Addrtaken() {
+				if livenessShouldTrackNode(n) && n.Addrtaken() {
 					dtypesym(n.Type)
 					// Also make sure we allocate a linker symbol
 					// for the stack object data, for the same reason.
@@ -254,6 +254,8 @@ func compile(fn *Node) {
 			}
 		}
 	}
+
+	fn.Func.populateStackVars()
 
 	if compilenow() {
 		compileSSA(fn, 0)
@@ -366,16 +368,16 @@ func debuginfo(fnsym *obj.LSym, curfn interface{}) ([]dwarf.Scope, dwarf.InlCall
 		}
 	}
 
-	var automDecls []*Node
+	var automDecls []*StackVar
 	// Populate Automs for fn.
-	for _, n := range fn.Func.Dcl {
+	for _, n := range fn.Func.StackVars {
 		if n.Op != ONAME { // might be OTYPE or OLITERAL
 			continue
 		}
 		var name obj.AddrName
-		switch n.Class() {
+		switch n.Class {
 		case PAUTO:
-			if !n.Name.Used() {
+			if !n.Used {
 				// Text == nil -> generating abstract function
 				if fnsym.Func.Text != nil {
 					Fatalf("debuginfo unused node (AllocFrame should truncate fn.Func.Dcl)")
@@ -389,7 +391,7 @@ func debuginfo(fnsym *obj.LSym, curfn interface{}) ([]dwarf.Scope, dwarf.InlCall
 			continue
 		}
 		automDecls = append(automDecls, n)
-		gotype := ngotype(n).Linksym()
+		gotype := ngotypeStackVar(n).Linksym()
 		fnsym.Func.Autom = append(fnsym.Func.Autom, &obj.Auto{
 			Asym:    Ctxt.Lookup(n.Sym.Name),
 			Aoffset: int32(n.Xoffset),
@@ -402,24 +404,28 @@ func debuginfo(fnsym *obj.LSym, curfn interface{}) ([]dwarf.Scope, dwarf.InlCall
 
 	var varScopes []ScopeID
 	for _, decl := range decls {
-		pos := decl.Pos
-		if decl.Name.Defn != nil && (decl.Name.Captured() || decl.Name.Byval()) {
-			// It's not clear which position is correct for captured variables here:
-			// * decl.Pos is the wrong position for captured variables, in the inner
-			//   function, but it is the right position in the outer function.
-			// * decl.Name.Defn is nil for captured variables that were arguments
-			//   on the outer function, however the decl.Pos for those seems to be
-			//   correct.
-			// * decl.Name.Defn is the "wrong" thing for variables declared in the
-			//   header of a type switch, it's their position in the header, rather
-			//   than the position of the case statement. In principle this is the
-			//   right thing, but here we prefer the latter because it makes each
-			//   instance of the header variable local to the lexical block of its
-			//   case statement.
-			// This code is probably wrong for type switch variables that are also
-			// captured.
-			pos = decl.Name.Defn.Pos
-		}
+		pos := decl.CapturedPos
+		// if decl.Name.Defn != nil && (decl.Name.Captured() || decl.Name.Byval()) {
+
+		// TODO: move location of comment??
+
+		// It's not clear which position is correct for captured variables here:
+		// * decl.Pos is the wrong position for captured variables, in the inner
+		//   function, but it is the right position in the outer function.
+		// * decl.Name.Defn is nil for captured variables that were arguments
+		//   on the outer function, however the decl.Pos for those seems to be
+		//   correct.
+		// * decl.Name.Defn is the "wrong" thing for variables declared in the
+		//   header of a type switch, it's their position in the header, rather
+		//   than the position of the case statement. In principle this is the
+		//   right thing, but here we prefer the latter because it makes each
+		//   instance of the header variable local to the lexical block of its
+		//   case statement.
+		// This code is probably wrong for type switch variables that are also
+		// captured.
+
+		// pos = decl.Name.Defn.Pos
+		// }
 		varScopes = append(varScopes, findScope(fn.Func.Marks, pos))
 	}
 
@@ -433,10 +439,10 @@ func debuginfo(fnsym *obj.LSym, curfn interface{}) ([]dwarf.Scope, dwarf.InlCall
 
 // createSimpleVars creates a DWARF entry for every variable declared in the
 // function, claiming that they are permanently on the stack.
-func createSimpleVars(automDecls []*Node) ([]*Node, []*dwarf.Var, map[*Node]bool) {
+func createSimpleVars(automDecls []*StackVar) ([]*StackVar, []*dwarf.Var, map[*StackVar]bool) {
 	var vars []*dwarf.Var
-	var decls []*Node
-	selected := make(map[*Node]bool)
+	var decls []*StackVar
+	selected := make(map[*StackVar]bool)
 	for _, n := range automDecls {
 		if n.IsAutoTmp() {
 			continue
@@ -444,7 +450,7 @@ func createSimpleVars(automDecls []*Node) ([]*Node, []*dwarf.Var, map[*Node]bool
 		var abbrev int
 		offs := n.Xoffset
 
-		switch n.Class() {
+		switch n.Class {
 		case PAUTO:
 			abbrev = dwarf.DW_ABRV_AUTO
 			if Ctxt.FixedFrameSize() == 0 {
@@ -459,7 +465,7 @@ func createSimpleVars(automDecls []*Node) ([]*Node, []*dwarf.Var, map[*Node]bool
 			abbrev = dwarf.DW_ABRV_PARAM
 			offs += Ctxt.FixedFrameSize()
 		default:
-			Fatalf("createSimpleVars unexpected type %v for node %v", n.Class(), n)
+			Fatalf("createSimpleVars unexpected type %v for node %v", n.Class, n)
 		}
 
 		selected[n] = true
@@ -467,9 +473,9 @@ func createSimpleVars(automDecls []*Node) ([]*Node, []*dwarf.Var, map[*Node]bool
 		decls = append(decls, n)
 		inlIndex := 0
 		if genDwarfInline > 1 {
-			if n.InlFormal() || n.InlLocal() {
+			if n.InlFormal || n.InlLocal {
 				inlIndex = posInlIndex(n.Pos) + 1
-				if n.InlFormal() {
+				if n.InlFormal {
 					abbrev = dwarf.DW_ABRV_PARAM
 				}
 			}
@@ -477,8 +483,8 @@ func createSimpleVars(automDecls []*Node) ([]*Node, []*dwarf.Var, map[*Node]bool
 		declpos := Ctxt.InnermostPos(n.Pos)
 		vars = append(vars, &dwarf.Var{
 			Name:          n.Sym.Name,
-			IsReturnValue: n.Class() == PPARAMOUT,
-			IsInlFormal:   n.InlFormal(),
+			IsReturnValue: n.Class == PPARAMOUT,
+			IsInlFormal:   n.InlFormal,
 			Abbrev:        abbrev,
 			StackOffset:   int32(offs),
 			Type:          Ctxt.Lookup(typename),
@@ -494,19 +500,19 @@ func createSimpleVars(automDecls []*Node) ([]*Node, []*dwarf.Var, map[*Node]bool
 
 // createComplexVars creates recomposed DWARF vars with location lists,
 // suitable for describing optimized code.
-func createComplexVars(fn *Func) ([]*Node, []*dwarf.Var, map[*Node]bool) {
+func createComplexVars(fn *Func) ([]*StackVar, []*dwarf.Var, map[*StackVar]bool) {
 	debugInfo := fn.DebugInfo
 
 	// Produce a DWARF variable entry for each user variable.
-	var decls []*Node
+	var decls []*StackVar
 	var vars []*dwarf.Var
-	ssaVars := make(map[*Node]bool)
+	ssaVars := make(map[*StackVar]bool)
 
 	for varID, dvar := range debugInfo.Vars {
-		n := dvar.(*Node)
+		n := dvar.(*StackVar)
 		ssaVars[n] = true
 		for _, slot := range debugInfo.VarSlots[varID] {
-			ssaVars[debugInfo.Slots[slot].N.(*Node)] = true
+			ssaVars[debugInfo.Slots[slot].N.(*StackVar)] = true
 		}
 
 		if dvar := createComplexVar(fn, ssa.VarID(varID)); dvar != nil {
@@ -519,19 +525,19 @@ func createComplexVars(fn *Func) ([]*Node, []*dwarf.Var, map[*Node]bool) {
 }
 
 // createDwarfVars process fn, returning a list of DWARF variables and the
-// Nodes they represent.
-func createDwarfVars(fnsym *obj.LSym, fn *Func, automDecls []*Node) ([]*Node, []*dwarf.Var) {
+// StackVars they represent.
+func createDwarfVars(fnsym *obj.LSym, fn *Func, automDecls []*StackVar) ([]*StackVar, []*dwarf.Var) {
 	// Collect a raw list of DWARF vars.
 	var vars []*dwarf.Var
-	var decls []*Node
-	var selected map[*Node]bool
+	var decls []*StackVar
+	var selected map[*StackVar]bool
 	if Ctxt.Flag_locationlists && Ctxt.Flag_optimize && fn.DebugInfo != nil {
 		decls, vars, selected = createComplexVars(fn)
 	} else {
 		decls, vars, selected = createSimpleVars(automDecls)
 	}
 
-	var dcl []*Node
+	var dcl []*StackVar
 	if fnsym.WasInlined() {
 		dcl = preInliningDcls(fnsym)
 	} else {
@@ -558,14 +564,14 @@ func createDwarfVars(fnsym *obj.LSym, fn *Func, automDecls []*Node) ([]*Node, []
 		typename := dwarf.InfoPrefix + typesymname(n.Type)
 		decls = append(decls, n)
 		abbrev := dwarf.DW_ABRV_AUTO_LOCLIST
-		if n.Class() == PPARAM || n.Class() == PPARAMOUT {
+		if n.Class == PPARAM || n.Class == PPARAMOUT {
 			abbrev = dwarf.DW_ABRV_PARAM_LOCLIST
 		}
 		inlIndex := 0
 		if genDwarfInline > 1 {
-			if n.InlFormal() || n.InlLocal() {
+			if n.InlFormal || n.InlLocal {
 				inlIndex = posInlIndex(n.Pos) + 1
-				if n.InlFormal() {
+				if n.InlFormal {
 					abbrev = dwarf.DW_ABRV_PARAM_LOCLIST
 				}
 			}
@@ -573,7 +579,7 @@ func createDwarfVars(fnsym *obj.LSym, fn *Func, automDecls []*Node) ([]*Node, []
 		declpos := Ctxt.InnermostPos(n.Pos)
 		vars = append(vars, &dwarf.Var{
 			Name:          n.Sym.Name,
-			IsReturnValue: n.Class() == PPARAMOUT,
+			IsReturnValue: n.Class == PPARAMOUT,
 			Abbrev:        abbrev,
 			StackOffset:   int32(n.Xoffset),
 			Type:          Ctxt.Lookup(typename),
@@ -586,7 +592,7 @@ func createDwarfVars(fnsym *obj.LSym, fn *Func, automDecls []*Node) ([]*Node, []
 		// Append a "deleted auto" entry to the autom list so as to
 		// insure that the type in question is picked up by the linker.
 		// See issue 22941.
-		gotype := ngotype(n).Linksym()
+		gotype := ngotypeStackVar(n).Linksym()
 		fnsym.Func.Autom = append(fnsym.Func.Autom, &obj.Auto{
 			Asym:    Ctxt.Lookup(n.Sym.Name),
 			Aoffset: int32(-1),
@@ -605,9 +611,9 @@ func createDwarfVars(fnsym *obj.LSym, fn *Func, automDecls []*Node) ([]*Node, []
 // function that is not local to the package being compiled, then the
 // names of the variables may have been "versioned" to avoid conflicts
 // with local vars; disregard this versioning when sorting.
-func preInliningDcls(fnsym *obj.LSym) []*Node {
+func preInliningDcls(fnsym *obj.LSym) []*StackVar {
 	fn := Ctxt.DwFixups.GetPrecursorFunc(fnsym).(*Node)
-	var rdcl []*Node
+	var rdcl []*StackVar
 	for _, n := range fn.Func.Inl.Dcl {
 		c := n.Sym.Name[0]
 		// Avoid reporting "_" parameters, since if there are more than
@@ -615,7 +621,7 @@ func preInliningDcls(fnsym *obj.LSym) []*Node {
 		if unversion(n.Sym.Name) == "_" || c == '.' || n.Type.IsUntyped() {
 			continue
 		}
-		rdcl = append(rdcl, n)
+		rdcl = append(rdcl, n.AsStackVar())
 	}
 	return rdcl
 }
@@ -624,9 +630,9 @@ func preInliningDcls(fnsym *obj.LSym) []*Node {
 // stack pointer, suitable for use in a DWARF location entry. This has nothing
 // to do with its offset in the user variable.
 func stackOffset(slot ssa.LocalSlot) int32 {
-	n := slot.N.(*Node)
+	n := slot.N.(*StackVar)
 	var base int64
-	switch n.Class() {
+	switch n.Class {
 	case PAUTO:
 		if Ctxt.FixedFrameSize() == 0 {
 			base -= int64(Widthptr)
@@ -644,10 +650,10 @@ func stackOffset(slot ssa.LocalSlot) int32 {
 // createComplexVar builds a single DWARF variable entry and location list.
 func createComplexVar(fn *Func, varID ssa.VarID) *dwarf.Var {
 	debug := fn.DebugInfo
-	n := debug.Vars[varID].(*Node)
+	n := debug.Vars[varID].(*StackVar)
 
 	var abbrev int
-	switch n.Class() {
+	switch n.Class {
 	case PAUTO:
 		abbrev = dwarf.DW_ABRV_AUTO_LOCLIST
 	case PPARAM, PPARAMOUT:
@@ -656,13 +662,13 @@ func createComplexVar(fn *Func, varID ssa.VarID) *dwarf.Var {
 		return nil
 	}
 
-	gotype := ngotype(n).Linksym()
+	gotype := ngotypeStackVar(n).Linksym()
 	typename := dwarf.InfoPrefix + gotype.Name[len("type."):]
 	inlIndex := 0
 	if genDwarfInline > 1 {
-		if n.InlFormal() || n.InlLocal() {
+		if n.InlFormal || n.InlLocal {
 			inlIndex = posInlIndex(n.Pos) + 1
-			if n.InlFormal() {
+			if n.InlFormal {
 				abbrev = dwarf.DW_ABRV_PARAM_LOCLIST
 			}
 		}
@@ -670,8 +676,8 @@ func createComplexVar(fn *Func, varID ssa.VarID) *dwarf.Var {
 	declpos := Ctxt.InnermostPos(n.Pos)
 	dvar := &dwarf.Var{
 		Name:          n.Sym.Name,
-		IsReturnValue: n.Class() == PPARAMOUT,
-		IsInlFormal:   n.InlFormal(),
+		IsReturnValue: n.Class == PPARAMOUT,
+		IsInlFormal:   n.InlFormal,
 		Abbrev:        abbrev,
 		Type:          Ctxt.Lookup(typename),
 		// The stack offset is used as a sorting key, so for decomposed

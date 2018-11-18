@@ -298,7 +298,7 @@ func writebarrier(f *Func) {
 func wbcall(pos src.XPos, b *Block, fn, typ *obj.LSym, ptr, val, mem, sp, sb *Value, valIsVolatile bool) *Value {
 	config := b.Func.Config
 
-	var tmp GCNode
+	var tmp GCStackVar
 	if valIsVolatile {
 		// Copy to temp location if the source is volatile (will be clobbered by
 		// a function call). Marshaling the args to typedmemmove might clobber the

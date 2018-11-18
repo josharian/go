@@ -138,9 +138,9 @@ func dse(f *Func) {
 // reaches stores then we delete all the stores. The other operations will then
 // be eliminated by the dead code elimination pass.
 func elimDeadAutosGeneric(f *Func) {
-	addr := make(map[*Value]GCNode) // values that the address of the auto reaches
-	elim := make(map[*Value]GCNode) // values that could be eliminated if the auto is
-	used := make(map[GCNode]bool)   // used autos that must be kept
+	addr := make(map[*Value]GCStackVar) // values that the address of the auto reaches
+	elim := make(map[*Value]GCStackVar) // values that could be eliminated if the auto is
+	used := make(map[GCStackVar]bool)   // used autos that must be kept
 
 	// visit the value and report whether any of the maps are updated
 	visit := func(v *Value) (changed bool) {
@@ -148,7 +148,7 @@ func elimDeadAutosGeneric(f *Func) {
 		switch v.Op {
 		case OpAddr, OpLocalAddr:
 			// Propagate the address if it points to an auto.
-			n, ok := v.Aux.(GCNode)
+			n, ok := v.Aux.(GCStackVar)
 			if !ok || n.StorageClass() != ClassAuto {
 				return
 			}
@@ -159,7 +159,7 @@ func elimDeadAutosGeneric(f *Func) {
 			return
 		case OpVarDef, OpVarKill:
 			// v should be eliminated if we eliminate the auto.
-			n, ok := v.Aux.(GCNode)
+			n, ok := v.Aux.(GCStackVar)
 			if !ok || n.StorageClass() != ClassAuto {
 				return
 			}
@@ -170,7 +170,7 @@ func elimDeadAutosGeneric(f *Func) {
 			return
 		case OpVarLive:
 			// Don't delete the auto if it needs to be kept alive.
-			n, ok := v.Aux.(GCNode)
+			n, ok := v.Aux.(GCStackVar)
 			if !ok || n.StorageClass() != ClassAuto {
 				return
 			}
@@ -218,7 +218,7 @@ func elimDeadAutosGeneric(f *Func) {
 		}
 
 		// Propagate any auto addresses through v.
-		node := GCNode(nil)
+		node := GCStackVar(nil)
 		for _, a := range args {
 			if n, ok := addr[a]; ok && !used[n] {
 				if node == nil {
@@ -296,11 +296,11 @@ func elimUnreadAutos(f *Func) {
 	// Loop over all ops that affect autos taking note of which
 	// autos we need and also stores that we might be able to
 	// eliminate.
-	seen := make(map[GCNode]bool)
+	seen := make(map[GCStackVar]bool)
 	var stores []*Value
 	for _, b := range f.Blocks {
 		for _, v := range b.Values {
-			n, ok := v.Aux.(GCNode)
+			n, ok := v.Aux.(GCStackVar)
 			if !ok {
 				continue
 			}
@@ -332,7 +332,7 @@ func elimUnreadAutos(f *Func) {
 
 	// Eliminate stores to unread autos.
 	for _, store := range stores {
-		n, _ := store.Aux.(GCNode)
+		n, _ := store.Aux.(GCStackVar)
 		if seen[n] {
 			continue
 		}
