@@ -64,7 +64,7 @@ func (z nat) make(n int) nat {
 	// Choosing a good value for e has significant performance impact
 	// because it increases the chance that a value can be reused.
 	const e = 4 // extra capacity
-	return make(nat, n, n+e)
+	return append(nat(nil), make(nat, n+e)...)[:n]
 }
 
 func (z nat) setWord(x Word) nat {
