@@ -277,6 +277,10 @@ func (a *Mpint) Int64() int64 {
 }
 
 func (a *Mpint) SetInt64(c int64) {
+	if 0 <= c && int64(big.Word(c)) == c {
+		a.Val.SetBits([]big.Word{big.Word(c)})
+		return
+	}
 	a.Val.SetInt64(c)
 }
 
