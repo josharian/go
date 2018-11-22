@@ -63,7 +63,7 @@ func (z nat) make(n int) nat {
 	}
 	// Choosing a good value for e has significant performance impact
 	// because it increases the chance that a value can be reused.
-	const e = 4 // extra capacity
+	const e = 0 // extra capacity
 	return append(nat(nil), make(nat, n+e)...)[:n]
 }
 
