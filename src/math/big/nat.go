@@ -58,8 +58,8 @@ func (z nat) make(n int) nat {
 	if n <= cap(z) {
 		return z[:n] // reuse z
 	}
-	if n == 1 {
-		return make(nat, 1)
+	if n < 2 {
+		return make(nat, n, 2)
 	}
 	// Choosing a good value for e has significant performance impact
 	// because it increases the chance that a value can be reused.
