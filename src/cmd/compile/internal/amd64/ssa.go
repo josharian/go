@@ -7,6 +7,7 @@ package amd64
 import (
 	"fmt"
 	"math"
+	"os"
 
 	"cmd/compile/internal/gc"
 	"cmd/compile/internal/ssa"
@@ -905,6 +906,9 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 			v.Fatalf("load flags not implemented: %v", v.LongString())
 			return
 		}
+		if os.Getenv("J") != "" {
+			fmt.Println("LOAD")
+		}
 		p := s.Prog(loadByType(v.Type))
 		gc.AddrAuto(&p.From, v.Args[0])
 		p.To.Type = obj.TYPE_REG
@@ -914,6 +918,9 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		if v.Type.IsFlags() {
 			v.Fatalf("store flags not implemented: %v", v.LongString())
 			return
+		}
+		if os.Getenv("J") != "" {
+			fmt.Println("SPILL")
 		}
 		p := s.Prog(storeByType(v.Type))
 		p.From.Type = obj.TYPE_REG

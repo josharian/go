@@ -120,6 +120,8 @@ import (
 	"cmd/internal/sys"
 	"fmt"
 	"math/bits"
+	"os"
+	"strconv"
 	"unsafe"
 )
 
@@ -132,11 +134,20 @@ const (
 
 // distance is a measure of how far into the future values are used.
 // distance is measured in units of instructions.
-const (
-	likelyDistance   = 1
-	normalDistance   = 10
-	unlikelyDistance = 100
+var (
+	likelyDistance   int32 = envOr("LIKELY", 1)
+	normalDistance   int32 = envOr("NORMAL", 10)
+	unlikelyDistance int32 = envOr("UNLIKELY", 100)
 )
+
+func envOr(s string, def int32) int32 {
+	x := os.Getenv(s)
+	n, err := strconv.Atoi(x)
+	if err != nil {
+		return def
+	}
+	return int32(n)
+}
 
 // regalloc performs register allocation on f. It sets f.RegAlloc
 // to the resulting allocation.

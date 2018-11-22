@@ -1,0 +1,710 @@
+goos: darwin
+goarch: amd64
+BenchmarkBinaryTree17-8   	      10	2152245151 ns/op
+BenchmarkBinaryTree17-8   	      10	2131485930 ns/op
+BenchmarkBinaryTree17-8   	      10	2129870552 ns/op
+BenchmarkBinaryTree17-8   	      10	2131507756 ns/op
+BenchmarkBinaryTree17-8   	      10	2149335957 ns/op
+BenchmarkBinaryTree17-8   	      10	2146498856 ns/op
+BenchmarkBinaryTree17-8   	      10	2186901957 ns/op
+BenchmarkBinaryTree17-8   	      10	2207150391 ns/op
+BenchmarkBinaryTree17-8   	      10	2202842916 ns/op
+BenchmarkBinaryTree17-8   	      10	2178139452 ns/op
+BenchmarkBinaryTree17-8   	      10	2165022386 ns/op
+BenchmarkBinaryTree17-8   	      10	2173045647 ns/op
+BenchmarkBinaryTree17-8   	      10	2198781066 ns/op
+BenchmarkBinaryTree17-8   	      10	2187895229 ns/op
+BenchmarkBinaryTree17-8   	      10	2198642456 ns/op
+BenchmarkBinaryTree17-8   	      10	2220635852 ns/op
+BenchmarkBinaryTree17-8   	      10	2202320429 ns/op
+BenchmarkBinaryTree17-8   	      10	2189684852 ns/op
+BenchmarkBinaryTree17-8   	      10	2188456327 ns/op
+BenchmarkBinaryTree17-8   	      10	2205081299 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkFannkuch11-8   	      10	2132597820 ns/op
+BenchmarkFannkuch11-8   	      10	2090505791 ns/op
+BenchmarkFannkuch11-8   	      10	2080657941 ns/op
+BenchmarkFannkuch11-8   	      10	2083822741 ns/op
+BenchmarkFannkuch11-8   	      10	2074873891 ns/op
+BenchmarkFannkuch11-8   	      10	2078778899 ns/op
+BenchmarkFannkuch11-8   	      10	2071497195 ns/op
+BenchmarkFannkuch11-8   	      10	2085384611 ns/op
+BenchmarkFannkuch11-8   	      10	2073956944 ns/op
+BenchmarkFannkuch11-8   	      10	2073181331 ns/op
+BenchmarkFannkuch11-8   	      10	2091115153 ns/op
+BenchmarkFannkuch11-8   	      10	2078050252 ns/op
+BenchmarkFannkuch11-8   	      10	2089273397 ns/op
+BenchmarkFannkuch11-8   	      10	2098837792 ns/op
+BenchmarkFannkuch11-8   	      10	2084941233 ns/op
+BenchmarkFannkuch11-8   	      10	2079298960 ns/op
+BenchmarkFannkuch11-8   	      10	2085880125 ns/op
+BenchmarkFannkuch11-8   	      10	2073122831 ns/op
+BenchmarkFannkuch11-8   	      10	2082316772 ns/op
+BenchmarkFannkuch11-8   	      10	2075893820 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.6 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        34.5 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.5 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.2 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        35.2 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        32.8 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.5 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        32.1 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.1 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        33.0 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        32.1 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.3 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.1 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.7 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        32.3 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        32.4 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.1 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        34.8 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        32.0 ns/op
+BenchmarkFmtFprintfEmpty-8   	  500000	        31.6 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkFmtFprintfString-8   	  300000	        54.1 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        53.9 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        54.7 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        59.9 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        53.9 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        55.6 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        55.9 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        55.4 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        57.4 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        58.5 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        56.9 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        55.9 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        59.0 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        60.5 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        55.2 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        57.3 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        57.1 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        59.8 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        56.4 ns/op
+BenchmarkFmtFprintfString-8   	  300000	        60.6 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkFmtFprintfInt-8      	  200000	        57.6 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        59.8 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        61.0 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        61.0 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        58.3 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        58.9 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        60.0 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        65.1 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        63.7 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        60.0 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        59.0 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        59.1 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        59.1 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        60.5 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        61.4 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        60.7 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        60.7 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        60.8 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        61.8 ns/op
+BenchmarkFmtFprintfInt-8      	  200000	        65.0 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        91.3 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.5 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        90.0 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.3 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.4 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.8 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        90.5 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.9 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.2 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        93.8 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        90.3 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.0 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.7 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.7 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        92.4 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.1 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.7 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.7 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        90.9 ns/op
+BenchmarkFmtFprintfIntInt-8   	  200000	        89.8 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkFmtFprintfIntInt-8   	  100000	        90.5 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        87.5 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        90.2 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        88.1 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        88.4 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        91.0 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        89.2 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        88.5 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        91.2 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        88.5 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        90.7 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        91.1 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        88.9 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        90.0 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        90.3 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        88.5 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        91.1 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        88.5 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        93.1 ns/op
+BenchmarkFmtFprintfIntInt-8   	  100000	        89.5 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       104 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	        98.7 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       100 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       105 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       102 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	        98.4 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       105 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	        99.7 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       101 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       108 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       102 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       101 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       103 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       103 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       101 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       101 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       105 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       105 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       103 ns/op
+BenchmarkFmtFprintfPrefixedInt-8   	  100000	       101 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkFmtFprintfFloat-8   	  500000	       175 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       180 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       177 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       173 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       181 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       176 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       173 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       177 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       174 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       179 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       172 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       176 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       169 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       187 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       182 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       169 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       169 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       173 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       178 ns/op
+BenchmarkFmtFprintfFloat-8   	  500000	       175 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkFmtManyArgs-8   	  300000	       397 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       396 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       391 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       392 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       408 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       388 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       403 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       376 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       394 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       397 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       390 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       385 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       390 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       391 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       394 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       392 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       394 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       392 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       394 ns/op
+BenchmarkFmtManyArgs-8   	  300000	       384 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkGobDecode-8   	     500	   5196261 ns/op	 147.71 MB/s
+BenchmarkGobDecode-8   	     500	   4928319 ns/op	 155.74 MB/s
+BenchmarkGobDecode-8   	     500	   4967855 ns/op	 154.50 MB/s
+BenchmarkGobDecode-8   	     500	   4821430 ns/op	 159.19 MB/s
+BenchmarkGobDecode-8   	     500	   4642681 ns/op	 165.32 MB/s
+BenchmarkGobDecode-8   	     500	   4826587 ns/op	 159.02 MB/s
+BenchmarkGobDecode-8   	     500	   4753087 ns/op	 161.48 MB/s
+BenchmarkGobDecode-8   	     500	   4662670 ns/op	 164.61 MB/s
+BenchmarkGobDecode-8   	     500	   4696290 ns/op	 163.43 MB/s
+BenchmarkGobDecode-8   	     500	   4644391 ns/op	 165.26 MB/s
+BenchmarkGobDecode-8   	     500	   4746646 ns/op	 161.70 MB/s
+BenchmarkGobDecode-8   	     500	   4697575 ns/op	 163.39 MB/s
+BenchmarkGobDecode-8   	     500	   4719105 ns/op	 162.64 MB/s
+BenchmarkGobDecode-8   	     500	   4712586 ns/op	 162.87 MB/s
+BenchmarkGobDecode-8   	     500	   4750245 ns/op	 161.58 MB/s
+BenchmarkGobDecode-8   	     500	   4705293 ns/op	 163.12 MB/s
+BenchmarkGobDecode-8   	     500	   4694682 ns/op	 163.49 MB/s
+BenchmarkGobDecode-8   	     500	   4672251 ns/op	 164.27 MB/s
+BenchmarkGobDecode-8   	     500	   4676567 ns/op	 164.12 MB/s
+BenchmarkGobDecode-8   	     500	   4743436 ns/op	 161.81 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkGobEncode-8   	     500	   4068873 ns/op	 188.64 MB/s
+BenchmarkGobEncode-8   	     500	   3857147 ns/op	 198.99 MB/s
+BenchmarkGobEncode-8   	     500	   3847082 ns/op	 199.51 MB/s
+BenchmarkGobEncode-8   	     500	   3836561 ns/op	 200.06 MB/s
+BenchmarkGobEncode-8   	     500	   3831971 ns/op	 200.30 MB/s
+BenchmarkGobEncode-8   	     500	   3647309 ns/op	 210.44 MB/s
+BenchmarkGobEncode-8   	     500	   3595045 ns/op	 213.50 MB/s
+BenchmarkGobEncode-8   	     500	   3614143 ns/op	 212.37 MB/s
+BenchmarkGobEncode-8   	     500	   3671785 ns/op	 209.04 MB/s
+BenchmarkGobEncode-8   	     500	   3634486 ns/op	 211.18 MB/s
+BenchmarkGobEncode-8   	     500	   3646384 ns/op	 210.49 MB/s
+BenchmarkGobEncode-8   	     500	   3620739 ns/op	 211.98 MB/s
+BenchmarkGobEncode-8   	     500	   3618178 ns/op	 212.13 MB/s
+BenchmarkGobEncode-8   	     500	   3653529 ns/op	 210.08 MB/s
+BenchmarkGobEncode-8   	     500	   3680542 ns/op	 208.54 MB/s
+BenchmarkGobEncode-8   	     500	   3701604 ns/op	 207.35 MB/s
+BenchmarkGobEncode-8   	     500	   3657718 ns/op	 209.84 MB/s
+BenchmarkGobEncode-8   	     500	   3634576 ns/op	 211.18 MB/s
+BenchmarkGobEncode-8   	     500	   3639601 ns/op	 210.88 MB/s
+BenchmarkGobEncode-8   	     500	   3611400 ns/op	 212.53 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkGzip-8   	      50	 186545636 ns/op	 104.02 MB/s
+BenchmarkGzip-8   	      50	 177425908 ns/op	 109.37 MB/s
+BenchmarkGzip-8   	      50	 176453281 ns/op	 109.97 MB/s
+BenchmarkGzip-8   	      50	 176967875 ns/op	 109.65 MB/s
+BenchmarkGzip-8   	      50	 179011612 ns/op	 108.40 MB/s
+BenchmarkGzip-8   	      50	 176617575 ns/op	 109.87 MB/s
+BenchmarkGzip-8   	      50	 177198253 ns/op	 109.51 MB/s
+BenchmarkGzip-8   	      50	 181709970 ns/op	 106.79 MB/s
+BenchmarkGzip-8   	      50	 177807954 ns/op	 109.13 MB/s
+BenchmarkGzip-8   	      50	 177860020 ns/op	 109.10 MB/s
+BenchmarkGzip-8   	      50	 177823329 ns/op	 109.12 MB/s
+BenchmarkGzip-8   	      50	 176392246 ns/op	 110.01 MB/s
+BenchmarkGzip-8   	      50	 176033749 ns/op	 110.23 MB/s
+BenchmarkGzip-8   	      50	 176833567 ns/op	 109.73 MB/s
+BenchmarkGzip-8   	      50	 177617054 ns/op	 109.25 MB/s
+BenchmarkGzip-8   	      50	 177404757 ns/op	 109.38 MB/s
+BenchmarkGzip-8   	      50	 176723796 ns/op	 109.80 MB/s
+BenchmarkGzip-8   	      50	 178058545 ns/op	 108.98 MB/s
+BenchmarkGzip-8   	      50	 176159186 ns/op	 110.15 MB/s
+BenchmarkGzip-8   	      50	 176199844 ns/op	 110.13 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkGunzip-8   	     100	  27823309 ns/op	 697.43 MB/s
+BenchmarkGunzip-8   	     100	  27233786 ns/op	 712.52 MB/s
+BenchmarkGunzip-8   	     100	  27362638 ns/op	 709.17 MB/s
+BenchmarkGunzip-8   	     100	  26225195 ns/op	 739.93 MB/s
+BenchmarkGunzip-8   	     100	  25958143 ns/op	 747.54 MB/s
+BenchmarkGunzip-8   	     100	  25558052 ns/op	 759.24 MB/s
+BenchmarkGunzip-8   	     100	  25654219 ns/op	 756.39 MB/s
+BenchmarkGunzip-8   	     100	  25681181 ns/op	 755.60 MB/s
+BenchmarkGunzip-8   	     100	  26069746 ns/op	 744.34 MB/s
+BenchmarkGunzip-8   	     100	  25986980 ns/op	 746.71 MB/s
+BenchmarkGunzip-8   	     100	  25748057 ns/op	 753.64 MB/s
+BenchmarkGunzip-8   	     100	  26113369 ns/op	 743.10 MB/s
+BenchmarkGunzip-8   	     100	  26412731 ns/op	 734.67 MB/s
+BenchmarkGunzip-8   	     100	  25756649 ns/op	 753.39 MB/s
+BenchmarkGunzip-8   	     100	  25587098 ns/op	 758.38 MB/s
+BenchmarkGunzip-8   	     100	  25804258 ns/op	 752.00 MB/s
+BenchmarkGunzip-8   	     100	  25952951 ns/op	 747.69 MB/s
+BenchmarkGunzip-8   	     100	  25503623 ns/op	 760.86 MB/s
+BenchmarkGunzip-8   	     100	  25632623 ns/op	 757.03 MB/s
+BenchmarkGunzip-8   	     100	  25857348 ns/op	 750.45 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkHTTPClientServer-8   	   10000	     94821 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93020 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93414 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93988 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     94059 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93620 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93557 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93702 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93715 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93484 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     92924 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     92559 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     95175 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93265 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     93441 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     92224 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     91211 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     91259 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     92818 ns/op
+BenchmarkHTTPClientServer-8   	   10000	     92864 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkJSONEncode-8   	     500	   7331398 ns/op	 264.68 MB/s
+BenchmarkJSONEncode-8   	     500	   7024333 ns/op	 276.25 MB/s
+BenchmarkJSONEncode-8   	     500	   6899696 ns/op	 281.24 MB/s
+BenchmarkJSONEncode-8   	     500	   6785277 ns/op	 285.98 MB/s
+BenchmarkJSONEncode-8   	     500	   6767312 ns/op	 286.74 MB/s
+BenchmarkJSONEncode-8   	     500	   6747982 ns/op	 287.56 MB/s
+BenchmarkJSONEncode-8   	     500	   6669709 ns/op	 290.94 MB/s
+BenchmarkJSONEncode-8   	     500	   6719294 ns/op	 288.79 MB/s
+BenchmarkJSONEncode-8   	     500	   6744219 ns/op	 287.72 MB/s
+BenchmarkJSONEncode-8   	     500	   6782816 ns/op	 286.09 MB/s
+BenchmarkJSONEncode-8   	     500	   6718928 ns/op	 288.81 MB/s
+BenchmarkJSONEncode-8   	     500	   6696929 ns/op	 289.76 MB/s
+BenchmarkJSONEncode-8   	     500	   6730255 ns/op	 288.32 MB/s
+BenchmarkJSONEncode-8   	     500	   6693368 ns/op	 289.91 MB/s
+BenchmarkJSONEncode-8   	     500	   6514273 ns/op	 297.88 MB/s
+BenchmarkJSONEncode-8   	     500	   6672235 ns/op	 290.83 MB/s
+BenchmarkJSONEncode-8   	     500	   6796279 ns/op	 285.52 MB/s
+BenchmarkJSONEncode-8   	     500	   6643650 ns/op	 292.08 MB/s
+BenchmarkJSONEncode-8   	     500	   6685179 ns/op	 290.26 MB/s
+BenchmarkJSONEncode-8   	     500	   6525849 ns/op	 297.35 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkJSONDecode-8   	     500	  35005009 ns/op	  55.43 MB/s
+BenchmarkJSONDecode-8   	     500	  33406611 ns/op	  58.09 MB/s
+BenchmarkJSONDecode-8   	     500	  33323160 ns/op	  58.23 MB/s
+BenchmarkJSONDecode-8   	     500	  33148582 ns/op	  58.54 MB/s
+BenchmarkJSONDecode-8   	     500	  33283161 ns/op	  58.30 MB/s
+BenchmarkJSONDecode-8   	     500	  33288640 ns/op	  58.29 MB/s
+BenchmarkJSONDecode-8   	     500	  33239473 ns/op	  58.38 MB/s
+BenchmarkJSONDecode-8   	     500	  33151608 ns/op	  58.53 MB/s
+BenchmarkJSONDecode-8   	     500	  33210010 ns/op	  58.43 MB/s
+BenchmarkJSONDecode-8   	     500	  33155158 ns/op	  58.53 MB/s
+BenchmarkJSONDecode-8   	     500	  33081484 ns/op	  58.66 MB/s
+BenchmarkJSONDecode-8   	     500	  33177902 ns/op	  58.49 MB/s
+BenchmarkJSONDecode-8   	     500	  33098108 ns/op	  58.63 MB/s
+BenchmarkJSONDecode-8   	     500	  33128772 ns/op	  58.57 MB/s
+BenchmarkJSONDecode-8   	     500	  33155982 ns/op	  58.53 MB/s
+BenchmarkJSONDecode-8   	     500	  33239860 ns/op	  58.38 MB/s
+BenchmarkJSONDecode-8   	     500	  33359188 ns/op	  58.17 MB/s
+BenchmarkJSONDecode-8   	     500	  33215492 ns/op	  58.42 MB/s
+BenchmarkJSONDecode-8   	     500	  33504977 ns/op	  57.92 MB/s
+BenchmarkJSONDecode-8   	     500	  33143230 ns/op	  58.55 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkMandelbrot200-8   	    2000	   3619547 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3496596 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3424048 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3408477 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3418287 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3445078 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3414722 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3403249 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3405197 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3400041 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3419789 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3410049 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3399590 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3409876 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3407011 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3403803 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3400597 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3417402 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3406652 ns/op
+BenchmarkMandelbrot200-8   	    2000	   3403845 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkGoParse-8   	    2000	   2666349 ns/op	  21.72 MB/s
+BenchmarkGoParse-8   	    2000	   2566732 ns/op	  22.57 MB/s
+BenchmarkGoParse-8   	    2000	   2490990 ns/op	  23.25 MB/s
+BenchmarkGoParse-8   	    2000	   2471616 ns/op	  23.43 MB/s
+BenchmarkGoParse-8   	    2000	   2492690 ns/op	  23.24 MB/s
+BenchmarkGoParse-8   	    2000	   2502832 ns/op	  23.14 MB/s
+BenchmarkGoParse-8   	    2000	   2479639 ns/op	  23.36 MB/s
+BenchmarkGoParse-8   	    2000	   2475112 ns/op	  23.40 MB/s
+BenchmarkGoParse-8   	    2000	   2485025 ns/op	  23.31 MB/s
+BenchmarkGoParse-8   	    2000	   2462223 ns/op	  23.52 MB/s
+BenchmarkGoParse-8   	    2000	   2479628 ns/op	  23.36 MB/s
+BenchmarkGoParse-8   	    2000	   2468750 ns/op	  23.46 MB/s
+BenchmarkGoParse-8   	    2000	   2454474 ns/op	  23.60 MB/s
+BenchmarkGoParse-8   	    2000	   2447317 ns/op	  23.67 MB/s
+BenchmarkGoParse-8   	    2000	   2448171 ns/op	  23.66 MB/s
+BenchmarkGoParse-8   	    2000	   2438660 ns/op	  23.75 MB/s
+BenchmarkGoParse-8   	    2000	   2470253 ns/op	  23.45 MB/s
+BenchmarkGoParse-8   	    2000	   2472084 ns/op	  23.43 MB/s
+BenchmarkGoParse-8   	    2000	   2452305 ns/op	  23.62 MB/s
+BenchmarkGoParse-8   	    2000	   2438534 ns/op	  23.75 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        52.0 ns/op	 615.69 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        54.0 ns/op	 592.51 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        56.1 ns/op	 570.29 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        57.0 ns/op	 561.64 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        54.0 ns/op	 593.03 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        55.2 ns/op	 579.91 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        54.5 ns/op	 587.68 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        55.1 ns/op	 580.57 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        54.6 ns/op	 586.20 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        53.7 ns/op	 595.48 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        55.3 ns/op	 578.67 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        52.6 ns/op	 608.20 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        53.1 ns/op	 602.12 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        55.5 ns/op	 576.61 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        53.9 ns/op	 593.52 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        53.8 ns/op	 594.30 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        57.1 ns/op	 560.39 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        52.8 ns/op	 605.87 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        56.0 ns/op	 571.46 MB/s
+BenchmarkRegexpMatchEasy0_32-8   	  300000	        52.9 ns/op	 605.29 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       141 ns/op	7240.16 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       142 ns/op	7163.76 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       141 ns/op	7219.66 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       164 ns/op	6240.75 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       142 ns/op	7185.52 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       141 ns/op	7223.81 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       145 ns/op	7019.27 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       147 ns/op	6929.10 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       142 ns/op	7178.25 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       147 ns/op	6963.94 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       143 ns/op	7127.18 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       144 ns/op	7070.66 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       141 ns/op	7223.52 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       142 ns/op	7173.15 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       141 ns/op	7212.51 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       140 ns/op	7266.96 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       145 ns/op	7057.57 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       146 ns/op	6973.46 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       143 ns/op	7151.17 MB/s
+BenchmarkRegexpMatchEasy0_1K-8   	  100000	       140 ns/op	7278.82 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        49.4 ns/op	 648.42 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        48.2 ns/op	 663.69 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        47.9 ns/op	 667.97 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        50.9 ns/op	 628.75 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        47.6 ns/op	 672.85 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        50.5 ns/op	 633.28 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        48.5 ns/op	 659.66 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        48.6 ns/op	 657.98 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        50.2 ns/op	 637.81 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        52.6 ns/op	 608.32 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        50.0 ns/op	 640.38 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        53.3 ns/op	 600.81 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        47.9 ns/op	 667.84 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        52.1 ns/op	 614.59 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        49.8 ns/op	 642.01 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        48.1 ns/op	 665.40 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        48.0 ns/op	 667.11 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        50.5 ns/op	 633.13 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        50.4 ns/op	 634.85 MB/s
+BenchmarkRegexpMatchEasy1_32-8   	  300000	        50.1 ns/op	 638.85 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       233 ns/op	4385.13 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       230 ns/op	4450.87 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       227 ns/op	4492.61 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       231 ns/op	4420.69 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       246 ns/op	4151.94 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       232 ns/op	4400.51 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       233 ns/op	4391.72 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       233 ns/op	4380.01 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       236 ns/op	4326.79 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       233 ns/op	4386.08 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       237 ns/op	4316.39 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       234 ns/op	4364.45 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       260 ns/op	3937.25 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       246 ns/op	4149.97 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       243 ns/op	4201.71 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       246 ns/op	4160.13 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       237 ns/op	4306.52 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       273 ns/op	3750.86 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       236 ns/op	4331.70 MB/s
+BenchmarkRegexpMatchEasy1_1K-8   	  100000	       240 ns/op	4261.50 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRegexpMatchMedium_32-8   	  200000	        71.7 ns/op	  13.94 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        73.2 ns/op	  13.66 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        72.1 ns/op	  13.87 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        72.5 ns/op	  13.80 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        73.1 ns/op	  13.68 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        75.6 ns/op	  13.22 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        73.7 ns/op	  13.57 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        73.7 ns/op	  13.57 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        73.8 ns/op	  13.55 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        73.6 ns/op	  13.58 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        73.8 ns/op	  13.55 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        72.0 ns/op	  13.89 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        74.9 ns/op	  13.35 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        71.8 ns/op	  13.92 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        74.0 ns/op	  13.52 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        72.0 ns/op	  13.88 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        72.8 ns/op	  13.73 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        72.2 ns/op	  13.84 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        72.6 ns/op	  13.77 MB/s
+BenchmarkRegexpMatchMedium_32-8   	  200000	        71.8 ns/op	  13.93 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     23456 ns/op	  43.65 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     23351 ns/op	  43.85 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     23440 ns/op	  43.69 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     23391 ns/op	  43.78 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     23755 ns/op	  43.11 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     23723 ns/op	  43.16 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     23706 ns/op	  43.19 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     23417 ns/op	  43.73 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22661 ns/op	  45.19 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22435 ns/op	  45.64 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22262 ns/op	  46.00 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22084 ns/op	  46.37 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22084 ns/op	  46.37 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22130 ns/op	  46.27 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22682 ns/op	  45.15 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22169 ns/op	  46.19 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22225 ns/op	  46.07 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22812 ns/op	  44.89 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22140 ns/op	  46.25 MB/s
+BenchmarkRegexpMatchMedium_1K-8   	   50000	     22047 ns/op	  46.45 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRegexpMatchHard_32-8   	  100000	      1125 ns/op	  28.44 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1110 ns/op	  28.81 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1140 ns/op	  28.06 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1111 ns/op	  28.80 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1127 ns/op	  28.39 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1117 ns/op	  28.62 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1114 ns/op	  28.72 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1099 ns/op	  29.10 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1149 ns/op	  27.85 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1123 ns/op	  28.48 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1118 ns/op	  28.60 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1100 ns/op	  29.07 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1122 ns/op	  28.52 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1093 ns/op	  29.27 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1136 ns/op	  28.17 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1116 ns/op	  28.66 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1101 ns/op	  29.05 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1110 ns/op	  28.81 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1148 ns/op	  27.85 MB/s
+BenchmarkRegexpMatchHard_32-8   	  100000	      1368 ns/op	  23.38 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRegexpMatchHard_1K-8   	   50000	     33112 ns/op	  30.93 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     33117 ns/op	  30.92 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     33199 ns/op	  30.84 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     33822 ns/op	  30.28 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     33535 ns/op	  30.53 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     32362 ns/op	  31.64 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31536 ns/op	  32.47 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31124 ns/op	  32.90 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31057 ns/op	  32.97 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31146 ns/op	  32.88 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31666 ns/op	  32.34 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31516 ns/op	  32.49 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31359 ns/op	  32.65 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31561 ns/op	  32.44 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31086 ns/op	  32.94 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31775 ns/op	  32.23 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31207 ns/op	  32.81 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31090 ns/op	  32.94 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31019 ns/op	  33.01 MB/s
+BenchmarkRegexpMatchHard_1K-8   	   50000	     31702 ns/op	  32.30 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkRevcomp-8   	      50	 318465890 ns/op	 798.10 MB/s
+BenchmarkRevcomp-8   	      50	 301552193 ns/op	 842.86 MB/s
+BenchmarkRevcomp-8   	      50	 306527353 ns/op	 829.18 MB/s
+BenchmarkRevcomp-8   	      50	 305417562 ns/op	 832.19 MB/s
+BenchmarkRevcomp-8   	      50	 300563798 ns/op	 845.63 MB/s
+BenchmarkRevcomp-8   	      50	 305114567 ns/op	 833.02 MB/s
+BenchmarkRevcomp-8   	      50	 303885073 ns/op	 836.39 MB/s
+BenchmarkRevcomp-8   	      50	 302908513 ns/op	 839.09 MB/s
+BenchmarkRevcomp-8   	      50	 302174877 ns/op	 841.12 MB/s
+BenchmarkRevcomp-8   	      50	 303772783 ns/op	 836.70 MB/s
+BenchmarkRevcomp-8   	      50	 301462368 ns/op	 843.11 MB/s
+BenchmarkRevcomp-8   	      50	 305115075 ns/op	 833.02 MB/s
+BenchmarkRevcomp-8   	      50	 303194433 ns/op	 838.30 MB/s
+BenchmarkRevcomp-8   	      50	 303388516 ns/op	 837.76 MB/s
+BenchmarkRevcomp-8   	      50	 307925333 ns/op	 825.42 MB/s
+BenchmarkRevcomp-8   	      50	 303634807 ns/op	 837.08 MB/s
+BenchmarkRevcomp-8   	      50	 305504599 ns/op	 831.96 MB/s
+BenchmarkRevcomp-8   	      50	 304594337 ns/op	 834.44 MB/s
+BenchmarkRevcomp-8   	      50	 305930725 ns/op	 830.80 MB/s
+BenchmarkRevcomp-8   	      50	 302399970 ns/op	 840.50 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkTemplate-8   	     200	  42657708 ns/op	  45.49 MB/s
+BenchmarkTemplate-8   	     200	  40070676 ns/op	  48.43 MB/s
+BenchmarkTemplate-8   	     200	  39162212 ns/op	  49.55 MB/s
+BenchmarkTemplate-8   	     200	  39360006 ns/op	  49.30 MB/s
+BenchmarkTemplate-8   	     200	  39178836 ns/op	  49.53 MB/s
+BenchmarkTemplate-8   	     200	  39735540 ns/op	  48.83 MB/s
+BenchmarkTemplate-8   	     200	  39306844 ns/op	  49.37 MB/s
+BenchmarkTemplate-8   	     200	  39179286 ns/op	  49.53 MB/s
+BenchmarkTemplate-8   	     200	  39309545 ns/op	  49.36 MB/s
+BenchmarkTemplate-8   	     200	  39403523 ns/op	  49.25 MB/s
+BenchmarkTemplate-8   	     200	  39234462 ns/op	  49.46 MB/s
+BenchmarkTemplate-8   	     200	  39371730 ns/op	  49.29 MB/s
+BenchmarkTemplate-8   	     200	  39519628 ns/op	  49.10 MB/s
+BenchmarkTemplate-8   	     200	  39374622 ns/op	  49.28 MB/s
+BenchmarkTemplate-8   	     200	  39194313 ns/op	  49.51 MB/s
+BenchmarkTemplate-8   	     200	  39546981 ns/op	  49.07 MB/s
+BenchmarkTemplate-8   	     200	  39969355 ns/op	  48.55 MB/s
+BenchmarkTemplate-8   	     200	  39371255 ns/op	  49.29 MB/s
+BenchmarkTemplate-8   	     200	  39183245 ns/op	  49.52 MB/s
+BenchmarkTemplate-8   	     200	  39220216 ns/op	  49.48 MB/s
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkTimeParse-8   	  500000	       259 ns/op
+BenchmarkTimeParse-8   	  500000	       253 ns/op
+BenchmarkTimeParse-8   	  500000	       233 ns/op
+BenchmarkTimeParse-8   	  500000	       246 ns/op
+BenchmarkTimeParse-8   	  500000	       243 ns/op
+BenchmarkTimeParse-8   	  500000	       248 ns/op
+BenchmarkTimeParse-8   	  500000	       261 ns/op
+BenchmarkTimeParse-8   	  500000	       246 ns/op
+BenchmarkTimeParse-8   	  500000	       237 ns/op
+BenchmarkTimeParse-8   	  500000	       245 ns/op
+BenchmarkTimeParse-8   	  500000	       245 ns/op
+BenchmarkTimeParse-8   	  500000	       244 ns/op
+BenchmarkTimeParse-8   	  500000	       239 ns/op
+BenchmarkTimeParse-8   	  500000	       245 ns/op
+BenchmarkTimeParse-8   	  500000	       265 ns/op
+BenchmarkTimeParse-8   	  500000	       236 ns/op
+BenchmarkTimeParse-8   	  500000	       258 ns/op
+BenchmarkTimeParse-8   	  500000	       247 ns/op
+BenchmarkTimeParse-8   	  500000	       246 ns/op
+BenchmarkTimeParse-8   	  500000	       254 ns/op
+PASS
+goos: darwin
+goarch: amd64
+BenchmarkTimeFormat-8   	  500000	       253 ns/op
+BenchmarkTimeFormat-8   	  500000	       242 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       245 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       241 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+BenchmarkTimeFormat-8   	  500000	       252 ns/op
+BenchmarkTimeFormat-8   	  500000	       240 ns/op
+BenchmarkTimeFormat-8   	  500000	       240 ns/op
+BenchmarkTimeFormat-8   	  500000	       240 ns/op
+BenchmarkTimeFormat-8   	  500000	       242 ns/op
+BenchmarkTimeFormat-8   	  500000	       241 ns/op
+BenchmarkTimeFormat-8   	  500000	       239 ns/op
+PASS
