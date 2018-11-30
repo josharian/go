@@ -531,21 +531,24 @@ func Repeat(s string, count int) string {
 	// See Issue golang.org/issue/16237
 	if count < 0 {
 		panic("strings: negative Repeat count")
-	} else if len(s)*count/count != len(s) {
+	}
+	if len(s)*count/count != len(s) {
 		panic("strings: Repeat count causes overflow")
+	}
+
+	if s == "" {
+		return ""
 	}
 
 	n := len(s) * count
 	var b Builder
 	b.Grow(n)
 	b.WriteString(s)
-	for b.Len() < n {
-		if b.Len() <= n/2 {
-			b.WriteString(b.String())
-		} else {
-			b.WriteString(b.String()[:n-b.Len()])
-			break
-		}
+	for b.Len() <= n/2 {
+		b.WriteString(b.String())
+	}
+	if tail := n - b.Len(); tail > 0 {
+		b.WriteString(b.String()[:tail])
 	}
 	return b.String()
 }
