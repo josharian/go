@@ -77,6 +77,11 @@ func (b *Builder) Grow(n int) {
 	if n < 0 {
 		panic("strings.Builder.Grow: negative count")
 	}
+	if b.buf == nil {
+		// Common case: Growing a brand new (or Reset) buffer.
+		b.buf = make([]byte, 0, n)
+		return
+	}
 	if cap(b.buf)-len(b.buf) < n {
 		b.grow(n)
 	}
