@@ -22,6 +22,7 @@ func panicmakeslicelen()
 func throwinit()
 func panicwrap()
 
+func gopanicstring(string)
 func gopanic(interface{})
 func gorecover(*int32) interface{}
 func goschedguarded()

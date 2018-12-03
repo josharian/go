@@ -793,7 +793,7 @@ func (s *state) stmt(n *Node) {
 		s.call(n, callNormal)
 		if n.Op == OCALLFUNC && n.Left.Op == ONAME && n.Left.Class() == PFUNC {
 			if fn := n.Left.Sym.Name; compiling_runtime && fn == "throw" ||
-				n.Left.Sym.Pkg == Runtimepkg && (fn == "throwinit" || fn == "gopanic" || fn == "panicwrap" || fn == "block" || fn == "panicmakeslicelen" || fn == "panicmakeslicecap") {
+				n.Left.Sym.Pkg == Runtimepkg && (fn == "throwinit" || fn == "gopanic" || fn == "gopanicstring" || fn == "panicwrap" || fn == "block" || fn == "panicmakeslicelen" || fn == "panicmakeslicecap") {
 				m := s.mem()
 				b := s.endBlock()
 				b.Kind = ssa.BlockExit

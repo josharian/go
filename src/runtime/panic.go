@@ -441,6 +441,10 @@ func printpanics(p *_panic) {
 	print("\n")
 }
 
+func gopanicstring(s string) {
+	gopanic(s)
+}
+
 // The implementation of the predeclared function panic.
 func gopanic(e interface{}) {
 	gp := getg()

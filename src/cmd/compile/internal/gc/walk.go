@@ -567,7 +567,11 @@ opswitch:
 		n = walkprint(n, init)
 
 	case OPANIC:
-		n = mkcall("gopanic", nil, init, n.Left)
+		fn := "gopanic"
+		if n.Left.Type == types.Types[TSTRING] {
+			fn = "gopanicstring"
+		}
+		n = mkcall(fn, nil, init, n.Left)
 
 	case ORECOVER:
 		n = mkcall("gorecover", n.Type, init, nod(OADDR, nodfp, nil))
