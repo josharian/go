@@ -2383,6 +2383,8 @@ func (s *state) expr(n *Node) *ssa.Value {
 		}
 		return s.zeroVal(n.Type)
 
+		// case OTYPEOF:
+
 	default:
 		s.Fatalf("unhandled expr %v", n.Op)
 		return nil
@@ -3574,10 +3576,7 @@ func findIntrinsic(sym *types.Sym) intrinsicBuilder {
 	if sym == nil || sym.Pkg == nil {
 		return nil
 	}
-	pkg := sym.Pkg.Path
-	if sym.Pkg == localpkg {
-		pkg = myimportpath
-	}
+	pkg := pkgpath(sym.Pkg)
 	if flag_race && pkg == "sync/atomic" {
 		// The race detector needs to be able to intercept these calls.
 		// We can't intrinsify them.

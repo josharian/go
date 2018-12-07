@@ -1374,14 +1374,19 @@ func typecheck1(n *Node, top int) (res *Node) {
 		if t.NumResults() == 1 {
 			n.Type = l.Type.Results().Field(0).Type
 
-			if n.Op == OCALLFUNC && n.Left.Op == ONAME && isRuntimePkg(n.Left.Sym.Pkg) && n.Left.Sym.Name == "getg" {
-				// Emit code for runtime.getg() directly instead of calling function.
-				// Most such rewrites (for example the similar one for math.Sqrt) should be done in walk,
-				// so that the ordering pass can make sure to preserve the semantics of the original code
-				// (in particular, the exact time of the function call) by introducing temporaries.
-				// In this case, we know getg() always returns the same result within a given function
-				// and we want to avoid the temporaries, so we do the rewrite earlier than is typical.
-				n.Op = OGETG
+			if n.Op == OCALLFUNC && n.Left.Op == ONAME {
+				sym := n.Left.Sym
+				if isRuntimePkg(sym.Pkg) && sym.Name == "getg" {
+					// Emit code for runtime.getg() directly instead of calling function.
+					// Most such rewrites (for example the similar one for math.Sqrt) should be done in walk,
+					// so that the ordering pass can make sure to preserve the semantics of the original code
+					// (in particular, the exact time of the function call) by introducing temporaries.
+					// In this case, we know getg() always returns the same result within a given function
+					// and we want to avoid the temporaries, so we do the rewrite earlier than is typical.
+					n.Op = OGETG
+				} else if pkgpath(sym.Pkg) == "reflect" && sym.Name == "TypeOf" {
+					n.Op = OTYPEOF
+				}
 			}
 
 			break

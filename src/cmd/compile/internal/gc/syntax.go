@@ -696,6 +696,7 @@ const (
 	OALIGNOF     // unsafe.Alignof(Left)
 	OOFFSETOF    // unsafe.Offsetof(Left)
 	OSIZEOF      // unsafe.Sizeof(Left)
+	OTYPEOF      // reflect.TypeOf(Left); Right holds typename for Left after walk if Left is non-interface
 
 	// statements
 	OBLOCK    // { List } (block of code)

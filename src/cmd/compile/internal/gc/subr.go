@@ -1848,6 +1848,14 @@ func isbadimport(path string, allowSpace bool) bool {
 	return false
 }
 
+// pkgpath returns the import path for pkg.
+func pkgpath(pkg *types.Pkg) string {
+	if pkg == localpkg {
+		return myimportpath
+	}
+	return pkg.Path
+}
+
 func checknil(x *Node, init *Nodes) {
 	x = walkexpr(x, nil) // caller has not done this yet
 	if x.Type.IsInterface() {

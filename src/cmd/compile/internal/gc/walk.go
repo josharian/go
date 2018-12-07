@@ -494,6 +494,12 @@ opswitch:
 		usefield(n)
 		n.Left = walkexpr(n.Left, init)
 
+	case OTYPEOF:
+		n.Left = walkexpr(n.Left)
+		if !n.Left.Type.IsInterface() {
+			n.Right = typename(n.Left.Type)
+		}
+
 	case ODOTTYPE, ODOTTYPE2:
 		n.Left = walkexpr(n.Left, init)
 		// Set up interface type addresses for back end.
