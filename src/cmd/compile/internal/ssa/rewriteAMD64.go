@@ -48120,6 +48120,32 @@ func rewriteValueAMD64_OpAMD64SETAE_0(v *Value) bool {
 func rewriteValueAMD64_OpAMD64SETAEstore_0(v *Value) bool {
 	b := v.Block
 	_ = b
+	// match: (SETAEstore {sym} ptr (CMPBconst [-128] x) mem)
+	// cond:
+	// result: (SETBstore {sym} ptr (BTQconst [7] x) mem)
+	for {
+		sym := v.Aux
+		_ = v.Args[2]
+		ptr := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64CMPBconst {
+			break
+		}
+		if v_1.AuxInt != -128 {
+			break
+		}
+		x := v_1.Args[0]
+		mem := v.Args[2]
+		v.reset(OpAMD64SETBstore)
+		v.Aux = sym
+		v.AddArg(ptr)
+		v0 := b.NewValue0(v.Pos, OpAMD64BTQconst, types.TypeFlags)
+		v0.AuxInt = 7
+		v0.AddArg(x)
+		v.AddArg(v0)
+		v.AddArg(mem)
+		return true
+	}
 	// match: (SETAEstore [off] {sym} ptr (InvertFlags x) mem)
 	// cond:
 	// result: (SETBEstore [off] {sym} ptr x mem)

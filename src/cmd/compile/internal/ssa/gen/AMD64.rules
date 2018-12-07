@@ -702,6 +702,8 @@
 (SET(NE|EQ)store [off] {sym} ptr (TESTL z1:(SHRLconst [31] x) z2) mem) && z1==z2 && !config.nacl
     -> (SET(B|AE)store [off] {sym} ptr (BTLconst [31] x) mem)
 
+(SETAEstore {sym} ptr (CMPBconst [-128] x) mem) -> (SETBstore {sym} ptr (BTQconst [7] x) mem)
+
 // Fold combinations of bit ops on same bit. An example is math.Copysign(c,-1)
 (BTS(Q|L)const [c] (BTR(Q|L)const [c] x)) -> (BTS(Q|L)const [c] x)
 (BTS(Q|L)const [c] (BTC(Q|L)const [c] x)) -> (BTS(Q|L)const [c] x)

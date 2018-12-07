@@ -7,6 +7,7 @@ package amd64
 import (
 	"fmt"
 	"math"
+	"os"
 
 	"cmd/compile/internal/gc"
 	"cmd/compile/internal/ssa"
@@ -905,7 +906,25 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 			v.Fatalf("load flags not implemented: %v", v.LongString())
 			return
 		}
-		p := s.Prog(loadByType(v.Type))
+		as := loadByType(v.Type)
+		if os.Getenv("J") != "" {
+			fmt.Println("search", v.Uses, v.LongString())
+			if v.Uses == 1 {
+				for _, w := range v.Block.Values {
+					for _, x := range w.Args {
+						if x == v {
+							fmt.Println("FOUND", w.LongString())
+							fmt.Println(w.Op, w.Op == ssa.OpAMD64BTQconst, w.AuxInt < 8)
+							if w.Op == ssa.OpAMD64BTQconst && w.AuxInt < 8 {
+								fmt.Println("OPT")
+								as = x86.AMOVB
+							}
+						}
+					}
+				}
+			}
+		}
+		p := s.Prog(as)
 		gc.AddrAuto(&p.From, v.Args[0])
 		p.To.Type = obj.TYPE_REG
 		p.To.Reg = v.Reg()
