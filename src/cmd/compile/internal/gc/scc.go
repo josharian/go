@@ -34,6 +34,7 @@ type bottomUpVisitor struct {
 	visitgen uint32
 	nodeID   map[*Node]uint32
 	stack    []*Node
+	filter   func(fn *Node) bool
 }
 
 // visitBottomUp invokes analyze on the ODCLFUNC nodes listed in list.
@@ -49,7 +50,7 @@ type bottomUpVisitor struct {
 // If recursive is false, the list consists of only a single function and its closures.
 // If recursive is true, the list may still contain only a single function,
 // if that function is itself recursive.
-func visitBottomUp(list []*Node, analyze func(list []*Node, recursive bool)) {
+func visitBottomUp(list []*Node, analyze func(list []*Node, recursive bool), filter func(fn *Node) bool) {
 	var v bottomUpVisitor
 	v.analyze = analyze
 	v.nodeID = make(map[*Node]uint32)
@@ -78,8 +79,10 @@ func (v *bottomUpVisitor) visit(n *Node) uint32 {
 		case OCALLFUNC, OCALLMETH:
 			fn := asNode(n.Left.Type.Nname())
 			if fn != nil && fn.Op == ONAME && fn.Class() == PFUNC && fn.Name.Defn != nil {
-				if m := v.visit(fn.Name.Defn); m < min {
-					min = m
+				if v.filter == nil || v.filter(fn.Name.Defn) {
+					if m := v.visit(fn.Name.Defn); m < min {
+						min = m
+					}
 				}
 			}
 		case OCLOSURE:

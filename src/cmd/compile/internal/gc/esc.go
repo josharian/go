@@ -46,7 +46,7 @@ import (
 var newescape bool
 
 func escapes(all []*Node) {
-	visitBottomUp(all, escapeImpl())
+	visitBottomUp(all, escapeImpl(), nil)
 }
 
 func escapeImpl() func([]*Node, bool) {

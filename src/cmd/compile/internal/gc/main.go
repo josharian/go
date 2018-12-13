@@ -609,8 +609,9 @@ func Main(archInit func(*Arch)) {
 	}
 
 	if Debug['l'] != 0 {
+		filter := func(fn *Node) bool { return fn.Func.Pragma&Noinline == 0 }
 		// Find functions that can be inlined and clone them before walk expands them.
-		visitBottomUp(xtop, func(list []*Node, recursive bool) {
+		analyze := func(list []*Node, recursive bool) {
 			for _, n := range list {
 				if !recursive {
 					caninl(n)
@@ -621,7 +622,8 @@ func Main(archInit func(*Arch)) {
 				}
 				inlcalls(n)
 			}
-		})
+		}
+		visitBottomUp(xtop, analyze, filter)
 	}
 
 	// Phase 6: Escape analysis.
