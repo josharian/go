@@ -11,6 +11,7 @@ import (
 	"internal/bytealg"
 	"unicode"
 	"unicode/utf8"
+	"unsafe"
 )
 
 // explode splits s into a slice of UTF-8 strings,
@@ -94,8 +95,27 @@ func Count(s, substr string) int {
 	}
 }
 
+type stringStruct struct {
+	str unsafe.Pointer
+	len int
+}
+
+func stringStructOf(sp *string) *stringStruct {
+	return (*stringStruct)(unsafe.Pointer(sp))
+}
+
+func (s stringStruct) end() unsafe.Pointer {
+	return unsafe.Pointer(uintptr(s.str) + uintptr(s.len-1))
+}
+
 // Contains reports whether substr is within s.
 func Contains(s, substr string) bool {
+	t := stringStructOf(&s)
+	tubstr := stringStructOf(&substr)
+	if uintptr(tubstr.str) >= uintptr(t.str) && uintptr(tubstr.end()) <= uintptr(t.end()) {
+		println("OPT")
+		return true
+	}
 	return Index(s, substr) >= 0
 }
 
