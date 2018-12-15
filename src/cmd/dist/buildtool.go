@@ -38,6 +38,7 @@ var bootstrapDirs = []string{
 	"cmd/cgo",
 	"cmd/compile",
 	"cmd/compile/internal/amd64",
+	"cmd/compile/internal/amd64/rewrite",
 	"cmd/compile/internal/arm",
 	"cmd/compile/internal/arm64",
 	"cmd/compile/internal/gc",
