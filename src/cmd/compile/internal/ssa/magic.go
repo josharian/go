@@ -40,7 +40,7 @@ import "math/big"
 //   2^e > x * delta * c
 // x can be at most 2^n-1 and delta can be at most 1.
 // So it is sufficient to have 2^e >= 2^n*c.
-// So we'll choose e = n + s, with s = ⎡log2(c)⎤.
+// So we'll choose e = n + s, with s = ⎡Log2(c)⎤.
 //
 // An additional complication arises because m has n+1 bits in it.
 // Hardware restricts us to n bit by n bit multiplies.
@@ -94,7 +94,7 @@ func umagicOK(n uint, c int64) bool {
 }
 
 type umagicData struct {
-	s int64  // ⎡log2(c)⎤
+	s int64  // ⎡Log2(c)⎤
 	m uint64 // ⎡2^(n+s)/c⎤ - 2^n
 }
 
@@ -127,7 +127,7 @@ func umagic(n uint, c int64) umagicData {
 //
 // If x is positive we're in a very similar state
 // to the unsigned case above.  We define:
-//   s = ⎡log2(c)⎤-1
+//   s = ⎡Log2(c)⎤-1
 //   m = ⎡2^(n+s)/c⎤
 // Then
 //   ⎣x / c⎦ = ⎣x * m / 2^(n+s)⎦
@@ -155,7 +155,7 @@ func smagicOK(n uint, c int64) bool {
 }
 
 type smagicData struct {
-	s int64  // ⎡log2(c)⎤-1
+	s int64  // ⎡Log2(c)⎤-1
 	m uint64 // ⎡2^(n+s)/c⎤
 }
 

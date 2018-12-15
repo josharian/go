@@ -464,7 +464,7 @@ func (s *regAllocState) makeSpill(v *Value, b *Block) *Value {
 // undone until the caller allows it by clearing nospill. Returns a
 // *Value which is either v or a copy of v allocated to the chosen register.
 func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, pos src.XPos) *Value {
-	if s.f.Config.ctxt.Arch.Arch == sys.ArchWasm && v.rematerializeable() {
+	if s.f.Config.ctxt.Arch.Arch == sys.ArchWasm && v.Rematerializeable() {
 		c := v.copyIntoWithXPos(s.curBlock, pos)
 		c.OnWasmStack = true
 		s.setOrig(c, v)
@@ -505,7 +505,7 @@ func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, pos 
 			panic("bad register state")
 		}
 		c = s.curBlock.NewValue1(pos, OpCopy, v.Type, s.regs[r2].c)
-	} else if v.rematerializeable() {
+	} else if v.Rematerializeable() {
 		// Rematerialize instead of loading from the spill location.
 		c = v.copyIntoWithXPos(s.curBlock, pos)
 	} else {
@@ -622,10 +622,10 @@ func (s *regAllocState) init(f *Func) {
 		case "s390x":
 			s.allocatable &^= 1 << 11 // R11
 		default:
-			s.f.fe.Fatalf(src.NoXPos, "arch %s not implemented", s.f.Config.arch)
+			s.f.Fe.Fatalf(src.NoXPos, "arch %s not implemented", s.f.Config.arch)
 		}
 	}
-	if s.f.Config.nacl {
+	if s.f.Config.NaCl {
 		switch s.f.Config.arch {
 		case "arm":
 			s.allocatable &^= 1 << 9 // R9 is "thread pointer" on nacl/arm
@@ -658,7 +658,7 @@ func (s *regAllocState) init(f *Func) {
 		for _, v := range b.Values {
 			if !v.Type.IsMemory() && !v.Type.IsVoid() && !v.Type.IsFlags() && !v.Type.IsTuple() {
 				s.values[v.ID].needReg = true
-				s.values[v.ID].rematerializeable = v.rematerializeable()
+				s.values[v.ID].rematerializeable = v.Rematerializeable()
 				s.orig[v.ID] = v
 			}
 			// Note: needReg is false for values returning Tuple types.
@@ -2243,12 +2243,12 @@ func (e *edgeState) findRegFor(typ *types.Type) Location {
 		a := e.cache[vid]
 		for _, c := range a {
 			if r, ok := e.s.f.getHome(c.ID).(*Register); ok && m>>uint(r.num)&1 != 0 {
-				if !c.rematerializeable() {
+				if !c.Rematerializeable() {
 					x := e.p.NewValue1(c.Pos, OpStoreReg, c.Type, c)
 					// Allocate a temp location to spill a register to.
 					// The type of the slot is immaterial - it will not be live across
 					// any safepoint. Just use a type big enough to hold any register.
-					t := LocalSlot{N: e.s.f.fe.Auto(c.Pos, types.Int64), Type: types.Int64}
+					t := LocalSlot{N: e.s.f.Fe.Auto(c.Pos, types.Int64), Type: types.Int64}
 					// TODO: reuse these slots. They'll need to be erased first.
 					e.set(t, vid, x, false, c.Pos)
 					if e.s.f.pass.debug > regDebug {
@@ -2274,9 +2274,9 @@ func (e *edgeState) findRegFor(typ *types.Type) Location {
 	return nil
 }
 
-// rematerializeable reports whether the register allocator should recompute
+// Rematerializeable reports whether the register allocator should recompute
 // a value instead of spilling/restoring it.
-func (v *Value) rematerializeable() bool {
+func (v *Value) Rematerializeable() bool {
 	if !opcodeTable[v.Op].rematerializeable {
 		return false
 	}

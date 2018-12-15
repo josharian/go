@@ -41,7 +41,7 @@ func newStackAllocState(f *Func) *stackAllocState {
 		return new(stackAllocState)
 	}
 	if s.f != nil {
-		f.fe.Fatalf(src.NoXPos, "newStackAllocState called without previous free")
+		f.Fe.Fatalf(src.NoXPos, "newStackAllocState called without previous free")
 	}
 	return s
 }
@@ -110,7 +110,7 @@ func (s *stackAllocState) init(f *Func, spillLive [][]ID) {
 	for _, b := range f.Blocks {
 		for _, v := range b.Values {
 			s.values[v.ID].typ = v.Type
-			s.values[v.ID].needSlot = !v.Type.IsMemory() && !v.Type.IsVoid() && !v.Type.IsFlags() && f.getHome(v.ID) == nil && !v.rematerializeable() && !v.OnWasmStack
+			s.values[v.ID].needSlot = !v.Type.IsMemory() && !v.Type.IsVoid() && !v.Type.IsFlags() && f.getHome(v.ID) == nil && !v.Rematerializeable() && !v.OnWasmStack
 			s.values[v.ID].isArg = v.Op == OpArg
 			if f.pass.debug > stackDebug && s.values[v.ID].needSlot {
 				fmt.Printf("%s needs a stack slot\n", v)
@@ -249,7 +249,7 @@ func (s *stackAllocState) stackalloc() {
 			// If there is no unused stack slot, allocate a new one.
 			if i == len(locs) {
 				s.nAuto++
-				locs = append(locs, LocalSlot{N: f.fe.Auto(v.Pos, v.Type), Type: v.Type, Off: 0})
+				locs = append(locs, LocalSlot{N: f.Fe.Auto(v.Pos, v.Type), Type: v.Type, Off: 0})
 				locations[v.Type] = locs
 			}
 			// Use the stack variable at that index for v.

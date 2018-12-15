@@ -137,7 +137,7 @@ func (t *RBTint32) Insert(key int32, data interface{}) interface{} {
 // Min returns the minimum element of t and its associated data.
 // If t is empty, then (0, nil) is returned.
 func (t *RBTint32) Min() (k int32, d interface{}) {
-	return t.root.min().keyAndData()
+	return t.root.Min().keyAndData()
 }
 
 // Max returns the maximum element of t and its associated data.
@@ -223,7 +223,7 @@ func (t *node32) find(key int32) *node32 {
 	return nil
 }
 
-func (t *node32) min() *node32 {
+func (t *node32) Min() *node32 {
 	if t == nil {
 		return t
 	}
@@ -394,7 +394,7 @@ func (t *node32) next() *node32 {
 	// If there is a right child, it is to the right
 	r := t.right
 	if r != nil {
-		return r.min()
+		return r.Min()
 	}
 	// if t is p.left, then p, else repeat.
 	p := t.parent

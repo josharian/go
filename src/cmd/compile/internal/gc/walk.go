@@ -3150,7 +3150,7 @@ func walkcompare(n *Node, init *Nodes) *Node {
 	var inline bool
 
 	maxcmpsize := int64(4)
-	unalignedLoad := canMergeLoads()
+	unalignedLoad := CanMergeLoads()
 	if unalignedLoad {
 		// Keep this low enough to generate less code than a function call.
 		maxcmpsize = 2 * int64(thearch.LinkArch.RegSize)
@@ -3385,7 +3385,7 @@ func walkcompareString(n *Node, init *Nodes) *Node {
 		maxRewriteLen := 6
 		// Some architectures can load unaligned byte sequence as 1 word.
 		// So we can cover longer strings with the same amount of code.
-		canCombineLoads := canMergeLoads()
+		canCombineLoads := CanMergeLoads()
 		combine64bit := false
 		if canCombineLoads {
 			// Keep this low enough to generate less code than a function call.
@@ -3957,11 +3957,11 @@ func substArgTypes(old *Node, types_ ...*types.Type) *Node {
 	return n
 }
 
-// canMergeLoads reports whether the backend optimization passes for
+// CanMergeLoads reports whether the backend optimization passes for
 // the current architecture can combine adjacent loads into a single
 // larger, possibly unaligned, load. Note that currently the
 // optimizations must be able to handle little endian byte order.
-func canMergeLoads() bool {
+func CanMergeLoads() bool {
 	switch thearch.LinkArch.Family {
 	case sys.ARM64, sys.AMD64, sys.I386, sys.S390X:
 		return true

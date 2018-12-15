@@ -85,10 +85,10 @@ func TestNto(t *testing.T) {
 }
 
 func TestLog2(t *testing.T) {
-	var log2Tests = []struct {
+	var Log2Tests = []struct {
 		v   int64
 		exp int64
-	}{{0, -1}, // nlz expects log2(0) == -1
+	}{{0, -1}, // nlz expects Log2(0) == -1
 		{1, 0},
 		{2, 1},
 		{4, 2},
@@ -97,9 +97,9 @@ func TestLog2(t *testing.T) {
 		{9, 3},
 		{1024, 10}}
 
-	for _, tc := range log2Tests {
-		if got := log2(tc.v); got != tc.exp {
-			t.Errorf("expected log2(%d) = %d, got %d", tc.v, tc.exp, got)
+	for _, tc := range Log2Tests {
+		if got := Log2(tc.v); got != tc.exp {
+			t.Errorf("expected Log2(%d) = %d, got %d", tc.v, tc.exp, got)
 		}
 	}
 }

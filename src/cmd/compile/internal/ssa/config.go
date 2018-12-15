@@ -31,11 +31,11 @@ type Config struct {
 	hasGReg        bool          // has hardware g register
 	ctxt           *obj.Link     // Generic arch information
 	optimize       bool          // Do optimization
-	noDuffDevice   bool          // Don't use Duff's device
-	useSSE         bool          // Use SSE for non-float operations
+	NoDuffDevice   bool          // Don't use Duff's device
+	UseSSE         bool          // Use SSE for non-float operations
 	useAvg         bool          // Use optimizations that need Avg* operations
 	useHmul        bool          // Use optimizations that need Hmul* operations
-	nacl           bool          // GOOS=nacl
+	NaCl           bool          // GOOS=nacl
 	use387         bool          // GO386=387
 	SoftFloat      bool          //
 	Race           bool          // race detector enabled
@@ -208,15 +208,15 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "amd64p32":
 		c.PtrSize = 4
 		c.RegSize = 8
-		c.LowerBlock = rewriteBlockAMD64
-		c.LowerValue = rewriteValueAMD64
+		// c.LowerBlock = rewriteBlockAMD64
+		// c.LowerValue = rewriteValueAMD64
 		c.registers = registersAMD64[:]
 		c.gpRegMask = gpRegMaskAMD64
 		c.fpRegMask = fpRegMaskAMD64
 		c.FPReg = framepointerRegAMD64
 		c.LinkReg = linkRegAMD64
 		c.hasGReg = false
-		c.noDuffDevice = true
+		c.NoDuffDevice = true
 	case "386":
 		c.PtrSize = 4
 		c.RegSize = 4
@@ -250,7 +250,7 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 		c.FPReg = framepointerRegARM64
 		c.LinkReg = linkRegARM64
 		c.hasGReg = true
-		c.noDuffDevice = objabi.GOOS == "darwin" // darwin linker cannot handle BR26 reloc with non-zero addend
+		c.NoDuffDevice = objabi.GOOS == "darwin" // darwin linker cannot handle BR26 reloc with non-zero addend
 	case "ppc64":
 		c.BigEndian = true
 		fallthrough
@@ -264,7 +264,7 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 		c.fpRegMask = fpRegMaskPPC64
 		c.FPReg = framepointerRegPPC64
 		c.LinkReg = linkRegPPC64
-		c.noDuffDevice = true // TODO: Resolve PPC64 DuffDevice (has zero, but not copy)
+		c.NoDuffDevice = true // TODO: Resolve PPC64 DuffDevice (has zero, but not copy)
 		c.hasGReg = true
 	case "mips64":
 		c.BigEndian = true
@@ -292,7 +292,7 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 		c.FPReg = framepointerRegS390X
 		c.LinkReg = linkRegS390X
 		c.hasGReg = true
-		c.noDuffDevice = true
+		c.NoDuffDevice = true
 		c.BigEndian = true
 	case "mips":
 		c.BigEndian = true
@@ -309,7 +309,7 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 		c.FPReg = framepointerRegMIPS
 		c.LinkReg = linkRegMIPS
 		c.hasGReg = true
-		c.noDuffDevice = true
+		c.NoDuffDevice = true
 	case "wasm":
 		c.PtrSize = 8
 		c.RegSize = 8
@@ -321,7 +321,7 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 		c.FPReg = framepointerRegWasm
 		c.LinkReg = linkRegWasm
 		c.hasGReg = true
-		c.noDuffDevice = true
+		c.NoDuffDevice = true
 		c.useAvg = false
 		c.useHmul = false
 	default:
@@ -329,18 +329,18 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	}
 	c.ctxt = ctxt
 	c.optimize = optimize
-	c.nacl = objabi.GOOS == "nacl"
-	c.useSSE = true
+	c.NaCl = objabi.GOOS == "nacl"
+	c.UseSSE = true
 
 	// Don't use Duff's device nor SSE on Plan 9 AMD64, because
 	// floating point operations are not allowed in note handler.
 	if objabi.GOOS == "plan9" && arch == "amd64" {
-		c.noDuffDevice = true
-		c.useSSE = false
+		c.NoDuffDevice = true
+		c.UseSSE = false
 	}
 
-	if c.nacl {
-		c.noDuffDevice = true // Don't use Duff's device on NaCl
+	if c.NaCl {
+		c.NoDuffDevice = true // Don't use Duff's device on NaCl
 
 		// Returns clobber BP on nacl/386, so the write
 		// barrier does.

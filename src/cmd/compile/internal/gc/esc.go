@@ -294,7 +294,7 @@ func (l Level) copy() Level {
 	return Level{value: l.value, suffixValue: max8(l.suffixValue, 0)}
 }
 
-func (l1 Level) min(l2 Level) Level {
+func (l1 Level) Min(l2 Level) Level {
 	return Level{
 		value:       min8(l1.value, l2.value),
 		suffixValue: min8(l1.suffixValue, l2.suffixValue)}
@@ -1921,7 +1921,7 @@ func (e *EscState) escwalkBody(level Level, dst *Node, src *Node, step *EscStep,
 		// Esclevels are vectors, do not compare as integers,
 		// and must use "min" of old and new to guarantee
 		// convergence.
-		level = level.min(srcE.Level)
+		level = level.Min(srcE.Level)
 		if level == srcE.Level {
 			// Have we been here already with an extraloopdepth,
 			// or is the extraloopdepth provided no improvement on

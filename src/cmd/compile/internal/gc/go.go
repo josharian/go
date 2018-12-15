@@ -269,6 +269,9 @@ type Arch struct {
 	// for all values in the block before SSAGenBlock.
 	SSAGenBlock func(s *SSAGenState, b, next *ssa.Block)
 
+	SSALowerBlock ssa.BlockRewriter // lowering function
+	SSALowerValue ssa.ValueRewriter // lowering function
+
 	// ZeroAuto emits code to zero the given auto stack variable.
 	// ZeroAuto must not use any non-temporary registers.
 	// ZeroAuto will only be called for variables which contain a pointer.

@@ -26,7 +26,7 @@ type writeSyncer interface {
 type Func struct {
 	Config *Config     // architecture information
 	Cache  *Cache      // re-usable cache
-	fe     Frontend    // frontend state associated with this Func, callbacks into compiler frontend
+	Fe     Frontend    // frontend state associated with this Func, callbacks into compiler frontend
 	pass   *pass       // current pass information (name, options, etc.)
 	Name   string      // e.g. NewFunc or (*Func).NumBlocks (no package prefix)
 	Type   *types.Type // type signature of the function.
@@ -77,7 +77,7 @@ type Func struct {
 // NewFunc returns a new, empty function object.
 // Caller must set f.Config and f.Cache before using f.
 func NewFunc(fe Frontend) *Func {
-	return &Func{fe: fe, NamedValues: make(map[LocalSlot][]*Value)}
+	return &Func{Fe: fe, NamedValues: make(map[LocalSlot][]*Value)}
 }
 
 // NumBlocks returns an integer larger than the id of any Block in the Func.
@@ -570,11 +570,11 @@ func (f *Func) ConstOffPtrSP(t *types.Type, c int64, sp *Value) *Value {
 
 }
 
-func (f *Func) Frontend() Frontend                                  { return f.fe }
-func (f *Func) Warnl(pos src.XPos, msg string, args ...interface{}) { f.fe.Warnl(pos, msg, args...) }
-func (f *Func) Logf(msg string, args ...interface{})                { f.fe.Logf(msg, args...) }
-func (f *Func) Log() bool                                           { return f.fe.Log() }
-func (f *Func) Fatalf(msg string, args ...interface{})              { f.fe.Fatalf(f.Entry.Pos, msg, args...) }
+func (f *Func) Frontend() Frontend                                  { return f.Fe }
+func (f *Func) Warnl(pos src.XPos, msg string, args ...interface{}) { f.Fe.Warnl(pos, msg, args...) }
+func (f *Func) Logf(msg string, args ...interface{})                { f.Fe.Logf(msg, args...) }
+func (f *Func) Log() bool                                           { return f.Fe.Log() }
+func (f *Func) Fatalf(msg string, args ...interface{})              { f.Fe.Fatalf(f.Entry.Pos, msg, args...) }
 
 // postorder returns the reachable blocks in f in a postorder traversal.
 func (f *Func) postorder() []*Block {

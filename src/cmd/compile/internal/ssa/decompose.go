@@ -34,7 +34,7 @@ func decomposeBuiltIn(f *Func) {
 		t := name.Type
 		switch {
 		case t.IsInteger() && t.Size() > f.Config.RegSize:
-			hiName, loName := f.fe.SplitInt64(name)
+			hiName, loName := f.Fe.SplitInt64(name)
 			newNames = append(newNames, hiName, loName)
 			for _, v := range f.NamedValues[name] {
 				if v.Op != OpInt64Make {
@@ -45,7 +45,7 @@ func decomposeBuiltIn(f *Func) {
 			}
 			delete(f.NamedValues, name)
 		case t.IsComplex():
-			rName, iName := f.fe.SplitComplex(name)
+			rName, iName := f.Fe.SplitComplex(name)
 			newNames = append(newNames, rName, iName)
 			for _, v := range f.NamedValues[name] {
 				if v.Op != OpComplexMake {
@@ -57,7 +57,7 @@ func decomposeBuiltIn(f *Func) {
 			}
 			delete(f.NamedValues, name)
 		case t.IsString():
-			ptrName, lenName := f.fe.SplitString(name)
+			ptrName, lenName := f.Fe.SplitString(name)
 			newNames = append(newNames, ptrName, lenName)
 			for _, v := range f.NamedValues[name] {
 				if v.Op != OpStringMake {
@@ -68,7 +68,7 @@ func decomposeBuiltIn(f *Func) {
 			}
 			delete(f.NamedValues, name)
 		case t.IsSlice():
-			ptrName, lenName, capName := f.fe.SplitSlice(name)
+			ptrName, lenName, capName := f.Fe.SplitSlice(name)
 			newNames = append(newNames, ptrName, lenName, capName)
 			for _, v := range f.NamedValues[name] {
 				if v.Op != OpSliceMake {
@@ -80,7 +80,7 @@ func decomposeBuiltIn(f *Func) {
 			}
 			delete(f.NamedValues, name)
 		case t.IsInterface():
-			typeName, dataName := f.fe.SplitInterface(name)
+			typeName, dataName := f.Fe.SplitInterface(name)
 			newNames = append(newNames, typeName, dataName)
 			for _, v := range f.NamedValues[name] {
 				if v.Op != OpIMake {
@@ -260,7 +260,7 @@ func decomposeUserArrayInto(f *Func, name LocalSlot, slots []LocalSlot) []LocalS
 		// shouldn't get here due to CanSSA
 		f.Fatalf("array not of size 1")
 	}
-	elemName := f.fe.SplitArray(name)
+	elemName := f.Fe.SplitArray(name)
 	for _, v := range f.NamedValues[name] {
 		if v.Op != OpArrayMake1 {
 			continue
@@ -288,7 +288,7 @@ func decomposeUserStructInto(f *Func, name LocalSlot, slots []LocalSlot) []Local
 	n := t.NumFields()
 
 	for i := 0; i < n; i++ {
-		fs := f.fe.SplitStruct(name, i)
+		fs := f.Fe.SplitStruct(name, i)
 		fnames = append(fnames, fs)
 		// arrays and structs will be decomposed further, so
 		// there's no need to record a name

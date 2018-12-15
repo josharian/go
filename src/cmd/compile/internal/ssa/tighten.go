@@ -32,7 +32,7 @@ func tighten(f *Func) {
 			// Count arguments which will need a register.
 			narg := 0
 			for _, a := range v.Args {
-				if !a.rematerializeable() {
+				if !a.Rematerializeable() {
 					narg++
 				}
 			}
@@ -150,7 +150,7 @@ func phiTighten(f *Func) {
 				continue
 			}
 			for i, a := range v.Args {
-				if !a.rematerializeable() {
+				if !a.Rematerializeable() {
 					continue // not a constant we can move around
 				}
 				if a.Block == b.Preds[i].b {

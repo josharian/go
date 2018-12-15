@@ -302,7 +302,7 @@ func (v *Value) copyIntoWithXPos(b *Block, pos src.XPos) *Value {
 func (v *Value) Logf(msg string, args ...interface{}) { v.Block.Logf(msg, args...) }
 func (v *Value) Log() bool                            { return v.Block.Log() }
 func (v *Value) Fatalf(msg string, args ...interface{}) {
-	v.Block.Func.fe.Fatalf(v.Pos, msg, args...)
+	v.Block.Func.Fe.Fatalf(v.Pos, msg, args...)
 }
 
 // isGenericIntConst reports whether v is a generic integer constant.

@@ -2355,14 +2355,14 @@ func rewriteValueWasm_OpLess8U_0(v *Value) bool {
 }
 func rewriteValueWasm_OpLoad_0(v *Value) bool {
 	// match: (Load <t> ptr mem)
-	// cond: is32BitFloat(t)
+	// cond: Is32BitFloat(t)
 	// result: (F32Load ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is32BitFloat(t)) {
+		if !(Is32BitFloat(t)) {
 			break
 		}
 		v.reset(OpWasmF32Load)
@@ -2371,14 +2371,14 @@ func rewriteValueWasm_OpLoad_0(v *Value) bool {
 		return true
 	}
 	// match: (Load <t> ptr mem)
-	// cond: is64BitFloat(t)
+	// cond: Is64BitFloat(t)
 	// result: (F64Load ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is64BitFloat(t)) {
+		if !(Is64BitFloat(t)) {
 			break
 		}
 		v.reset(OpWasmF64Load)
@@ -4769,7 +4769,7 @@ func rewriteValueWasm_OpStaticCall_0(v *Value) bool {
 }
 func rewriteValueWasm_OpStore_0(v *Value) bool {
 	// match: (Store {t} ptr val mem)
-	// cond: is64BitFloat(t.(*types.Type))
+	// cond: Is64BitFloat(t.(*types.Type))
 	// result: (F64Store ptr val mem)
 	for {
 		t := v.Aux
@@ -4777,7 +4777,7 @@ func rewriteValueWasm_OpStore_0(v *Value) bool {
 		ptr := v.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is64BitFloat(t.(*types.Type))) {
+		if !(Is64BitFloat(t.(*types.Type))) {
 			break
 		}
 		v.reset(OpWasmF64Store)
@@ -4787,7 +4787,7 @@ func rewriteValueWasm_OpStore_0(v *Value) bool {
 		return true
 	}
 	// match: (Store {t} ptr val mem)
-	// cond: is32BitFloat(t.(*types.Type))
+	// cond: Is32BitFloat(t.(*types.Type))
 	// result: (F32Store ptr val mem)
 	for {
 		t := v.Aux
@@ -4795,7 +4795,7 @@ func rewriteValueWasm_OpStore_0(v *Value) bool {
 		ptr := v.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32BitFloat(t.(*types.Type))) {
+		if !(Is32BitFloat(t.(*types.Type))) {
 			break
 		}
 		v.reset(OpWasmF32Store)
@@ -5073,7 +5073,7 @@ func rewriteValueWasm_OpWasmF64Add_0(v *Value) bool {
 	_ = typ
 	// match: (F64Add (F64Const [x]) (F64Const [y]))
 	// cond:
-	// result: (F64Const [auxFrom64F(auxTo64F(x) + auxTo64F(y))])
+	// result: (F64Const [AuxFrom64F(auxTo64F(x) + auxTo64F(y))])
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
@@ -5087,7 +5087,7 @@ func rewriteValueWasm_OpWasmF64Add_0(v *Value) bool {
 		}
 		y := v_1.AuxInt
 		v.reset(OpWasmF64Const)
-		v.AuxInt = auxFrom64F(auxTo64F(x) + auxTo64F(y))
+		v.AuxInt = AuxFrom64F(auxTo64F(x) + auxTo64F(y))
 		return true
 	}
 	// match: (F64Add (F64Const [x]) y)
@@ -5117,7 +5117,7 @@ func rewriteValueWasm_OpWasmF64Mul_0(v *Value) bool {
 	_ = typ
 	// match: (F64Mul (F64Const [x]) (F64Const [y]))
 	// cond:
-	// result: (F64Const [auxFrom64F(auxTo64F(x) * auxTo64F(y))])
+	// result: (F64Const [AuxFrom64F(auxTo64F(x) * auxTo64F(y))])
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
@@ -5131,7 +5131,7 @@ func rewriteValueWasm_OpWasmF64Mul_0(v *Value) bool {
 		}
 		y := v_1.AuxInt
 		v.reset(OpWasmF64Const)
-		v.AuxInt = auxFrom64F(auxTo64F(x) * auxTo64F(y))
+		v.AuxInt = AuxFrom64F(auxTo64F(x) * auxTo64F(y))
 		return true
 	}
 	// match: (F64Mul (F64Const [x]) y)
@@ -6590,7 +6590,7 @@ func rewriteValueWasm_OpZeroExt8to64_0(v *Value) bool {
 func rewriteBlockWasm(b *Block) bool {
 	config := b.Func.Config
 	_ = config
-	fe := b.Func.fe
+	fe := b.Func.Fe
 	_ = fe
 	typ := &config.Types
 	_ = typ

@@ -122,40 +122,35 @@ func (x ValAndOff) String() string {
 }
 
 // validVal reports whether the value can be used
-// as an argument to makeValAndOff.
+// as an argument to MakeValAndOff.
 func validVal(val int64) bool {
 	return val == int64(int32(val))
 }
 
-// validOff reports whether the offset can be used
-// as an argument to makeValAndOff.
-func validOff(off int64) bool {
+// ValidOff reports whether the offset can be used
+// as an argument to MakeValAndOff.
+func ValidOff(off int64) bool {
 	return off == int64(int32(off))
 }
 
-// validValAndOff reports whether we can fit the value and offset into
+// ValidValAndOff reports whether we can fit the value and offset into
 // a ValAndOff value.
-func validValAndOff(val, off int64) bool {
+func ValidValAndOff(val, off int64) bool {
 	if !validVal(val) {
 		return false
 	}
-	if !validOff(off) {
+	if !ValidOff(off) {
 		return false
 	}
 	return true
 }
 
-// makeValAndOff encodes a ValAndOff into an int64 suitable for storing in an AuxInt field.
-func makeValAndOff(val, off int64) int64 {
-	if !validValAndOff(val, off) {
-		panic("invalid makeValAndOff")
+// MakeValAndOff encodes a ValAndOff into an int64 suitable for storing in an AuxInt field.
+func MakeValAndOff(val, off int64) int64 {
+	if !ValidValAndOff(val, off) {
+		panic("invalid MakeValAndOff")
 	}
 	return ValAndOff(val<<32 + int64(uint32(off))).Int64()
-}
-
-// JABS
-func (x ValAndOff) canAdd(off int64) bool {
-	return x.CanAdd(off)
 }
 
 func (x ValAndOff) CanAdd(off int64) bool {
@@ -163,14 +158,9 @@ func (x ValAndOff) CanAdd(off int64) bool {
 	return newoff == int64(int32(newoff))
 }
 
-// JABS
-func (x ValAndOff) add(off int64) int64 {
-	return x.Add(off)
-}
-
 func (x ValAndOff) Add(off int64) int64 {
-	if !x.canAdd(off) {
-		panic("invalid ValAndOff.add")
+	if !x.CanAdd(off) {
+		panic("invalid ValAndOff.Add")
 	}
-	return makeValAndOff(x.Val(), x.Off()+off)
+	return MakeValAndOff(x.Val(), x.Off()+off)
 }

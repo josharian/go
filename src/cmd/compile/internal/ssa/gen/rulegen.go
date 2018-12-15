@@ -251,7 +251,7 @@ func genRules(arch arch) {
 				fmt.Fprintln(w, "_ = config")
 			}
 			if hasfe {
-				fmt.Fprintln(w, "fe := b.Func.fe")
+				fmt.Fprintln(w, "fe := b.Func.Fe")
 				fmt.Fprintln(w, "_ = fe")
 			}
 			if hastyps {
@@ -268,7 +268,7 @@ func genRules(arch arch) {
 	fmt.Fprintf(w, "func rewriteBlock%s(b *Block) bool {\n", arch.name)
 	fmt.Fprintln(w, "config := b.Func.Config")
 	fmt.Fprintln(w, "_ = config")
-	fmt.Fprintln(w, "fe := b.Func.fe")
+	fmt.Fprintln(w, "fe := b.Func.Fe")
 	fmt.Fprintln(w, "_ = fe")
 	fmt.Fprintln(w, "typ := &config.Types")
 	fmt.Fprintln(w, "_ = typ")

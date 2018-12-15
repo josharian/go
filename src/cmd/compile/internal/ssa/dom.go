@@ -78,7 +78,7 @@ func (cache *Cache) scratchBlocksForDom(maxBlockID int) (a, b, c, d, e, f, g []I
 	tot := maxBlockID * nscratchslices
 	scratch := cache.domblockstore
 	if len(scratch) < tot {
-		// req = min(1.5*tot, nscratchslices*minscratchblocks)
+		// req = Min(1.5*tot, nscratchslices*minscratchblocks)
 		// 50% padding allows for graph growth in later phases.
 		req := (tot * 3) >> 1
 		if req < nscratchslices*minscratchblocks {

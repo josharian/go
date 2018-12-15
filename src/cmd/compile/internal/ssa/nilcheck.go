@@ -135,7 +135,7 @@ func nilcheckelim(f *Func) {
 						// This is a redundant implicit nil check.
 						// Logging in the style of the former compiler -- and omit line 1,
 						// which is usually in generated code.
-						if f.fe.Debug_checknil() && v.Pos.Line() > 1 {
+						if f.Fe.Debug_checknil() && v.Pos.Line() > 1 {
 							f.Warnl(v.Pos, "removed nil check")
 						}
 						if v.Pos.IsStmt() == src.PosIsStmt { // About to lose a statement boundary
@@ -206,7 +206,7 @@ func nilcheckelim2(f *Func) {
 		for i := len(b.Values) - 1; i >= 0; i-- {
 			v := b.Values[i]
 			if opcodeTable[v.Op].nilCheck && unnecessary.contains(v.Args[0].ID) {
-				if f.fe.Debug_checknil() && v.Pos.Line() > 1 {
+				if f.Fe.Debug_checknil() && v.Pos.Line() > 1 {
 					f.Warnl(v.Pos, "removed nil check")
 				}
 				if v.Pos.IsStmt() == src.PosIsStmt {

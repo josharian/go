@@ -130,31 +130,31 @@ func applyRewrite(f *Func, rb BlockRewriter, rv ValueRewriter) {
 
 // Common functions called from rewriting rules
 
-func is64BitFloat(t *types.Type) bool {
+func Is64BitFloat(t *types.Type) bool {
 	return t.Size() == 8 && t.IsFloat()
 }
 
-func is32BitFloat(t *types.Type) bool {
+func Is32BitFloat(t *types.Type) bool {
 	return t.Size() == 4 && t.IsFloat()
 }
 
-func is64BitInt(t *types.Type) bool {
+func Is64BitInt(t *types.Type) bool {
 	return t.Size() == 8 && t.IsInteger()
 }
 
-func is32BitInt(t *types.Type) bool {
+func Is32BitInt(t *types.Type) bool {
 	return t.Size() == 4 && t.IsInteger()
 }
 
-func is16BitInt(t *types.Type) bool {
+func Is16BitInt(t *types.Type) bool {
 	return t.Size() == 2 && t.IsInteger()
 }
 
-func is8BitInt(t *types.Type) bool {
+func Is8BitInt(t *types.Type) bool {
 	return t.Size() == 1 && t.IsInteger()
 }
 
-func isPtr(t *types.Type) bool {
+func IsPtr(t *types.Type) bool {
 	return t.IsPtrShaped()
 }
 
@@ -162,29 +162,27 @@ func isSigned(t *types.Type) bool {
 	return t.IsSigned()
 }
 
-// mergeSym merges two symbolic offsets. There is no real merging of
+// MergeSym merges two symbolic offsets. There is no real merging of
 // offsets, we just pick the non-nil one.
-func mergeSym(x, y interface{}) interface{} {
+func MergeSym(x, y interface{}) interface{} {
 	if x == nil {
 		return y
 	}
 	if y == nil {
 		return x
 	}
-	panic(fmt.Sprintf("mergeSym with two non-nil syms %s %s", x, y))
+	panic(fmt.Sprintf("MergeSym with two non-nil syms %s %s", x, y))
 }
 func CanMergeSym(x, y interface{}) bool {
 	return x == nil || y == nil
 }
 
-var canMergeSym = CanMergeSym // JABS
-
-// canMergeLoadClobber reports whether the load can be merged into target without
+// CanMergeLoadClobber reports whether the load can be merged into target without
 // invalidating the schedule.
 // It also checks that the other non-load argument x is something we
-// are ok with clobbering.
+// are ok with Clobbering.
 func CanMergeLoadClobber(target, load, x *Value) bool {
-	// The register containing x is going to get clobbered.
+	// The register containing x is going to get Clobbered.
 	// Don't merge if we still need the value of x.
 	// We don't have liveness information here, but we can
 	// approximate x dying with:
@@ -198,14 +196,12 @@ func CanMergeLoadClobber(target, load, x *Value) bool {
 	if loopnest.depth(target.Block.ID) > loopnest.depth(x.Block.ID) {
 		return false
 	}
-	return canMergeLoad(target, load)
+	return CanMergeLoad(target, load)
 }
 
-var canMergeLoadClobber = CanMergeLoadClobber // JABS
-
-// canMergeLoad reports whether the load can be merged into target without
+// CanMergeLoad reports whether the load can be merged into target without
 // invalidating the schedule.
-func canMergeLoad(target, load *Value) bool {
+func CanMergeLoad(target, load *Value) bool {
 	if target.Block.ID != load.Block.ID {
 		// If the load is in a different block do not merge it.
 		return false
@@ -368,31 +364,31 @@ func nto(x int64) int64 {
 	return ntz(^x)
 }
 
-// log2 returns logarithm in base 2 of uint64(n), with log2(0) = -1.
+// Log2 returns logarithm in base 2 of uint64(n), with Log2(0) = -1.
 // Rounds down.
-func log2(n int64) int64 {
+func Log2(n int64) int64 {
 	return int64(bits.Len64(uint64(n))) - 1
 }
 
-// log2uint32 returns logarithm in base 2 of uint32(n), with log2(0) = -1.
+// Log2uint32 returns logarithm in base 2 of uint32(n), with Log2(0) = -1.
 // Rounds down.
-func log2uint32(n int64) int64 {
+func Log2uint32(n int64) int64 {
 	return int64(bits.Len32(uint32(n))) - 1
 }
 
-// isPowerOfTwo reports whether n is a power of 2.
-func isPowerOfTwo(n int64) bool {
+// IsPowerOfTwo reports whether n is a power of 2.
+func IsPowerOfTwo(n int64) bool {
 	return n > 0 && n&(n-1) == 0
 }
 
-// isUint64PowerOfTwo reports whether uint64(n) is a power of 2.
-func isUint64PowerOfTwo(in int64) bool {
+// IsUint64PowerOfTwo reports whether uint64(n) is a power of 2.
+func IsUint64PowerOfTwo(in int64) bool {
 	n := uint64(in)
 	return n > 0 && n&(n-1) == 0
 }
 
-// isUint32PowerOfTwo reports whether uint32(n) is a power of 2.
-func isUint32PowerOfTwo(in int64) bool {
+// IsUint32PowerOfTwo reports whether uint32(n) is a power of 2.
+func IsUint32PowerOfTwo(in int64) bool {
 	n := uint64(uint32(in))
 	return n > 0 && n&(n-1) == 0
 }
@@ -437,9 +433,9 @@ func b2i(b bool) int64 {
 	return 0
 }
 
-// shiftIsBounded reports whether (left/right) shift Value v is known to be bounded.
+// ShiftIsBounded reports whether (left/right) shift Value v is known to be bounded.
 // A shift is bounded if it is shifting by less than the width of the shifted value.
-func shiftIsBounded(v *Value) bool {
+func ShiftIsBounded(v *Value) bool {
 	return v.AuxInt != 0
 }
 
@@ -485,13 +481,13 @@ func i2f(i int64) float64 {
 	return math.Float64frombits(uint64(i))
 }
 
-// auxFrom64F encodes a float64 value so it can be stored in an AuxInt.
-func auxFrom64F(f float64) int64 {
+// AuxFrom64F encodes a float64 value so it can be stored in an AuxInt.
+func AuxFrom64F(f float64) int64 {
 	return int64(math.Float64bits(f))
 }
 
-// auxFrom32F encodes a float32 value so it can be stored in an AuxInt.
-func auxFrom32F(f float32) int64 {
+// AuxFrom32F encodes a float32 value so it can be stored in an AuxInt.
+func AuxFrom32F(f float32) int64 {
 	return int64(math.Float64bits(extend32Fto64F(f)))
 }
 
@@ -518,7 +514,7 @@ func devirt(v *Value, sym interface{}, offset int64) *obj.LSym {
 	if !ok {
 		return nil
 	}
-	lsym := f.fe.DerefItab(n, offset)
+	lsym := f.Fe.DerefItab(n, offset)
 	if f.pass.debug > 0 {
 		if lsym != nil {
 			f.Warnl(v.Pos, "de-virtualizing call")
@@ -529,8 +525,8 @@ func devirt(v *Value, sym interface{}, offset int64) *obj.LSym {
 	return lsym
 }
 
-// isSamePtr reports whether p1 and p2 point to the same address.
-func isSamePtr(p1, p2 *Value) bool {
+// IsSamePtr reports whether p1 and p2 point to the same address.
+func IsSamePtr(p1, p2 *Value) bool {
 	if p1 == p2 {
 		return true
 	}
@@ -539,13 +535,13 @@ func isSamePtr(p1, p2 *Value) bool {
 	}
 	switch p1.Op {
 	case OpOffPtr:
-		return p1.AuxInt == p2.AuxInt && isSamePtr(p1.Args[0], p2.Args[0])
+		return p1.AuxInt == p2.AuxInt && IsSamePtr(p1.Args[0], p2.Args[0])
 	case OpAddr, OpLocalAddr:
 		// OpAddr's 0th arg is either OpSP or OpSB, which means that it is uniquely identified by its Op.
 		// Checking for value equality only works after [z]cse has run.
 		return p1.Aux == p2.Aux && p1.Args[0].Op == p2.Args[0].Op
 	case OpAddPtr:
-		return p1.Args[1] == p2.Args[1] && isSamePtr(p1.Args[0], p2.Args[0])
+		return p1.Args[1] == p2.Args[1] && IsSamePtr(p1.Args[0], p2.Args[0])
 	}
 	return false
 }
@@ -577,7 +573,7 @@ func disjoint(p1 *Value, n1 int64, p2 *Value, n2 int64) bool {
 	}
 	p1, off1 := baseAndOffset(p1)
 	p2, off2 := baseAndOffset(p2)
-	if isSamePtr(p1, p2) {
+	if IsSamePtr(p1, p2) {
 		return !overlap(off1, n1, off2, n2)
 	}
 	// p1 and p2 are not the same, so if they are both OpAddrs then
@@ -613,10 +609,10 @@ func moveSize(align int64, c *Config) int64 {
 	return 1
 }
 
-// mergePoint finds a block among a's blocks which dominates b and is itself
+// MergePoint finds a block among a's blocks which dominates b and is itself
 // dominated by all of a's blocks. Returns nil if it can't find one.
 // Might return nil even if one does exist.
-func mergePoint(b *Block, a ...*Value) *Block {
+func MergePoint(b *Block, a ...*Value) *Block {
 	// Walk backward from b looking for one of the a's blocks.
 
 	// Max distance
@@ -669,20 +665,18 @@ found:
 //   B) decrement use counts of v's args.
 func Clobber(v *Value) bool {
 	v.reset(OpInvalid)
-	// Note: leave v.Block intact.  The Block field is used after clobber.
+	// Note: leave v.Block intact.  The Block field is used after Clobber.
 	return true
 }
 
-var clobber = Clobber // JABS
-
-// clobberIfDead resets v when use count is 1. Returns true.
-// clobberIfDead is used by rewrite rules to decrement
+// ClobberIfDead resets v when use count is 1. Returns true.
+// ClobberIfDead is used by rewrite rules to decrement
 // use counts of v's args when v is dead and never used.
-func clobberIfDead(v *Value) bool {
+func ClobberIfDead(v *Value) bool {
 	if v.Uses == 1 {
 		v.reset(OpInvalid)
 	}
-	// Note: leave v.Block intact.  The Block field is used after clobberIfDead.
+	// Note: leave v.Block intact.  The Block field is used after ClobberIfDead.
 	return true
 }
 
@@ -854,7 +848,7 @@ func logRule(s string) {
 
 var ruleFile io.Writer
 
-func min(x, y int64) int64 {
+func Min(x, y int64) int64 {
 	if x < y {
 		return x
 	}
@@ -946,7 +940,7 @@ func areAdjacentOffsets(off1, off2, size int64) bool {
 // check if value zeroes out upper 32-bit of 64-bit register.
 // depth limits recursion depth. In AMD64.rules 3 is used as limit,
 // because it catches same amount of cases as 4.
-func zeroUpper32Bits(x *Value, depth int) bool {
+func ZeroUpper32Bits(x *Value, depth int) bool {
 	switch x.Op {
 	case OpAMD64MOVLconst, OpAMD64MOVLload, OpAMD64MOVLQZX, OpAMD64MOVLloadidx1,
 		OpAMD64MOVWload, OpAMD64MOVWloadidx1, OpAMD64MOVBload, OpAMD64MOVBloadidx1,
@@ -965,7 +959,7 @@ func zeroUpper32Bits(x *Value, depth int) bool {
 			return false
 		}
 		for i := range x.Args {
-			if !zeroUpper32Bits(x.Args[i], depth-1) {
+			if !ZeroUpper32Bits(x.Args[i], depth-1) {
 				return false
 			}
 		}
@@ -975,8 +969,8 @@ func zeroUpper32Bits(x *Value, depth int) bool {
 	return false
 }
 
-// zeroUpper48Bits is similar to zeroUpper32Bits, but for upper 48 bits
-func zeroUpper48Bits(x *Value, depth int) bool {
+// ZeroUpper48Bits is similar to ZeroUpper32Bits, but for upper 48 bits
+func ZeroUpper48Bits(x *Value, depth int) bool {
 	switch x.Op {
 	case OpAMD64MOVWQZX, OpAMD64MOVWload, OpAMD64MOVWloadidx1, OpAMD64MOVWloadidx2:
 		return true
@@ -989,7 +983,7 @@ func zeroUpper48Bits(x *Value, depth int) bool {
 			return false
 		}
 		for i := range x.Args {
-			if !zeroUpper48Bits(x.Args[i], depth-1) {
+			if !ZeroUpper48Bits(x.Args[i], depth-1) {
 				return false
 			}
 		}
@@ -999,8 +993,8 @@ func zeroUpper48Bits(x *Value, depth int) bool {
 	return false
 }
 
-// zeroUpper56Bits is similar to zeroUpper32Bits, but for upper 56 bits
-func zeroUpper56Bits(x *Value, depth int) bool {
+// ZeroUpper56Bits is similar to ZeroUpper32Bits, but for upper 56 bits
+func ZeroUpper56Bits(x *Value, depth int) bool {
 	switch x.Op {
 	case OpAMD64MOVBQZX, OpAMD64MOVBload, OpAMD64MOVBloadidx1:
 		return true
@@ -1013,7 +1007,7 @@ func zeroUpper56Bits(x *Value, depth int) bool {
 			return false
 		}
 		for i := range x.Args {
-			if !zeroUpper56Bits(x.Args[i], depth-1) {
+			if !ZeroUpper56Bits(x.Args[i], depth-1) {
 				return false
 			}
 		}
@@ -1069,7 +1063,7 @@ func getARM64BFwidth(bfc int64) int64 {
 // checks if mask >> rshift applied at lsb is a valid arm64 bitfield op mask.
 func isARM64BFMask(lsb, mask, rshift int64) bool {
 	shiftedMask := int64(uint64(mask) >> uint64(rshift))
-	return shiftedMask != 0 && isPowerOfTwo(shiftedMask+1) && nto(shiftedMask)+lsb < 64
+	return shiftedMask != 0 && IsPowerOfTwo(shiftedMask+1) && nto(shiftedMask)+lsb < 64
 }
 
 // returns the bitfield width of mask >> rshift for arm64 bitfield ops
@@ -1136,20 +1130,20 @@ func needRaceCleanup(sym interface{}, v *Value) bool {
 	return true
 }
 
-// symIsRO reports whether sym is a read-only global.
-func symIsRO(sym interface{}) bool {
+// SymIsRO reports whether sym is a read-only global.
+func SymIsRO(sym interface{}) bool {
 	lsym := sym.(*obj.LSym)
 	return lsym.Type == objabi.SRODATA && len(lsym.R) == 0
 }
 
-// read8 reads one byte from the read-only global sym at offset off.
-func read8(sym interface{}, off int64) uint8 {
+// Read8 reads one byte from the read-only global sym at offset off.
+func Read8(sym interface{}, off int64) uint8 {
 	lsym := sym.(*obj.LSym)
 	return lsym.P[off]
 }
 
-// read16 reads two bytes from the read-only global sym at offset off.
-func read16(sym interface{}, off int64, bigEndian bool) uint16 {
+// Read16 reads two bytes from the read-only global sym at offset off.
+func Read16(sym interface{}, off int64, bigEndian bool) uint16 {
 	lsym := sym.(*obj.LSym)
 	if bigEndian {
 		return binary.BigEndian.Uint16(lsym.P[off:])
@@ -1158,8 +1152,8 @@ func read16(sym interface{}, off int64, bigEndian bool) uint16 {
 	}
 }
 
-// read32 reads four bytes from the read-only global sym at offset off.
-func read32(sym interface{}, off int64, bigEndian bool) uint32 {
+// Read32 reads four bytes from the read-only global sym at offset off.
+func Read32(sym interface{}, off int64, bigEndian bool) uint32 {
 	lsym := sym.(*obj.LSym)
 	if bigEndian {
 		return binary.BigEndian.Uint32(lsym.P[off:])
@@ -1168,8 +1162,8 @@ func read32(sym interface{}, off int64, bigEndian bool) uint32 {
 	}
 }
 
-// read64 reads eight bytes from the read-only global sym at offset off.
-func read64(sym interface{}, off int64, bigEndian bool) uint64 {
+// Read64 reads eight bytes from the read-only global sym at offset off.
+func Read64(sym interface{}, off int64, bigEndian bool) uint64 {
 	lsym := sym.(*obj.LSym)
 	if bigEndian {
 		return binary.BigEndian.Uint64(lsym.P[off:])

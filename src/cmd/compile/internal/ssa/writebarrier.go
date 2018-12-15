@@ -48,7 +48,7 @@ func needwb(v *Value) bool {
 // A sequence of WB stores for many pointer fields of a single type will
 // be emitted together, with a single branch.
 func writebarrier(f *Func) {
-	if !f.fe.UseWriteBarrier() {
+	if !f.Fe.UseWriteBarrier() {
 		return
 	}
 
@@ -103,11 +103,11 @@ func writebarrier(f *Func) {
 			if sp == nil {
 				sp = f.Entry.NewValue0(initpos, OpSP, f.Config.Types.Uintptr)
 			}
-			wbsym := f.fe.Syslook("writeBarrier")
+			wbsym := f.Fe.Syslook("writeBarrier")
 			wbaddr = f.Entry.NewValue1A(initpos, OpAddr, f.Config.Types.UInt32Ptr, wbsym, sb)
-			gcWriteBarrier = f.fe.Syslook("gcWriteBarrier")
-			typedmemmove = f.fe.Syslook("typedmemmove")
-			typedmemclr = f.fe.Syslook("typedmemclr")
+			gcWriteBarrier = f.Fe.Syslook("gcWriteBarrier")
+			typedmemmove = f.Fe.Syslook("typedmemmove")
+			typedmemclr = f.Fe.Syslook("typedmemclr")
 			const0 = f.ConstInt32(f.Config.Types.UInt32, 0)
 
 			// allocate auxiliary data structures for computing store order
@@ -229,7 +229,7 @@ func writebarrier(f *Func) {
 					memThen = wbcall(pos, bThen, fn, typ, ptr, val, memThen, sp, sb, volatile)
 				}
 				// Note that we set up a writebarrier function call.
-				f.fe.SetWBPos(pos)
+				f.Fe.SetWBPos(pos)
 			case OpVarDef, OpVarLive, OpVarKill:
 				memThen = bThen.NewValue1A(pos, w.Op, types.TypeMem, w.Aux, memThen)
 			}
@@ -312,7 +312,7 @@ func wbcall(pos src.XPos, b *Block, fn, typ *obj.LSym, ptr, val, mem, sp, sb *Va
 		// a function call). Marshaling the args to typedmemmove might clobber the
 		// value we're trying to move.
 		t := val.Type.Elem()
-		tmp = b.Func.fe.Auto(val.Pos, t)
+		tmp = b.Func.Fe.Auto(val.Pos, t)
 		mem = b.NewValue1A(pos, OpVarDef, types.TypeMem, tmp, mem)
 		tmpaddr := b.NewValue2A(pos, OpLocalAddr, t.PtrTo(), tmp, sp, mem)
 		siz := t.Size()

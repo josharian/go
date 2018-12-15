@@ -2402,14 +2402,14 @@ func rewriteValueMIPS_OpLoad_0(v *Value) bool {
 		return true
 	}
 	// match: (Load <t> ptr mem)
-	// cond: (is8BitInt(t) && isSigned(t))
+	// cond: (Is8BitInt(t) && isSigned(t))
 	// result: (MOVBload ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is8BitInt(t) && isSigned(t)) {
+		if !(Is8BitInt(t) && isSigned(t)) {
 			break
 		}
 		v.reset(OpMIPSMOVBload)
@@ -2418,14 +2418,14 @@ func rewriteValueMIPS_OpLoad_0(v *Value) bool {
 		return true
 	}
 	// match: (Load <t> ptr mem)
-	// cond: (is8BitInt(t) && !isSigned(t))
+	// cond: (Is8BitInt(t) && !isSigned(t))
 	// result: (MOVBUload ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is8BitInt(t) && !isSigned(t)) {
+		if !(Is8BitInt(t) && !isSigned(t)) {
 			break
 		}
 		v.reset(OpMIPSMOVBUload)
@@ -2434,14 +2434,14 @@ func rewriteValueMIPS_OpLoad_0(v *Value) bool {
 		return true
 	}
 	// match: (Load <t> ptr mem)
-	// cond: (is16BitInt(t) && isSigned(t))
+	// cond: (Is16BitInt(t) && isSigned(t))
 	// result: (MOVHload ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is16BitInt(t) && isSigned(t)) {
+		if !(Is16BitInt(t) && isSigned(t)) {
 			break
 		}
 		v.reset(OpMIPSMOVHload)
@@ -2450,14 +2450,14 @@ func rewriteValueMIPS_OpLoad_0(v *Value) bool {
 		return true
 	}
 	// match: (Load <t> ptr mem)
-	// cond: (is16BitInt(t) && !isSigned(t))
+	// cond: (Is16BitInt(t) && !isSigned(t))
 	// result: (MOVHUload ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is16BitInt(t) && !isSigned(t)) {
+		if !(Is16BitInt(t) && !isSigned(t)) {
 			break
 		}
 		v.reset(OpMIPSMOVHUload)
@@ -2466,14 +2466,14 @@ func rewriteValueMIPS_OpLoad_0(v *Value) bool {
 		return true
 	}
 	// match: (Load <t> ptr mem)
-	// cond: (is32BitInt(t) || isPtr(t))
+	// cond: (Is32BitInt(t) || IsPtr(t))
 	// result: (MOVWload ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is32BitInt(t) || isPtr(t)) {
+		if !(Is32BitInt(t) || IsPtr(t)) {
 			break
 		}
 		v.reset(OpMIPSMOVWload)
@@ -2482,14 +2482,14 @@ func rewriteValueMIPS_OpLoad_0(v *Value) bool {
 		return true
 	}
 	// match: (Load <t> ptr mem)
-	// cond: is32BitFloat(t)
+	// cond: Is32BitFloat(t)
 	// result: (MOVFload ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is32BitFloat(t)) {
+		if !(Is32BitFloat(t)) {
 			break
 		}
 		v.reset(OpMIPSMOVFload)
@@ -2498,14 +2498,14 @@ func rewriteValueMIPS_OpLoad_0(v *Value) bool {
 		return true
 	}
 	// match: (Load <t> ptr mem)
-	// cond: is64BitFloat(t)
+	// cond: Is64BitFloat(t)
 	// result: (MOVDload ptr mem)
 	for {
 		t := v.Type
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		mem := v.Args[1]
-		if !(is64BitFloat(t)) {
+		if !(Is64BitFloat(t)) {
 			break
 		}
 		v.reset(OpMIPSMOVDload)
@@ -3406,8 +3406,8 @@ func rewriteValueMIPS_OpMIPSMOVBUload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBUload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVBUload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVBUload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -3420,18 +3420,18 @@ func rewriteValueMIPS_OpMIPSMOVBUload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVBUload)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
 	}
 	// match: (MOVBUload [off] {sym} ptr (MOVBstore [off2] {sym2} ptr2 x _))
-	// cond: sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)
+	// cond: sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)
 	// result: (MOVBUreg x)
 	for {
 		off := v.AuxInt
@@ -3447,7 +3447,7 @@ func rewriteValueMIPS_OpMIPSMOVBUload_0(v *Value) bool {
 		_ = v_1.Args[2]
 		ptr2 := v_1.Args[0]
 		x := v_1.Args[1]
-		if !(sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)) {
+		if !(sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)) {
 			break
 		}
 		v.reset(OpMIPSMOVBUreg)
@@ -3485,7 +3485,7 @@ func rewriteValueMIPS_OpMIPSMOVBUreg_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBUreg <t> x:(MOVBload [off] {sym} ptr mem))
-	// cond: x.Uses == 1 && clobber(x)
+	// cond: x.Uses == 1 && Clobber(x)
 	// result: @x.Block (MOVBUload <t> [off] {sym} ptr mem)
 	for {
 		t := v.Type
@@ -3498,7 +3498,7 @@ func rewriteValueMIPS_OpMIPSMOVBUreg_0(v *Value) bool {
 		_ = x.Args[1]
 		ptr := x.Args[0]
 		mem := x.Args[1]
-		if !(x.Uses == 1 && clobber(x)) {
+		if !(x.Uses == 1 && Clobber(x)) {
 			break
 		}
 		b = x.Block
@@ -3567,8 +3567,8 @@ func rewriteValueMIPS_OpMIPSMOVBload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVBload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVBload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -3581,18 +3581,18 @@ func rewriteValueMIPS_OpMIPSMOVBload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVBload)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
 	}
 	// match: (MOVBload [off] {sym} ptr (MOVBstore [off2] {sym2} ptr2 x _))
-	// cond: sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)
+	// cond: sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)
 	// result: (MOVBreg x)
 	for {
 		off := v.AuxInt
@@ -3608,7 +3608,7 @@ func rewriteValueMIPS_OpMIPSMOVBload_0(v *Value) bool {
 		_ = v_1.Args[2]
 		ptr2 := v_1.Args[0]
 		x := v_1.Args[1]
-		if !(sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)) {
+		if !(sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)) {
 			break
 		}
 		v.reset(OpMIPSMOVBreg)
@@ -3646,7 +3646,7 @@ func rewriteValueMIPS_OpMIPSMOVBreg_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBreg <t> x:(MOVBUload [off] {sym} ptr mem))
-	// cond: x.Uses == 1 && clobber(x)
+	// cond: x.Uses == 1 && Clobber(x)
 	// result: @x.Block (MOVBload <t> [off] {sym} ptr mem)
 	for {
 		t := v.Type
@@ -3659,7 +3659,7 @@ func rewriteValueMIPS_OpMIPSMOVBreg_0(v *Value) bool {
 		_ = x.Args[1]
 		ptr := x.Args[0]
 		mem := x.Args[1]
-		if !(x.Uses == 1 && clobber(x)) {
+		if !(x.Uses == 1 && Clobber(x)) {
 			break
 		}
 		b = x.Block
@@ -3733,8 +3733,8 @@ func rewriteValueMIPS_OpMIPSMOVBstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVBstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVBstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -3748,12 +3748,12 @@ func rewriteValueMIPS_OpMIPSMOVBstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVBstore)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(val)
 		v.AddArg(mem)
@@ -3920,8 +3920,8 @@ func rewriteValueMIPS_OpMIPSMOVBstorezero_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBstorezero [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVBstorezero [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVBstorezero [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -3934,12 +3934,12 @@ func rewriteValueMIPS_OpMIPSMOVBstorezero_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVBstorezero)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
@@ -3972,8 +3972,8 @@ func rewriteValueMIPS_OpMIPSMOVDload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVDload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVDload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVDload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -3986,18 +3986,18 @@ func rewriteValueMIPS_OpMIPSMOVDload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVDload)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
 	}
 	// match: (MOVDload [off] {sym} ptr (MOVDstore [off2] {sym2} ptr2 x _))
-	// cond: sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)
+	// cond: sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)
 	// result: x
 	for {
 		off := v.AuxInt
@@ -4013,7 +4013,7 @@ func rewriteValueMIPS_OpMIPSMOVDload_0(v *Value) bool {
 		_ = v_1.Args[2]
 		ptr2 := v_1.Args[0]
 		x := v_1.Args[1]
-		if !(sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)) {
+		if !(sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)) {
 			break
 		}
 		v.reset(OpCopy)
@@ -4051,8 +4051,8 @@ func rewriteValueMIPS_OpMIPSMOVDstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVDstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVDstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVDstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4066,12 +4066,12 @@ func rewriteValueMIPS_OpMIPSMOVDstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVDstore)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(val)
 		v.AddArg(mem)
@@ -4105,8 +4105,8 @@ func rewriteValueMIPS_OpMIPSMOVFload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVFload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVFload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVFload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4119,18 +4119,18 @@ func rewriteValueMIPS_OpMIPSMOVFload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVFload)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
 	}
 	// match: (MOVFload [off] {sym} ptr (MOVFstore [off2] {sym2} ptr2 x _))
-	// cond: sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)
+	// cond: sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)
 	// result: x
 	for {
 		off := v.AuxInt
@@ -4146,7 +4146,7 @@ func rewriteValueMIPS_OpMIPSMOVFload_0(v *Value) bool {
 		_ = v_1.Args[2]
 		ptr2 := v_1.Args[0]
 		x := v_1.Args[1]
-		if !(sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)) {
+		if !(sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)) {
 			break
 		}
 		v.reset(OpCopy)
@@ -4184,8 +4184,8 @@ func rewriteValueMIPS_OpMIPSMOVFstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVFstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVFstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVFstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4199,12 +4199,12 @@ func rewriteValueMIPS_OpMIPSMOVFstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVFstore)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(val)
 		v.AddArg(mem)
@@ -4238,8 +4238,8 @@ func rewriteValueMIPS_OpMIPSMOVHUload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVHUload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVHUload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVHUload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4252,18 +4252,18 @@ func rewriteValueMIPS_OpMIPSMOVHUload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVHUload)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
 	}
 	// match: (MOVHUload [off] {sym} ptr (MOVHstore [off2] {sym2} ptr2 x _))
-	// cond: sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)
+	// cond: sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)
 	// result: (MOVHUreg x)
 	for {
 		off := v.AuxInt
@@ -4279,7 +4279,7 @@ func rewriteValueMIPS_OpMIPSMOVHUload_0(v *Value) bool {
 		_ = v_1.Args[2]
 		ptr2 := v_1.Args[0]
 		x := v_1.Args[1]
-		if !(sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)) {
+		if !(sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)) {
 			break
 		}
 		v.reset(OpMIPSMOVHUreg)
@@ -4342,7 +4342,7 @@ func rewriteValueMIPS_OpMIPSMOVHUreg_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVHUreg <t> x:(MOVHload [off] {sym} ptr mem))
-	// cond: x.Uses == 1 && clobber(x)
+	// cond: x.Uses == 1 && Clobber(x)
 	// result: @x.Block (MOVHUload <t> [off] {sym} ptr mem)
 	for {
 		t := v.Type
@@ -4355,7 +4355,7 @@ func rewriteValueMIPS_OpMIPSMOVHUreg_0(v *Value) bool {
 		_ = x.Args[1]
 		ptr := x.Args[0]
 		mem := x.Args[1]
-		if !(x.Uses == 1 && clobber(x)) {
+		if !(x.Uses == 1 && Clobber(x)) {
 			break
 		}
 		b = x.Block
@@ -4424,8 +4424,8 @@ func rewriteValueMIPS_OpMIPSMOVHload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVHload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVHload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVHload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4438,18 +4438,18 @@ func rewriteValueMIPS_OpMIPSMOVHload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVHload)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
 	}
 	// match: (MOVHload [off] {sym} ptr (MOVHstore [off2] {sym2} ptr2 x _))
-	// cond: sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)
+	// cond: sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)
 	// result: (MOVHreg x)
 	for {
 		off := v.AuxInt
@@ -4465,7 +4465,7 @@ func rewriteValueMIPS_OpMIPSMOVHload_0(v *Value) bool {
 		_ = v_1.Args[2]
 		ptr2 := v_1.Args[0]
 		x := v_1.Args[1]
-		if !(sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)) {
+		if !(sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)) {
 			break
 		}
 		v.reset(OpMIPSMOVHreg)
@@ -4553,7 +4553,7 @@ func rewriteValueMIPS_OpMIPSMOVHreg_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVHreg <t> x:(MOVHUload [off] {sym} ptr mem))
-	// cond: x.Uses == 1 && clobber(x)
+	// cond: x.Uses == 1 && Clobber(x)
 	// result: @x.Block (MOVHload <t> [off] {sym} ptr mem)
 	for {
 		t := v.Type
@@ -4566,7 +4566,7 @@ func rewriteValueMIPS_OpMIPSMOVHreg_0(v *Value) bool {
 		_ = x.Args[1]
 		ptr := x.Args[0]
 		mem := x.Args[1]
-		if !(x.Uses == 1 && clobber(x)) {
+		if !(x.Uses == 1 && Clobber(x)) {
 			break
 		}
 		b = x.Block
@@ -4640,8 +4640,8 @@ func rewriteValueMIPS_OpMIPSMOVHstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVHstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVHstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVHstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4655,12 +4655,12 @@ func rewriteValueMIPS_OpMIPSMOVHstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVHstore)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(val)
 		v.AddArg(mem)
@@ -4783,8 +4783,8 @@ func rewriteValueMIPS_OpMIPSMOVHstorezero_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVHstorezero [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVHstorezero [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVHstorezero [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4797,12 +4797,12 @@ func rewriteValueMIPS_OpMIPSMOVHstorezero_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVHstorezero)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
@@ -4835,8 +4835,8 @@ func rewriteValueMIPS_OpMIPSMOVWload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVWload [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVWload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4849,18 +4849,18 @@ func rewriteValueMIPS_OpMIPSMOVWload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVWload)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
 	}
 	// match: (MOVWload [off] {sym} ptr (MOVWstore [off2] {sym2} ptr2 x _))
-	// cond: sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)
+	// cond: sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)
 	// result: x
 	for {
 		off := v.AuxInt
@@ -4876,7 +4876,7 @@ func rewriteValueMIPS_OpMIPSMOVWload_0(v *Value) bool {
 		_ = v_1.Args[2]
 		ptr2 := v_1.Args[0]
 		x := v_1.Args[1]
-		if !(sym == sym2 && off == off2 && isSamePtr(ptr, ptr2)) {
+		if !(sym == sym2 && off == off2 && IsSamePtr(ptr, ptr2)) {
 			break
 		}
 		v.reset(OpCopy)
@@ -4942,8 +4942,8 @@ func rewriteValueMIPS_OpMIPSMOVWstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWstore [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) val mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVWstore [off1+off2] {mergeSym(sym1,sym2)} ptr val mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVWstore [off1+off2] {MergeSym(sym1,sym2)} ptr val mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -4957,12 +4957,12 @@ func rewriteValueMIPS_OpMIPSMOVWstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVWstore)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(val)
 		v.AddArg(mem)
@@ -5041,8 +5041,8 @@ func rewriteValueMIPS_OpMIPSMOVWstorezero_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWstorezero [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem)
-	// cond: canMergeSym(sym1,sym2)
-	// result: (MOVWstorezero [off1+off2] {mergeSym(sym1,sym2)} ptr mem)
+	// cond: CanMergeSym(sym1,sym2)
+	// result: (MOVWstorezero [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 	for {
 		off1 := v.AuxInt
 		sym1 := v.Aux
@@ -5055,12 +5055,12 @@ func rewriteValueMIPS_OpMIPSMOVWstorezero_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(canMergeSym(sym1, sym2)) {
+		if !(CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.reset(OpMIPSMOVWstorezero)
 		v.AuxInt = off1 + off2
-		v.Aux = mergeSym(sym1, sym2)
+		v.Aux = MergeSym(sym1, sym2)
 		v.AddArg(ptr)
 		v.AddArg(mem)
 		return true
@@ -5171,8 +5171,8 @@ func rewriteValueMIPS_OpMIPSMUL_0(v *Value) bool {
 		return true
 	}
 	// match: (MUL (MOVWconst [c]) x)
-	// cond: isPowerOfTwo(int64(uint32(c)))
-	// result: (SLLconst [log2(int64(uint32(c)))] x)
+	// cond: IsPowerOfTwo(int64(uint32(c)))
+	// result: (SLLconst [Log2(int64(uint32(c)))] x)
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
@@ -5181,17 +5181,17 @@ func rewriteValueMIPS_OpMIPSMUL_0(v *Value) bool {
 		}
 		c := v_0.AuxInt
 		x := v.Args[1]
-		if !(isPowerOfTwo(int64(uint32(c)))) {
+		if !(IsPowerOfTwo(int64(uint32(c)))) {
 			break
 		}
 		v.reset(OpMIPSSLLconst)
-		v.AuxInt = log2(int64(uint32(c)))
+		v.AuxInt = Log2(int64(uint32(c)))
 		v.AddArg(x)
 		return true
 	}
 	// match: (MUL x (MOVWconst [c]))
-	// cond: isPowerOfTwo(int64(uint32(c)))
-	// result: (SLLconst [log2(int64(uint32(c)))] x)
+	// cond: IsPowerOfTwo(int64(uint32(c)))
+	// result: (SLLconst [Log2(int64(uint32(c)))] x)
 	for {
 		_ = v.Args[1]
 		x := v.Args[0]
@@ -5200,11 +5200,11 @@ func rewriteValueMIPS_OpMIPSMUL_0(v *Value) bool {
 			break
 		}
 		c := v_1.AuxInt
-		if !(isPowerOfTwo(int64(uint32(c)))) {
+		if !(IsPowerOfTwo(int64(uint32(c)))) {
 			break
 		}
 		v.reset(OpMIPSSLLconst)
-		v.AuxInt = log2(int64(uint32(c)))
+		v.AuxInt = Log2(int64(uint32(c)))
 		v.AddArg(x)
 		return true
 	}
@@ -8359,8 +8359,8 @@ func rewriteValueMIPS_OpSelect0_0(v *Value) bool {
 		return true
 	}
 	// match: (Select0 (MULTU (MOVWconst [c]) x))
-	// cond: isPowerOfTwo(int64(uint32(c)))
-	// result: (SRLconst [32-log2(int64(uint32(c)))] x)
+	// cond: IsPowerOfTwo(int64(uint32(c)))
+	// result: (SRLconst [32-Log2(int64(uint32(c)))] x)
 	for {
 		v_0 := v.Args[0]
 		if v_0.Op != OpMIPSMULTU {
@@ -8373,17 +8373,17 @@ func rewriteValueMIPS_OpSelect0_0(v *Value) bool {
 		}
 		c := v_0_0.AuxInt
 		x := v_0.Args[1]
-		if !(isPowerOfTwo(int64(uint32(c)))) {
+		if !(IsPowerOfTwo(int64(uint32(c)))) {
 			break
 		}
 		v.reset(OpMIPSSRLconst)
-		v.AuxInt = 32 - log2(int64(uint32(c)))
+		v.AuxInt = 32 - Log2(int64(uint32(c)))
 		v.AddArg(x)
 		return true
 	}
 	// match: (Select0 (MULTU x (MOVWconst [c])))
-	// cond: isPowerOfTwo(int64(uint32(c)))
-	// result: (SRLconst [32-log2(int64(uint32(c)))] x)
+	// cond: IsPowerOfTwo(int64(uint32(c)))
+	// result: (SRLconst [32-Log2(int64(uint32(c)))] x)
 	for {
 		v_0 := v.Args[0]
 		if v_0.Op != OpMIPSMULTU {
@@ -8396,11 +8396,11 @@ func rewriteValueMIPS_OpSelect0_0(v *Value) bool {
 			break
 		}
 		c := v_0_1.AuxInt
-		if !(isPowerOfTwo(int64(uint32(c)))) {
+		if !(IsPowerOfTwo(int64(uint32(c)))) {
 			break
 		}
 		v.reset(OpMIPSSRLconst)
-		v.AuxInt = 32 - log2(int64(uint32(c)))
+		v.AuxInt = 32 - Log2(int64(uint32(c)))
 		v.AddArg(x)
 		return true
 	}
@@ -8677,8 +8677,8 @@ func rewriteValueMIPS_OpSelect1_0(v *Value) bool {
 		return true
 	}
 	// match: (Select1 (MULTU (MOVWconst [c]) x))
-	// cond: isPowerOfTwo(int64(uint32(c)))
-	// result: (SLLconst [log2(int64(uint32(c)))] x)
+	// cond: IsPowerOfTwo(int64(uint32(c)))
+	// result: (SLLconst [Log2(int64(uint32(c)))] x)
 	for {
 		v_0 := v.Args[0]
 		if v_0.Op != OpMIPSMULTU {
@@ -8691,17 +8691,17 @@ func rewriteValueMIPS_OpSelect1_0(v *Value) bool {
 		}
 		c := v_0_0.AuxInt
 		x := v_0.Args[1]
-		if !(isPowerOfTwo(int64(uint32(c)))) {
+		if !(IsPowerOfTwo(int64(uint32(c)))) {
 			break
 		}
 		v.reset(OpMIPSSLLconst)
-		v.AuxInt = log2(int64(uint32(c)))
+		v.AuxInt = Log2(int64(uint32(c)))
 		v.AddArg(x)
 		return true
 	}
 	// match: (Select1 (MULTU x (MOVWconst [c])))
-	// cond: isPowerOfTwo(int64(uint32(c)))
-	// result: (SLLconst [log2(int64(uint32(c)))] x)
+	// cond: IsPowerOfTwo(int64(uint32(c)))
+	// result: (SLLconst [Log2(int64(uint32(c)))] x)
 	for {
 		v_0 := v.Args[0]
 		if v_0.Op != OpMIPSMULTU {
@@ -8714,11 +8714,11 @@ func rewriteValueMIPS_OpSelect1_0(v *Value) bool {
 			break
 		}
 		c := v_0_1.AuxInt
-		if !(isPowerOfTwo(int64(uint32(c)))) {
+		if !(IsPowerOfTwo(int64(uint32(c)))) {
 			break
 		}
 		v.reset(OpMIPSSLLconst)
-		v.AuxInt = log2(int64(uint32(c)))
+		v.AuxInt = Log2(int64(uint32(c)))
 		v.AddArg(x)
 		return true
 	}
@@ -8945,7 +8945,7 @@ func rewriteValueMIPS_OpStore_0(v *Value) bool {
 		return true
 	}
 	// match: (Store {t} ptr val mem)
-	// cond: t.(*types.Type).Size() == 4 && !is32BitFloat(val.Type)
+	// cond: t.(*types.Type).Size() == 4 && !Is32BitFloat(val.Type)
 	// result: (MOVWstore ptr val mem)
 	for {
 		t := v.Aux
@@ -8953,7 +8953,7 @@ func rewriteValueMIPS_OpStore_0(v *Value) bool {
 		ptr := v.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(t.(*types.Type).Size() == 4 && !is32BitFloat(val.Type)) {
+		if !(t.(*types.Type).Size() == 4 && !Is32BitFloat(val.Type)) {
 			break
 		}
 		v.reset(OpMIPSMOVWstore)
@@ -8963,7 +8963,7 @@ func rewriteValueMIPS_OpStore_0(v *Value) bool {
 		return true
 	}
 	// match: (Store {t} ptr val mem)
-	// cond: t.(*types.Type).Size() == 4 && is32BitFloat(val.Type)
+	// cond: t.(*types.Type).Size() == 4 && Is32BitFloat(val.Type)
 	// result: (MOVFstore ptr val mem)
 	for {
 		t := v.Aux
@@ -8971,7 +8971,7 @@ func rewriteValueMIPS_OpStore_0(v *Value) bool {
 		ptr := v.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(t.(*types.Type).Size() == 4 && is32BitFloat(val.Type)) {
+		if !(t.(*types.Type).Size() == 4 && Is32BitFloat(val.Type)) {
 			break
 		}
 		v.reset(OpMIPSMOVFstore)
@@ -8981,7 +8981,7 @@ func rewriteValueMIPS_OpStore_0(v *Value) bool {
 		return true
 	}
 	// match: (Store {t} ptr val mem)
-	// cond: t.(*types.Type).Size() == 8 && is64BitFloat(val.Type)
+	// cond: t.(*types.Type).Size() == 8 && Is64BitFloat(val.Type)
 	// result: (MOVDstore ptr val mem)
 	for {
 		t := v.Aux
@@ -8989,7 +8989,7 @@ func rewriteValueMIPS_OpStore_0(v *Value) bool {
 		ptr := v.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(t.(*types.Type).Size() == 8 && is64BitFloat(val.Type)) {
+		if !(t.(*types.Type).Size() == 8 && Is64BitFloat(val.Type)) {
 			break
 		}
 		v.reset(OpMIPSMOVDstore)
@@ -9648,7 +9648,7 @@ func rewriteValueMIPS_OpZeromask_0(v *Value) bool {
 func rewriteBlockMIPS(b *Block) bool {
 	config := b.Func.Config
 	_ = config
-	fe := b.Func.fe
+	fe := b.Func.Fe
 	_ = fe
 	typ := &config.Types
 	_ = typ

@@ -27,7 +27,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 	_ = b
 	config := b.Func.Config
 	_ = config
-	fe := b.Func.fe
+	fe := b.Func.Fe
 	_ = fe
 	typ := &b.Func.Config.Types
 	_ = typ
@@ -243,7 +243,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 func rewriteValuedecArgs_OpArg_10(v *Value) bool {
 	b := v.Block
 	_ = b
-	fe := b.Func.fe
+	fe := b.Func.Fe
 	_ = fe
 	// match: (Arg <t>)
 	// cond: t.IsArray() && t.NumElem() == 0
@@ -278,7 +278,7 @@ func rewriteValuedecArgs_OpArg_10(v *Value) bool {
 func rewriteBlockdecArgs(b *Block) bool {
 	config := b.Func.Config
 	_ = config
-	fe := b.Func.fe
+	fe := b.Func.Fe
 	_ = fe
 	typ := &config.Types
 	_ = typ
