@@ -409,7 +409,7 @@ func (s *regAllocState) allocReg(mask regMask, v *Value) register {
 		s.f.Fatalf("couldn't find register to spill")
 	}
 
-	if s.f.Config.ctxt.Arch.Arch == sys.ArchWasm {
+	if s.f.Config.Ctxt.Arch.Arch == sys.ArchWasm {
 		// TODO(neelance): In theory this should never happen, because all wasm registers are equal.
 		// So if there is still a free register, the allocation should have picked that one in the first place insead of
 		// trying to kick some other value out. In practice, this case does happen and it breaks the stack optimization.
@@ -464,7 +464,7 @@ func (s *regAllocState) makeSpill(v *Value, b *Block) *Value {
 // undone until the caller allows it by clearing nospill. Returns a
 // *Value which is either v or a copy of v allocated to the chosen register.
 func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, pos src.XPos) *Value {
-	if s.f.Config.ctxt.Arch.Arch == sys.ArchWasm && v.Rematerializeable() {
+	if s.f.Config.Ctxt.Arch.Arch == sys.ArchWasm && v.Rematerializeable() {
 		c := v.copyIntoWithXPos(s.curBlock, pos)
 		c.OnWasmStack = true
 		s.setOrig(c, v)
@@ -490,7 +490,7 @@ func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, pos 
 
 	var r register
 	// If nospill is set, the value is used immedately, so it can live on the WebAssembly stack.
-	onWasmStack := nospill && s.f.Config.ctxt.Arch.Arch == sys.ArchWasm
+	onWasmStack := nospill && s.f.Config.Ctxt.Arch.Arch == sys.ArchWasm
 	if !onWasmStack {
 		// Allocate a register.
 		r = s.allocReg(mask, v)
@@ -588,7 +588,7 @@ func (s *regAllocState) init(f *Func) {
 	if s.f.Config.hasGReg {
 		s.allocatable &^= 1 << s.GReg
 	}
-	if s.f.Config.ctxt.Framepointer_enabled && s.f.Config.FPReg >= 0 {
+	if s.f.Config.Ctxt.Framepointer_enabled && s.f.Config.FPReg >= 0 {
 		s.allocatable &^= 1 << uint(s.f.Config.FPReg)
 	}
 	if s.f.Config.LinkReg != -1 {
@@ -603,7 +603,7 @@ func (s *regAllocState) init(f *Func) {
 			s.allocatable &^= 1 << uint(s.f.Config.LinkReg)
 		}
 	}
-	if s.f.Config.ctxt.Flag_dynlink {
+	if s.f.Config.Ctxt.Flag_dynlink {
 		switch s.f.Config.arch {
 		case "amd64":
 			s.allocatable &^= 1 << 15 // R15
@@ -634,7 +634,7 @@ func (s *regAllocState) init(f *Func) {
 			s.allocatable &^= 1 << 15 // R15 - reserved for nacl
 		}
 	}
-	if s.f.Config.use387 {
+	if s.f.Config.Use387 {
 		s.allocatable &^= 1 << 15 // X7 disallowed (one 387 register is used as scratch space during SSE->387 generation in ../x86/387.go)
 	}
 
@@ -689,7 +689,7 @@ func (s *regAllocState) init(f *Func) {
 	s.sdom = f.sdom()
 
 	// wasm: Mark instructions that can be optimized to have their values only on the WebAssembly stack.
-	if f.Config.ctxt.Arch.Arch == sys.ArchWasm {
+	if f.Config.Ctxt.Arch.Arch == sys.ArchWasm {
 		canLiveOnStack := f.newSparseSet(f.NumValues())
 		defer f.retSparseSet(canLiveOnStack)
 		for _, b := range f.Blocks {
@@ -1020,7 +1020,7 @@ func (s *regAllocState) regalloc(f *Func) {
 				if phiRegs[i] != noRegister {
 					continue
 				}
-				if s.f.Config.use387 && v.Type.IsFloat() {
+				if s.f.Config.Use387 && v.Type.IsFloat() {
 					continue // 387 can't handle floats in registers between blocks
 				}
 				m := s.compatRegs(v.Type) &^ phiUsed &^ s.used
@@ -1509,7 +1509,7 @@ func (s *regAllocState) regalloc(f *Func) {
 		}
 
 		// Spill any values that can't live across basic block boundaries.
-		if s.f.Config.use387 {
+		if s.f.Config.Use387 {
 			s.freeRegs(s.f.Config.fpRegMask)
 		}
 
@@ -1542,7 +1542,7 @@ func (s *regAllocState) regalloc(f *Func) {
 					continue
 				}
 				v := s.orig[vid]
-				if s.f.Config.use387 && v.Type.IsFloat() {
+				if s.f.Config.Use387 && v.Type.IsFloat() {
 					continue // 387 can't handle floats in registers between blocks
 				}
 				m := s.compatRegs(v.Type) &^ s.used

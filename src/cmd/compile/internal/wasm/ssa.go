@@ -8,6 +8,7 @@ import (
 	"cmd/compile/internal/gc"
 	"cmd/compile/internal/ssa"
 	"cmd/compile/internal/types"
+	"cmd/compile/internal/wasm/rewrite"
 	"cmd/internal/obj"
 	"cmd/internal/obj/wasm"
 )
@@ -24,6 +25,8 @@ func Init(arch *gc.Arch) {
 	arch.SSAMarkMoves = ssaMarkMoves
 	arch.SSAGenValue = ssaGenValue
 	arch.SSAGenBlock = ssaGenBlock
+	arch.SSALowerValue = rewrite.ValueWasm
+	arch.SSALowerBlock = rewrite.BlockWasm
 }
 
 func zeroRange(pp *gc.Progs, p *obj.Prog, off, cnt int64, state *uint32) *obj.Prog {

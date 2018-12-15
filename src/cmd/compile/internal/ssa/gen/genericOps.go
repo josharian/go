@@ -424,7 +424,7 @@ var genericOps = []opData{
 	{name: "GetCallerSP"},                         // for getcallersp intrinsic
 
 	// Indexing operations
-	{name: "PtrIndex", argLength: 2},             // arg0=ptr, arg1=index. Computes ptr+sizeof(*v.type)*index, where index is extended to ptrwidth type
+	{name: "PtrIndex", argLength: 2},             // arg0=ptr, arg1=index. Computes ptr+SizeOf(*v.type)*index, where index is extended to ptrwidth type
 	{name: "OffPtr", argLength: 1, aux: "Int64"}, // arg0 + auxint (arg0 and result are pointers)
 
 	// Slices

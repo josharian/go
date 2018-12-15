@@ -1496,7 +1496,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLconst [c] (LEAL [d] {s} x))
-	// cond: is32Bit(c+d)
+	// cond: Is32Bit(c+d)
 	// result: (LEAL [c+d] {s} x)
 	for {
 		c := v.AuxInt
@@ -1507,7 +1507,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		d := v_0.AuxInt
 		s := v_0.Aux
 		x := v_0.Args[0]
-		if !(is32Bit(c + d)) {
+		if !(Is32Bit(c + d)) {
 			break
 		}
 		v.Reset(Op386LEAL)
@@ -1517,7 +1517,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLconst [c] (LEAL1 [d] {s} x y))
-	// cond: is32Bit(c+d)
+	// cond: Is32Bit(c+d)
 	// result: (LEAL1 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -1530,7 +1530,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		y := v_0.Args[1]
-		if !(is32Bit(c + d)) {
+		if !(Is32Bit(c + d)) {
 			break
 		}
 		v.Reset(Op386LEAL1)
@@ -1541,7 +1541,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLconst [c] (LEAL2 [d] {s} x y))
-	// cond: is32Bit(c+d)
+	// cond: Is32Bit(c+d)
 	// result: (LEAL2 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -1554,7 +1554,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		y := v_0.Args[1]
-		if !(is32Bit(c + d)) {
+		if !(Is32Bit(c + d)) {
 			break
 		}
 		v.Reset(Op386LEAL2)
@@ -1565,7 +1565,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLconst [c] (LEAL4 [d] {s} x y))
-	// cond: is32Bit(c+d)
+	// cond: Is32Bit(c+d)
 	// result: (LEAL4 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -1578,7 +1578,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		y := v_0.Args[1]
-		if !(is32Bit(c + d)) {
+		if !(Is32Bit(c + d)) {
 			break
 		}
 		v.Reset(Op386LEAL4)
@@ -1589,7 +1589,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLconst [c] (LEAL8 [d] {s} x y))
-	// cond: is32Bit(c+d)
+	// cond: Is32Bit(c+d)
 	// result: (LEAL8 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -1602,7 +1602,7 @@ func rewriteValue386_Op386ADDLconst_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		y := v_0.Args[1]
-		if !(is32Bit(c + d)) {
+		if !(Is32Bit(c + d)) {
 			break
 		}
 		v.Reset(Op386LEAL8)
@@ -1688,7 +1688,7 @@ func rewriteValue386_Op386ADDLconstmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLconstmodify [valoff1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ADDLconstmodify [ValAndOff(valoff1).Add(off2)] {MergeSym(sym1,sym2)} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -1702,7 +1702,7 @@ func rewriteValue386_Op386ADDLconstmodify_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ADDLconstmodify)
@@ -1772,7 +1772,7 @@ func rewriteValue386_Op386ADDLconstmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLconstmodifyidx4 [valoff1] {sym1} (LEAL [off2] {sym2} base) idx mem)
-	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ADDLconstmodifyidx4 [ValAndOff(valoff1).Add(off2)] {MergeSym(sym1,sym2)} base idx mem)
 	for {
 		valoff1 := v.AuxInt
@@ -1787,7 +1787,7 @@ func rewriteValue386_Op386ADDLconstmodifyidx4_0(v *Value) bool {
 		base := v_0.Args[0]
 		idx := v.Args[1]
 		mem := v.Args[2]
-		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ADDLconstmodifyidx4)
@@ -1806,7 +1806,7 @@ func rewriteValue386_Op386ADDLload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ADDLload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ADDLload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -1820,7 +1820,7 @@ func rewriteValue386_Op386ADDLload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ADDLload)
@@ -1832,7 +1832,7 @@ func rewriteValue386_Op386ADDLload_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ADDLload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -1847,7 +1847,7 @@ func rewriteValue386_Op386ADDLload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ADDLload)
@@ -1859,7 +1859,7 @@ func rewriteValue386_Op386ADDLload_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLload [off1] {sym1} val (LEAL4 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (ADDLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -1876,7 +1876,7 @@ func rewriteValue386_Op386ADDLload_0(v *Value) bool {
 		ptr := v_1.Args[0]
 		idx := v_1.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386ADDLloadidx4)
@@ -1896,7 +1896,7 @@ func rewriteValue386_Op386ADDLloadidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ADDLloadidx4 [off1] {sym} val (ADDLconst [off2] base) idx mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ADDLloadidx4 [off1+off2] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -1911,7 +1911,7 @@ func rewriteValue386_Op386ADDLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ADDLloadidx4)
@@ -1924,7 +1924,7 @@ func rewriteValue386_Op386ADDLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLloadidx4 [off1] {sym} val base (ADDLconst [off2] idx) mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (ADDLloadidx4 [off1+off2*4] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -1939,7 +1939,7 @@ func rewriteValue386_Op386ADDLloadidx4_0(v *Value) bool {
 		off2 := v_2.AuxInt
 		idx := v_2.Args[0]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386ADDLloadidx4)
@@ -1952,7 +1952,7 @@ func rewriteValue386_Op386ADDLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLloadidx4 [off1] {sym1} val (LEAL [off2] {sym2} base) idx mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ADDLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -1968,7 +1968,7 @@ func rewriteValue386_Op386ADDLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ADDLloadidx4)
@@ -1988,7 +1988,7 @@ func rewriteValue386_Op386ADDLmodify_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ADDLmodify [off1] {sym} (ADDLconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ADDLmodify [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -2002,7 +2002,7 @@ func rewriteValue386_Op386ADDLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ADDLmodify)
@@ -2014,7 +2014,7 @@ func rewriteValue386_Op386ADDLmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLmodify [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ADDLmodify [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -2029,7 +2029,7 @@ func rewriteValue386_Op386ADDLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ADDLmodify)
@@ -2048,7 +2048,7 @@ func rewriteValue386_Op386ADDLmodifyidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ADDLmodifyidx4 [off1] {sym} (ADDLconst [off2] base) idx val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ADDLmodifyidx4 [off1+off2] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -2063,7 +2063,7 @@ func rewriteValue386_Op386ADDLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ADDLmodifyidx4)
@@ -2076,7 +2076,7 @@ func rewriteValue386_Op386ADDLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLmodifyidx4 [off1] {sym} base (ADDLconst [off2] idx) val mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (ADDLmodifyidx4 [off1+off2*4] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -2091,7 +2091,7 @@ func rewriteValue386_Op386ADDLmodifyidx4_0(v *Value) bool {
 		idx := v_1.Args[0]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386ADDLmodifyidx4)
@@ -2104,7 +2104,7 @@ func rewriteValue386_Op386ADDLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDLmodifyidx4 [off1] {sym1} (LEAL [off2] {sym2} base) idx val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ADDLmodifyidx4 [off1+off2] {MergeSym(sym1,sym2)} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -2120,7 +2120,7 @@ func rewriteValue386_Op386ADDLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ADDLmodifyidx4)
@@ -2166,7 +2166,7 @@ func rewriteValue386_Op386ADDSD_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ADDSD x l:(MOVSDload [off] {sym} ptr mem))
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (ADDSDload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -2180,7 +2180,7 @@ func rewriteValue386_Op386ADDSD_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386ADDSDload)
@@ -2192,7 +2192,7 @@ func rewriteValue386_Op386ADDSD_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDSD l:(MOVSDload [off] {sym} ptr mem) x)
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (ADDSDload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -2206,7 +2206,7 @@ func rewriteValue386_Op386ADDSD_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		x := v.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386ADDSDload)
@@ -2225,7 +2225,7 @@ func rewriteValue386_Op386ADDSDload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ADDSDload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ADDSDload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -2239,7 +2239,7 @@ func rewriteValue386_Op386ADDSDload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ADDSDload)
@@ -2251,7 +2251,7 @@ func rewriteValue386_Op386ADDSDload_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDSDload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ADDSDload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -2266,7 +2266,7 @@ func rewriteValue386_Op386ADDSDload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ADDSDload)
@@ -2285,7 +2285,7 @@ func rewriteValue386_Op386ADDSS_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ADDSS x l:(MOVSSload [off] {sym} ptr mem))
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (ADDSSload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -2299,7 +2299,7 @@ func rewriteValue386_Op386ADDSS_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386ADDSSload)
@@ -2311,7 +2311,7 @@ func rewriteValue386_Op386ADDSS_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDSS l:(MOVSSload [off] {sym} ptr mem) x)
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (ADDSSload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -2325,7 +2325,7 @@ func rewriteValue386_Op386ADDSS_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		x := v.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386ADDSSload)
@@ -2344,7 +2344,7 @@ func rewriteValue386_Op386ADDSSload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ADDSSload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ADDSSload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -2358,7 +2358,7 @@ func rewriteValue386_Op386ADDSSload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ADDSSload)
@@ -2370,7 +2370,7 @@ func rewriteValue386_Op386ADDSSload_0(v *Value) bool {
 		return true
 	}
 	// match: (ADDSSload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ADDSSload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -2385,7 +2385,7 @@ func rewriteValue386_Op386ADDSSload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ADDSSload)
@@ -2644,7 +2644,7 @@ func rewriteValue386_Op386ANDLconstmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLconstmodify [valoff1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ANDLconstmodify [ValAndOff(valoff1).Add(off2)] {MergeSym(sym1,sym2)} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -2658,7 +2658,7 @@ func rewriteValue386_Op386ANDLconstmodify_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ANDLconstmodify)
@@ -2728,7 +2728,7 @@ func rewriteValue386_Op386ANDLconstmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLconstmodifyidx4 [valoff1] {sym1} (LEAL [off2] {sym2} base) idx mem)
-	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ANDLconstmodifyidx4 [ValAndOff(valoff1).Add(off2)] {MergeSym(sym1,sym2)} base idx mem)
 	for {
 		valoff1 := v.AuxInt
@@ -2743,7 +2743,7 @@ func rewriteValue386_Op386ANDLconstmodifyidx4_0(v *Value) bool {
 		base := v_0.Args[0]
 		idx := v.Args[1]
 		mem := v.Args[2]
-		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ANDLconstmodifyidx4)
@@ -2762,7 +2762,7 @@ func rewriteValue386_Op386ANDLload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ANDLload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ANDLload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -2776,7 +2776,7 @@ func rewriteValue386_Op386ANDLload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ANDLload)
@@ -2788,7 +2788,7 @@ func rewriteValue386_Op386ANDLload_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ANDLload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -2803,7 +2803,7 @@ func rewriteValue386_Op386ANDLload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ANDLload)
@@ -2815,7 +2815,7 @@ func rewriteValue386_Op386ANDLload_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLload [off1] {sym1} val (LEAL4 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (ANDLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -2832,7 +2832,7 @@ func rewriteValue386_Op386ANDLload_0(v *Value) bool {
 		ptr := v_1.Args[0]
 		idx := v_1.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386ANDLloadidx4)
@@ -2852,7 +2852,7 @@ func rewriteValue386_Op386ANDLloadidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ANDLloadidx4 [off1] {sym} val (ADDLconst [off2] base) idx mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ANDLloadidx4 [off1+off2] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -2867,7 +2867,7 @@ func rewriteValue386_Op386ANDLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ANDLloadidx4)
@@ -2880,7 +2880,7 @@ func rewriteValue386_Op386ANDLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLloadidx4 [off1] {sym} val base (ADDLconst [off2] idx) mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (ANDLloadidx4 [off1+off2*4] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -2895,7 +2895,7 @@ func rewriteValue386_Op386ANDLloadidx4_0(v *Value) bool {
 		off2 := v_2.AuxInt
 		idx := v_2.Args[0]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386ANDLloadidx4)
@@ -2908,7 +2908,7 @@ func rewriteValue386_Op386ANDLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLloadidx4 [off1] {sym1} val (LEAL [off2] {sym2} base) idx mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ANDLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -2924,7 +2924,7 @@ func rewriteValue386_Op386ANDLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ANDLloadidx4)
@@ -2944,7 +2944,7 @@ func rewriteValue386_Op386ANDLmodify_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ANDLmodify [off1] {sym} (ADDLconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ANDLmodify [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -2958,7 +2958,7 @@ func rewriteValue386_Op386ANDLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ANDLmodify)
@@ -2970,7 +2970,7 @@ func rewriteValue386_Op386ANDLmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLmodify [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ANDLmodify [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -2985,7 +2985,7 @@ func rewriteValue386_Op386ANDLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ANDLmodify)
@@ -3004,7 +3004,7 @@ func rewriteValue386_Op386ANDLmodifyidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ANDLmodifyidx4 [off1] {sym} (ADDLconst [off2] base) idx val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ANDLmodifyidx4 [off1+off2] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -3019,7 +3019,7 @@ func rewriteValue386_Op386ANDLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ANDLmodifyidx4)
@@ -3032,7 +3032,7 @@ func rewriteValue386_Op386ANDLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLmodifyidx4 [off1] {sym} base (ADDLconst [off2] idx) val mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (ANDLmodifyidx4 [off1+off2*4] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -3047,7 +3047,7 @@ func rewriteValue386_Op386ANDLmodifyidx4_0(v *Value) bool {
 		idx := v_1.Args[0]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386ANDLmodifyidx4)
@@ -3060,7 +3060,7 @@ func rewriteValue386_Op386ANDLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ANDLmodifyidx4 [off1] {sym1} (LEAL [off2] {sym2} base) idx val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ANDLmodifyidx4 [off1+off2] {MergeSym(sym1,sym2)} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -3076,7 +3076,7 @@ func rewriteValue386_Op386ANDLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ANDLmodifyidx4)
@@ -4053,7 +4053,7 @@ func rewriteValue386_Op386DIVSD_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (DIVSD x l:(MOVSDload [off] {sym} ptr mem))
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (DIVSDload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -4067,7 +4067,7 @@ func rewriteValue386_Op386DIVSD_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386DIVSDload)
@@ -4086,7 +4086,7 @@ func rewriteValue386_Op386DIVSDload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (DIVSDload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (DIVSDload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -4100,7 +4100,7 @@ func rewriteValue386_Op386DIVSDload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386DIVSDload)
@@ -4112,7 +4112,7 @@ func rewriteValue386_Op386DIVSDload_0(v *Value) bool {
 		return true
 	}
 	// match: (DIVSDload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (DIVSDload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -4127,7 +4127,7 @@ func rewriteValue386_Op386DIVSDload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386DIVSDload)
@@ -4146,7 +4146,7 @@ func rewriteValue386_Op386DIVSS_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (DIVSS x l:(MOVSSload [off] {sym} ptr mem))
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (DIVSSload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -4160,7 +4160,7 @@ func rewriteValue386_Op386DIVSS_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386DIVSSload)
@@ -4179,7 +4179,7 @@ func rewriteValue386_Op386DIVSSload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (DIVSSload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (DIVSSload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -4193,7 +4193,7 @@ func rewriteValue386_Op386DIVSSload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386DIVSSload)
@@ -4205,7 +4205,7 @@ func rewriteValue386_Op386DIVSSload_0(v *Value) bool {
 		return true
 	}
 	// match: (DIVSSload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (DIVSSload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -4220,7 +4220,7 @@ func rewriteValue386_Op386DIVSSload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386DIVSSload)
@@ -4235,7 +4235,7 @@ func rewriteValue386_Op386DIVSSload_0(v *Value) bool {
 }
 func rewriteValue386_Op386LEAL_0(v *Value) bool {
 	// match: (LEAL [c] {s} (ADDLconst [d] x))
-	// cond: is32Bit(c+d)
+	// cond: Is32Bit(c+d)
 	// result: (LEAL [c+d] {s} x)
 	for {
 		c := v.AuxInt
@@ -4246,7 +4246,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		}
 		d := v_0.AuxInt
 		x := v_0.Args[0]
-		if !(is32Bit(c + d)) {
+		if !(Is32Bit(c + d)) {
 			break
 		}
 		v.Reset(Op386LEAL)
@@ -4279,7 +4279,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL [off1] {sym1} (LEAL [off2] {sym2} x))
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (LEAL [off1+off2] {MergeSym(sym1,sym2)} x)
 	for {
 		off1 := v.AuxInt
@@ -4291,7 +4291,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		sym2 := v_0.Aux
 		x := v_0.Args[0]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386LEAL)
@@ -4301,7 +4301,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL [off1] {sym1} (LEAL1 [off2] {sym2} x y))
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (LEAL1 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4315,7 +4315,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		y := v_0.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386LEAL1)
@@ -4326,7 +4326,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL [off1] {sym1} (LEAL2 [off2] {sym2} x y))
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (LEAL2 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4340,7 +4340,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		y := v_0.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386LEAL2)
@@ -4351,7 +4351,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL [off1] {sym1} (LEAL4 [off2] {sym2} x y))
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (LEAL4 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4365,7 +4365,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		y := v_0.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386LEAL4)
@@ -4376,7 +4376,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL [off1] {sym1} (LEAL8 [off2] {sym2} x y))
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (LEAL8 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4390,7 +4390,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		y := v_0.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386LEAL8)
@@ -4404,7 +4404,7 @@ func rewriteValue386_Op386LEAL_0(v *Value) bool {
 }
 func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 	// match: (LEAL1 [c] {s} (ADDLconst [d] x) y)
-	// cond: is32Bit(c+d) && x.Op != OpSB
+	// cond: Is32Bit(c+d) && x.Op != OpSB
 	// result: (LEAL1 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -4417,7 +4417,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		d := v_0.AuxInt
 		x := v_0.Args[0]
 		y := v.Args[1]
-		if !(is32Bit(c+d) && x.Op != OpSB) {
+		if !(Is32Bit(c+d) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL1)
@@ -4428,7 +4428,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL1 [c] {s} y (ADDLconst [d] x))
-	// cond: is32Bit(c+d) && x.Op != OpSB
+	// cond: Is32Bit(c+d) && x.Op != OpSB
 	// result: (LEAL1 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -4441,7 +4441,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		}
 		d := v_1.AuxInt
 		x := v_1.Args[0]
-		if !(is32Bit(c+d) && x.Op != OpSB) {
+		if !(Is32Bit(c+d) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL1)
@@ -4590,7 +4590,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL1 [off1] {sym1} (LEAL [off2] {sym2} x) y)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
 	// result: (LEAL1 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4604,7 +4604,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		sym2 := v_0.Aux
 		x := v_0.Args[0]
 		y := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL1)
@@ -4615,7 +4615,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL1 [off1] {sym1} y (LEAL [off2] {sym2} x))
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
 	// result: (LEAL1 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4629,7 +4629,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		sym2 := v_1.Aux
 		x := v_1.Args[0]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL1)
@@ -4643,7 +4643,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 }
 func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 	// match: (LEAL2 [c] {s} (ADDLconst [d] x) y)
-	// cond: is32Bit(c+d) && x.Op != OpSB
+	// cond: Is32Bit(c+d) && x.Op != OpSB
 	// result: (LEAL2 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -4656,7 +4656,7 @@ func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 		d := v_0.AuxInt
 		x := v_0.Args[0]
 		y := v.Args[1]
-		if !(is32Bit(c+d) && x.Op != OpSB) {
+		if !(Is32Bit(c+d) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL2)
@@ -4667,7 +4667,7 @@ func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL2 [c] {s} x (ADDLconst [d] y))
-	// cond: is32Bit(c+2*d) && y.Op != OpSB
+	// cond: Is32Bit(c+2*d) && y.Op != OpSB
 	// result: (LEAL2 [c+2*d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -4680,7 +4680,7 @@ func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 		}
 		d := v_1.AuxInt
 		y := v_1.Args[0]
-		if !(is32Bit(c+2*d) && y.Op != OpSB) {
+		if !(Is32Bit(c+2*d) && y.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL2)
@@ -4737,7 +4737,7 @@ func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL2 [off1] {sym1} (LEAL [off2] {sym2} x) y)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
 	// result: (LEAL2 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4751,7 +4751,7 @@ func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 		sym2 := v_0.Aux
 		x := v_0.Args[0]
 		y := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL2)
@@ -4765,7 +4765,7 @@ func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 }
 func rewriteValue386_Op386LEAL4_0(v *Value) bool {
 	// match: (LEAL4 [c] {s} (ADDLconst [d] x) y)
-	// cond: is32Bit(c+d) && x.Op != OpSB
+	// cond: Is32Bit(c+d) && x.Op != OpSB
 	// result: (LEAL4 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -4778,7 +4778,7 @@ func rewriteValue386_Op386LEAL4_0(v *Value) bool {
 		d := v_0.AuxInt
 		x := v_0.Args[0]
 		y := v.Args[1]
-		if !(is32Bit(c+d) && x.Op != OpSB) {
+		if !(Is32Bit(c+d) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL4)
@@ -4789,7 +4789,7 @@ func rewriteValue386_Op386LEAL4_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL4 [c] {s} x (ADDLconst [d] y))
-	// cond: is32Bit(c+4*d) && y.Op != OpSB
+	// cond: Is32Bit(c+4*d) && y.Op != OpSB
 	// result: (LEAL4 [c+4*d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -4802,7 +4802,7 @@ func rewriteValue386_Op386LEAL4_0(v *Value) bool {
 		}
 		d := v_1.AuxInt
 		y := v_1.Args[0]
-		if !(is32Bit(c+4*d) && y.Op != OpSB) {
+		if !(Is32Bit(c+4*d) && y.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL4)
@@ -4836,7 +4836,7 @@ func rewriteValue386_Op386LEAL4_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL4 [off1] {sym1} (LEAL [off2] {sym2} x) y)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
 	// result: (LEAL4 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4850,7 +4850,7 @@ func rewriteValue386_Op386LEAL4_0(v *Value) bool {
 		sym2 := v_0.Aux
 		x := v_0.Args[0]
 		y := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL4)
@@ -4864,7 +4864,7 @@ func rewriteValue386_Op386LEAL4_0(v *Value) bool {
 }
 func rewriteValue386_Op386LEAL8_0(v *Value) bool {
 	// match: (LEAL8 [c] {s} (ADDLconst [d] x) y)
-	// cond: is32Bit(c+d) && x.Op != OpSB
+	// cond: Is32Bit(c+d) && x.Op != OpSB
 	// result: (LEAL8 [c+d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -4877,7 +4877,7 @@ func rewriteValue386_Op386LEAL8_0(v *Value) bool {
 		d := v_0.AuxInt
 		x := v_0.Args[0]
 		y := v.Args[1]
-		if !(is32Bit(c+d) && x.Op != OpSB) {
+		if !(Is32Bit(c+d) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL8)
@@ -4888,7 +4888,7 @@ func rewriteValue386_Op386LEAL8_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL8 [c] {s} x (ADDLconst [d] y))
-	// cond: is32Bit(c+8*d) && y.Op != OpSB
+	// cond: Is32Bit(c+8*d) && y.Op != OpSB
 	// result: (LEAL8 [c+8*d] {s} x y)
 	for {
 		c := v.AuxInt
@@ -4901,7 +4901,7 @@ func rewriteValue386_Op386LEAL8_0(v *Value) bool {
 		}
 		d := v_1.AuxInt
 		y := v_1.Args[0]
-		if !(is32Bit(c+8*d) && y.Op != OpSB) {
+		if !(Is32Bit(c+8*d) && y.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL8)
@@ -4912,7 +4912,7 @@ func rewriteValue386_Op386LEAL8_0(v *Value) bool {
 		return true
 	}
 	// match: (LEAL8 [off1] {sym1} (LEAL [off2] {sym2} x) y)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB
 	// result: (LEAL8 [off1+off2] {MergeSym(sym1,sym2)} x y)
 	for {
 		off1 := v.AuxInt
@@ -4926,7 +4926,7 @@ func rewriteValue386_Op386LEAL8_0(v *Value) bool {
 		sym2 := v_0.Aux
 		x := v_0.Args[0]
 		y := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && x.Op != OpSB) {
 			break
 		}
 		v.Reset(Op386LEAL8)
@@ -5017,7 +5017,7 @@ func rewriteValue386_Op386MOVBLSXload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBLSXload [off1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVBLSXload [off1+off2] {MergeSym(sym1,sym2)} base mem)
 	for {
 		off1 := v.AuxInt
@@ -5031,7 +5031,7 @@ func rewriteValue386_Op386MOVBLSXload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVBLSXload)
@@ -5147,7 +5147,7 @@ func rewriteValue386_Op386MOVBload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBload [off1] {sym} (ADDLconst [off2] ptr) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVBload [off1+off2] {sym} ptr mem)
 	for {
 		off1 := v.AuxInt
@@ -5160,7 +5160,7 @@ func rewriteValue386_Op386MOVBload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVBload)
@@ -5171,7 +5171,7 @@ func rewriteValue386_Op386MOVBload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBload [off1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVBload [off1+off2] {MergeSym(sym1,sym2)} base mem)
 	for {
 		off1 := v.AuxInt
@@ -5185,7 +5185,7 @@ func rewriteValue386_Op386MOVBload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVBload)
@@ -5196,7 +5196,7 @@ func rewriteValue386_Op386MOVBload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBload [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVBloadidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -5212,7 +5212,7 @@ func rewriteValue386_Op386MOVBload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVBloadidx1)
@@ -5414,7 +5414,7 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBstore [off1] {sym} (ADDLconst [off2] ptr) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVBstore [off1+off2] {sym} ptr val mem)
 	for {
 		off1 := v.AuxInt
@@ -5428,7 +5428,7 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVBstore)
@@ -5464,7 +5464,7 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBstore [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVBstore [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -5479,7 +5479,7 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVBstore)
@@ -5491,7 +5491,7 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBstore [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVBstoreidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -5508,7 +5508,7 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVBstoreidx1)
@@ -5813,7 +5813,7 @@ func rewriteValue386_Op386MOVBstoreconst_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVBstoreconst [sc] {sym1} (LEAL [off] {sym2} ptr) mem)
-	// cond: CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVBstoreconst [ValAndOff(sc).Add(off)] {MergeSym(sym1, sym2)} ptr mem)
 	for {
 		sc := v.AuxInt
@@ -5827,7 +5827,7 @@ func rewriteValue386_Op386MOVBstoreconst_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVBstoreconst)
@@ -7197,7 +7197,7 @@ func rewriteValue386_Op386MOVLload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLload [off1] {sym} (ADDLconst [off2] ptr) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVLload [off1+off2] {sym} ptr mem)
 	for {
 		off1 := v.AuxInt
@@ -7210,7 +7210,7 @@ func rewriteValue386_Op386MOVLload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVLload)
@@ -7221,7 +7221,7 @@ func rewriteValue386_Op386MOVLload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLload [off1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVLload [off1+off2] {MergeSym(sym1,sym2)} base mem)
 	for {
 		off1 := v.AuxInt
@@ -7235,7 +7235,7 @@ func rewriteValue386_Op386MOVLload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVLload)
@@ -7246,7 +7246,7 @@ func rewriteValue386_Op386MOVLload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLload [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVLloadidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -7262,7 +7262,7 @@ func rewriteValue386_Op386MOVLload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVLloadidx1)
@@ -7274,7 +7274,7 @@ func rewriteValue386_Op386MOVLload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLload [off1] {sym1} (LEAL4 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -7290,7 +7290,7 @@ func rewriteValue386_Op386MOVLload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVLloadidx4)
@@ -7547,7 +7547,7 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MOVLstore [off1] {sym} (ADDLconst [off2] ptr) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVLstore [off1+off2] {sym} ptr val mem)
 	for {
 		off1 := v.AuxInt
@@ -7561,7 +7561,7 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVLstore)
@@ -7597,7 +7597,7 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLstore [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVLstore [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -7612,7 +7612,7 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVLstore)
@@ -7624,7 +7624,7 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLstore [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVLstoreidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -7641,7 +7641,7 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVLstoreidx1)
@@ -7654,7 +7654,7 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLstore [off1] {sym1} (LEAL4 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVLstoreidx4 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -7671,7 +7671,7 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVLstoreidx4)
@@ -8452,7 +8452,7 @@ func rewriteValue386_Op386MOVLstoreconst_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLstoreconst [sc] {sym1} (LEAL [off] {sym2} ptr) mem)
-	// cond: CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVLstoreconst [ValAndOff(sc).Add(off)] {MergeSym(sym1, sym2)} ptr mem)
 	for {
 		sc := v.AuxInt
@@ -8466,7 +8466,7 @@ func rewriteValue386_Op386MOVLstoreconst_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVLstoreconst)
@@ -9689,11 +9689,11 @@ func rewriteValue386_Op386MOVSDconst_0(v *Value) bool {
 	typ := &b.Func.Config.Types
 	_ = typ
 	// match: (MOVSDconst [c])
-	// cond: config.ctxt.Flag_shared
+	// cond: config.Ctxt.Flag_shared
 	// result: (MOVSDconst2 (MOVSDconst1 [c]))
 	for {
 		c := v.AuxInt
-		if !(config.ctxt.Flag_shared) {
+		if !(config.Ctxt.Flag_shared) {
 			break
 		}
 		v.Reset(Op386MOVSDconst2)
@@ -9710,7 +9710,7 @@ func rewriteValue386_Op386MOVSDload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MOVSDload [off1] {sym} (ADDLconst [off2] ptr) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVSDload [off1+off2] {sym} ptr mem)
 	for {
 		off1 := v.AuxInt
@@ -9723,7 +9723,7 @@ func rewriteValue386_Op386MOVSDload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVSDload)
@@ -9734,7 +9734,7 @@ func rewriteValue386_Op386MOVSDload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSDload [off1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVSDload [off1+off2] {MergeSym(sym1,sym2)} base mem)
 	for {
 		off1 := v.AuxInt
@@ -9748,7 +9748,7 @@ func rewriteValue386_Op386MOVSDload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVSDload)
@@ -9759,7 +9759,7 @@ func rewriteValue386_Op386MOVSDload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSDload [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVSDloadidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -9775,7 +9775,7 @@ func rewriteValue386_Op386MOVSDload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVSDloadidx1)
@@ -9787,7 +9787,7 @@ func rewriteValue386_Op386MOVSDload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSDload [off1] {sym1} (LEAL8 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVSDloadidx8 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -9803,7 +9803,7 @@ func rewriteValue386_Op386MOVSDload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVSDloadidx8)
@@ -9946,7 +9946,7 @@ func rewriteValue386_Op386MOVSDstore_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MOVSDstore [off1] {sym} (ADDLconst [off2] ptr) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVSDstore [off1+off2] {sym} ptr val mem)
 	for {
 		off1 := v.AuxInt
@@ -9960,7 +9960,7 @@ func rewriteValue386_Op386MOVSDstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVSDstore)
@@ -9972,7 +9972,7 @@ func rewriteValue386_Op386MOVSDstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSDstore [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVSDstore [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -9987,7 +9987,7 @@ func rewriteValue386_Op386MOVSDstore_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVSDstore)
@@ -9999,7 +9999,7 @@ func rewriteValue386_Op386MOVSDstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSDstore [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVSDstoreidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -10016,7 +10016,7 @@ func rewriteValue386_Op386MOVSDstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVSDstoreidx1)
@@ -10029,7 +10029,7 @@ func rewriteValue386_Op386MOVSDstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSDstore [off1] {sym1} (LEAL8 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVSDstoreidx8 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -10046,7 +10046,7 @@ func rewriteValue386_Op386MOVSDstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVSDstoreidx8)
@@ -10202,11 +10202,11 @@ func rewriteValue386_Op386MOVSSconst_0(v *Value) bool {
 	typ := &b.Func.Config.Types
 	_ = typ
 	// match: (MOVSSconst [c])
-	// cond: config.ctxt.Flag_shared
+	// cond: config.Ctxt.Flag_shared
 	// result: (MOVSSconst2 (MOVSSconst1 [c]))
 	for {
 		c := v.AuxInt
-		if !(config.ctxt.Flag_shared) {
+		if !(config.Ctxt.Flag_shared) {
 			break
 		}
 		v.Reset(Op386MOVSSconst2)
@@ -10223,7 +10223,7 @@ func rewriteValue386_Op386MOVSSload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MOVSSload [off1] {sym} (ADDLconst [off2] ptr) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVSSload [off1+off2] {sym} ptr mem)
 	for {
 		off1 := v.AuxInt
@@ -10236,7 +10236,7 @@ func rewriteValue386_Op386MOVSSload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVSSload)
@@ -10247,7 +10247,7 @@ func rewriteValue386_Op386MOVSSload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSSload [off1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVSSload [off1+off2] {MergeSym(sym1,sym2)} base mem)
 	for {
 		off1 := v.AuxInt
@@ -10261,7 +10261,7 @@ func rewriteValue386_Op386MOVSSload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVSSload)
@@ -10272,7 +10272,7 @@ func rewriteValue386_Op386MOVSSload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSSload [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVSSloadidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -10288,7 +10288,7 @@ func rewriteValue386_Op386MOVSSload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVSSloadidx1)
@@ -10300,7 +10300,7 @@ func rewriteValue386_Op386MOVSSload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSSload [off1] {sym1} (LEAL4 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVSSloadidx4 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -10316,7 +10316,7 @@ func rewriteValue386_Op386MOVSSload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVSSloadidx4)
@@ -10459,7 +10459,7 @@ func rewriteValue386_Op386MOVSSstore_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MOVSSstore [off1] {sym} (ADDLconst [off2] ptr) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVSSstore [off1+off2] {sym} ptr val mem)
 	for {
 		off1 := v.AuxInt
@@ -10473,7 +10473,7 @@ func rewriteValue386_Op386MOVSSstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVSSstore)
@@ -10485,7 +10485,7 @@ func rewriteValue386_Op386MOVSSstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSSstore [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVSSstore [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -10500,7 +10500,7 @@ func rewriteValue386_Op386MOVSSstore_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVSSstore)
@@ -10512,7 +10512,7 @@ func rewriteValue386_Op386MOVSSstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSSstore [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVSSstoreidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -10529,7 +10529,7 @@ func rewriteValue386_Op386MOVSSstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVSSstoreidx1)
@@ -10542,7 +10542,7 @@ func rewriteValue386_Op386MOVSSstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVSSstore [off1] {sym1} (LEAL4 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVSSstoreidx4 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -10559,7 +10559,7 @@ func rewriteValue386_Op386MOVSSstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVSSstoreidx4)
@@ -10786,7 +10786,7 @@ func rewriteValue386_Op386MOVWLSXload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWLSXload [off1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVWLSXload [off1+off2] {MergeSym(sym1,sym2)} base mem)
 	for {
 		off1 := v.AuxInt
@@ -10800,7 +10800,7 @@ func rewriteValue386_Op386MOVWLSXload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVWLSXload)
@@ -10944,7 +10944,7 @@ func rewriteValue386_Op386MOVWload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWload [off1] {sym} (ADDLconst [off2] ptr) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVWload [off1+off2] {sym} ptr mem)
 	for {
 		off1 := v.AuxInt
@@ -10957,7 +10957,7 @@ func rewriteValue386_Op386MOVWload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVWload)
@@ -10968,7 +10968,7 @@ func rewriteValue386_Op386MOVWload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWload [off1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVWload [off1+off2] {MergeSym(sym1,sym2)} base mem)
 	for {
 		off1 := v.AuxInt
@@ -10982,7 +10982,7 @@ func rewriteValue386_Op386MOVWload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVWload)
@@ -10993,7 +10993,7 @@ func rewriteValue386_Op386MOVWload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWload [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVWloadidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -11009,7 +11009,7 @@ func rewriteValue386_Op386MOVWload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVWloadidx1)
@@ -11021,7 +11021,7 @@ func rewriteValue386_Op386MOVWload_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWload [off1] {sym1} (LEAL2 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVWloadidx2 [off1+off2] {MergeSym(sym1,sym2)} ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -11037,7 +11037,7 @@ func rewriteValue386_Op386MOVWload_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		idx := v_0.Args[1]
 		mem := v.Args[1]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVWloadidx2)
@@ -11338,7 +11338,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWstore [off1] {sym} (ADDLconst [off2] ptr) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MOVWstore [off1+off2] {sym} ptr val mem)
 	for {
 		off1 := v.AuxInt
@@ -11352,7 +11352,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MOVWstore)
@@ -11388,7 +11388,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWstore [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVWstore [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -11403,7 +11403,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVWstore)
@@ -11415,7 +11415,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWstore [off1] {sym1} (LEAL1 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVWstoreidx1 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -11432,7 +11432,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVWstoreidx1)
@@ -11445,7 +11445,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWstore [off1] {sym1} (LEAL2 [off2] {sym2} ptr idx) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MOVWstoreidx2 [off1+off2] {MergeSym(sym1,sym2)} ptr idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -11462,7 +11462,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		idx := v_0.Args[1]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MOVWstoreidx2)
@@ -11629,7 +11629,7 @@ func rewriteValue386_Op386MOVWstoreconst_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVWstoreconst [sc] {sym1} (LEAL [off] {sym2} ptr) mem)
-	// cond: CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MOVWstoreconst [ValAndOff(sc).Add(off)] {MergeSym(sym1, sym2)} ptr mem)
 	for {
 		sc := v.AuxInt
@@ -11643,7 +11643,7 @@ func rewriteValue386_Op386MOVWstoreconst_0(v *Value) bool {
 		sym2 := v_0.Aux
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(CanMergeSym(sym1, sym2) && ValAndOff(sc).CanAdd(off) && (ptr.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MOVWstoreconst)
@@ -13396,7 +13396,7 @@ func rewriteValue386_Op386MULLload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MULLload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MULLload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -13410,7 +13410,7 @@ func rewriteValue386_Op386MULLload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MULLload)
@@ -13422,7 +13422,7 @@ func rewriteValue386_Op386MULLload_0(v *Value) bool {
 		return true
 	}
 	// match: (MULLload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MULLload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -13437,7 +13437,7 @@ func rewriteValue386_Op386MULLload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MULLload)
@@ -13449,7 +13449,7 @@ func rewriteValue386_Op386MULLload_0(v *Value) bool {
 		return true
 	}
 	// match: (MULLload [off1] {sym1} val (LEAL4 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (MULLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -13466,7 +13466,7 @@ func rewriteValue386_Op386MULLload_0(v *Value) bool {
 		ptr := v_1.Args[0]
 		idx := v_1.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386MULLloadidx4)
@@ -13486,7 +13486,7 @@ func rewriteValue386_Op386MULLloadidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MULLloadidx4 [off1] {sym} val (ADDLconst [off2] base) idx mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MULLloadidx4 [off1+off2] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -13501,7 +13501,7 @@ func rewriteValue386_Op386MULLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MULLloadidx4)
@@ -13514,7 +13514,7 @@ func rewriteValue386_Op386MULLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (MULLloadidx4 [off1] {sym} val base (ADDLconst [off2] idx) mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (MULLloadidx4 [off1+off2*4] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -13529,7 +13529,7 @@ func rewriteValue386_Op386MULLloadidx4_0(v *Value) bool {
 		off2 := v_2.AuxInt
 		idx := v_2.Args[0]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386MULLloadidx4)
@@ -13542,7 +13542,7 @@ func rewriteValue386_Op386MULLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (MULLloadidx4 [off1] {sym1} val (LEAL [off2] {sym2} base) idx mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MULLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -13558,7 +13558,7 @@ func rewriteValue386_Op386MULLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MULLloadidx4)
@@ -13578,7 +13578,7 @@ func rewriteValue386_Op386MULSD_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MULSD x l:(MOVSDload [off] {sym} ptr mem))
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (MULSDload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -13592,7 +13592,7 @@ func rewriteValue386_Op386MULSD_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386MULSDload)
@@ -13604,7 +13604,7 @@ func rewriteValue386_Op386MULSD_0(v *Value) bool {
 		return true
 	}
 	// match: (MULSD l:(MOVSDload [off] {sym} ptr mem) x)
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (MULSDload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -13618,7 +13618,7 @@ func rewriteValue386_Op386MULSD_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		x := v.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386MULSDload)
@@ -13637,7 +13637,7 @@ func rewriteValue386_Op386MULSDload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MULSDload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MULSDload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -13651,7 +13651,7 @@ func rewriteValue386_Op386MULSDload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MULSDload)
@@ -13663,7 +13663,7 @@ func rewriteValue386_Op386MULSDload_0(v *Value) bool {
 		return true
 	}
 	// match: (MULSDload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MULSDload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -13678,7 +13678,7 @@ func rewriteValue386_Op386MULSDload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MULSDload)
@@ -13697,7 +13697,7 @@ func rewriteValue386_Op386MULSS_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MULSS x l:(MOVSSload [off] {sym} ptr mem))
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (MULSSload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -13711,7 +13711,7 @@ func rewriteValue386_Op386MULSS_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386MULSSload)
@@ -13723,7 +13723,7 @@ func rewriteValue386_Op386MULSS_0(v *Value) bool {
 		return true
 	}
 	// match: (MULSS l:(MOVSSload [off] {sym} ptr mem) x)
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (MULSSload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -13737,7 +13737,7 @@ func rewriteValue386_Op386MULSS_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		x := v.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386MULSSload)
@@ -13756,7 +13756,7 @@ func rewriteValue386_Op386MULSSload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (MULSSload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (MULSSload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -13770,7 +13770,7 @@ func rewriteValue386_Op386MULSSload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386MULSSload)
@@ -13782,7 +13782,7 @@ func rewriteValue386_Op386MULSSload_0(v *Value) bool {
 		return true
 	}
 	// match: (MULSSload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (MULSSload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -13797,7 +13797,7 @@ func rewriteValue386_Op386MULSSload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386MULSSload)
@@ -17787,7 +17787,7 @@ func rewriteValue386_Op386ORLconstmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLconstmodify [valoff1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ORLconstmodify [ValAndOff(valoff1).Add(off2)] {MergeSym(sym1,sym2)} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -17801,7 +17801,7 @@ func rewriteValue386_Op386ORLconstmodify_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ORLconstmodify)
@@ -17871,7 +17871,7 @@ func rewriteValue386_Op386ORLconstmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLconstmodifyidx4 [valoff1] {sym1} (LEAL [off2] {sym2} base) idx mem)
-	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ORLconstmodifyidx4 [ValAndOff(valoff1).Add(off2)] {MergeSym(sym1,sym2)} base idx mem)
 	for {
 		valoff1 := v.AuxInt
@@ -17886,7 +17886,7 @@ func rewriteValue386_Op386ORLconstmodifyidx4_0(v *Value) bool {
 		base := v_0.Args[0]
 		idx := v.Args[1]
 		mem := v.Args[2]
-		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ORLconstmodifyidx4)
@@ -17905,7 +17905,7 @@ func rewriteValue386_Op386ORLload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ORLload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ORLload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -17919,7 +17919,7 @@ func rewriteValue386_Op386ORLload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ORLload)
@@ -17931,7 +17931,7 @@ func rewriteValue386_Op386ORLload_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ORLload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -17946,7 +17946,7 @@ func rewriteValue386_Op386ORLload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ORLload)
@@ -17958,7 +17958,7 @@ func rewriteValue386_Op386ORLload_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLload [off1] {sym1} val (LEAL4 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (ORLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -17975,7 +17975,7 @@ func rewriteValue386_Op386ORLload_0(v *Value) bool {
 		ptr := v_1.Args[0]
 		idx := v_1.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386ORLloadidx4)
@@ -17995,7 +17995,7 @@ func rewriteValue386_Op386ORLloadidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ORLloadidx4 [off1] {sym} val (ADDLconst [off2] base) idx mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ORLloadidx4 [off1+off2] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -18010,7 +18010,7 @@ func rewriteValue386_Op386ORLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ORLloadidx4)
@@ -18023,7 +18023,7 @@ func rewriteValue386_Op386ORLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLloadidx4 [off1] {sym} val base (ADDLconst [off2] idx) mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (ORLloadidx4 [off1+off2*4] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -18038,7 +18038,7 @@ func rewriteValue386_Op386ORLloadidx4_0(v *Value) bool {
 		off2 := v_2.AuxInt
 		idx := v_2.Args[0]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386ORLloadidx4)
@@ -18051,7 +18051,7 @@ func rewriteValue386_Op386ORLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLloadidx4 [off1] {sym1} val (LEAL [off2] {sym2} base) idx mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ORLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -18067,7 +18067,7 @@ func rewriteValue386_Op386ORLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ORLloadidx4)
@@ -18087,7 +18087,7 @@ func rewriteValue386_Op386ORLmodify_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ORLmodify [off1] {sym} (ADDLconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ORLmodify [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -18101,7 +18101,7 @@ func rewriteValue386_Op386ORLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ORLmodify)
@@ -18113,7 +18113,7 @@ func rewriteValue386_Op386ORLmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLmodify [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ORLmodify [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -18128,7 +18128,7 @@ func rewriteValue386_Op386ORLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ORLmodify)
@@ -18147,7 +18147,7 @@ func rewriteValue386_Op386ORLmodifyidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (ORLmodifyidx4 [off1] {sym} (ADDLconst [off2] base) idx val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (ORLmodifyidx4 [off1+off2] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -18162,7 +18162,7 @@ func rewriteValue386_Op386ORLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386ORLmodifyidx4)
@@ -18175,7 +18175,7 @@ func rewriteValue386_Op386ORLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLmodifyidx4 [off1] {sym} base (ADDLconst [off2] idx) val mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (ORLmodifyidx4 [off1+off2*4] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -18190,7 +18190,7 @@ func rewriteValue386_Op386ORLmodifyidx4_0(v *Value) bool {
 		idx := v_1.Args[0]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386ORLmodifyidx4)
@@ -18203,7 +18203,7 @@ func rewriteValue386_Op386ORLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (ORLmodifyidx4 [off1] {sym1} (LEAL [off2] {sym2} base) idx val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (ORLmodifyidx4 [off1+off2] {MergeSym(sym1,sym2)} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -18219,7 +18219,7 @@ func rewriteValue386_Op386ORLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386ORLmodifyidx4)
@@ -19741,7 +19741,7 @@ func rewriteValue386_Op386SUBLload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (SUBLload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (SUBLload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -19755,7 +19755,7 @@ func rewriteValue386_Op386SUBLload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386SUBLload)
@@ -19767,7 +19767,7 @@ func rewriteValue386_Op386SUBLload_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBLload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (SUBLload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -19782,7 +19782,7 @@ func rewriteValue386_Op386SUBLload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386SUBLload)
@@ -19794,7 +19794,7 @@ func rewriteValue386_Op386SUBLload_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBLload [off1] {sym1} val (LEAL4 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (SUBLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -19811,7 +19811,7 @@ func rewriteValue386_Op386SUBLload_0(v *Value) bool {
 		ptr := v_1.Args[0]
 		idx := v_1.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386SUBLloadidx4)
@@ -19831,7 +19831,7 @@ func rewriteValue386_Op386SUBLloadidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (SUBLloadidx4 [off1] {sym} val (ADDLconst [off2] base) idx mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (SUBLloadidx4 [off1+off2] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -19846,7 +19846,7 @@ func rewriteValue386_Op386SUBLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386SUBLloadidx4)
@@ -19859,7 +19859,7 @@ func rewriteValue386_Op386SUBLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBLloadidx4 [off1] {sym} val base (ADDLconst [off2] idx) mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (SUBLloadidx4 [off1+off2*4] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -19874,7 +19874,7 @@ func rewriteValue386_Op386SUBLloadidx4_0(v *Value) bool {
 		off2 := v_2.AuxInt
 		idx := v_2.Args[0]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386SUBLloadidx4)
@@ -19887,7 +19887,7 @@ func rewriteValue386_Op386SUBLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBLloadidx4 [off1] {sym1} val (LEAL [off2] {sym2} base) idx mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (SUBLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -19903,7 +19903,7 @@ func rewriteValue386_Op386SUBLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386SUBLloadidx4)
@@ -19923,7 +19923,7 @@ func rewriteValue386_Op386SUBLmodify_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (SUBLmodify [off1] {sym} (ADDLconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (SUBLmodify [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -19937,7 +19937,7 @@ func rewriteValue386_Op386SUBLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386SUBLmodify)
@@ -19949,7 +19949,7 @@ func rewriteValue386_Op386SUBLmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBLmodify [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (SUBLmodify [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -19964,7 +19964,7 @@ func rewriteValue386_Op386SUBLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386SUBLmodify)
@@ -19983,7 +19983,7 @@ func rewriteValue386_Op386SUBLmodifyidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (SUBLmodifyidx4 [off1] {sym} (ADDLconst [off2] base) idx val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (SUBLmodifyidx4 [off1+off2] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -19998,7 +19998,7 @@ func rewriteValue386_Op386SUBLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386SUBLmodifyidx4)
@@ -20011,7 +20011,7 @@ func rewriteValue386_Op386SUBLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBLmodifyidx4 [off1] {sym} base (ADDLconst [off2] idx) val mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (SUBLmodifyidx4 [off1+off2*4] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -20026,7 +20026,7 @@ func rewriteValue386_Op386SUBLmodifyidx4_0(v *Value) bool {
 		idx := v_1.Args[0]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386SUBLmodifyidx4)
@@ -20039,7 +20039,7 @@ func rewriteValue386_Op386SUBLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBLmodifyidx4 [off1] {sym1} (LEAL [off2] {sym2} base) idx val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (SUBLmodifyidx4 [off1+off2] {MergeSym(sym1,sym2)} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -20055,7 +20055,7 @@ func rewriteValue386_Op386SUBLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386SUBLmodifyidx4)
@@ -20101,7 +20101,7 @@ func rewriteValue386_Op386SUBSD_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (SUBSD x l:(MOVSDload [off] {sym} ptr mem))
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (SUBSDload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -20115,7 +20115,7 @@ func rewriteValue386_Op386SUBSD_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386SUBSDload)
@@ -20134,7 +20134,7 @@ func rewriteValue386_Op386SUBSDload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (SUBSDload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (SUBSDload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -20148,7 +20148,7 @@ func rewriteValue386_Op386SUBSDload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386SUBSDload)
@@ -20160,7 +20160,7 @@ func rewriteValue386_Op386SUBSDload_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBSDload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (SUBSDload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -20175,7 +20175,7 @@ func rewriteValue386_Op386SUBSDload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386SUBSDload)
@@ -20194,7 +20194,7 @@ func rewriteValue386_Op386SUBSS_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (SUBSS x l:(MOVSSload [off] {sym} ptr mem))
-	// cond: CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)
+	// cond: CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)
 	// result: (SUBSSload x [off] {sym} ptr mem)
 	for {
 		_ = v.Args[1]
@@ -20208,7 +20208,7 @@ func rewriteValue386_Op386SUBSS_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(CanMergeLoadClobber(v, l, x) && !config.use387 && Clobber(l)) {
+		if !(CanMergeLoadClobber(v, l, x) && !config.Use387 && Clobber(l)) {
 			break
 		}
 		v.Reset(Op386SUBSSload)
@@ -20227,7 +20227,7 @@ func rewriteValue386_Op386SUBSSload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (SUBSSload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (SUBSSload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -20241,7 +20241,7 @@ func rewriteValue386_Op386SUBSSload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386SUBSSload)
@@ -20253,7 +20253,7 @@ func rewriteValue386_Op386SUBSSload_0(v *Value) bool {
 		return true
 	}
 	// match: (SUBSSload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (SUBSSload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -20268,7 +20268,7 @@ func rewriteValue386_Op386SUBSSload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386SUBSSload)
@@ -20683,7 +20683,7 @@ func rewriteValue386_Op386XORLconstmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLconstmodify [valoff1] {sym1} (LEAL [off2] {sym2} base) mem)
-	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (XORLconstmodify [ValAndOff(valoff1).Add(off2)] {MergeSym(sym1,sym2)} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -20697,7 +20697,7 @@ func rewriteValue386_Op386XORLconstmodify_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386XORLconstmodify)
@@ -20767,7 +20767,7 @@ func rewriteValue386_Op386XORLconstmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLconstmodifyidx4 [valoff1] {sym1} (LEAL [off2] {sym2} base) idx mem)
-	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (XORLconstmodifyidx4 [ValAndOff(valoff1).Add(off2)] {MergeSym(sym1,sym2)} base idx mem)
 	for {
 		valoff1 := v.AuxInt
@@ -20782,7 +20782,7 @@ func rewriteValue386_Op386XORLconstmodifyidx4_0(v *Value) bool {
 		base := v_0.Args[0]
 		idx := v.Args[1]
 		mem := v.Args[2]
-		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(ValAndOff(valoff1).CanAdd(off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386XORLconstmodifyidx4)
@@ -20801,7 +20801,7 @@ func rewriteValue386_Op386XORLload_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (XORLload [off1] {sym} val (ADDLconst [off2] base) mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (XORLload [off1+off2] {sym} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -20815,7 +20815,7 @@ func rewriteValue386_Op386XORLload_0(v *Value) bool {
 		off2 := v_1.AuxInt
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386XORLload)
@@ -20827,7 +20827,7 @@ func rewriteValue386_Op386XORLload_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLload [off1] {sym1} val (LEAL [off2] {sym2} base) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (XORLload [off1+off2] {MergeSym(sym1,sym2)} val base mem)
 	for {
 		off1 := v.AuxInt
@@ -20842,7 +20842,7 @@ func rewriteValue386_Op386XORLload_0(v *Value) bool {
 		sym2 := v_1.Aux
 		base := v_1.Args[0]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386XORLload)
@@ -20854,7 +20854,7 @@ func rewriteValue386_Op386XORLload_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLload [off1] {sym1} val (LEAL4 [off2] {sym2} ptr idx) mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)
 	// result: (XORLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val ptr idx mem)
 	for {
 		off1 := v.AuxInt
@@ -20871,7 +20871,7 @@ func rewriteValue386_Op386XORLload_0(v *Value) bool {
 		ptr := v_1.Args[0]
 		idx := v_1.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2)) {
 			break
 		}
 		v.Reset(Op386XORLloadidx4)
@@ -20891,7 +20891,7 @@ func rewriteValue386_Op386XORLloadidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (XORLloadidx4 [off1] {sym} val (ADDLconst [off2] base) idx mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (XORLloadidx4 [off1+off2] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -20906,7 +20906,7 @@ func rewriteValue386_Op386XORLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386XORLloadidx4)
@@ -20919,7 +20919,7 @@ func rewriteValue386_Op386XORLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLloadidx4 [off1] {sym} val base (ADDLconst [off2] idx) mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (XORLloadidx4 [off1+off2*4] {sym} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -20934,7 +20934,7 @@ func rewriteValue386_Op386XORLloadidx4_0(v *Value) bool {
 		off2 := v_2.AuxInt
 		idx := v_2.Args[0]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386XORLloadidx4)
@@ -20947,7 +20947,7 @@ func rewriteValue386_Op386XORLloadidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLloadidx4 [off1] {sym1} val (LEAL [off2] {sym2} base) idx mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (XORLloadidx4 [off1+off2] {MergeSym(sym1,sym2)} val base idx mem)
 	for {
 		off1 := v.AuxInt
@@ -20963,7 +20963,7 @@ func rewriteValue386_Op386XORLloadidx4_0(v *Value) bool {
 		base := v_1.Args[0]
 		idx := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386XORLloadidx4)
@@ -20983,7 +20983,7 @@ func rewriteValue386_Op386XORLmodify_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (XORLmodify [off1] {sym} (ADDLconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (XORLmodify [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -20997,7 +20997,7 @@ func rewriteValue386_Op386XORLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386XORLmodify)
@@ -21009,7 +21009,7 @@ func rewriteValue386_Op386XORLmodify_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLmodify [off1] {sym1} (LEAL [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (XORLmodify [off1+off2] {MergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -21024,7 +21024,7 @@ func rewriteValue386_Op386XORLmodify_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386XORLmodify)
@@ -21043,7 +21043,7 @@ func rewriteValue386_Op386XORLmodifyidx4_0(v *Value) bool {
 	config := b.Func.Config
 	_ = config
 	// match: (XORLmodifyidx4 [off1] {sym} (ADDLconst [off2] base) idx val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: Is32Bit(off1+off2)
 	// result: (XORLmodifyidx4 [off1+off2] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -21058,7 +21058,7 @@ func rewriteValue386_Op386XORLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2)) {
+		if !(Is32Bit(off1 + off2)) {
 			break
 		}
 		v.Reset(Op386XORLmodifyidx4)
@@ -21071,7 +21071,7 @@ func rewriteValue386_Op386XORLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLmodifyidx4 [off1] {sym} base (ADDLconst [off2] idx) val mem)
-	// cond: is32Bit(off1+off2*4)
+	// cond: Is32Bit(off1+off2*4)
 	// result: (XORLmodifyidx4 [off1+off2*4] {sym} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -21086,7 +21086,7 @@ func rewriteValue386_Op386XORLmodifyidx4_0(v *Value) bool {
 		idx := v_1.Args[0]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1 + off2*4)) {
+		if !(Is32Bit(off1 + off2*4)) {
 			break
 		}
 		v.Reset(Op386XORLmodifyidx4)
@@ -21099,7 +21099,7 @@ func rewriteValue386_Op386XORLmodifyidx4_0(v *Value) bool {
 		return true
 	}
 	// match: (XORLmodifyidx4 [off1] {sym1} (LEAL [off2] {sym2} base) idx val mem)
-	// cond: is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)
+	// cond: Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)
 	// result: (XORLmodifyidx4 [off1+off2] {MergeSym(sym1,sym2)} base idx val mem)
 	for {
 		off1 := v.AuxInt
@@ -21115,7 +21115,7 @@ func rewriteValue386_Op386XORLmodifyidx4_0(v *Value) bool {
 		idx := v.Args[1]
 		val := v.Args[2]
 		mem := v.Args[3]
-		if !(is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.ctxt.Flag_shared)) {
+		if !(Is32Bit(off1+off2) && CanMergeSym(sym1, sym2) && (base.Op != OpSB || !config.Ctxt.Flag_shared)) {
 			break
 		}
 		v.Reset(Op386XORLmodifyidx4)
@@ -23488,11 +23488,11 @@ func rewriteValue386_OpNeg32F_0(v *Value) bool {
 	typ := &b.Func.Config.Types
 	_ = typ
 	// match: (Neg32F x)
-	// cond: !config.use387
+	// cond: !config.Use387
 	// result: (PXOR x (MOVSSconst <typ.Float32> [AuxFrom32F(float32(math.Copysign(0, -1)))]))
 	for {
 		x := v.Args[0]
-		if !(!config.use387) {
+		if !(!config.Use387) {
 			break
 		}
 		v.Reset(Op386PXOR)
@@ -23503,11 +23503,11 @@ func rewriteValue386_OpNeg32F_0(v *Value) bool {
 		return true
 	}
 	// match: (Neg32F x)
-	// cond: config.use387
+	// cond: config.Use387
 	// result: (FCHS x)
 	for {
 		x := v.Args[0]
-		if !(config.use387) {
+		if !(config.Use387) {
 			break
 		}
 		v.Reset(Op386FCHS)
@@ -23524,11 +23524,11 @@ func rewriteValue386_OpNeg64F_0(v *Value) bool {
 	typ := &b.Func.Config.Types
 	_ = typ
 	// match: (Neg64F x)
-	// cond: !config.use387
+	// cond: !config.Use387
 	// result: (PXOR x (MOVSDconst <typ.Float64> [AuxFrom64F(math.Copysign(0, -1))]))
 	for {
 		x := v.Args[0]
-		if !(!config.use387) {
+		if !(!config.Use387) {
 			break
 		}
 		v.Reset(Op386PXOR)
@@ -23539,11 +23539,11 @@ func rewriteValue386_OpNeg64F_0(v *Value) bool {
 		return true
 	}
 	// match: (Neg64F x)
-	// cond: config.use387
+	// cond: config.Use387
 	// result: (FCHS x)
 	for {
 		x := v.Args[0]
-		if !(config.use387) {
+		if !(config.Use387) {
 			break
 		}
 		v.Reset(Op386FCHS)

@@ -322,7 +322,7 @@ func wbcall(pos src.XPos, b *Block, fn, typ *obj.LSym, ptr, val, mem, sp, sb *Va
 	}
 
 	// put arguments on stack
-	off := config.ctxt.FixedFrameSize()
+	off := config.Ctxt.FixedFrameSize()
 
 	if typ != nil { // for typedmemmove
 		taddr := b.NewValue1A(pos, OpAddr, b.Func.Config.Types.Uintptr, typ, sb)
@@ -347,7 +347,7 @@ func wbcall(pos src.XPos, b *Block, fn, typ *obj.LSym, ptr, val, mem, sp, sb *Va
 
 	// issue call
 	mem = b.NewValue1A(pos, OpStaticCall, types.TypeMem, fn, mem)
-	mem.AuxInt = off - config.ctxt.FixedFrameSize()
+	mem.AuxInt = off - config.Ctxt.FixedFrameSize()
 
 	if valIsVolatile {
 		mem = b.NewValue1A(pos, OpVarKill, types.TypeMem, tmp, mem) // mark temp dead
@@ -412,7 +412,7 @@ func IsNewObject(v *Value, mem *Value) bool {
 		return false
 	}
 	c := v.Block.Func.Config
-	if v.Args[0].AuxInt != c.ctxt.FixedFrameSize()+c.RegSize { // offset of return value
+	if v.Args[0].AuxInt != c.Ctxt.FixedFrameSize()+c.RegSize { // offset of return value
 		return false
 	}
 	return true

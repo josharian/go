@@ -5074,7 +5074,7 @@ func rewriteValueWasm_OpWasmF64Add_0(v *Value) bool {
 	_ = typ
 	// match: (F64Add (F64Const [x]) (F64Const [y]))
 	// cond:
-	// result: (F64Const [AuxFrom64F(auxTo64F(x) + auxTo64F(y))])
+	// result: (F64Const [AuxFrom64F(AuxTo64F(x) + AuxTo64F(y))])
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
@@ -5088,7 +5088,7 @@ func rewriteValueWasm_OpWasmF64Add_0(v *Value) bool {
 		}
 		y := v_1.AuxInt
 		v.Reset(OpWasmF64Const)
-		v.AuxInt = AuxFrom64F(auxTo64F(x) + auxTo64F(y))
+		v.AuxInt = AuxFrom64F(AuxTo64F(x) + AuxTo64F(y))
 		return true
 	}
 	// match: (F64Add (F64Const [x]) y)
@@ -5118,7 +5118,7 @@ func rewriteValueWasm_OpWasmF64Mul_0(v *Value) bool {
 	_ = typ
 	// match: (F64Mul (F64Const [x]) (F64Const [y]))
 	// cond:
-	// result: (F64Const [AuxFrom64F(auxTo64F(x) * auxTo64F(y))])
+	// result: (F64Const [AuxFrom64F(AuxTo64F(x) * AuxTo64F(y))])
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
@@ -5132,7 +5132,7 @@ func rewriteValueWasm_OpWasmF64Mul_0(v *Value) bool {
 		}
 		y := v_1.AuxInt
 		v.Reset(OpWasmF64Const)
-		v.AuxInt = AuxFrom64F(auxTo64F(x) * auxTo64F(y))
+		v.AuxInt = AuxFrom64F(AuxTo64F(x) * AuxTo64F(y))
 		return true
 	}
 	// match: (F64Mul (F64Const [x]) y)
@@ -5230,7 +5230,7 @@ func rewriteValueWasm_OpWasmI64AddConst_0(v *Value) bool {
 		return true
 	}
 	// match: (I64AddConst [off] (LoweredAddr {sym} [off2] base))
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (LoweredAddr {sym} [off+off2] base)
 	for {
 		off := v.AuxInt
@@ -5241,7 +5241,7 @@ func rewriteValueWasm_OpWasmI64AddConst_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		sym := v_0.Aux
 		base := v_0.Args[0]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmLoweredAddr)
@@ -5404,7 +5404,7 @@ func rewriteValueWasm_OpWasmI64Eqz_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Load_0(v *Value) bool {
 	// match: (I64Load [off] (I64AddConst [off2] ptr) mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Load [off+off2] ptr mem)
 	for {
 		off := v.AuxInt
@@ -5416,7 +5416,7 @@ func rewriteValueWasm_OpWasmI64Load_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Load)
@@ -5429,7 +5429,7 @@ func rewriteValueWasm_OpWasmI64Load_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Load16S_0(v *Value) bool {
 	// match: (I64Load16S [off] (I64AddConst [off2] ptr) mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Load16S [off+off2] ptr mem)
 	for {
 		off := v.AuxInt
@@ -5441,7 +5441,7 @@ func rewriteValueWasm_OpWasmI64Load16S_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Load16S)
@@ -5454,7 +5454,7 @@ func rewriteValueWasm_OpWasmI64Load16S_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Load16U_0(v *Value) bool {
 	// match: (I64Load16U [off] (I64AddConst [off2] ptr) mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Load16U [off+off2] ptr mem)
 	for {
 		off := v.AuxInt
@@ -5466,7 +5466,7 @@ func rewriteValueWasm_OpWasmI64Load16U_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Load16U)
@@ -5479,7 +5479,7 @@ func rewriteValueWasm_OpWasmI64Load16U_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Load32S_0(v *Value) bool {
 	// match: (I64Load32S [off] (I64AddConst [off2] ptr) mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Load32S [off+off2] ptr mem)
 	for {
 		off := v.AuxInt
@@ -5491,7 +5491,7 @@ func rewriteValueWasm_OpWasmI64Load32S_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Load32S)
@@ -5504,7 +5504,7 @@ func rewriteValueWasm_OpWasmI64Load32S_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Load32U_0(v *Value) bool {
 	// match: (I64Load32U [off] (I64AddConst [off2] ptr) mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Load32U [off+off2] ptr mem)
 	for {
 		off := v.AuxInt
@@ -5516,7 +5516,7 @@ func rewriteValueWasm_OpWasmI64Load32U_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Load32U)
@@ -5529,7 +5529,7 @@ func rewriteValueWasm_OpWasmI64Load32U_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Load8S_0(v *Value) bool {
 	// match: (I64Load8S [off] (I64AddConst [off2] ptr) mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Load8S [off+off2] ptr mem)
 	for {
 		off := v.AuxInt
@@ -5541,7 +5541,7 @@ func rewriteValueWasm_OpWasmI64Load8S_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Load8S)
@@ -5554,7 +5554,7 @@ func rewriteValueWasm_OpWasmI64Load8S_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Load8U_0(v *Value) bool {
 	// match: (I64Load8U [off] (I64AddConst [off2] ptr) mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Load8U [off+off2] ptr mem)
 	for {
 		off := v.AuxInt
@@ -5566,7 +5566,7 @@ func rewriteValueWasm_OpWasmI64Load8U_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		ptr := v_0.Args[0]
 		mem := v.Args[1]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Load8U)
@@ -5821,7 +5821,7 @@ func rewriteValueWasm_OpWasmI64ShrU_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Store_0(v *Value) bool {
 	// match: (I64Store [off] (I64AddConst [off2] ptr) val mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Store [off+off2] ptr val mem)
 	for {
 		off := v.AuxInt
@@ -5834,7 +5834,7 @@ func rewriteValueWasm_OpWasmI64Store_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Store)
@@ -5848,7 +5848,7 @@ func rewriteValueWasm_OpWasmI64Store_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Store16_0(v *Value) bool {
 	// match: (I64Store16 [off] (I64AddConst [off2] ptr) val mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Store16 [off+off2] ptr val mem)
 	for {
 		off := v.AuxInt
@@ -5861,7 +5861,7 @@ func rewriteValueWasm_OpWasmI64Store16_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Store16)
@@ -5875,7 +5875,7 @@ func rewriteValueWasm_OpWasmI64Store16_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Store32_0(v *Value) bool {
 	// match: (I64Store32 [off] (I64AddConst [off2] ptr) val mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Store32 [off+off2] ptr val mem)
 	for {
 		off := v.AuxInt
@@ -5888,7 +5888,7 @@ func rewriteValueWasm_OpWasmI64Store32_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Store32)
@@ -5902,7 +5902,7 @@ func rewriteValueWasm_OpWasmI64Store32_0(v *Value) bool {
 }
 func rewriteValueWasm_OpWasmI64Store8_0(v *Value) bool {
 	// match: (I64Store8 [off] (I64AddConst [off2] ptr) val mem)
-	// cond: isU32Bit(off+off2)
+	// cond: IsU32Bit(off+off2)
 	// result: (I64Store8 [off+off2] ptr val mem)
 	for {
 		off := v.AuxInt
@@ -5915,7 +5915,7 @@ func rewriteValueWasm_OpWasmI64Store8_0(v *Value) bool {
 		ptr := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(isU32Bit(off + off2)) {
+		if !(IsU32Bit(off + off2)) {
 			break
 		}
 		v.Reset(OpWasmI64Store8)

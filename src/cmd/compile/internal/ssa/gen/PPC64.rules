@@ -75,11 +75,11 @@
 (ConstBool [b]) -> (MOVDconst [b])
 
 // Constant folding
-(FABS (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Abs(auxTo64F(x)))])
-(FSQRT (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Sqrt(auxTo64F(x)))])
-(FFLOOR (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Floor(auxTo64F(x)))])
-(FCEIL (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Ceil(auxTo64F(x)))])
-(FTRUNC (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Trunc(auxTo64F(x)))])
+(FABS (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Abs(AuxTo64F(x)))])
+(FSQRT (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Sqrt(AuxTo64F(x)))])
+(FFLOOR (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Floor(AuxTo64F(x)))])
+(FCEIL (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Ceil(AuxTo64F(x)))])
+(FTRUNC (FMOVDconst [x])) -> (FMOVDconst [AuxFrom64F(math.Trunc(AuxTo64F(x)))])
 
 // Rotate generation with const shift
 (ADD (SLDconst x [c]) (SRDconst x [d])) && d == 64-c -> (ROTLconst [c] x)
@@ -329,8 +329,8 @@
 // Lowering comparisons
 (EqB x y)  -> (ANDconst [1] (EQV x y))
 // Sign extension dependence on operand sign sets up for sign/zero-extension elision later
-(Eq8 x y) && isSigned(x.Type) && isSigned(y.Type) -> (Equal (CMPW (SignExt8to32 x) (SignExt8to32 y)))
-(Eq16 x y) && isSigned(x.Type) && isSigned(y.Type) -> (Equal (CMPW (SignExt16to32 x) (SignExt16to32 y)))
+(Eq8 x y) && IsSigned(x.Type) && IsSigned(y.Type) -> (Equal (CMPW (SignExt8to32 x) (SignExt8to32 y)))
+(Eq16 x y) && IsSigned(x.Type) && IsSigned(y.Type) -> (Equal (CMPW (SignExt16to32 x) (SignExt16to32 y)))
 (Eq8 x y)  -> (Equal (CMPW (ZeroExt8to32 x) (ZeroExt8to32 y)))
 (Eq16 x y) -> (Equal (CMPW (ZeroExt16to32 x) (ZeroExt16to32 y)))
 (Eq32 x y) -> (Equal (CMPW x y))
@@ -341,8 +341,8 @@
 
 (NeqB x y)  -> (XOR x y)
 // Like Eq8 and Eq16, prefer sign extension likely to enable later elision.
-(Neq8 x y) && isSigned(x.Type) && isSigned(y.Type) -> (NotEqual (CMPW (SignExt8to32 x) (SignExt8to32 y)))
-(Neq16 x y) && isSigned(x.Type) && isSigned(y.Type) -> (NotEqual (CMPW (SignExt16to32 x) (SignExt16to32 y)))
+(Neq8 x y) && IsSigned(x.Type) && IsSigned(y.Type) -> (NotEqual (CMPW (SignExt8to32 x) (SignExt8to32 y)))
+(Neq16 x y) && IsSigned(x.Type) && IsSigned(y.Type) -> (NotEqual (CMPW (SignExt16to32 x) (SignExt16to32 y)))
 (Neq8 x y)  -> (NotEqual (CMPW (ZeroExt8to32 x) (ZeroExt8to32 y)))
 (Neq16 x y) -> (NotEqual (CMPW (ZeroExt16to32 x) (ZeroExt16to32 y)))
 (Neq32 x y) -> (NotEqual (CMPW x y))
@@ -527,13 +527,13 @@
 
 // Lowering loads
 (Load <t> ptr mem) && (Is64BitInt(t) || IsPtr(t)) -> (MOVDload ptr mem)
-(Load <t> ptr mem) && Is32BitInt(t) && isSigned(t) -> (MOVWload ptr mem)
-(Load <t> ptr mem) && Is32BitInt(t) && !isSigned(t) -> (MOVWZload ptr mem)
-(Load <t> ptr mem) && Is16BitInt(t) && isSigned(t) -> (MOVHload ptr mem)
-(Load <t> ptr mem) && Is16BitInt(t) && !isSigned(t) -> (MOVHZload ptr mem)
+(Load <t> ptr mem) && Is32BitInt(t) && IsSigned(t) -> (MOVWload ptr mem)
+(Load <t> ptr mem) && Is32BitInt(t) && !IsSigned(t) -> (MOVWZload ptr mem)
+(Load <t> ptr mem) && Is16BitInt(t) && IsSigned(t) -> (MOVHload ptr mem)
+(Load <t> ptr mem) && Is16BitInt(t) && !IsSigned(t) -> (MOVHZload ptr mem)
 (Load <t> ptr mem) && t.IsBoolean() -> (MOVBZload ptr mem)
-(Load <t> ptr mem) && Is8BitInt(t) && isSigned(t) -> (MOVBreg (MOVBZload ptr mem)) // PPC has no signed-byte load.
-(Load <t> ptr mem) && Is8BitInt(t) && !isSigned(t) -> (MOVBZload ptr mem)
+(Load <t> ptr mem) && Is8BitInt(t) && IsSigned(t) -> (MOVBreg (MOVBZload ptr mem)) // PPC has no signed-byte load.
+(Load <t> ptr mem) && Is8BitInt(t) && !IsSigned(t) -> (MOVBZload ptr mem)
 
 (Load <t> ptr mem) && Is32BitFloat(t) -> (FMOVSload ptr mem)
 (Load <t> ptr mem) && Is64BitFloat(t) -> (FMOVDload ptr mem)
@@ -657,9 +657,9 @@
 (XOR (MOVDconst [c]) (MOVDconst [d])) -> (MOVDconst [c^d])
 
 // Discover consts
-(AND x (MOVDconst [c])) && isU16Bit(c) -> (ANDconst [c] x)
-(XOR x (MOVDconst [c])) && isU32Bit(c) -> (XORconst [c] x)
-(OR x (MOVDconst [c])) && isU32Bit(c) -> (ORconst [c] x)
+(AND x (MOVDconst [c])) && IsU16Bit(c) -> (ANDconst [c] x)
+(XOR x (MOVDconst [c])) && IsU32Bit(c) -> (XORconst [c] x)
+(OR x (MOVDconst [c])) && IsU32Bit(c) -> (ORconst [c] x)
 
 // Simplify consts
 (ANDconst [c] (ANDconst [d] x)) -> (ANDconst [c&d] x)
@@ -704,12 +704,12 @@
 (MOV(H|W)reg (SRAWconst [c] (MOVHreg x))) -> (SRAWconst [c] (MOVHreg x))
 (MOVWreg (SRAWconst [c] (MOVWreg x))) -> (SRAWconst [c] (MOVWreg x))
 
-(MOVWZreg (SRWconst [c] x)) && sizeof(x.Type) <= 32 -> (SRWconst [c] x)
-(MOVHZreg (SRWconst [c] x)) && sizeof(x.Type) <= 16 -> (SRWconst [c] x)
-(MOVBZreg (SRWconst [c] x)) && sizeof(x.Type) == 8 -> (SRWconst [c] x)
-(MOVWreg (SRAWconst [c] x)) && sizeof(x.Type) <= 32 -> (SRAWconst [c] x)
-(MOVHreg (SRAWconst [c] x)) && sizeof(x.Type) <= 16 -> (SRAWconst [c] x)
-(MOVBreg (SRAWconst [c] x)) && sizeof(x.Type) == 8 -> (SRAWconst [c] x)
+(MOVWZreg (SRWconst [c] x)) && SizeOf(x.Type) <= 32 -> (SRWconst [c] x)
+(MOVHZreg (SRWconst [c] x)) && SizeOf(x.Type) <= 16 -> (SRWconst [c] x)
+(MOVBZreg (SRWconst [c] x)) && SizeOf(x.Type) == 8 -> (SRWconst [c] x)
+(MOVWreg (SRAWconst [c] x)) && SizeOf(x.Type) <= 32 -> (SRAWconst [c] x)
+(MOVHreg (SRAWconst [c] x)) && SizeOf(x.Type) <= 16 -> (SRAWconst [c] x)
+(MOVBreg (SRAWconst [c] x)) && SizeOf(x.Type) == 8 -> (SRAWconst [c] x)
 
 // initial right shift will handle sign/zero extend
 (MOVBZreg (SRDconst [c] x)) && c>=56 -> (SRDconst [c] x)
@@ -765,10 +765,10 @@
 
 // Arithmetic constant ops
 
-(ADD x (MOVDconst [c])) && is32Bit(c) -> (ADDconst [c] x)
-(ADDconst [c] (ADDconst [d] x)) && is32Bit(c+d) -> (ADDconst [c+d] x)
+(ADD x (MOVDconst [c])) && Is32Bit(c) -> (ADDconst [c] x)
+(ADDconst [c] (ADDconst [d] x)) && Is32Bit(c+d) -> (ADDconst [c+d] x)
 (ADDconst [0] x) -> x
-(SUB x (MOVDconst [c])) && is32Bit(-c) -> (ADDconst [-c] x)
+(SUB x (MOVDconst [c])) && Is32Bit(-c) -> (ADDconst [-c] x)
 // TODO deal with subtract-from-const
 
 (ADDconst [c] (MOVDaddr [d] {sym} x)) -> (MOVDaddr [c+d] {sym} x)
@@ -788,13 +788,13 @@
 (MFVSRD x:(FMOVDload [off] {sym} ptr mem)) && x.Uses == 1 && Clobber(x) -> @x.Block (MOVDload [off] {sym} ptr mem)
 
 // Fold offsets for stores.
-(MOVDstore [off1] {sym} (ADDconst [off2] x) val mem) && is16Bit(off1+off2) -> (MOVDstore [off1+off2] {sym} x val mem)
-(MOVWstore [off1] {sym} (ADDconst [off2] x) val mem) && is16Bit(off1+off2) -> (MOVWstore [off1+off2] {sym} x val mem)
-(MOVHstore [off1] {sym} (ADDconst [off2] x) val mem) && is16Bit(off1+off2) -> (MOVHstore [off1+off2] {sym} x val mem)
-(MOVBstore [off1] {sym} (ADDconst [off2] x) val mem) && is16Bit(off1+off2) -> (MOVBstore [off1+off2] {sym} x val mem)
+(MOVDstore [off1] {sym} (ADDconst [off2] x) val mem) && Is16Bit(off1+off2) -> (MOVDstore [off1+off2] {sym} x val mem)
+(MOVWstore [off1] {sym} (ADDconst [off2] x) val mem) && Is16Bit(off1+off2) -> (MOVWstore [off1+off2] {sym} x val mem)
+(MOVHstore [off1] {sym} (ADDconst [off2] x) val mem) && Is16Bit(off1+off2) -> (MOVHstore [off1+off2] {sym} x val mem)
+(MOVBstore [off1] {sym} (ADDconst [off2] x) val mem) && Is16Bit(off1+off2) -> (MOVBstore [off1+off2] {sym} x val mem)
 
-(FMOVSstore [off1] {sym} (ADDconst [off2] ptr) val mem) && is16Bit(off1+off2) -> (FMOVSstore [off1+off2] {sym} ptr val mem)
-(FMOVDstore [off1] {sym} (ADDconst [off2] ptr) val mem) && is16Bit(off1+off2) -> (FMOVDstore [off1+off2] {sym} ptr val mem)
+(FMOVSstore [off1] {sym} (ADDconst [off2] ptr) val mem) && Is16Bit(off1+off2) -> (FMOVSstore [off1+off2] {sym} ptr val mem)
+(FMOVDstore [off1] {sym} (ADDconst [off2] ptr) val mem) && Is16Bit(off1+off2) -> (FMOVDstore [off1+off2] {sym} ptr val mem)
 
 // Fold address into load/store.
 // The assembler needs to generate several instructions and use
@@ -847,22 +847,22 @@
         (FMOVDload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
 
 // Fold offsets for loads.
-(FMOVSload [off1] {sym} (ADDconst [off2] ptr) mem) && is16Bit(off1+off2) -> (FMOVSload [off1+off2] {sym} ptr mem)
-(FMOVDload [off1] {sym} (ADDconst [off2] ptr) mem) && is16Bit(off1+off2) -> (FMOVDload [off1+off2] {sym} ptr mem)
+(FMOVSload [off1] {sym} (ADDconst [off2] ptr) mem) && Is16Bit(off1+off2) -> (FMOVSload [off1+off2] {sym} ptr mem)
+(FMOVDload [off1] {sym} (ADDconst [off2] ptr) mem) && Is16Bit(off1+off2) -> (FMOVDload [off1+off2] {sym} ptr mem)
 
-(MOVDload [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) -> (MOVDload [off1+off2] {sym} x mem)
-(MOVWload [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) -> (MOVWload [off1+off2] {sym} x mem)
-(MOVWZload [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) -> (MOVWZload [off1+off2] {sym} x mem)
-(MOVHload [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) -> (MOVHload [off1+off2] {sym} x mem)
-(MOVHZload [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) -> (MOVHZload [off1+off2] {sym} x mem)
-(MOVBZload [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) -> (MOVBZload [off1+off2] {sym} x mem)
+(MOVDload [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) -> (MOVDload [off1+off2] {sym} x mem)
+(MOVWload [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) -> (MOVWload [off1+off2] {sym} x mem)
+(MOVWZload [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) -> (MOVWZload [off1+off2] {sym} x mem)
+(MOVHload [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) -> (MOVHload [off1+off2] {sym} x mem)
+(MOVHZload [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) -> (MOVHZload [off1+off2] {sym} x mem)
+(MOVBZload [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) -> (MOVBZload [off1+off2] {sym} x mem)
 
 // Determine load + addressing that can be done as a register indexed load
 (MOV(D|W|WZ|H|HZ|BZ)load [0] {sym} p:(ADD ptr idx) mem) && sym == nil && p.Uses == 1 -> (MOV(D|W|WZ|H|HZ|BZ)loadidx ptr idx mem)
 
 // Determine indexed loads with constant values that can be done without index
-(MOV(D|W|WZ|H|HZ|BZ)loadidx ptr (MOVDconst [c]) mem) && is16Bit(c) -> (MOV(D|W|WZ|H|HZ|BZ)load [c] ptr mem)
-(MOV(D|W|WZ|H|HZ|BZ)loadidx (MOVDconst [c]) ptr mem) && is16Bit(c) -> (MOV(D|W|WZ|H|HZ|BZ)load [c] ptr mem)
+(MOV(D|W|WZ|H|HZ|BZ)loadidx ptr (MOVDconst [c]) mem) && Is16Bit(c) -> (MOV(D|W|WZ|H|HZ|BZ)load [c] ptr mem)
+(MOV(D|W|WZ|H|HZ|BZ)loadidx (MOVDconst [c]) ptr mem) && Is16Bit(c) -> (MOV(D|W|WZ|H|HZ|BZ)load [c] ptr mem)
 
 
 // Store of zero -> storezero
@@ -872,21 +872,21 @@
 (MOVBstore [off] {sym} ptr (MOVDconst [0]) mem) -> (MOVBstorezero [off] {sym} ptr mem)
 
 // Fold offsets for storezero
-(MOVDstorezero [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) ->
+(MOVDstorezero [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) ->
     (MOVDstorezero [off1+off2] {sym} x mem)
-(MOVWstorezero [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) ->
+(MOVWstorezero [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) ->
     (MOVWstorezero [off1+off2] {sym} x mem)
-(MOVHstorezero [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) ->
+(MOVHstorezero [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) ->
     (MOVHstorezero [off1+off2] {sym} x mem)
-(MOVBstorezero [off1] {sym} (ADDconst [off2] x) mem) && is16Bit(off1+off2) ->
+(MOVBstorezero [off1] {sym} (ADDconst [off2] x) mem) && Is16Bit(off1+off2) ->
     (MOVBstorezero [off1+off2] {sym} x mem)
 
 // Stores with addressing that can be done as indexed stores
 (MOV(D|W|H|B)store [off] {sym} p:(ADD ptr idx) val mem) && off == 0 && sym == nil && p.Uses == 1 -> (MOV(D|W|H|B)storeidx ptr idx val mem)
 
 // Stores with constant index values can be done without indexed instructions
-(MOV(D|W|H|B)storeidx ptr (MOVDconst [c]) val mem) && is16Bit(c) -> (MOV(D|W|H|B)store [c] ptr val mem)
-(MOV(D|W|H|B)storeidx (MOVDconst [c]) ptr val mem) && is16Bit(c) -> (MOV(D|W|H|B)store [c] ptr val mem)
+(MOV(D|W|H|B)storeidx ptr (MOVDconst [c]) val mem) && Is16Bit(c) -> (MOV(D|W|H|B)store [c] ptr val mem)
+(MOV(D|W|H|B)storeidx (MOVDconst [c]) ptr val mem) && Is16Bit(c) -> (MOV(D|W|H|B)store [c] ptr val mem)
 
 // Fold symbols into storezero
 (MOVDstorezero [off1] {sym1} p:(MOVDaddr [off2] {sym2} x) mem) && CanMergeSym(sym1,sym2)
@@ -930,11 +930,11 @@
 (ZeroExt16to(32|64) x) -> (MOVHZreg x)
 (ZeroExt32to64 x) -> (MOVWZreg x)
 
-(Trunc(16|32|64)to8  x) && isSigned(x.Type) -> (MOVBreg x)
+(Trunc(16|32|64)to8  x) && IsSigned(x.Type) -> (MOVBreg x)
 (Trunc(16|32|64)to8  x) -> (MOVBZreg x)
-(Trunc(32|64)to16 x) && isSigned(x.Type) -> (MOVHreg x)
+(Trunc(32|64)to16 x) && IsSigned(x.Type) -> (MOVHreg x)
 (Trunc(32|64)to16 x) -> (MOVHZreg x)
-(Trunc64to32 x) && isSigned(x.Type) -> (MOVWreg x)
+(Trunc64to32 x) && IsSigned(x.Type) -> (MOVWreg x)
 (Trunc64to32 x) -> (MOVWZreg x)
 
 (Slicemask <t> x) -> (SRADconst (NEG <t> x) [63])
@@ -953,12 +953,12 @@
 (MOVWreg x:(MOVWloadidx _ _ _)) -> x
 
 // don't extend if argument is already extended
-(MOVBreg x:(Arg <t>)) && Is8BitInt(t) && isSigned(t) -> x
-(MOVBZreg x:(Arg <t>)) && Is8BitInt(t) && !isSigned(t) -> x
-(MOVHreg x:(Arg <t>)) && (Is8BitInt(t) || Is16BitInt(t)) && isSigned(t) -> x
-(MOVHZreg x:(Arg <t>)) && (Is8BitInt(t) || Is16BitInt(t)) && !isSigned(t) -> x
-(MOVWreg x:(Arg <t>)) && (Is8BitInt(t) || Is16BitInt(t) || Is32BitInt(t)) && isSigned(t) -> x
-(MOVWZreg x:(Arg <t>)) && (Is8BitInt(t) || Is16BitInt(t) || Is32BitInt(t)) && !isSigned(t) -> x
+(MOVBreg x:(Arg <t>)) && Is8BitInt(t) && IsSigned(t) -> x
+(MOVBZreg x:(Arg <t>)) && Is8BitInt(t) && !IsSigned(t) -> x
+(MOVHreg x:(Arg <t>)) && (Is8BitInt(t) || Is16BitInt(t)) && IsSigned(t) -> x
+(MOVHZreg x:(Arg <t>)) && (Is8BitInt(t) || Is16BitInt(t)) && !IsSigned(t) -> x
+(MOVWreg x:(Arg <t>)) && (Is8BitInt(t) || Is16BitInt(t) || Is32BitInt(t)) && IsSigned(t) -> x
+(MOVWZreg x:(Arg <t>)) && (Is8BitInt(t) || Is16BitInt(t) || Is32BitInt(t)) && !IsSigned(t) -> x
 
 (MOVBZreg (MOVDconst [c]))  -> (MOVDconst [int64(uint8(c))])
 (MOVBreg (MOVDconst [c]))  -> (MOVDconst [int64(int8(c))])
@@ -988,15 +988,15 @@
 (CMPWU x (MOVWZreg y)) -> (CMPWU x y)
 (CMPWU (MOVWZreg x) y) -> (CMPWU x y)
 
-(CMP x (MOVDconst [c])) && is16Bit(c) -> (CMPconst x [c])
-(CMP (MOVDconst [c]) y) && is16Bit(c) -> (InvertFlags (CMPconst y [c]))
-(CMPW x (MOVDconst [c])) && is16Bit(c) -> (CMPWconst x [c])
-(CMPW (MOVDconst [c]) y) && is16Bit(c) -> (InvertFlags (CMPWconst y [c]))
+(CMP x (MOVDconst [c])) && Is16Bit(c) -> (CMPconst x [c])
+(CMP (MOVDconst [c]) y) && Is16Bit(c) -> (InvertFlags (CMPconst y [c]))
+(CMPW x (MOVDconst [c])) && Is16Bit(c) -> (CMPWconst x [c])
+(CMPW (MOVDconst [c]) y) && Is16Bit(c) -> (InvertFlags (CMPWconst y [c]))
 
-(CMPU x (MOVDconst [c])) && isU16Bit(c) -> (CMPUconst x [c])
-(CMPU (MOVDconst [c]) y) && isU16Bit(c) -> (InvertFlags (CMPUconst y [c]))
-(CMPWU x (MOVDconst [c])) && isU16Bit(c) -> (CMPWUconst x [c])
-(CMPWU (MOVDconst [c]) y) && isU16Bit(c) -> (InvertFlags (CMPWUconst y [c]))
+(CMPU x (MOVDconst [c])) && IsU16Bit(c) -> (CMPUconst x [c])
+(CMPU (MOVDconst [c]) y) && IsU16Bit(c) -> (InvertFlags (CMPUconst y [c]))
+(CMPWU x (MOVDconst [c])) && IsU16Bit(c) -> (CMPWUconst x [c])
+(CMPWU (MOVDconst [c]) y) && IsU16Bit(c) -> (InvertFlags (CMPWUconst y [c]))
 
 // A particular pattern seen in cgo code:
 (AND (MOVDconst [c]) x:(MOVBZload _ _)) -> (ANDconst [c&0xFF] x)

@@ -158,7 +158,7 @@ func IsPtr(t *types.Type) bool {
 	return t.IsPtrShaped()
 }
 
-func isSigned(t *types.Type) bool {
+func IsSigned(t *types.Type) bool {
 	return t.IsSigned()
 }
 
@@ -345,12 +345,12 @@ func nlz(x int64) int64 {
 	return int64(bits.LeadingZeros64(uint64(x)))
 }
 
-// ntz returns the number of trailing zeros.
-func ntz(x int64) int64 {
+// Ntz returns the number of trailing zeros.
+func Ntz(x int64) int64 {
 	return int64(bits.TrailingZeros64(uint64(x)))
 }
 
-func oneBit(x int64) bool {
+func OneBit(x int64) bool {
 	return bits.OnesCount64(uint64(x)) == 1
 }
 
@@ -361,7 +361,7 @@ func nlo(x int64) int64 {
 
 // nto returns the number of trailing ones.
 func nto(x int64) int64 {
-	return ntz(^x)
+	return Ntz(^x)
 }
 
 // Log2 returns logarithm in base 2 of uint64(n), with Log2(0) = -1.
@@ -398,28 +398,28 @@ func Is32Bit(n int64) bool {
 	return n == int64(int32(n))
 }
 
-// is16Bit reports whether n can be represented as a signed 16 bit integer.
-func is16Bit(n int64) bool {
+// Is16Bit reports whether n can be represented as a signed 16 bit integer.
+func Is16Bit(n int64) bool {
 	return n == int64(int16(n))
 }
 
-// isU12Bit reports whether n can be represented as an unsigned 12 bit integer.
-func isU12Bit(n int64) bool {
+// IsU12Bit reports whether n can be represented as an unsigned 12 bit integer.
+func IsU12Bit(n int64) bool {
 	return 0 <= n && n < (1<<12)
 }
 
-// isU16Bit reports whether n can be represented as an unsigned 16 bit integer.
-func isU16Bit(n int64) bool {
+// IsU16Bit reports whether n can be represented as an unsigned 16 bit integer.
+func IsU16Bit(n int64) bool {
 	return n == int64(uint16(n))
 }
 
-// isU32Bit reports whether n can be represented as an unsigned 32 bit integer.
-func isU32Bit(n int64) bool {
+// IsU32Bit reports whether n can be represented as an unsigned 32 bit integer.
+func IsU32Bit(n int64) bool {
 	return n == int64(uint32(n))
 }
 
-// is20Bit reports whether n can be represented as a signed 20 bit integer.
-func is20Bit(n int64) bool {
+// Is20Bit reports whether n can be represented as a signed 20 bit integer.
+func Is20Bit(n int64) bool {
 	return -(1<<19) <= n && n < (1<<19)
 }
 
@@ -489,13 +489,13 @@ func AuxFrom32F(f float32) int64 {
 	return int64(math.Float64bits(extend32Fto64F(f)))
 }
 
-// auxTo32F decodes a float32 from the AuxInt value provided.
-func auxTo32F(i int64) float32 {
+// AuxTo32F decodes a float32 from the AuxInt value provided.
+func AuxTo32F(i int64) float32 {
 	return truncate64Fto32F(math.Float64frombits(uint64(i)))
 }
 
-// auxTo64F decodes a float64 from the AuxInt value provided.
-func auxTo64F(i int64) float64 {
+// AuxTo64F decodes a float64 from the AuxInt value provided.
+func AuxTo64F(i int64) float64 {
 	return math.Float64frombits(uint64(i))
 }
 
@@ -595,7 +595,7 @@ func disjoint(p1 *Value, n1 int64, p2 *Value, n2 int64) bool {
 }
 
 // moveSize returns the number of bytes an aligned MOV instruction moves
-func moveSize(align int64, c *Config) int64 {
+func MoveSize(align int64, c *Config) int64 {
 	switch {
 	case align%8 == 0 && c.PtrSize == 8:
 		return 8
@@ -697,18 +697,18 @@ func warnRule(cond bool, v *Value, s string) bool {
 }
 
 // for a pseudo-op like (LessThan x), extract x
-func flagArg(v *Value) *Value {
+func FlagArg(v *Value) *Value {
 	if len(v.Args) != 1 || !v.Args[0].Type.IsFlags() {
 		return nil
 	}
 	return v.Args[0]
 }
 
-// arm64Negate finds the complement to an ARM64 condition code,
+// ARM64Negate finds the complement to an ARM64 condition code,
 // for example Equal -> NotEqual or LessThan -> GreaterEqual
 //
 // TODO: add floating-point conditions
-func arm64Negate(op Op) Op {
+func ARM64Negate(op Op) Op {
 	switch op {
 	case OpARM64LessThan:
 		return OpARM64GreaterEqual
@@ -735,14 +735,14 @@ func arm64Negate(op Op) Op {
 	}
 }
 
-// arm64Invert evaluates (InvertFlags op), which
+// ARM64Invert evaluates (InvertFlags op), which
 // is the same as altering the condition codes such
 // that the same result would be produced if the arguments
 // to the flag-generating instruction were reversed, e.g.
 // (InvertFlags (CMP x y)) -> (CMP y x)
 //
 // TODO: add floating-point conditions
-func arm64Invert(op Op) Op {
+func ARM64Invert(op Op) Op {
 	switch op {
 	case OpARM64LessThan:
 		return OpARM64GreaterThan
@@ -770,12 +770,12 @@ func arm64Invert(op Op) Op {
 // evaluate an ARM64 op against a flags value
 // that is potentially constant; return 1 for true,
 // -1 for false, and 0 for not constant.
-func ccARM64Eval(cc interface{}, flags *Value) int {
+func CCarm64Eval(cc interface{}, flags *Value) int {
 	op := cc.(Op)
 	fop := flags.Op
 	switch fop {
 	case OpARM64InvertFlags:
-		return -ccARM64Eval(op, flags.Args[0])
+		return -CCarm64Eval(op, flags.Args[0])
 	case OpARM64FlagEQ:
 		switch op {
 		case OpARM64Equal, OpARM64GreaterEqual, OpARM64LessEqual,
@@ -908,7 +908,7 @@ func reciprocalExact32(c float32) bool {
 }
 
 // check if an immediate can be directly encoded into an ARM's instruction
-func isARMImmRot(v uint32) bool {
+func IsARMImmRot(v uint32) bool {
 	for i := 0; i < 16; i++ {
 		if v&^0xff == 0 {
 			return true
@@ -931,7 +931,7 @@ func overlap(offset1, size1, offset2, size2 int64) bool {
 	return false
 }
 
-func areAdjacentOffsets(off1, off2, size int64) bool {
+func AreAdjacentOffsets(off1, off2, size int64) bool {
 	return off1+size == off2 || off1 == off2+size
 }
 
@@ -1038,7 +1038,7 @@ func isInlinableMemmove(dst, src *Value, sz int64, c *Config) bool {
 }
 
 // encodes the lsb and width for arm64 bitfield ops into the expected auxInt format.
-func arm64BFAuxInt(lsb, width int64) int64 {
+func ARM64BFAuxInt(lsb, width int64) int64 {
 	if lsb < 0 || lsb > 63 {
 		panic("ARM64 bit field lsb constant out of range")
 	}
@@ -1049,23 +1049,23 @@ func arm64BFAuxInt(lsb, width int64) int64 {
 }
 
 // returns the lsb part of the auxInt field of arm64 bitfield ops.
-func getARM64BFlsb(bfc int64) int64 {
+func GetARM64BFlsb(bfc int64) int64 {
 	return int64(uint64(bfc) >> 8)
 }
 
 // returns the width part of the auxInt field of arm64 bitfield ops.
-func getARM64BFwidth(bfc int64) int64 {
+func GetARM64BFwidth(bfc int64) int64 {
 	return bfc & 0xff
 }
 
 // checks if mask >> rshift applied at lsb is a valid arm64 bitfield op mask.
-func isARM64BFMask(lsb, mask, rshift int64) bool {
+func IsARM64BFMask(lsb, mask, rshift int64) bool {
 	shiftedMask := int64(uint64(mask) >> uint64(rshift))
 	return shiftedMask != 0 && IsPowerOfTwo(shiftedMask+1) && nto(shiftedMask)+lsb < 64
 }
 
 // returns the bitfield width of mask >> rshift for arm64 bitfield ops
-func arm64BFWidth(mask, rshift int64) int64 {
+func ARM64BFWidth(mask, rshift int64) int64 {
 	shiftedMask := int64(uint64(mask) >> uint64(rshift))
 	if shiftedMask == 0 {
 		panic("ARM64 BF mask is zero")
@@ -1073,9 +1073,9 @@ func arm64BFWidth(mask, rshift int64) int64 {
 	return nto(shiftedMask)
 }
 
-// sizeof returns the size of t in bytes.
+// SizeOf returns the size of t in bytes.
 // It will panic if t is not a *types.Type.
-func sizeof(t interface{}) int64 {
+func SizeOf(t interface{}) int64 {
 	return t.(*types.Type).Size()
 }
 

@@ -257,10 +257,10 @@
 
 // loads
 (Load <t> ptr mem) && t.IsBoolean() -> (MOVBUload ptr mem)
-(Load <t> ptr mem) && (Is8BitInt(t) && isSigned(t)) -> (MOVBload ptr mem)
-(Load <t> ptr mem) && (Is8BitInt(t) && !isSigned(t)) -> (MOVBUload ptr mem)
-(Load <t> ptr mem) && (Is16BitInt(t) && isSigned(t)) -> (MOVHload ptr mem)
-(Load <t> ptr mem) && (Is16BitInt(t) && !isSigned(t)) -> (MOVHUload ptr mem)
+(Load <t> ptr mem) && (Is8BitInt(t) && IsSigned(t)) -> (MOVBload ptr mem)
+(Load <t> ptr mem) && (Is8BitInt(t) && !IsSigned(t)) -> (MOVBUload ptr mem)
+(Load <t> ptr mem) && (Is16BitInt(t) && IsSigned(t)) -> (MOVHload ptr mem)
+(Load <t> ptr mem) && (Is16BitInt(t) && !IsSigned(t)) -> (MOVHUload ptr mem)
 (Load <t> ptr mem) && (Is32BitInt(t) || IsPtr(t)) -> (MOVWload ptr mem)
 (Load <t> ptr mem) && Is32BitFloat(t) -> (MOVFload ptr mem)
 (Load <t> ptr mem) && Is64BitFloat(t) -> (MOVDload ptr mem)
@@ -308,7 +308,7 @@
 	&& (s > 512 || config.NoDuffDevice) || t.(*types.Type).Alignment()%4 != 0 ->
 	(LoweredZero [t.(*types.Type).Alignment()]
 		ptr
-		(ADDconst <ptr.Type> ptr [s-moveSize(t.(*types.Type).Alignment(), config)])
+		(ADDconst <ptr.Type> ptr [s-MoveSize(t.(*types.Type).Alignment(), config)])
 		(MOVWconst [0])
 		mem)
 
@@ -349,7 +349,7 @@
 	(LoweredMove [t.(*types.Type).Alignment()]
 		dst
 		src
-		(ADDconst <src.Type> src [s-moveSize(t.(*types.Type).Alignment(), config)])
+		(ADDconst <src.Type> src [s-MoveSize(t.(*types.Type).Alignment(), config)])
 		mem)
 
 // calls
@@ -549,10 +549,10 @@
 (MUL x (MOVWconst [c])) && IsPowerOfTwo(c) -> (SLLconst [Log2(c)] x)
 (MUL x (MOVWconst [c])) && IsPowerOfTwo(c-1) && int32(c) >= 3 -> (ADDshiftLL x x [Log2(c-1)])
 (MUL x (MOVWconst [c])) && IsPowerOfTwo(c+1) && int32(c) >= 7 -> (RSBshiftLL x x [Log2(c+1)])
-(MUL x (MOVWconst [c])) && c%3 == 0 && IsPowerOfTwo(c/3) && is32Bit(c) -> (SLLconst [Log2(c/3)] (ADDshiftLL <x.Type> x x [1]))
-(MUL x (MOVWconst [c])) && c%5 == 0 && IsPowerOfTwo(c/5) && is32Bit(c) -> (SLLconst [Log2(c/5)] (ADDshiftLL <x.Type> x x [2]))
-(MUL x (MOVWconst [c])) && c%7 == 0 && IsPowerOfTwo(c/7) && is32Bit(c) -> (SLLconst [Log2(c/7)] (RSBshiftLL <x.Type> x x [3]))
-(MUL x (MOVWconst [c])) && c%9 == 0 && IsPowerOfTwo(c/9) && is32Bit(c) -> (SLLconst [Log2(c/9)] (ADDshiftLL <x.Type> x x [3]))
+(MUL x (MOVWconst [c])) && c%3 == 0 && IsPowerOfTwo(c/3) && Is32Bit(c) -> (SLLconst [Log2(c/3)] (ADDshiftLL <x.Type> x x [1]))
+(MUL x (MOVWconst [c])) && c%5 == 0 && IsPowerOfTwo(c/5) && Is32Bit(c) -> (SLLconst [Log2(c/5)] (ADDshiftLL <x.Type> x x [2]))
+(MUL x (MOVWconst [c])) && c%7 == 0 && IsPowerOfTwo(c/7) && Is32Bit(c) -> (SLLconst [Log2(c/7)] (RSBshiftLL <x.Type> x x [3]))
+(MUL x (MOVWconst [c])) && c%9 == 0 && IsPowerOfTwo(c/9) && Is32Bit(c) -> (SLLconst [Log2(c/9)] (ADDshiftLL <x.Type> x x [3]))
 
 (MULA x (MOVWconst [c]) a) && int32(c) == -1 -> (SUB a x)
 (MULA _ (MOVWconst [0]) a) -> a
@@ -560,10 +560,10 @@
 (MULA x (MOVWconst [c]) a) && IsPowerOfTwo(c) -> (ADD (SLLconst <x.Type> [Log2(c)] x) a)
 (MULA x (MOVWconst [c]) a) && IsPowerOfTwo(c-1) && int32(c) >= 3 -> (ADD (ADDshiftLL <x.Type> x x [Log2(c-1)]) a)
 (MULA x (MOVWconst [c]) a) && IsPowerOfTwo(c+1) && int32(c) >= 7 -> (ADD (RSBshiftLL <x.Type> x x [Log2(c+1)]) a)
-(MULA x (MOVWconst [c]) a) && c%3 == 0 && IsPowerOfTwo(c/3) && is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
-(MULA x (MOVWconst [c]) a) && c%5 == 0 && IsPowerOfTwo(c/5) && is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
-(MULA x (MOVWconst [c]) a) && c%7 == 0 && IsPowerOfTwo(c/7) && is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
-(MULA x (MOVWconst [c]) a) && c%9 == 0 && IsPowerOfTwo(c/9) && is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
+(MULA x (MOVWconst [c]) a) && c%3 == 0 && IsPowerOfTwo(c/3) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
+(MULA x (MOVWconst [c]) a) && c%5 == 0 && IsPowerOfTwo(c/5) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
+(MULA x (MOVWconst [c]) a) && c%7 == 0 && IsPowerOfTwo(c/7) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
+(MULA x (MOVWconst [c]) a) && c%9 == 0 && IsPowerOfTwo(c/9) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
 
 (MULA (MOVWconst [c]) x a) && int32(c) == -1 -> (SUB a x)
 (MULA (MOVWconst [0]) _ a) -> a
@@ -571,10 +571,10 @@
 (MULA (MOVWconst [c]) x a) && IsPowerOfTwo(c) -> (ADD (SLLconst <x.Type> [Log2(c)] x) a)
 (MULA (MOVWconst [c]) x a) && IsPowerOfTwo(c-1) && int32(c) >= 3 -> (ADD (ADDshiftLL <x.Type> x x [Log2(c-1)]) a)
 (MULA (MOVWconst [c]) x a) && IsPowerOfTwo(c+1) && int32(c) >= 7 -> (ADD (RSBshiftLL <x.Type> x x [Log2(c+1)]) a)
-(MULA (MOVWconst [c]) x a) && c%3 == 0 && IsPowerOfTwo(c/3) && is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
-(MULA (MOVWconst [c]) x a) && c%5 == 0 && IsPowerOfTwo(c/5) && is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
-(MULA (MOVWconst [c]) x a) && c%7 == 0 && IsPowerOfTwo(c/7) && is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
-(MULA (MOVWconst [c]) x a) && c%9 == 0 && IsPowerOfTwo(c/9) && is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
+(MULA (MOVWconst [c]) x a) && c%3 == 0 && IsPowerOfTwo(c/3) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
+(MULA (MOVWconst [c]) x a) && c%5 == 0 && IsPowerOfTwo(c/5) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
+(MULA (MOVWconst [c]) x a) && c%7 == 0 && IsPowerOfTwo(c/7) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
+(MULA (MOVWconst [c]) x a) && c%9 == 0 && IsPowerOfTwo(c/9) && Is32Bit(c) -> (ADD (SLLconst <x.Type> [Log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
 
 (MULS x (MOVWconst [c]) a) && int32(c) == -1 -> (ADD a x)
 (MULS _ (MOVWconst [0]) a) -> a
@@ -582,10 +582,10 @@
 (MULS x (MOVWconst [c]) a) && IsPowerOfTwo(c) -> (RSB (SLLconst <x.Type> [Log2(c)] x) a)
 (MULS x (MOVWconst [c]) a) && IsPowerOfTwo(c-1) && int32(c) >= 3 -> (RSB (ADDshiftLL <x.Type> x x [Log2(c-1)]) a)
 (MULS x (MOVWconst [c]) a) && IsPowerOfTwo(c+1) && int32(c) >= 7 -> (RSB (RSBshiftLL <x.Type> x x [Log2(c+1)]) a)
-(MULS x (MOVWconst [c]) a) && c%3 == 0 && IsPowerOfTwo(c/3) && is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
-(MULS x (MOVWconst [c]) a) && c%5 == 0 && IsPowerOfTwo(c/5) && is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
-(MULS x (MOVWconst [c]) a) && c%7 == 0 && IsPowerOfTwo(c/7) && is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
-(MULS x (MOVWconst [c]) a) && c%9 == 0 && IsPowerOfTwo(c/9) && is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
+(MULS x (MOVWconst [c]) a) && c%3 == 0 && IsPowerOfTwo(c/3) && Is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
+(MULS x (MOVWconst [c]) a) && c%5 == 0 && IsPowerOfTwo(c/5) && Is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
+(MULS x (MOVWconst [c]) a) && c%7 == 0 && IsPowerOfTwo(c/7) && Is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
+(MULS x (MOVWconst [c]) a) && c%9 == 0 && IsPowerOfTwo(c/9) && Is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
 
 (MULS (MOVWconst [c]) x a) && int32(c) == -1 -> (ADD a x)
 (MULS (MOVWconst [0]) _ a) -> a
@@ -593,10 +593,10 @@
 (MULS (MOVWconst [c]) x a) && IsPowerOfTwo(c) -> (RSB (SLLconst <x.Type> [Log2(c)] x) a)
 (MULS (MOVWconst [c]) x a) && IsPowerOfTwo(c-1) && int32(c) >= 3 -> (RSB (ADDshiftLL <x.Type> x x [Log2(c-1)]) a)
 (MULS (MOVWconst [c]) x a) && IsPowerOfTwo(c+1) && int32(c) >= 7 -> (RSB (RSBshiftLL <x.Type> x x [Log2(c+1)]) a)
-(MULS (MOVWconst [c]) x a) && c%3 == 0 && IsPowerOfTwo(c/3) && is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
-(MULS (MOVWconst [c]) x a) && c%5 == 0 && IsPowerOfTwo(c/5) && is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
-(MULS (MOVWconst [c]) x a) && c%7 == 0 && IsPowerOfTwo(c/7) && is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
-(MULS (MOVWconst [c]) x a) && c%9 == 0 && IsPowerOfTwo(c/9) && is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
+(MULS (MOVWconst [c]) x a) && c%3 == 0 && IsPowerOfTwo(c/3) && Is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/3)] (ADDshiftLL <x.Type> x x [1])) a)
+(MULS (MOVWconst [c]) x a) && c%5 == 0 && IsPowerOfTwo(c/5) && Is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/5)] (ADDshiftLL <x.Type> x x [2])) a)
+(MULS (MOVWconst [c]) x a) && c%7 == 0 && IsPowerOfTwo(c/7) && Is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/7)] (RSBshiftLL <x.Type> x x [3])) a)
+(MULS (MOVWconst [c]) x a) && c%9 == 0 && IsPowerOfTwo(c/9) && Is32Bit(c) -> (RSB (SLLconst <x.Type> [Log2(c/9)] (ADDshiftLL <x.Type> x x [3])) a)
 
 // div by constant
 (Select0 (CALLudiv x (MOVWconst [1]))) -> x
@@ -808,14 +808,14 @@
 (BICconst [c] _) && int32(c)==-1 -> (MOVWconst [0])
 
 // generic constant folding
-(ADDconst [c] x) && !isARMImmRot(uint32(c)) && isARMImmRot(uint32(-c)) -> (SUBconst [int64(int32(-c))] x)
-(SUBconst [c] x) && !isARMImmRot(uint32(c)) && isARMImmRot(uint32(-c)) -> (ADDconst [int64(int32(-c))] x)
-(ANDconst [c] x) && !isARMImmRot(uint32(c)) && isARMImmRot(^uint32(c)) -> (BICconst [int64(int32(^uint32(c)))] x)
-(BICconst [c] x) && !isARMImmRot(uint32(c)) && isARMImmRot(^uint32(c)) -> (ANDconst [int64(int32(^uint32(c)))] x)
-(ADDconst [c] x) && objabi.GOARM==7 && !isARMImmRot(uint32(c)) && uint32(c)>0xffff && uint32(-c)<=0xffff -> (SUBconst [int64(int32(-c))] x)
-(SUBconst [c] x) && objabi.GOARM==7 && !isARMImmRot(uint32(c)) && uint32(c)>0xffff && uint32(-c)<=0xffff -> (ANDconst [int64(int32(-c))] x)
-(ANDconst [c] x) && objabi.GOARM==7 && !isARMImmRot(uint32(c)) && uint32(c)>0xffff && ^uint32(c)<=0xffff -> (BICconst [int64(int32(^uint32(c)))] x)
-(BICconst [c] x) && objabi.GOARM==7 && !isARMImmRot(uint32(c)) && uint32(c)>0xffff && ^uint32(c)<=0xffff -> (ANDconst [int64(int32(^uint32(c)))] x)
+(ADDconst [c] x) && !IsARMImmRot(uint32(c)) && IsARMImmRot(uint32(-c)) -> (SUBconst [int64(int32(-c))] x)
+(SUBconst [c] x) && !IsARMImmRot(uint32(c)) && IsARMImmRot(uint32(-c)) -> (ADDconst [int64(int32(-c))] x)
+(ANDconst [c] x) && !IsARMImmRot(uint32(c)) && IsARMImmRot(^uint32(c)) -> (BICconst [int64(int32(^uint32(c)))] x)
+(BICconst [c] x) && !IsARMImmRot(uint32(c)) && IsARMImmRot(^uint32(c)) -> (ANDconst [int64(int32(^uint32(c)))] x)
+(ADDconst [c] x) && objabi.GOARM==7 && !IsARMImmRot(uint32(c)) && uint32(c)>0xffff && uint32(-c)<=0xffff -> (SUBconst [int64(int32(-c))] x)
+(SUBconst [c] x) && objabi.GOARM==7 && !IsARMImmRot(uint32(c)) && uint32(c)>0xffff && uint32(-c)<=0xffff -> (ANDconst [int64(int32(-c))] x)
+(ANDconst [c] x) && objabi.GOARM==7 && !IsARMImmRot(uint32(c)) && uint32(c)>0xffff && ^uint32(c)<=0xffff -> (BICconst [int64(int32(^uint32(c)))] x)
+(BICconst [c] x) && objabi.GOARM==7 && !IsARMImmRot(uint32(c)) && uint32(c)>0xffff && ^uint32(c)<=0xffff -> (ANDconst [int64(int32(^uint32(c)))] x)
 (ADDconst [c] (MOVWconst [d])) -> (MOVWconst [int64(int32(c+d))])
 (ADDconst [c] (ADDconst [d] x)) -> (ADDconst [int64(int32(c+d))] x)
 (ADDconst [c] (SUBconst [d] x)) -> (ADDconst [int64(int32(c-d))] x)

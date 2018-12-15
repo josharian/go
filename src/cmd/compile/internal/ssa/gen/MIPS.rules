@@ -223,10 +223,10 @@
 
 // loads
 (Load <t> ptr mem) && t.IsBoolean() -> (MOVBUload ptr mem)
-(Load <t> ptr mem) && (Is8BitInt(t) && isSigned(t)) -> (MOVBload ptr mem)
-(Load <t> ptr mem) && (Is8BitInt(t) && !isSigned(t)) -> (MOVBUload ptr mem)
-(Load <t> ptr mem) && (Is16BitInt(t) && isSigned(t)) -> (MOVHload ptr mem)
-(Load <t> ptr mem) && (Is16BitInt(t) && !isSigned(t)) -> (MOVHUload ptr mem)
+(Load <t> ptr mem) && (Is8BitInt(t) && IsSigned(t)) -> (MOVBload ptr mem)
+(Load <t> ptr mem) && (Is8BitInt(t) && !IsSigned(t)) -> (MOVBUload ptr mem)
+(Load <t> ptr mem) && (Is16BitInt(t) && IsSigned(t)) -> (MOVHload ptr mem)
+(Load <t> ptr mem) && (Is16BitInt(t) && !IsSigned(t)) -> (MOVHUload ptr mem)
 (Load <t> ptr mem) && (Is32BitInt(t) || IsPtr(t)) -> (MOVWload ptr mem)
 (Load <t> ptr mem) && Is32BitFloat(t) -> (MOVFload ptr mem)
 (Load <t> ptr mem) && Is64BitFloat(t) -> (MOVDload ptr mem)
@@ -282,7 +282,7 @@
 	&& (s > 16  || t.(*types.Type).Alignment()%4 != 0) ->
 	(LoweredZero [t.(*types.Type).Alignment()]
 		ptr
-		(ADDconst <ptr.Type> ptr [s-moveSize(t.(*types.Type).Alignment(), config)])
+		(ADDconst <ptr.Type> ptr [s-MoveSize(t.(*types.Type).Alignment(), config)])
 		mem)
 
 // moves
@@ -336,7 +336,7 @@
 	(LoweredMove [t.(*types.Type).Alignment()]
 		dst
 		src
-		(ADDconst <src.Type> src [s-moveSize(t.(*types.Type).Alignment(), config)])
+		(ADDconst <src.Type> src [s-MoveSize(t.(*types.Type).Alignment(), config)])
 		mem)
 
 // calls
@@ -443,23 +443,23 @@
 (ADDconst [off1] (MOVWaddr [off2] {sym} ptr)) -> (MOVWaddr [off1+off2] {sym} ptr)
 
 // fold address into load/store
-(MOVBload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVBload  [off1+off2] {sym} ptr mem)
-(MOVBUload [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVBUload [off1+off2] {sym} ptr mem)
-(MOVHload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVHload  [off1+off2] {sym} ptr mem)
-(MOVHUload [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVHUload [off1+off2] {sym} ptr mem)
-(MOVWload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVWload  [off1+off2] {sym} ptr mem)
-(MOVFload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVFload  [off1+off2] {sym} ptr mem)
-(MOVDload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVDload  [off1+off2] {sym} ptr mem)
+(MOVBload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVBload  [off1+off2] {sym} ptr mem)
+(MOVBUload [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVBUload [off1+off2] {sym} ptr mem)
+(MOVHload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVHload  [off1+off2] {sym} ptr mem)
+(MOVHUload [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVHUload [off1+off2] {sym} ptr mem)
+(MOVWload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVWload  [off1+off2] {sym} ptr mem)
+(MOVFload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVFload  [off1+off2] {sym} ptr mem)
+(MOVDload  [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVDload  [off1+off2] {sym} ptr mem)
 
-(MOVBstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVBstore [off1+off2] {sym} ptr val mem)
-(MOVHstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVHstore [off1+off2] {sym} ptr val mem)
-(MOVWstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVWstore [off1+off2] {sym} ptr val mem)
-(MOVFstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVFstore [off1+off2] {sym} ptr val mem)
-(MOVDstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVDstore [off1+off2] {sym} ptr val mem)
+(MOVBstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVBstore [off1+off2] {sym} ptr val mem)
+(MOVHstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVHstore [off1+off2] {sym} ptr val mem)
+(MOVWstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVWstore [off1+off2] {sym} ptr val mem)
+(MOVFstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVFstore [off1+off2] {sym} ptr val mem)
+(MOVDstore [off1] {sym} x:(ADDconst [off2] ptr) val mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVDstore [off1+off2] {sym} ptr val mem)
 
-(MOVBstorezero [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVBstorezero [off1+off2] {sym} ptr mem)
-(MOVHstorezero [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVHstorezero [off1+off2] {sym} ptr mem)
-(MOVWstorezero [off1] {sym} x:(ADDconst [off2] ptr) mem) && (is16Bit(off1+off2) || x.Uses == 1) -> (MOVWstorezero [off1+off2] {sym} ptr mem)
+(MOVBstorezero [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVBstorezero [off1+off2] {sym} ptr mem)
+(MOVHstorezero [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVHstorezero [off1+off2] {sym} ptr mem)
+(MOVWstorezero [off1] {sym} x:(ADDconst [off2] ptr) mem) && (Is16Bit(off1+off2) || x.Uses == 1) -> (MOVWstorezero [off1+off2] {sym} ptr mem)
 
 (MOVBload [off1] {sym1} (MOVWaddr [off2] {sym2} ptr) mem) && CanMergeSym(sym1,sym2) ->
 	(MOVBload [off1+off2] {MergeSym(sym1,sym2)} ptr mem)
@@ -696,5 +696,5 @@
 
 // atomic
 (LoweredAtomicStore ptr (MOVWconst [0]) mem) -> (LoweredAtomicStorezero ptr mem)
-(LoweredAtomicAdd ptr (MOVWconst [c]) mem) && is16Bit(c) -> (LoweredAtomicAddconst [c] ptr mem)
+(LoweredAtomicAdd ptr (MOVWconst [c]) mem) && Is16Bit(c) -> (LoweredAtomicAddconst [c] ptr mem)
 

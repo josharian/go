@@ -29,14 +29,14 @@ type Config struct {
 	FPReg          int8          // register number of frame pointer, -1 if not used
 	LinkReg        int8          // register number of link register if it is a general purpose register, -1 if not used
 	hasGReg        bool          // has hardware g register
-	ctxt           *obj.Link     // Generic arch information
+	Ctxt           *obj.Link     // Generic arch information
 	optimize       bool          // Do optimization
 	NoDuffDevice   bool          // Don't use Duff's device
 	UseSSE         bool          // Use SSE for non-float operations
 	useAvg         bool          // Use optimizations that need Avg* operations
 	useHmul        bool          // Use optimizations that need Hmul* operations
 	NaCl           bool          // GOOS=nacl
-	use387         bool          // GO386=387
+	Use387         bool          // GO386=387
 	SoftFloat      bool          //
 	Race           bool          // race detector enabled
 	NeedsFpScratch bool          // No direct move between GP and FP register sets
@@ -309,7 +309,7 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	default:
 		ctxt.Diag("arch %s not implemented", arch)
 	}
-	c.ctxt = ctxt
+	c.Ctxt = ctxt
 	c.optimize = optimize
 	c.NaCl = objabi.GOOS == "nacl"
 	c.UseSSE = true
@@ -359,7 +359,5 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 
 func (c *Config) Set387(b bool) {
 	c.NeedsFpScratch = b
-	c.use387 = b
+	c.Use387 = b
 }
-
-func (c *Config) Ctxt() *obj.Link { return c.ctxt }
