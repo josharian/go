@@ -5,6 +5,7 @@
 package amd64
 
 import (
+	"cmd/compile/internal/amd64/rewrite"
 	"cmd/compile/internal/gc"
 	"cmd/internal/obj/x86"
 	"cmd/internal/objabi"
@@ -28,4 +29,6 @@ func Init(arch *gc.Arch) {
 	arch.SSAMarkMoves = ssaMarkMoves
 	arch.SSAGenValue = ssaGenValue
 	arch.SSAGenBlock = ssaGenBlock
+	arch.SSALowerValue = rewrite.ValueAMD64
+	arch.SSALowerBlock = rewrite.BlockAMD64
 }

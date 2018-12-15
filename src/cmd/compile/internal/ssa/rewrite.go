@@ -18,7 +18,7 @@ import (
 	"path/filepath"
 )
 
-func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
+func applyRewrite(f *Func, rb BlockRewriter, rv ValueRewriter) {
 	// repeat rewrites until we find no more rewrites
 	pendingLines := f.cachedLineStarts // Holds statement boundaries that need to be moved to a new value/block
 	pendingLines.clear()
@@ -173,15 +173,17 @@ func mergeSym(x, y interface{}) interface{} {
 	}
 	panic(fmt.Sprintf("mergeSym with two non-nil syms %s %s", x, y))
 }
-func canMergeSym(x, y interface{}) bool {
+func CanMergeSym(x, y interface{}) bool {
 	return x == nil || y == nil
 }
+
+var canMergeSym = CanMergeSym // JABS
 
 // canMergeLoadClobber reports whether the load can be merged into target without
 // invalidating the schedule.
 // It also checks that the other non-load argument x is something we
 // are ok with clobbering.
-func canMergeLoadClobber(target, load, x *Value) bool {
+func CanMergeLoadClobber(target, load, x *Value) bool {
 	// The register containing x is going to get clobbered.
 	// Don't merge if we still need the value of x.
 	// We don't have liveness information here, but we can
@@ -198,6 +200,8 @@ func canMergeLoadClobber(target, load, x *Value) bool {
 	}
 	return canMergeLoad(target, load)
 }
+
+var canMergeLoadClobber = CanMergeLoadClobber // JABS
 
 // canMergeLoad reports whether the load can be merged into target without
 // invalidating the schedule.
@@ -393,10 +397,12 @@ func isUint32PowerOfTwo(in int64) bool {
 	return n > 0 && n&(n-1) == 0
 }
 
-// is32Bit reports whether n can be represented as a signed 32 bit integer.
-func is32Bit(n int64) bool {
+// Is32Bit reports whether n can be represented as a signed 32 bit integer.
+func Is32Bit(n int64) bool {
 	return n == int64(int32(n))
 }
+
+var is32Bit = Is32Bit // JABS
 
 // is16Bit reports whether n can be represented as a signed 16 bit integer.
 func is16Bit(n int64) bool {
@@ -657,15 +663,17 @@ found:
 	return nil // too far away
 }
 
-// clobber invalidates v.  Returns true.
-// clobber is used by rewrite rules to:
+// Clobber invalidates v.  Returns true.
+// Clobber is used by rewrite rules to:
 //   A) make sure v is really dead and never used again.
 //   B) decrement use counts of v's args.
-func clobber(v *Value) bool {
+func Clobber(v *Value) bool {
 	v.reset(OpInvalid)
 	// Note: leave v.Block intact.  The Block field is used after clobber.
 	return true
 }
+
+var clobber = Clobber // JABS
 
 // clobberIfDead resets v when use count is 1. Returns true.
 // clobberIfDead is used by rewrite rules to decrement

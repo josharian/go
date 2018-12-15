@@ -1222,7 +1222,7 @@ func removeBranch(b *Block, branch branch) {
 	b.Kind = BlockFirst
 	b.SetControl(nil)
 	if branch == positive {
-		b.swapSuccessors()
+		b.SwapSuccessors()
 	}
 }
 

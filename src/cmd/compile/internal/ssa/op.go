@@ -153,12 +153,22 @@ func makeValAndOff(val, off int64) int64 {
 	return ValAndOff(val<<32 + int64(uint32(off))).Int64()
 }
 
+// JABS
 func (x ValAndOff) canAdd(off int64) bool {
+	return x.CanAdd(off)
+}
+
+func (x ValAndOff) CanAdd(off int64) bool {
 	newoff := x.Off() + off
 	return newoff == int64(int32(newoff))
 }
 
+// JABS
 func (x ValAndOff) add(off int64) int64 {
+	return x.Add(off)
+}
+
+func (x ValAndOff) Add(off int64) int64 {
 	if !x.canAdd(off) {
 		panic("invalid ValAndOff.add")
 	}

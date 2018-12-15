@@ -42311,7 +42311,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (EQ (FlagGT) yes no)
@@ -42325,7 +42325,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 	case BlockS390XGE:
@@ -42367,7 +42367,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (GE (FlagGT) yes no)
@@ -42409,7 +42409,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (GT (FlagLT) yes no)
@@ -42423,7 +42423,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (GT (FlagGT) yes no)
@@ -42741,7 +42741,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 	case BlockS390XLT:
@@ -42770,7 +42770,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (LT (FlagLT) yes no)
@@ -42797,7 +42797,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 	case BlockS390XNE:
@@ -43114,7 +43114,7 @@ func rewriteBlockS390X(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (NE (FlagLT) yes no)

@@ -254,7 +254,12 @@ func (v *Value) resetArgs() {
 	v.Args = v.argstorage[:0]
 }
 
+// JABS
 func (v *Value) reset(op Op) {
+	v.Reset(op)
+}
+
+func (v *Value) Reset(op Op) {
 	v.Op = op
 	if op != OpCopy && notStmtBoundary(op) {
 		// Special case for OpCopy because of how it is used in rewrite

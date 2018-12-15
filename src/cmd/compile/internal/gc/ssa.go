@@ -58,6 +58,8 @@ func initssaconfig() {
 	if thearch.LinkArch.Name == "386" {
 		ssaConfig.Set387(thearch.Use387)
 	}
+	ssaConfig.LowerBlock = thearch.SSALowerBlock
+	ssaConfig.LowerValue = thearch.SSALowerValue
 	ssaConfig.SoftFloat = thearch.SoftFloat
 	ssaConfig.Race = flag_race
 	ssaCaches = make([]ssa.Cache, nBackendWorkers)

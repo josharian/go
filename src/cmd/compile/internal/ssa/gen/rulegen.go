@@ -356,7 +356,7 @@ func genRules(arch arch) {
 				if succs[0] != newsuccs[1] || succs[1] != newsuccs[0] {
 					log.Fatalf("can only handle swapped successors in %s", rule)
 				}
-				fmt.Fprintln(w, "b.swapSuccessors()")
+				fmt.Fprintln(w, "b.SwapSuccessors()")
 			}
 
 			if *genLog {

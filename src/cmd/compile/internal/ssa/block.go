@@ -185,9 +185,9 @@ func (b *Block) removeSucc(i int) {
 	b.Func.invalidateCFG()
 }
 
-func (b *Block) swapSuccessors() {
+func (b *Block) SwapSuccessors() {
 	if len(b.Succs) != 2 {
-		b.Fatalf("swapSuccessors with len(Succs)=%d", len(b.Succs))
+		b.Fatalf("SwapSuccessors with len(Succs)=%d", len(b.Succs))
 	}
 	e0 := b.Succs[0]
 	e1 := b.Succs[1]

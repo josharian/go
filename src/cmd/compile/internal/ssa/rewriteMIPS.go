@@ -9897,7 +9897,7 @@ func rewriteBlockMIPS(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 	case BlockMIPSGEZ:
@@ -9933,7 +9933,7 @@ func rewriteBlockMIPS(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 	case BlockMIPSGTZ:
@@ -9969,7 +9969,7 @@ func rewriteBlockMIPS(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 	case BlockIf:
@@ -10018,7 +10018,7 @@ func rewriteBlockMIPS(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 	case BlockMIPSLTZ:
@@ -10054,7 +10054,7 @@ func rewriteBlockMIPS(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 	case BlockMIPSNE:
@@ -10284,7 +10284,7 @@ func rewriteBlockMIPS(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (NE (MOVWconst [c]) yes no)

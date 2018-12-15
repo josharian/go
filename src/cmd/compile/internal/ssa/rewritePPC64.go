@@ -30965,7 +30965,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (EQ (FlagGT) yes no)
@@ -30979,7 +30979,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (EQ (InvertFlags cmp) yes no)
@@ -31158,7 +31158,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (GE (FlagGT) yes no)
@@ -31337,7 +31337,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (GT (FlagLT) yes no)
@@ -31351,7 +31351,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (GT (FlagGT) yes no)
@@ -31712,7 +31712,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (LE (InvertFlags cmp) yes no)
@@ -31878,7 +31878,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (LT (FlagLT) yes no)
@@ -31905,7 +31905,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (LT (InvertFlags cmp) yes no)
@@ -32331,7 +32331,7 @@ func rewriteBlockPPC64(b *Block) bool {
 			b.Kind = BlockFirst
 			b.SetControl(nil)
 			b.Aux = nil
-			b.swapSuccessors()
+			b.SwapSuccessors()
 			return true
 		}
 		// match: (NE (FlagLT) yes no)
