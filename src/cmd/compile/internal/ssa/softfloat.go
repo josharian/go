@@ -34,7 +34,7 @@ func softfloat(f *Func) {
 					v.Type = f.Config.Types.UInt64
 				case OpNeg32F:
 					arg0 := v.Args[0]
-					v.reset(OpXor32)
+					v.Reset(OpXor32)
 					v.Type = f.Config.Types.UInt32
 					v.AddArg(arg0)
 					mask := v.Block.NewValue0(v.Pos, OpConst32, v.Type)
@@ -42,7 +42,7 @@ func softfloat(f *Func) {
 					v.AddArg(mask)
 				case OpNeg64F:
 					arg0 := v.Args[0]
-					v.reset(OpXor64)
+					v.Reset(OpXor64)
 					v.Type = f.Config.Types.UInt64
 					v.AddArg(arg0)
 					mask := v.Block.NewValue0(v.Pos, OpConst64, v.Type)

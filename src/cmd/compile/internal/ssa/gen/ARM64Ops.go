@@ -668,7 +668,7 @@ func init() {
 	archs = append(archs, arch{
 		name:            "ARM64",
 		pkg:             "cmd/internal/obj/arm64",
-		genfile:         "../../arm64/ssa.go",
+		gendir:          "../../arm64",
 		ops:             ops,
 		blocks:          blocks,
 		regnames:        regNamesARM64,

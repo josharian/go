@@ -1,5 +1,5 @@
-// Code generated from gen/AMD64.rules; DO NOT EDIT.
-// generated with: cd gen; go run *.go
+// Code generated from $GOROOT/src/cmd/compile/internal/ssa/gen/AMD64.rules; DO NOT EDIT.
+// generated with: go run *.go
 
 package rewrite
 

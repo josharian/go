@@ -126,7 +126,7 @@ func nilcheckelim(f *Func) {
 							v.Pos = v.Pos.WithNotStmt()
 						}
 						// This is a redundant explicit nil check.
-						v.reset(OpConstBool)
+						v.Reset(OpConstBool)
 						v.AuxInt = 1 // true
 					}
 				case OpNilCheck:
@@ -141,7 +141,7 @@ func nilcheckelim(f *Func) {
 						if v.Pos.IsStmt() == src.PosIsStmt { // About to lose a statement boundary
 							pendingLines.add(v.Pos.Line())
 						}
-						v.reset(OpUnknown)
+						v.Reset(OpUnknown)
 						f.freeValue(v)
 						i--
 						continue
@@ -212,7 +212,7 @@ func nilcheckelim2(f *Func) {
 				if v.Pos.IsStmt() == src.PosIsStmt {
 					pendingLines.add(v.Pos.Line())
 				}
-				v.reset(OpUnknown)
+				v.Reset(OpUnknown)
 				firstToRemove = i
 				continue
 			}

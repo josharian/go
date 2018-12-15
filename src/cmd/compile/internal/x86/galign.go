@@ -6,6 +6,7 @@ package x86
 
 import (
 	"cmd/compile/internal/gc"
+	"cmd/compile/internal/x86/rewrite"
 	"cmd/internal/obj/x86"
 	"cmd/internal/objabi"
 	"fmt"
@@ -34,4 +35,6 @@ func Init(arch *gc.Arch) {
 	arch.Ginsnop = ginsnop
 
 	arch.SSAMarkMoves = ssaMarkMoves
+	arch.SSALowerValue = rewrite.Value386
+	arch.SSALowerBlock = rewrite.Block386
 }

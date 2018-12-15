@@ -6,6 +6,7 @@ package s390x
 
 import (
 	"cmd/compile/internal/gc"
+	"cmd/compile/internal/s390x/rewrite"
 	"cmd/internal/obj/s390x"
 )
 
@@ -21,4 +22,6 @@ func Init(arch *gc.Arch) {
 	arch.SSAMarkMoves = ssaMarkMoves
 	arch.SSAGenValue = ssaGenValue
 	arch.SSAGenBlock = ssaGenBlock
+	arch.SSALowerValue = rewrite.ValueS390X
+	arch.SSALowerBlock = rewrite.BlockS390X
 }

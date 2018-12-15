@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -156,15 +157,22 @@ func genRules(arch arch) {
 
 	// Start output buffer, write header.
 	w := new(bytes.Buffer)
-	fmt.Fprintf(w, "// Code generated from gen/%s.rules; DO NOT EDIT.\n", arch.name)
-	fmt.Fprintln(w, "// generated with: cd gen; go run *.go")
+	fmt.Fprintf(w, "// Code generated from $GOROOT/src/cmd/compile/internal/ssa/gen/%s.rules; DO NOT EDIT.\n", arch.name)
+	fmt.Fprintln(w, "// generated with: go run *.go")
 	fmt.Fprintln(w)
-	fmt.Fprintln(w, "package ssa")
+	if arch.generic {
+		fmt.Fprintln(w, "package ssa")
+	} else {
+		fmt.Fprintln(w, "package rewrite")
+	}
 	fmt.Fprintln(w, "import \"fmt\"")
 	fmt.Fprintln(w, "import \"math\"")
 	fmt.Fprintln(w, "import \"cmd/internal/obj\"")
 	fmt.Fprintln(w, "import \"cmd/internal/objabi\"")
 	fmt.Fprintln(w, "import \"cmd/compile/internal/types\"")
+	if !arch.generic {
+		fmt.Fprintln(w, "import . \"cmd/compile/internal/ssa\"")
+	}
 	fmt.Fprintln(w, "var _ = fmt.Println   // in case not otherwise used")
 	fmt.Fprintln(w, "var _ = math.MinInt8  // in case not otherwise used")
 	fmt.Fprintln(w, "var _ = obj.ANOP      // in case not otherwise used")
@@ -174,7 +182,11 @@ func genRules(arch arch) {
 
 	const chunkSize = 10
 	// Main rewrite routine is a switch on v.Op.
-	fmt.Fprintf(w, "func rewriteValue%s(v *Value) bool {\n", arch.name)
+	if arch.generic {
+		fmt.Fprintf(w, "func rewriteValue%s(v *Value) bool {\n", arch.name)
+	} else {
+		fmt.Fprintf(w, "func Value%s(v *Value) bool {\n", arch.name)
+	}
 	fmt.Fprintf(w, "switch v.Op {\n")
 	for _, op := range ops {
 		fmt.Fprintf(w, "case %s:\n", op)
@@ -265,7 +277,11 @@ func genRules(arch arch) {
 
 	// Generate block rewrite function. There are only a few block types
 	// so we can make this one function with a switch.
-	fmt.Fprintf(w, "func rewriteBlock%s(b *Block) bool {\n", arch.name)
+	if arch.generic {
+		fmt.Fprintf(w, "func rewriteBlock%s(b *Block) bool {\n", arch.name)
+	} else {
+		fmt.Fprintf(w, "func Block%s(b *Block) bool {\n", arch.name)
+	}
 	fmt.Fprintln(w, "config := b.Func.Config")
 	fmt.Fprintln(w, "_ = config")
 	fmt.Fprintln(w, "fe := b.Func.Fe")
@@ -380,7 +396,13 @@ func genRules(arch arch) {
 	}
 
 	// Write to file
-	err = ioutil.WriteFile("../rewrite"+arch.name+".go", src, 0666)
+	var path string
+	if arch.generic {
+		path = filepath.Join("..", "rewrite"+arch.name+".go")
+	} else {
+		path = filepath.Join(arch.gendir, "rewrite", "rewrite"+arch.name+".go")
+	}
+	err = ioutil.WriteFile(path, src, 0666)
 	if err != nil {
 		log.Fatalf("can't write output: %v\n", err)
 	}
@@ -526,7 +548,7 @@ func genResult0(w io.Writer, arch arch, result string, alloc *int, top, move boo
 			// It in not safe in general to move a variable between blocks
 			// (and particularly not a phi node).
 			// Introduce a copy.
-			fmt.Fprintf(w, "v.reset(OpCopy)\n")
+			fmt.Fprintf(w, "v.Reset(OpCopy)\n")
 			fmt.Fprintf(w, "v.Type = %s.Type\n", result)
 			fmt.Fprintf(w, "v.AddArg(%s)\n", result)
 		}
@@ -544,7 +566,7 @@ func genResult0(w io.Writer, arch arch, result string, alloc *int, top, move boo
 	var v string
 	if top && !move {
 		v = "v"
-		fmt.Fprintf(w, "v.reset(Op%s%s)\n", oparch, op.name)
+		fmt.Fprintf(w, "v.Reset(Op%s%s)\n", oparch, op.name)
 		if typeOverride {
 			fmt.Fprintf(w, "v.Type = %s\n", typ)
 		}
@@ -557,7 +579,7 @@ func genResult0(w io.Writer, arch arch, result string, alloc *int, top, move boo
 		fmt.Fprintf(w, "%s := b.NewValue0(v.Pos, Op%s%s, %s)\n", v, oparch, op.name, typ)
 		if move && top {
 			// Rewrite original into a copy
-			fmt.Fprintf(w, "v.reset(OpCopy)\n")
+			fmt.Fprintf(w, "v.Reset(OpCopy)\n")
 			fmt.Fprintf(w, "v.AddArg(%s)\n", v)
 		}
 	}

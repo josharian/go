@@ -256,7 +256,7 @@ func writebarrier(f *Func) {
 		// one memory live.
 		bEnd.Values = append(bEnd.Values, last)
 		last.Block = bEnd
-		last.reset(OpPhi)
+		last.Reset(OpPhi)
 		last.Type = types.TypeMem
 		last.AddArg(memThen)
 		last.AddArg(memElse)

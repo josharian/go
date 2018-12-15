@@ -1,5 +1,5 @@
-// Code generated from gen/decArgs.rules; DO NOT EDIT.
-// generated with: cd gen; go run *.go
+// Code generated from $GOROOT/src/cmd/compile/internal/ssa/gen/decArgs.rules; DO NOT EDIT.
+// generated with: go run *.go
 
 package ssa
 
@@ -40,7 +40,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(v.Type.IsString()) {
 			break
 		}
-		v.reset(OpStringMake)
+		v.Reset(OpStringMake)
 		v0 := b.NewValue0(v.Pos, OpArg, typ.BytePtr)
 		v0.AuxInt = off
 		v0.Aux = n
@@ -60,7 +60,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(v.Type.IsSlice()) {
 			break
 		}
-		v.reset(OpSliceMake)
+		v.Reset(OpSliceMake)
 		v0 := b.NewValue0(v.Pos, OpArg, v.Type.Elem().PtrTo())
 		v0.AuxInt = off
 		v0.Aux = n
@@ -84,7 +84,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(v.Type.IsInterface()) {
 			break
 		}
-		v.reset(OpIMake)
+		v.Reset(OpIMake)
 		v0 := b.NewValue0(v.Pos, OpArg, typ.Uintptr)
 		v0.AuxInt = off
 		v0.Aux = n
@@ -104,7 +104,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(v.Type.IsComplex() && v.Type.Size() == 16) {
 			break
 		}
-		v.reset(OpComplexMake)
+		v.Reset(OpComplexMake)
 		v0 := b.NewValue0(v.Pos, OpArg, typ.Float64)
 		v0.AuxInt = off
 		v0.Aux = n
@@ -124,7 +124,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(v.Type.IsComplex() && v.Type.Size() == 8) {
 			break
 		}
-		v.reset(OpComplexMake)
+		v.Reset(OpComplexMake)
 		v0 := b.NewValue0(v.Pos, OpArg, typ.Float32)
 		v0.AuxInt = off
 		v0.Aux = n
@@ -143,7 +143,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(t.IsStruct() && t.NumFields() == 0 && fe.CanSSA(t)) {
 			break
 		}
-		v.reset(OpStructMake0)
+		v.Reset(OpStructMake0)
 		return true
 	}
 	// match: (Arg <t> {n} [off])
@@ -156,7 +156,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(t.IsStruct() && t.NumFields() == 1 && fe.CanSSA(t)) {
 			break
 		}
-		v.reset(OpStructMake1)
+		v.Reset(OpStructMake1)
 		v0 := b.NewValue0(v.Pos, OpArg, t.FieldType(0))
 		v0.AuxInt = off + t.FieldOff(0)
 		v0.Aux = n
@@ -173,7 +173,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(t.IsStruct() && t.NumFields() == 2 && fe.CanSSA(t)) {
 			break
 		}
-		v.reset(OpStructMake2)
+		v.Reset(OpStructMake2)
 		v0 := b.NewValue0(v.Pos, OpArg, t.FieldType(0))
 		v0.AuxInt = off + t.FieldOff(0)
 		v0.Aux = n
@@ -194,7 +194,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(t.IsStruct() && t.NumFields() == 3 && fe.CanSSA(t)) {
 			break
 		}
-		v.reset(OpStructMake3)
+		v.Reset(OpStructMake3)
 		v0 := b.NewValue0(v.Pos, OpArg, t.FieldType(0))
 		v0.AuxInt = off + t.FieldOff(0)
 		v0.Aux = n
@@ -219,7 +219,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 		if !(t.IsStruct() && t.NumFields() == 4 && fe.CanSSA(t)) {
 			break
 		}
-		v.reset(OpStructMake4)
+		v.Reset(OpStructMake4)
 		v0 := b.NewValue0(v.Pos, OpArg, t.FieldType(0))
 		v0.AuxInt = off + t.FieldOff(0)
 		v0.Aux = n
@@ -253,7 +253,7 @@ func rewriteValuedecArgs_OpArg_10(v *Value) bool {
 		if !(t.IsArray() && t.NumElem() == 0) {
 			break
 		}
-		v.reset(OpArrayMake0)
+		v.Reset(OpArrayMake0)
 		return true
 	}
 	// match: (Arg <t> {n} [off])
@@ -266,7 +266,7 @@ func rewriteValuedecArgs_OpArg_10(v *Value) bool {
 		if !(t.IsArray() && t.NumElem() == 1 && fe.CanSSA(t)) {
 			break
 		}
-		v.reset(OpArrayMake1)
+		v.Reset(OpArrayMake1)
 		v0 := b.NewValue0(v.Pos, OpArg, t.Elem())
 		v0.AuxInt = off
 		v0.Aux = n

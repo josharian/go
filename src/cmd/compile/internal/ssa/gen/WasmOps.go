@@ -196,7 +196,7 @@ func init() {
 	archs = append(archs, arch{
 		name:            "Wasm",
 		pkg:             "cmd/internal/obj/wasm",
-		genfile:         "",
+		gendir:          "../../wasm",
 		ops:             WasmOps,
 		blocks:          nil,
 		regnames:        regNamesWasm,

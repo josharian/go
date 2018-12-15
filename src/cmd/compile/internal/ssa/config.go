@@ -208,8 +208,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "amd64p32":
 		c.PtrSize = 4
 		c.RegSize = 8
-		// c.LowerBlock = rewriteBlockAMD64
-		// c.LowerValue = rewriteValueAMD64
 		c.registers = registersAMD64[:]
 		c.gpRegMask = gpRegMaskAMD64
 		c.fpRegMask = fpRegMaskAMD64
@@ -220,8 +218,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "386":
 		c.PtrSize = 4
 		c.RegSize = 4
-		c.LowerBlock = rewriteBlock386
-		c.LowerValue = rewriteValue386
 		c.registers = registers386[:]
 		c.gpRegMask = gpRegMask386
 		c.fpRegMask = fpRegMask386
@@ -231,8 +227,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "arm":
 		c.PtrSize = 4
 		c.RegSize = 4
-		c.LowerBlock = rewriteBlockARM
-		c.LowerValue = rewriteValueARM
 		c.registers = registersARM[:]
 		c.gpRegMask = gpRegMaskARM
 		c.fpRegMask = fpRegMaskARM
@@ -242,8 +236,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "arm64":
 		c.PtrSize = 8
 		c.RegSize = 8
-		c.LowerBlock = rewriteBlockARM64
-		c.LowerValue = rewriteValueARM64
 		c.registers = registersARM64[:]
 		c.gpRegMask = gpRegMaskARM64
 		c.fpRegMask = fpRegMaskARM64
@@ -257,8 +249,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "ppc64le":
 		c.PtrSize = 8
 		c.RegSize = 8
-		c.LowerBlock = rewriteBlockPPC64
-		c.LowerValue = rewriteValuePPC64
 		c.registers = registersPPC64[:]
 		c.gpRegMask = gpRegMaskPPC64
 		c.fpRegMask = fpRegMaskPPC64
@@ -272,8 +262,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "mips64le":
 		c.PtrSize = 8
 		c.RegSize = 8
-		c.LowerBlock = rewriteBlockMIPS64
-		c.LowerValue = rewriteValueMIPS64
 		c.registers = registersMIPS64[:]
 		c.gpRegMask = gpRegMaskMIPS64
 		c.fpRegMask = fpRegMaskMIPS64
@@ -284,8 +272,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "s390x":
 		c.PtrSize = 8
 		c.RegSize = 8
-		c.LowerBlock = rewriteBlockS390X
-		c.LowerValue = rewriteValueS390X
 		c.registers = registersS390X[:]
 		c.gpRegMask = gpRegMaskS390X
 		c.fpRegMask = fpRegMaskS390X
@@ -300,8 +286,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "mipsle":
 		c.PtrSize = 4
 		c.RegSize = 4
-		c.LowerBlock = rewriteBlockMIPS
-		c.LowerValue = rewriteValueMIPS
 		c.registers = registersMIPS[:]
 		c.gpRegMask = gpRegMaskMIPS
 		c.fpRegMask = fpRegMaskMIPS
@@ -313,8 +297,6 @@ func NewConfig(arch string, types Types, ctxt *obj.Link, optimize bool) *Config 
 	case "wasm":
 		c.PtrSize = 8
 		c.RegSize = 8
-		c.LowerBlock = rewriteBlockWasm
-		c.LowerValue = rewriteValueWasm
 		c.registers = registersWasm[:]
 		c.gpRegMask = gpRegMaskWasm
 		c.fpRegMask = fpRegMaskWasm

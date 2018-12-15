@@ -6,6 +6,7 @@ package ppc64
 
 import (
 	"cmd/compile/internal/gc"
+	"cmd/compile/internal/ppc64/rewrite"
 	"cmd/internal/obj/ppc64"
 	"cmd/internal/objabi"
 )
@@ -25,4 +26,6 @@ func Init(arch *gc.Arch) {
 	arch.SSAMarkMoves = ssaMarkMoves
 	arch.SSAGenValue = ssaGenValue
 	arch.SSAGenBlock = ssaGenBlock
+	arch.SSALowerValue = rewrite.ValuePPC64
+	arch.SSALowerBlock = rewrite.BlockPPC64
 }

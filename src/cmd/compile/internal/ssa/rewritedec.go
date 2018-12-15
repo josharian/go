@@ -1,5 +1,5 @@
-// Code generated from gen/dec.rules; DO NOT EDIT.
-// generated with: cd gen; go run *.go
+// Code generated from $GOROOT/src/cmd/compile/internal/ssa/gen/dec.rules; DO NOT EDIT.
+// generated with: go run *.go
 
 package ssa
 
@@ -53,7 +53,7 @@ func rewriteValuedec_OpComplexImag_0(v *Value) bool {
 		}
 		_ = v_0.Args[1]
 		imag := v_0.Args[1]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = imag.Type
 		v.AddArg(imag)
 		return true
@@ -71,7 +71,7 @@ func rewriteValuedec_OpComplexReal_0(v *Value) bool {
 		}
 		_ = v_0.Args[1]
 		real := v_0.Args[0]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = real.Type
 		v.AddArg(real)
 		return true
@@ -89,7 +89,7 @@ func rewriteValuedec_OpIData_0(v *Value) bool {
 		}
 		_ = v_0.Args[1]
 		data := v_0.Args[1]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = data.Type
 		v.AddArg(data)
 		return true
@@ -109,7 +109,7 @@ func rewriteValuedec_OpITab_0(v *Value) bool {
 		}
 		_ = v_0.Args[1]
 		itab := v_0.Args[0]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = itab.Type
 		v.AddArg(itab)
 		return true
@@ -134,7 +134,7 @@ func rewriteValuedec_OpLoad_0(v *Value) bool {
 		if !(t.IsComplex() && t.Size() == 8) {
 			break
 		}
-		v.reset(OpComplexMake)
+		v.Reset(OpComplexMake)
 		v0 := b.NewValue0(v.Pos, OpLoad, typ.Float32)
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
@@ -159,7 +159,7 @@ func rewriteValuedec_OpLoad_0(v *Value) bool {
 		if !(t.IsComplex() && t.Size() == 16) {
 			break
 		}
-		v.reset(OpComplexMake)
+		v.Reset(OpComplexMake)
 		v0 := b.NewValue0(v.Pos, OpLoad, typ.Float64)
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
@@ -184,7 +184,7 @@ func rewriteValuedec_OpLoad_0(v *Value) bool {
 		if !(t.IsString()) {
 			break
 		}
-		v.reset(OpStringMake)
+		v.Reset(OpStringMake)
 		v0 := b.NewValue0(v.Pos, OpLoad, typ.BytePtr)
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
@@ -209,7 +209,7 @@ func rewriteValuedec_OpLoad_0(v *Value) bool {
 		if !(t.IsSlice()) {
 			break
 		}
-		v.reset(OpSliceMake)
+		v.Reset(OpSliceMake)
 		v0 := b.NewValue0(v.Pos, OpLoad, t.Elem().PtrTo())
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
@@ -241,7 +241,7 @@ func rewriteValuedec_OpLoad_0(v *Value) bool {
 		if !(t.IsInterface()) {
 			break
 		}
-		v.reset(OpIMake)
+		v.Reset(OpIMake)
 		v0 := b.NewValue0(v.Pos, OpLoad, typ.Uintptr)
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
@@ -268,7 +268,7 @@ func rewriteValuedec_OpSliceCap_0(v *Value) bool {
 		}
 		_ = v_0.Args[2]
 		cap := v_0.Args[2]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = cap.Type
 		v.AddArg(cap)
 		return true
@@ -286,7 +286,7 @@ func rewriteValuedec_OpSliceLen_0(v *Value) bool {
 		}
 		_ = v_0.Args[2]
 		len := v_0.Args[1]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = len.Type
 		v.AddArg(len)
 		return true
@@ -304,7 +304,7 @@ func rewriteValuedec_OpSlicePtr_0(v *Value) bool {
 		}
 		_ = v_0.Args[2]
 		ptr := v_0.Args[0]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = ptr.Type
 		v.AddArg(ptr)
 		return true
@@ -336,7 +336,7 @@ func rewriteValuedec_OpStore_0(v *Value) bool {
 		if !(t.(*types.Type).Size() == 8) {
 			break
 		}
-		v.reset(OpStore)
+		v.Reset(OpStore)
 		v.Aux = typ.Float32
 		v0 := b.NewValue0(v.Pos, OpOffPtr, typ.Float32Ptr)
 		v0.AuxInt = 4
@@ -369,7 +369,7 @@ func rewriteValuedec_OpStore_0(v *Value) bool {
 		if !(t.(*types.Type).Size() == 16) {
 			break
 		}
-		v.reset(OpStore)
+		v.Reset(OpStore)
 		v.Aux = typ.Float64
 		v0 := b.NewValue0(v.Pos, OpOffPtr, typ.Float64Ptr)
 		v0.AuxInt = 8
@@ -398,7 +398,7 @@ func rewriteValuedec_OpStore_0(v *Value) bool {
 		ptr := v_1.Args[0]
 		len := v_1.Args[1]
 		mem := v.Args[2]
-		v.reset(OpStore)
+		v.Reset(OpStore)
 		v.Aux = typ.Int
 		v0 := b.NewValue0(v.Pos, OpOffPtr, typ.IntPtr)
 		v0.AuxInt = config.PtrSize
@@ -428,7 +428,7 @@ func rewriteValuedec_OpStore_0(v *Value) bool {
 		len := v_1.Args[1]
 		cap := v_1.Args[2]
 		mem := v.Args[2]
-		v.reset(OpStore)
+		v.Reset(OpStore)
 		v.Aux = typ.Int
 		v0 := b.NewValue0(v.Pos, OpOffPtr, typ.IntPtr)
 		v0.AuxInt = 2 * config.PtrSize
@@ -465,7 +465,7 @@ func rewriteValuedec_OpStore_0(v *Value) bool {
 		itab := v_1.Args[0]
 		data := v_1.Args[1]
 		mem := v.Args[2]
-		v.reset(OpStore)
+		v.Reset(OpStore)
 		v.Aux = typ.BytePtr
 		v0 := b.NewValue0(v.Pos, OpOffPtr, typ.BytePtrPtr)
 		v0.AuxInt = config.PtrSize
@@ -493,7 +493,7 @@ func rewriteValuedec_OpStringLen_0(v *Value) bool {
 		}
 		_ = v_0.Args[1]
 		len := v_0.Args[1]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = len.Type
 		v.AddArg(len)
 		return true
@@ -511,7 +511,7 @@ func rewriteValuedec_OpStringPtr_0(v *Value) bool {
 		}
 		_ = v_0.Args[1]
 		ptr := v_0.Args[0]
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 		v.Type = ptr.Type
 		v.AddArg(ptr)
 		return true

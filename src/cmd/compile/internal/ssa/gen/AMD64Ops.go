@@ -793,7 +793,7 @@ func init() {
 	archs = append(archs, arch{
 		name:            "AMD64",
 		pkg:             "cmd/internal/obj/x86",
-		genfile:         "../../amd64/ssa.go",
+		gendir:          "../../amd64",
 		ops:             AMD64ops,
 		blocks:          AMD64blocks,
 		regnames:        regNamesAMD64,

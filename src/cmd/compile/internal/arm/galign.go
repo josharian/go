@@ -5,6 +5,7 @@
 package arm
 
 import (
+	"cmd/compile/internal/arm/rewrite"
 	"cmd/compile/internal/gc"
 	"cmd/compile/internal/ssa"
 	"cmd/internal/obj/arm"
@@ -23,4 +24,6 @@ func Init(arch *gc.Arch) {
 	arch.SSAMarkMoves = func(s *gc.SSAGenState, b *ssa.Block) {}
 	arch.SSAGenValue = ssaGenValue
 	arch.SSAGenBlock = ssaGenBlock
+	arch.SSALowerValue = rewrite.ValueARM
+	arch.SSALowerBlock = rewrite.BlockARM
 }

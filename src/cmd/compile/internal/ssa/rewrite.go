@@ -71,7 +71,7 @@ func applyRewrite(f *Func, rb BlockRewriter, rv ValueRewriter) {
 					change = true
 					for a.Uses == 0 {
 						b := a.Args[0]
-						a.reset(OpInvalid)
+						a.Reset(OpInvalid)
 						a = b
 					}
 				}
@@ -398,8 +398,6 @@ func Is32Bit(n int64) bool {
 	return n == int64(int32(n))
 }
 
-var is32Bit = Is32Bit // JABS
-
 // is16Bit reports whether n can be represented as a signed 16 bit integer.
 func is16Bit(n int64) bool {
 	return n == int64(int16(n))
@@ -664,7 +662,7 @@ found:
 //   A) make sure v is really dead and never used again.
 //   B) decrement use counts of v's args.
 func Clobber(v *Value) bool {
-	v.reset(OpInvalid)
+	v.Reset(OpInvalid)
 	// Note: leave v.Block intact.  The Block field is used after Clobber.
 	return true
 }
@@ -674,7 +672,7 @@ func Clobber(v *Value) bool {
 // use counts of v's args when v is dead and never used.
 func ClobberIfDead(v *Value) bool {
 	if v.Uses == 1 {
-		v.reset(OpInvalid)
+		v.Reset(OpInvalid)
 	}
 	// Note: leave v.Block intact.  The Block field is used after ClobberIfDead.
 	return true

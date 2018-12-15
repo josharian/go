@@ -16,6 +16,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -24,7 +25,7 @@ import (
 type arch struct {
 	name            string
 	pkg             string // obj package to import for this arch.
-	genfile         string // source file containing opcode code generation.
+	gendir          string // dir containing opcode code generation file named ssa.go and rewrite subdir
 	ops             []opData
 	blocks          []blockData
 	regnames        []string
@@ -359,13 +360,14 @@ func genOp() {
 	// Check that the arch genfile handles all the arch-specific opcodes.
 	// This is very much a hack, but it is better than nothing.
 	for _, a := range archs {
-		if a.genfile == "" {
+		if a.gendir == "" {
 			continue
 		}
+		genfile := filepath.Join(a.gendir, "ssa.go")
 
-		src, err := ioutil.ReadFile(a.genfile)
+		src, err := ioutil.ReadFile(genfile)
 		if err != nil {
-			log.Fatalf("can't read %s: %v", a.genfile, err)
+			log.Fatalf("can't read %s: %v", genfile, err)
 		}
 
 		for _, v := range a.ops {
@@ -375,7 +377,7 @@ func genOp() {
 				log.Fatalf("bad opcode regexp %s: %v", pattern, err)
 			}
 			if !match {
-				log.Fatalf("Op%s%s has no code generation in %s", a.name, v.name, a.genfile)
+				log.Fatalf("Op%s%s has no code generation in %s", a.name, v.name, genfile)
 			}
 		}
 	}

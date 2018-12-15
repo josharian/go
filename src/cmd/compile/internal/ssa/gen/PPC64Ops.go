@@ -575,7 +575,7 @@ func init() {
 	archs = append(archs, arch{
 		name:            "PPC64",
 		pkg:             "cmd/internal/obj/ppc64",
-		genfile:         "../../ppc64/ssa.go",
+		gendir:          "../../ppc64",
 		ops:             ops,
 		blocks:          blocks,
 		regnames:        regNamesPPC64,

@@ -5,6 +5,7 @@
 package arm64
 
 import (
+	"cmd/compile/internal/arm64/rewrite"
 	"cmd/compile/internal/gc"
 	"cmd/compile/internal/ssa"
 	"cmd/internal/obj/arm64"
@@ -23,4 +24,6 @@ func Init(arch *gc.Arch) {
 	arch.SSAMarkMoves = func(s *gc.SSAGenState, b *ssa.Block) {}
 	arch.SSAGenValue = ssaGenValue
 	arch.SSAGenBlock = ssaGenBlock
+	arch.SSALowerValue = rewrite.ValueARM64
+	arch.SSALowerBlock = rewrite.BlockARM64
 }

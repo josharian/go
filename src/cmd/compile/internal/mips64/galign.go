@@ -6,6 +6,7 @@ package mips64
 
 import (
 	"cmd/compile/internal/gc"
+	"cmd/compile/internal/mips64/rewrite"
 	"cmd/compile/internal/ssa"
 	"cmd/internal/obj/mips"
 	"cmd/internal/objabi"
@@ -26,4 +27,6 @@ func Init(arch *gc.Arch) {
 	arch.SSAMarkMoves = func(s *gc.SSAGenState, b *ssa.Block) {}
 	arch.SSAGenValue = ssaGenValue
 	arch.SSAGenBlock = ssaGenBlock
+	arch.SSALowerValue = rewrite.ValueMIPS64
+	arch.SSALowerBlock = rewrite.BlockMIPS64
 }

@@ -572,7 +572,7 @@ func init() {
 	archs = append(archs, arch{
 		name:            "386",
 		pkg:             "cmd/internal/obj/x86",
-		genfile:         "../../x86/ssa.go",
+		gendir:          "../../x86",
 		ops:             _386ops,
 		blocks:          _386blocks,
 		regnames:        regNames386,

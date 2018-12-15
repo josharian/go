@@ -78,7 +78,7 @@ func phiopt(f *Func) {
 			if v.Args[0].Op == OpConstBool && v.Args[1].Op == OpConstBool {
 				if v.Args[reverse].AuxInt != v.Args[1-reverse].AuxInt {
 					ops := [2]Op{OpNot, OpCopy}
-					v.reset(ops[v.Args[reverse].AuxInt])
+					v.Reset(ops[v.Args[reverse].AuxInt])
 					v.AddArg(b0.Control)
 					if f.pass.debug > 0 {
 						f.Warnl(b.Pos, "converted OpPhi to %v", v.Op)
@@ -94,7 +94,7 @@ func phiopt(f *Func) {
 			// of value are not seen if a is false.
 			if v.Args[reverse].Op == OpConstBool && v.Args[reverse].AuxInt == 1 {
 				if tmp := v.Args[1-reverse]; sdom.isAncestorEq(tmp.Block, b) {
-					v.reset(OpOrB)
+					v.Reset(OpOrB)
 					v.SetArgs2(b0.Control, tmp)
 					if f.pass.debug > 0 {
 						f.Warnl(b.Pos, "converted OpPhi to %v", v.Op)
@@ -110,7 +110,7 @@ func phiopt(f *Func) {
 			// of value are not seen if a is false.
 			if v.Args[1-reverse].Op == OpConstBool && v.Args[1-reverse].AuxInt == 0 {
 				if tmp := v.Args[reverse]; sdom.isAncestorEq(tmp.Block, b) {
-					v.reset(OpAndB)
+					v.Reset(OpAndB)
 					v.SetArgs2(b0.Control, tmp)
 					if f.pass.debug > 0 {
 						f.Warnl(b.Pos, "converted OpPhi to %v", v.Op)
@@ -150,13 +150,13 @@ func phioptint(v *Value, b0 *Block, reverse int) {
 
 	switch v.Type.Size() {
 	case 1:
-		v.reset(OpCopy)
+		v.Reset(OpCopy)
 	case 2:
-		v.reset(OpZeroExt8to16)
+		v.Reset(OpZeroExt8to16)
 	case 4:
-		v.reset(OpZeroExt8to32)
+		v.Reset(OpZeroExt8to32)
 	case 8:
-		v.reset(OpZeroExt8to64)
+		v.Reset(OpZeroExt8to64)
 	default:
 		v.Fatalf("bad int size %d", v.Type.Size())
 	}
