@@ -978,10 +978,7 @@ func rewriteValue386_Op386ADDL_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 3 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 3 {
 			break
 		}
 		y := v_1.Args[0]
@@ -996,10 +993,7 @@ func rewriteValue386_Op386ADDL_0(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 3 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 3 {
 			break
 		}
 		y := v_0.Args[0]
@@ -1018,10 +1012,7 @@ func rewriteValue386_Op386ADDL_10(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 2 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 2 {
 			break
 		}
 		y := v_1.Args[0]
@@ -1036,10 +1027,7 @@ func rewriteValue386_Op386ADDL_10(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 2 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 2 {
 			break
 		}
 		y := v_0.Args[0]
@@ -1055,10 +1043,7 @@ func rewriteValue386_Op386ADDL_10(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 1 {
 			break
 		}
 		y := v_1.Args[0]
@@ -1073,10 +1058,7 @@ func rewriteValue386_Op386ADDL_10(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 1 {
 			break
 		}
 		y := v_0.Args[0]
@@ -4296,10 +4278,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 1 {
 			break
 		}
 		y := v_1.Args[0]
@@ -4318,10 +4297,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		s := v.Aux
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 1 {
 			break
 		}
 		y := v_0.Args[0]
@@ -4341,10 +4317,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 2 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 2 {
 			break
 		}
 		y := v_1.Args[0]
@@ -4363,10 +4336,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		s := v.Aux
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 2 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 2 {
 			break
 		}
 		y := v_0.Args[0]
@@ -4386,10 +4356,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 3 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 3 {
 			break
 		}
 		y := v_1.Args[0]
@@ -4408,10 +4375,7 @@ func rewriteValue386_Op386LEAL1_0(v *Value) bool {
 		s := v.Aux
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 3 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 3 {
 			break
 		}
 		y := v_0.Args[0]
@@ -4530,10 +4494,7 @@ func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 1 {
 			break
 		}
 		y := v_1.Args[0]
@@ -4553,10 +4514,7 @@ func rewriteValue386_Op386LEAL2_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 2 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 2 {
 			break
 		}
 		y := v_1.Args[0]
@@ -4650,10 +4608,7 @@ func rewriteValue386_Op386LEAL4_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 1 {
 			break
 		}
 		y := v_1.Args[0]
@@ -5352,28 +5307,16 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHRWconst {
-			break
-		}
-		if v_1.AuxInt != 8 {
+		if v_1.Op != Op386SHRWconst || v_1.AuxInt != 8 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != Op386MOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -5396,28 +5339,16 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHRLconst {
-			break
-		}
-		if v_1.AuxInt != 8 {
+		if v_1.Op != Op386SHRLconst || v_1.AuxInt != 8 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != Op386MOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -5441,13 +5372,7 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 		p := v.Args[0]
 		w := v.Args[1]
 		x := v.Args[2]
-		if x.Op != Op386MOVBstore {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstore || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -5455,13 +5380,7 @@ func rewriteValue386_Op386MOVBstore_0(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != Op386SHRWconst {
-			break
-		}
-		if x_1.AuxInt != 8 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != Op386SHRWconst || x_1.AuxInt != 8 || w != x_1.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -5488,13 +5407,7 @@ func rewriteValue386_Op386MOVBstore_10(v *Value) bool {
 		p := v.Args[0]
 		w := v.Args[1]
 		x := v.Args[2]
-		if x.Op != Op386MOVBstore {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstore || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -5502,13 +5415,7 @@ func rewriteValue386_Op386MOVBstore_10(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != Op386SHRLconst {
-			break
-		}
-		if x_1.AuxInt != 8 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != Op386SHRLconst || x_1.AuxInt != 8 || w != x_1.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -5537,13 +5444,7 @@ func rewriteValue386_Op386MOVBstore_10(v *Value) bool {
 		j := v_1.AuxInt
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != Op386MOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -5551,13 +5452,7 @@ func rewriteValue386_Op386MOVBstore_10(v *Value) bool {
 			break
 		}
 		w0 := x.Args[1]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -5795,10 +5690,7 @@ func rewriteValue386_Op386MOVBstoreconstidx1_0(v *Value) bool {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if i != x.Args[1] {
+		if p != x.Args[0] || i != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && ValAndOff(a).Off()+1 == ValAndOff(c).Off() && clobber(x)) {
@@ -5921,31 +5813,16 @@ func rewriteValue386_Op386MOVBstoreidx1_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -5970,31 +5847,16 @@ func rewriteValue386_Op386MOVBstoreidx1_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6019,31 +5881,16 @@ func rewriteValue386_Op386MOVBstoreidx1_0(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6068,31 +5915,16 @@ func rewriteValue386_Op386MOVBstoreidx1_0(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6117,31 +5949,16 @@ func rewriteValue386_Op386MOVBstoreidx1_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRWconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != Op386SHRWconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6166,31 +5983,16 @@ func rewriteValue386_Op386MOVBstoreidx1_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRWconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != Op386SHRWconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6218,31 +6020,16 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRWconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != Op386SHRWconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6267,31 +6054,16 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRWconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != Op386SHRWconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6317,30 +6089,15 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != Op386SHRLconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != Op386SHRLconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6366,30 +6123,15 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != Op386SHRLconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != Op386SHRLconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6415,30 +6157,15 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != Op386SHRLconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != Op386SHRLconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6464,30 +6191,15 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != Op386SHRLconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != Op386SHRLconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6513,30 +6225,15 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != Op386SHRWconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != Op386SHRWconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6562,30 +6259,15 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != Op386SHRWconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != Op386SHRWconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6611,30 +6293,15 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != Op386SHRWconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != Op386SHRWconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6660,30 +6327,15 @@ func rewriteValue386_Op386MOVBstoreidx1_10(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i+1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i+1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != Op386SHRWconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != Op386SHRWconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6717,30 +6369,15 @@ func rewriteValue386_Op386MOVBstoreidx1_20(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6771,30 +6408,15 @@ func rewriteValue386_Op386MOVBstoreidx1_20(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6825,30 +6447,15 @@ func rewriteValue386_Op386MOVBstoreidx1_20(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -6879,30 +6486,15 @@ func rewriteValue386_Op386MOVBstoreidx1_20(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVBstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVBstoreidx1 || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -7100,10 +6692,7 @@ func rewriteValue386_Op386MOVLloadidx1_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 2 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 2 {
 			break
 		}
 		idx := v_1.Args[0]
@@ -7123,10 +6712,7 @@ func rewriteValue386_Op386MOVLloadidx1_0(v *Value) bool {
 		sym := v.Aux
 		mem := v.Args[2]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 2 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 2 {
 			break
 		}
 		idx := v_0.Args[0]
@@ -7444,21 +7030,12 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		y := v.Args[1]
-		if y.Op != Op386ADDLload {
-			break
-		}
-		if y.AuxInt != off {
-			break
-		}
-		if y.Aux != sym {
+		if y.Op != Op386ADDLload || y.AuxInt != off || y.Aux != sym {
 			break
 		}
 		_ = y.Args[2]
 		x := y.Args[0]
-		if ptr != y.Args[1] {
-			break
-		}
-		if mem != y.Args[2] {
+		if ptr != y.Args[1] || mem != y.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && clobber(y)) {
@@ -7481,21 +7058,12 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		y := v.Args[1]
-		if y.Op != Op386ANDLload {
-			break
-		}
-		if y.AuxInt != off {
-			break
-		}
-		if y.Aux != sym {
+		if y.Op != Op386ANDLload || y.AuxInt != off || y.Aux != sym {
 			break
 		}
 		_ = y.Args[2]
 		x := y.Args[0]
-		if ptr != y.Args[1] {
-			break
-		}
-		if mem != y.Args[2] {
+		if ptr != y.Args[1] || mem != y.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && clobber(y)) {
@@ -7518,21 +7086,12 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		y := v.Args[1]
-		if y.Op != Op386ORLload {
-			break
-		}
-		if y.AuxInt != off {
-			break
-		}
-		if y.Aux != sym {
+		if y.Op != Op386ORLload || y.AuxInt != off || y.Aux != sym {
 			break
 		}
 		_ = y.Args[2]
 		x := y.Args[0]
-		if ptr != y.Args[1] {
-			break
-		}
-		if mem != y.Args[2] {
+		if ptr != y.Args[1] || mem != y.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && clobber(y)) {
@@ -7555,21 +7114,12 @@ func rewriteValue386_Op386MOVLstore_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		y := v.Args[1]
-		if y.Op != Op386XORLload {
-			break
-		}
-		if y.AuxInt != off {
-			break
-		}
-		if y.Aux != sym {
+		if y.Op != Op386XORLload || y.AuxInt != off || y.Aux != sym {
 			break
 		}
 		_ = y.Args[2]
 		x := y.Args[0]
-		if ptr != y.Args[1] {
-			break
-		}
-		if mem != y.Args[2] {
+		if ptr != y.Args[1] || mem != y.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && clobber(y)) {
@@ -7600,20 +7150,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7642,20 +7183,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		_ = y.Args[1]
 		x := y.Args[0]
 		l := y.Args[1]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7683,20 +7215,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7724,20 +7247,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7766,20 +7280,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		_ = y.Args[1]
 		x := y.Args[0]
 		l := y.Args[1]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7807,20 +7312,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7849,20 +7345,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		_ = y.Args[1]
 		x := y.Args[0]
 		l := y.Args[1]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7890,20 +7377,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7932,20 +7410,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		_ = y.Args[1]
 		x := y.Args[0]
 		l := y.Args[1]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -7973,20 +7442,11 @@ func rewriteValue386_Op386MOVLstore_10(v *Value) bool {
 		}
 		c := y.AuxInt
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l) && validValAndOff(c, off)) {
@@ -8016,20 +7476,11 @@ func rewriteValue386_Op386MOVLstore_20(v *Value) bool {
 		}
 		c := y.AuxInt
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l) && validValAndOff(c, off)) {
@@ -8056,20 +7507,11 @@ func rewriteValue386_Op386MOVLstore_20(v *Value) bool {
 		}
 		c := y.AuxInt
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l) && validValAndOff(c, off)) {
@@ -8096,20 +7538,11 @@ func rewriteValue386_Op386MOVLstore_20(v *Value) bool {
 		}
 		c := y.AuxInt
 		l := y.Args[0]
-		if l.Op != Op386MOVLload {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLload || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[1]
-		if ptr != l.Args[0] {
-			break
-		}
-		if mem != l.Args[1] {
+		if ptr != l.Args[0] || mem != l.Args[1] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l) && validValAndOff(c, off)) {
@@ -8259,10 +7692,7 @@ func rewriteValue386_Op386MOVLstoreconstidx1_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 2 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 2 {
 			break
 		}
 		idx := v_1.Args[0]
@@ -8377,10 +7807,7 @@ func rewriteValue386_Op386MOVLstoreidx1_0(v *Value) bool {
 		mem := v.Args[3]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 2 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 2 {
 			break
 		}
 		idx := v_1.Args[0]
@@ -8402,10 +7829,7 @@ func rewriteValue386_Op386MOVLstoreidx1_0(v *Value) bool {
 		sym := v.Aux
 		mem := v.Args[3]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 2 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 2 {
 			break
 		}
 		idx := v_0.Args[0]
@@ -8577,24 +8001,12 @@ func rewriteValue386_Op386MOVLstoreidx4_0(v *Value) bool {
 		ptr := v.Args[0]
 		idx := v.Args[1]
 		y := v.Args[2]
-		if y.Op != Op386ADDLloadidx4 {
-			break
-		}
-		if y.AuxInt != off {
-			break
-		}
-		if y.Aux != sym {
+		if y.Op != Op386ADDLloadidx4 || y.AuxInt != off || y.Aux != sym {
 			break
 		}
 		_ = y.Args[3]
 		x := y.Args[0]
-		if ptr != y.Args[1] {
-			break
-		}
-		if idx != y.Args[2] {
-			break
-		}
-		if mem != y.Args[3] {
+		if ptr != y.Args[1] || idx != y.Args[2] || mem != y.Args[3] {
 			break
 		}
 		if !(y.Uses == 1 && clobber(y)) {
@@ -8619,24 +8031,12 @@ func rewriteValue386_Op386MOVLstoreidx4_0(v *Value) bool {
 		ptr := v.Args[0]
 		idx := v.Args[1]
 		y := v.Args[2]
-		if y.Op != Op386ANDLloadidx4 {
-			break
-		}
-		if y.AuxInt != off {
-			break
-		}
-		if y.Aux != sym {
+		if y.Op != Op386ANDLloadidx4 || y.AuxInt != off || y.Aux != sym {
 			break
 		}
 		_ = y.Args[3]
 		x := y.Args[0]
-		if ptr != y.Args[1] {
-			break
-		}
-		if idx != y.Args[2] {
-			break
-		}
-		if mem != y.Args[3] {
+		if ptr != y.Args[1] || idx != y.Args[2] || mem != y.Args[3] {
 			break
 		}
 		if !(y.Uses == 1 && clobber(y)) {
@@ -8661,24 +8061,12 @@ func rewriteValue386_Op386MOVLstoreidx4_0(v *Value) bool {
 		ptr := v.Args[0]
 		idx := v.Args[1]
 		y := v.Args[2]
-		if y.Op != Op386ORLloadidx4 {
-			break
-		}
-		if y.AuxInt != off {
-			break
-		}
-		if y.Aux != sym {
+		if y.Op != Op386ORLloadidx4 || y.AuxInt != off || y.Aux != sym {
 			break
 		}
 		_ = y.Args[3]
 		x := y.Args[0]
-		if ptr != y.Args[1] {
-			break
-		}
-		if idx != y.Args[2] {
-			break
-		}
-		if mem != y.Args[3] {
+		if ptr != y.Args[1] || idx != y.Args[2] || mem != y.Args[3] {
 			break
 		}
 		if !(y.Uses == 1 && clobber(y)) {
@@ -8703,24 +8091,12 @@ func rewriteValue386_Op386MOVLstoreidx4_0(v *Value) bool {
 		ptr := v.Args[0]
 		idx := v.Args[1]
 		y := v.Args[2]
-		if y.Op != Op386XORLloadidx4 {
-			break
-		}
-		if y.AuxInt != off {
-			break
-		}
-		if y.Aux != sym {
+		if y.Op != Op386XORLloadidx4 || y.AuxInt != off || y.Aux != sym {
 			break
 		}
 		_ = y.Args[3]
 		x := y.Args[0]
-		if ptr != y.Args[1] {
-			break
-		}
-		if idx != y.Args[2] {
-			break
-		}
-		if mem != y.Args[3] {
+		if ptr != y.Args[1] || idx != y.Args[2] || mem != y.Args[3] {
 			break
 		}
 		if !(y.Uses == 1 && clobber(y)) {
@@ -8750,23 +8126,11 @@ func rewriteValue386_Op386MOVLstoreidx4_0(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -8797,23 +8161,11 @@ func rewriteValue386_Op386MOVLstoreidx4_0(v *Value) bool {
 		_ = y.Args[1]
 		x := y.Args[0]
 		l := y.Args[1]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -8843,23 +8195,11 @@ func rewriteValue386_Op386MOVLstoreidx4_0(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -8889,23 +8229,11 @@ func rewriteValue386_Op386MOVLstoreidx4_0(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -8939,23 +8267,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		_ = y.Args[1]
 		x := y.Args[0]
 		l := y.Args[1]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -8985,23 +8301,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -9032,23 +8336,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		_ = y.Args[1]
 		x := y.Args[0]
 		l := y.Args[1]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -9078,23 +8370,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		}
 		x := y.Args[1]
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -9125,23 +8405,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		_ = y.Args[1]
 		x := y.Args[0]
 		l := y.Args[1]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l)) {
@@ -9171,23 +8439,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		}
 		c := y.AuxInt
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l) && validValAndOff(c, off)) {
@@ -9216,23 +8472,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		}
 		c := y.AuxInt
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l) && validValAndOff(c, off)) {
@@ -9261,23 +8505,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		}
 		c := y.AuxInt
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l) && validValAndOff(c, off)) {
@@ -9306,23 +8538,11 @@ func rewriteValue386_Op386MOVLstoreidx4_10(v *Value) bool {
 		}
 		c := y.AuxInt
 		l := y.Args[0]
-		if l.Op != Op386MOVLloadidx4 {
-			break
-		}
-		if l.AuxInt != off {
-			break
-		}
-		if l.Aux != sym {
+		if l.Op != Op386MOVLloadidx4 || l.AuxInt != off || l.Aux != sym {
 			break
 		}
 		_ = l.Args[2]
-		if ptr != l.Args[0] {
-			break
-		}
-		if idx != l.Args[1] {
-			break
-		}
-		if mem != l.Args[2] {
+		if ptr != l.Args[0] || idx != l.Args[1] || mem != l.Args[2] {
 			break
 		}
 		if !(y.Uses == 1 && l.Uses == 1 && clobber(y) && clobber(l) && validValAndOff(c, off)) {
@@ -10680,10 +9900,7 @@ func rewriteValue386_Op386MOVWloadidx1_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 1 {
 			break
 		}
 		idx := v_1.Args[0]
@@ -10703,10 +9920,7 @@ func rewriteValue386_Op386MOVWloadidx1_0(v *Value) bool {
 		sym := v.Aux
 		mem := v.Args[2]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 1 {
 			break
 		}
 		idx := v_0.Args[0]
@@ -11066,28 +10280,16 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHRLconst {
-			break
-		}
-		if v_1.AuxInt != 16 {
+		if v_1.Op != Op386SHRLconst || v_1.AuxInt != 16 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != Op386MOVWstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -11116,13 +10318,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 		j := v_1.AuxInt
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != Op386MOVWstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -11130,13 +10326,7 @@ func rewriteValue386_Op386MOVWstore_0(v *Value) bool {
 			break
 		}
 		w0 := x.Args[1]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -11347,10 +10537,7 @@ func rewriteValue386_Op386MOVWstoreconstidx1_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 1 {
 			break
 		}
 		idx := v_1.Args[0]
@@ -11424,10 +10611,7 @@ func rewriteValue386_Op386MOVWstoreconstidx1_0(v *Value) bool {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if i != x.Args[1] {
+		if p != x.Args[0] || i != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && ValAndOff(a).Off()+2 == ValAndOff(c).Off() && clobber(x)) {
@@ -11507,10 +10691,7 @@ func rewriteValue386_Op386MOVWstoreconstidx2_0(v *Value) bool {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if i != x.Args[1] {
+		if p != x.Args[0] || i != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && ValAndOff(a).Off()+2 == ValAndOff(c).Off() && clobber(x)) {
@@ -11539,10 +10720,7 @@ func rewriteValue386_Op386MOVWstoreidx1_0(v *Value) bool {
 		mem := v.Args[3]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386SHLLconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != Op386SHLLconst || v_1.AuxInt != 1 {
 			break
 		}
 		idx := v_1.Args[0]
@@ -11564,10 +10742,7 @@ func rewriteValue386_Op386MOVWstoreidx1_0(v *Value) bool {
 		sym := v.Aux
 		mem := v.Args[3]
 		v_0 := v.Args[0]
-		if v_0.Op != Op386SHLLconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != Op386SHLLconst || v_0.AuxInt != 1 {
 			break
 		}
 		idx := v_0.Args[0]
@@ -11688,31 +10863,16 @@ func rewriteValue386_Op386MOVWstoreidx1_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx1 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -11737,31 +10897,16 @@ func rewriteValue386_Op386MOVWstoreidx1_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx1 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -11786,31 +10931,16 @@ func rewriteValue386_Op386MOVWstoreidx1_0(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx1 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -11835,31 +10965,16 @@ func rewriteValue386_Op386MOVWstoreidx1_0(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx1 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -11893,30 +11008,15 @@ func rewriteValue386_Op386MOVWstoreidx1_10(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx1 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -11947,30 +11047,15 @@ func rewriteValue386_Op386MOVWstoreidx1_10(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx1 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12001,30 +11086,15 @@ func rewriteValue386_Op386MOVWstoreidx1_10(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx1 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12055,30 +11125,15 @@ func rewriteValue386_Op386MOVWstoreidx1_10(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx1 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx1 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12155,31 +11210,16 @@ func rewriteValue386_Op386MOVWstoreidx2_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != Op386SHRLconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != Op386SHRLconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx2 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx2 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12213,30 +11253,15 @@ func rewriteValue386_Op386MOVWstoreidx2_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != Op386MOVWstoreidx2 {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != Op386MOVWstoreidx2 || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != Op386SHRLconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != Op386SHRLconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13649,10 +12674,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		s0 := v.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13664,10 +12686,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -13689,10 +12708,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13712,10 +12728,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -13750,10 +12763,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13765,17 +12775,11 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13787,10 +12791,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13817,10 +12818,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13840,17 +12838,11 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13862,10 +12854,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13887,10 +12876,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13915,17 +12901,11 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13937,10 +12917,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13962,10 +12939,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13982,10 +12956,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13997,10 +12968,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -14012,10 +12980,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14046,10 +13011,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		s0 := v.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14061,13 +13023,7 @@ func rewriteValue386_Op386ORL_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -14103,10 +13059,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		s0 := v.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14118,13 +13071,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -14156,10 +13103,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		s0 := v.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14171,13 +13115,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -14209,10 +13147,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		s0 := v.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14224,13 +13159,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -14253,10 +13182,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14277,13 +13203,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -14306,10 +13226,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14330,13 +13247,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -14359,10 +13270,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14383,13 +13291,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -14412,10 +13314,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14436,13 +13335,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0)) {
@@ -14479,10 +13372,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14494,20 +13384,11 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14519,13 +13400,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if p != x2.Args[0] {
-			break
-		}
-		if idx != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if p != x2.Args[0] || idx != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14562,10 +13437,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14577,20 +13449,11 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14602,13 +13465,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if p != x2.Args[0] {
-			break
-		}
-		if idx != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if p != x2.Args[0] || idx != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14645,10 +13502,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14660,20 +13514,11 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14685,13 +13530,7 @@ func rewriteValue386_Op386ORL_20(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if p != x2.Args[0] {
-			break
-		}
-		if idx != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if p != x2.Args[0] || idx != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14732,10 +13571,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14747,20 +13583,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14772,13 +13599,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if p != x2.Args[0] {
-			break
-		}
-		if idx != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if p != x2.Args[0] || idx != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14806,10 +13627,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14830,20 +13648,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14855,13 +13664,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if p != x2.Args[0] {
-			break
-		}
-		if idx != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if p != x2.Args[0] || idx != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14889,10 +13692,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14913,20 +13713,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14938,13 +13729,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if p != x2.Args[0] {
-			break
-		}
-		if idx != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if p != x2.Args[0] || idx != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14972,10 +13757,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14996,20 +13778,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15021,13 +13794,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if p != x2.Args[0] {
-			break
-		}
-		if idx != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if p != x2.Args[0] || idx != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15055,10 +13822,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15079,20 +13843,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15104,13 +13859,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if p != x2.Args[0] {
-			break
-		}
-		if idx != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if p != x2.Args[0] || idx != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15147,10 +13896,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15162,20 +13908,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15187,13 +13924,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if idx != x2.Args[0] {
-			break
-		}
-		if p != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if idx != x2.Args[0] || p != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15230,10 +13961,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15245,20 +13973,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15270,13 +13989,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if idx != x2.Args[0] {
-			break
-		}
-		if p != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if idx != x2.Args[0] || p != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15313,10 +14026,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15328,20 +14038,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15353,13 +14054,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if idx != x2.Args[0] {
-			break
-		}
-		if p != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if idx != x2.Args[0] || p != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15396,10 +14091,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15411,20 +14103,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15436,13 +14119,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if idx != x2.Args[0] {
-			break
-		}
-		if p != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if idx != x2.Args[0] || p != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15470,10 +14147,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15494,20 +14168,11 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15519,13 +14184,7 @@ func rewriteValue386_Op386ORL_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if idx != x2.Args[0] {
-			break
-		}
-		if p != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if idx != x2.Args[0] || p != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15557,10 +14216,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15581,20 +14237,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15606,13 +14253,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if idx != x2.Args[0] {
-			break
-		}
-		if p != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if idx != x2.Args[0] || p != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15640,10 +14281,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15664,20 +14302,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15689,13 +14318,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if idx != x2.Args[0] {
-			break
-		}
-		if p != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if idx != x2.Args[0] || p != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15723,10 +14346,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15747,20 +14367,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15772,13 +14383,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x2.Args[2]
-		if idx != x2.Args[0] {
-			break
-		}
-		if p != x2.Args[1] {
-			break
-		}
-		if mem != x2.Args[2] {
+		if idx != x2.Args[0] || p != x2.Args[1] || mem != x2.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15801,10 +14406,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15830,20 +14432,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15855,13 +14448,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15884,10 +14471,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15913,20 +14497,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15938,13 +14513,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15967,10 +14536,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -15996,20 +14562,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16021,13 +14578,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16050,10 +14601,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16079,20 +14627,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16104,13 +14643,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16133,10 +14666,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16162,20 +14692,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16187,13 +14708,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16216,10 +14731,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16245,20 +14757,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16270,13 +14773,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16299,10 +14796,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16328,20 +14822,11 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16353,13 +14838,7 @@ func rewriteValue386_Op386ORL_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16386,10 +14865,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16415,20 +14891,11 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16440,13 +14907,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16469,10 +14930,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16490,10 +14948,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16505,13 +14960,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -16523,13 +14972,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16552,10 +14995,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16573,10 +15013,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16588,13 +15025,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -16606,13 +15037,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16635,10 +15060,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16656,10 +15078,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16671,13 +15090,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -16689,13 +15102,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16718,10 +15125,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16739,10 +15143,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16754,13 +15155,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -16772,13 +15167,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16801,10 +15190,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16822,10 +15208,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16837,13 +15220,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -16855,13 +15232,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16884,10 +15255,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16905,10 +15273,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -16920,13 +15285,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -16938,13 +15297,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -16967,10 +15320,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -16988,10 +15338,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -17003,13 +15350,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -17021,13 +15362,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -17050,10 +15385,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != Op386SHLLconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != Op386SHLLconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -17071,10 +15403,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != Op386SHLLconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != Op386SHLLconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -17086,13 +15415,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -17104,13 +15427,7 @@ func rewriteValue386_Op386ORL_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && o0.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -17813,10 +16130,7 @@ func rewriteValue386_Op386SARL_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386ANDLconst {
-			break
-		}
-		if v_1.AuxInt != 31 {
+		if v_1.Op != Op386ANDLconst || v_1.AuxInt != 31 {
 			break
 		}
 		y := v_1.Args[0]
@@ -18773,10 +17087,7 @@ func rewriteValue386_Op386SHLL_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386ANDLconst {
-			break
-		}
-		if v_1.AuxInt != 31 {
+		if v_1.Op != Op386ANDLconst || v_1.AuxInt != 31 {
 			break
 		}
 		y := v_1.Args[0]
@@ -18882,10 +17193,7 @@ func rewriteValue386_Op386SHRL_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != Op386ANDLconst {
-			break
-		}
-		if v_1.AuxInt != 31 {
+		if v_1.Op != Op386ANDLconst || v_1.AuxInt != 31 {
 			break
 		}
 		y := v_1.Args[0]
@@ -25015,10 +23323,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETL {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETL || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386LT
@@ -25041,10 +23346,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETL {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETL || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386LT
@@ -25067,10 +23369,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETLE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETLE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386LE
@@ -25093,10 +23392,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETLE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETLE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386LE
@@ -25119,10 +23415,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETG {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETG || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386GT
@@ -25145,10 +23438,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETG {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETG || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386GT
@@ -25171,10 +23461,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETGE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETGE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386GE
@@ -25197,10 +23484,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETGE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETGE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386GE
@@ -25223,10 +23507,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETEQ {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETEQ || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386EQ
@@ -25249,10 +23530,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETEQ {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETEQ || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386EQ
@@ -25275,10 +23553,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETNE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETNE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386NE
@@ -25301,10 +23576,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETNE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETNE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386NE
@@ -25327,10 +23599,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETB {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETB || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386ULT
@@ -25353,10 +23622,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETB {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETB || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386ULT
@@ -25379,10 +23645,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETBE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETBE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386ULE
@@ -25405,10 +23668,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETBE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETBE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386ULE
@@ -25431,10 +23691,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETA {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETA || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386UGT
@@ -25457,10 +23714,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETA {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETA || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386UGT
@@ -25483,10 +23737,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETAE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETAE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386UGE
@@ -25509,10 +23760,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETAE {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETAE || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386UGE
@@ -25535,10 +23783,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETO {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETO || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386OS
@@ -25561,10 +23806,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETO {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETO || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386OS
@@ -25587,10 +23829,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETGF {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETGF || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386UGT
@@ -25613,10 +23852,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETGF {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETGF || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386UGT
@@ -25639,10 +23875,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETGEF {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETGEF || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386UGE
@@ -25665,10 +23898,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETGEF {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETGEF || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386UGE
@@ -25691,10 +23921,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETEQF {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETEQF || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386EQF
@@ -25717,10 +23944,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETEQF {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETEQF || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386EQF
@@ -25743,10 +23967,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETNEF {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETNEF || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386NEF
@@ -25769,10 +23990,7 @@ func rewriteBlock386(b *Block) bool {
 			}
 			cmp := v_0.Args[0]
 			v_1 := v.Args[1]
-			if v_1.Op != Op386SETNEF {
-				break
-			}
-			if cmp != v_1.Args[0] {
+			if v_1.Op != Op386SETNEF || cmp != v_1.Args[0] {
 				break
 			}
 			b.Kind = Block386NEF

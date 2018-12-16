@@ -965,10 +965,7 @@ func rewriteValuedec64_OpLsh16x64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpLsh16x32)
@@ -1040,10 +1037,7 @@ func rewriteValuedec64_OpLsh32x64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpLsh32x32)
@@ -1213,10 +1207,7 @@ func rewriteValuedec64_OpLsh64x64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpLsh64x32)
@@ -1337,10 +1328,7 @@ func rewriteValuedec64_OpLsh8x64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpLsh8x32)
@@ -1539,10 +1527,7 @@ func rewriteValuedec64_OpRsh16Ux64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpRsh16Ux32)
@@ -1617,10 +1602,7 @@ func rewriteValuedec64_OpRsh16x64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpRsh16x32)
@@ -1692,10 +1674,7 @@ func rewriteValuedec64_OpRsh32Ux64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpRsh32Ux32)
@@ -1768,10 +1747,7 @@ func rewriteValuedec64_OpRsh32x64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpRsh32x32)
@@ -1941,10 +1917,7 @@ func rewriteValuedec64_OpRsh64Ux64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpRsh64Ux32)
@@ -2195,10 +2168,7 @@ func rewriteValuedec64_OpRsh64x64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpRsh64x32)
@@ -2331,10 +2301,7 @@ func rewriteValuedec64_OpRsh8Ux64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpRsh8Ux32)
@@ -2409,10 +2376,7 @@ func rewriteValuedec64_OpRsh8x64_0(v *Value) bool {
 		}
 		lo := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpConst32 {
-			break
-		}
-		if v_1_0.AuxInt != 0 {
+		if v_1_0.Op != OpConst32 || v_1_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpRsh8x32)

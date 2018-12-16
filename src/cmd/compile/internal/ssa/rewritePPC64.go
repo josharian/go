@@ -3433,10 +3433,7 @@ func rewriteValuePPC64_OpLsh32x64_0(v *Value) bool {
 		_ = v_1.Args[1]
 		y := v_1.Args[0]
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1.AuxInt != 31 {
+		if v_1_1.Op != OpPPC64MOVDconst || v_1_1.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SLW)
@@ -3459,10 +3456,7 @@ func rewriteValuePPC64_OpLsh32x64_0(v *Value) bool {
 		}
 		y := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 31 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SLW)
@@ -3480,13 +3474,7 @@ func rewriteValuePPC64_OpLsh32x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1.Type != typ.Int32 {
-			break
-		}
-		if v_1.AuxInt != 31 {
+		if v_1.Op != OpPPC64ANDconst || v_1.Type != typ.Int32 || v_1.AuxInt != 31 {
 			break
 		}
 		y := v_1.Args[0]
@@ -3758,10 +3746,7 @@ func rewriteValuePPC64_OpLsh64x64_0(v *Value) bool {
 		_ = v_1.Args[1]
 		y := v_1.Args[0]
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1.AuxInt != 63 {
+		if v_1_1.Op != OpPPC64MOVDconst || v_1_1.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SLD)
@@ -3784,10 +3769,7 @@ func rewriteValuePPC64_OpLsh64x64_0(v *Value) bool {
 		}
 		y := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 63 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SLD)
@@ -3805,13 +3787,7 @@ func rewriteValuePPC64_OpLsh64x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1.Type != typ.Int64 {
-			break
-		}
-		if v_1.AuxInt != 63 {
+		if v_1.Op != OpPPC64ANDconst || v_1.Type != typ.Int64 || v_1.AuxInt != 63 {
 			break
 		}
 		y := v_1.Args[0]
@@ -5119,13 +5095,7 @@ func rewriteValuePPC64_OpPPC64ADD_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1.Type != typ.Int64 {
-			break
-		}
-		if v_0_1.AuxInt != 63 {
+		if v_0_1.Op != OpPPC64ANDconst || v_0_1.Type != typ.Int64 || v_0_1.AuxInt != 63 {
 			break
 		}
 		y := v_0_1.Args[0]
@@ -5138,31 +5108,16 @@ func rewriteValuePPC64_OpPPC64ADD_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64SUB || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 64 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1_1.AuxInt != 63 {
-			break
-		}
-		if y != v_1_1_1.Args[0] {
+		if v_1_1_1.Op != OpPPC64ANDconst || v_1_1_1.Type != typ.UInt || v_1_1_1.AuxInt != 63 || y != v_1_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTL)
@@ -5182,28 +5137,16 @@ func rewriteValuePPC64_OpPPC64ADD_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_0_1.Type != typ.UInt {
+		if v_0_1.Op != OpPPC64SUB || v_0_1.Type != typ.UInt {
 			break
 		}
 		_ = v_0_1.Args[1]
 		v_0_1_0 := v_0_1.Args[0]
-		if v_0_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_0_1_0.AuxInt != 64 {
+		if v_0_1_0.Op != OpPPC64MOVDconst || v_0_1_0.AuxInt != 64 {
 			break
 		}
 		v_0_1_1 := v_0_1.Args[1]
-		if v_0_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1_1.Type != typ.UInt {
-			break
-		}
-		if v_0_1_1.AuxInt != 63 {
+		if v_0_1_1.Op != OpPPC64ANDconst || v_0_1_1.Type != typ.UInt || v_0_1_1.AuxInt != 63 {
 			break
 		}
 		y := v_0_1_1.Args[0]
@@ -5216,16 +5159,7 @@ func rewriteValuePPC64_OpPPC64ADD_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.Int64 {
-			break
-		}
-		if v_1_1.AuxInt != 63 {
-			break
-		}
-		if y != v_1_1.Args[0] {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.Int64 || v_1_1.AuxInt != 63 || y != v_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTL)
@@ -5245,13 +5179,7 @@ func rewriteValuePPC64_OpPPC64ADD_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1.Type != typ.Int32 {
-			break
-		}
-		if v_0_1.AuxInt != 31 {
+		if v_0_1.Op != OpPPC64ANDconst || v_0_1.Type != typ.Int32 || v_0_1.AuxInt != 31 {
 			break
 		}
 		y := v_0_1.Args[0]
@@ -5264,31 +5192,16 @@ func rewriteValuePPC64_OpPPC64ADD_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64SUB || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 32 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1_1.AuxInt != 31 {
-			break
-		}
-		if y != v_1_1_1.Args[0] {
+		if v_1_1_1.Op != OpPPC64ANDconst || v_1_1_1.Type != typ.UInt || v_1_1_1.AuxInt != 31 || y != v_1_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTLW)
@@ -5308,28 +5221,16 @@ func rewriteValuePPC64_OpPPC64ADD_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_0_1.Type != typ.UInt {
+		if v_0_1.Op != OpPPC64SUB || v_0_1.Type != typ.UInt {
 			break
 		}
 		_ = v_0_1.Args[1]
 		v_0_1_0 := v_0_1.Args[0]
-		if v_0_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_0_1_0.AuxInt != 32 {
+		if v_0_1_0.Op != OpPPC64MOVDconst || v_0_1_0.AuxInt != 32 {
 			break
 		}
 		v_0_1_1 := v_0_1.Args[1]
-		if v_0_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1_1.Type != typ.UInt {
-			break
-		}
-		if v_0_1_1.AuxInt != 31 {
+		if v_0_1_1.Op != OpPPC64ANDconst || v_0_1_1.Type != typ.UInt || v_0_1_1.AuxInt != 31 {
 			break
 		}
 		y := v_0_1_1.Args[0]
@@ -5342,16 +5243,7 @@ func rewriteValuePPC64_OpPPC64ADD_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.Int32 {
-			break
-		}
-		if v_1_1.AuxInt != 31 {
-			break
-		}
-		if y != v_1_1.Args[0] {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.Int32 || v_1_1.AuxInt != 31 || y != v_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTLW)
@@ -5614,10 +5506,7 @@ func rewriteValuePPC64_OpPPC64AND_0(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_0.AuxInt != 0xFFFFFFFF {
+		if v_0.Op != OpPPC64MOVDconst || v_0.AuxInt != 0xFFFFFFFF {
 			break
 		}
 		y := v.Args[1]
@@ -5640,10 +5529,7 @@ func rewriteValuePPC64_OpPPC64AND_0(v *Value) bool {
 		}
 		x := y.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0xFFFFFFFF {
+		if v_1.Op != OpPPC64MOVDconst || v_1.AuxInt != 0xFFFFFFFF {
 			break
 		}
 		v.reset(OpPPC64MOVWZreg)
@@ -6561,13 +6447,7 @@ func rewriteValuePPC64_OpPPC64FMOVDload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64MOVDstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpPPC64MOVDstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -7713,10 +7593,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpPPC64MOVDconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpPPC64MOVBstorezero)
@@ -8019,10 +7896,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SRWconst {
-			break
-		}
-		if v_1.AuxInt != 24 {
+		if v_1.Op != OpPPC64SRWconst || v_1.AuxInt != 24 {
 			break
 		}
 		w := v_1.Args[0]
@@ -8039,13 +7913,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 			break
 		}
 		x0_1 := x0.Args[1]
-		if x0_1.Op != OpPPC64SRWconst {
-			break
-		}
-		if x0_1.AuxInt != 16 {
-			break
-		}
-		if w != x0_1.Args[0] {
+		if x0_1.Op != OpPPC64SRWconst || x0_1.AuxInt != 16 || w != x0_1.Args[0] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && i1 == i0+1 && clobber(x0)) {
@@ -8071,10 +7939,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if v_1.AuxInt != 24 {
+		if v_1.Op != OpPPC64SRDconst || v_1.AuxInt != 24 {
 			break
 		}
 		w := v_1.Args[0]
@@ -8091,13 +7956,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 			break
 		}
 		x0_1 := x0.Args[1]
-		if x0_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x0_1.AuxInt != 16 {
-			break
-		}
-		if w != x0_1.Args[0] {
+		if x0_1.Op != OpPPC64SRDconst || x0_1.AuxInt != 16 || w != x0_1.Args[0] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && i1 == i0+1 && clobber(x0)) {
@@ -8123,10 +7982,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SRWconst {
-			break
-		}
-		if v_1.AuxInt != 8 {
+		if v_1.Op != OpPPC64SRWconst || v_1.AuxInt != 8 {
 			break
 		}
 		w := v_1.Args[0]
@@ -8139,10 +7995,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 			break
 		}
 		mem := x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if w != x0.Args[1] {
+		if p != x0.Args[0] || w != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && i1 == i0+1 && clobber(x0)) {
@@ -8165,10 +8018,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if v_1.AuxInt != 8 {
+		if v_1.Op != OpPPC64SRDconst || v_1.AuxInt != 8 {
 			break
 		}
 		w := v_1.Args[0]
@@ -8181,10 +8031,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 			break
 		}
 		mem := x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if w != x0.Args[1] {
+		if p != x0.Args[0] || w != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && i1 == i0+1 && clobber(x0)) {
@@ -8220,13 +8067,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 			break
 		}
 		x0_1 := x0.Args[1]
-		if x0_1.Op != OpPPC64SRWconst {
-			break
-		}
-		if x0_1.AuxInt != 8 {
-			break
-		}
-		if w != x0_1.Args[0] {
+		if x0_1.Op != OpPPC64SRWconst || x0_1.AuxInt != 8 || w != x0_1.Args[0] {
 			break
 		}
 		x1 := x0.Args[2]
@@ -8242,13 +8083,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 			break
 		}
 		x1_1 := x1.Args[1]
-		if x1_1.Op != OpPPC64SRWconst {
-			break
-		}
-		if x1_1.AuxInt != 16 {
-			break
-		}
-		if w != x1_1.Args[0] {
+		if x1_1.Op != OpPPC64SRWconst || x1_1.AuxInt != 16 || w != x1_1.Args[0] {
 			break
 		}
 		x2 := x1.Args[2]
@@ -8264,13 +8099,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 			break
 		}
 		x2_1 := x2.Args[1]
-		if x2_1.Op != OpPPC64SRWconst {
-			break
-		}
-		if x2_1.AuxInt != 24 {
-			break
-		}
-		if w != x2_1.Args[0] {
+		if x2_1.Op != OpPPC64SRWconst || x2_1.AuxInt != 24 || w != x2_1.Args[0] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && clobber(x0) && clobber(x1) && clobber(x2)) {
@@ -8308,13 +8137,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_10(v *Value) bool {
 			break
 		}
 		x0_1 := x0.Args[1]
-		if x0_1.Op != OpPPC64SRWconst {
-			break
-		}
-		if x0_1.AuxInt != 8 {
-			break
-		}
-		if w != x0_1.Args[0] {
+		if x0_1.Op != OpPPC64SRWconst || x0_1.AuxInt != 8 || w != x0_1.Args[0] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && i1 == i0+1 && clobber(x0)) {
@@ -8345,10 +8168,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if v_1.AuxInt != 56 {
+		if v_1.Op != OpPPC64SRDconst || v_1.AuxInt != 56 {
 			break
 		}
 		w := v_1.Args[0]
@@ -8365,13 +8185,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x0_1 := x0.Args[1]
-		if x0_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x0_1.AuxInt != 48 {
-			break
-		}
-		if w != x0_1.Args[0] {
+		if x0_1.Op != OpPPC64SRDconst || x0_1.AuxInt != 48 || w != x0_1.Args[0] {
 			break
 		}
 		x1 := x0.Args[2]
@@ -8387,13 +8201,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x1_1 := x1.Args[1]
-		if x1_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x1_1.AuxInt != 40 {
-			break
-		}
-		if w != x1_1.Args[0] {
+		if x1_1.Op != OpPPC64SRDconst || x1_1.AuxInt != 40 || w != x1_1.Args[0] {
 			break
 		}
 		x2 := x1.Args[2]
@@ -8409,13 +8217,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x2_1 := x2.Args[1]
-		if x2_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x2_1.AuxInt != 32 {
-			break
-		}
-		if w != x2_1.Args[0] {
+		if x2_1.Op != OpPPC64SRDconst || x2_1.AuxInt != 32 || w != x2_1.Args[0] {
 			break
 		}
 		x3 := x2.Args[2]
@@ -8427,10 +8229,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		mem := x3.Args[2]
-		if p != x3.Args[0] {
-			break
-		}
-		if w != x3.Args[1] {
+		if p != x3.Args[0] || w != x3.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3)) {
@@ -8466,13 +8265,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x0_1 := x0.Args[1]
-		if x0_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x0_1.AuxInt != 8 {
-			break
-		}
-		if w != x0_1.Args[0] {
+		if x0_1.Op != OpPPC64SRDconst || x0_1.AuxInt != 8 || w != x0_1.Args[0] {
 			break
 		}
 		x1 := x0.Args[2]
@@ -8488,13 +8281,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x1_1 := x1.Args[1]
-		if x1_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x1_1.AuxInt != 16 {
-			break
-		}
-		if w != x1_1.Args[0] {
+		if x1_1.Op != OpPPC64SRDconst || x1_1.AuxInt != 16 || w != x1_1.Args[0] {
 			break
 		}
 		x2 := x1.Args[2]
@@ -8510,13 +8297,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x2_1 := x2.Args[1]
-		if x2_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x2_1.AuxInt != 24 {
-			break
-		}
-		if w != x2_1.Args[0] {
+		if x2_1.Op != OpPPC64SRDconst || x2_1.AuxInt != 24 || w != x2_1.Args[0] {
 			break
 		}
 		x3 := x2.Args[2]
@@ -8532,13 +8313,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x3_1 := x3.Args[1]
-		if x3_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x3_1.AuxInt != 32 {
-			break
-		}
-		if w != x3_1.Args[0] {
+		if x3_1.Op != OpPPC64SRDconst || x3_1.AuxInt != 32 || w != x3_1.Args[0] {
 			break
 		}
 		x4 := x3.Args[2]
@@ -8554,13 +8329,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x4_1 := x4.Args[1]
-		if x4_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x4_1.AuxInt != 40 {
-			break
-		}
-		if w != x4_1.Args[0] {
+		if x4_1.Op != OpPPC64SRDconst || x4_1.AuxInt != 40 || w != x4_1.Args[0] {
 			break
 		}
 		x5 := x4.Args[2]
@@ -8576,13 +8345,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x5_1 := x5.Args[1]
-		if x5_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x5_1.AuxInt != 48 {
-			break
-		}
-		if w != x5_1.Args[0] {
+		if x5_1.Op != OpPPC64SRDconst || x5_1.AuxInt != 48 || w != x5_1.Args[0] {
 			break
 		}
 		x6 := x5.Args[2]
@@ -8598,13 +8361,7 @@ func rewriteValuePPC64_OpPPC64MOVBstore_20(v *Value) bool {
 			break
 		}
 		x6_1 := x6.Args[1]
-		if x6_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if x6_1.AuxInt != 56 {
-			break
-		}
-		if w != x6_1.Args[0] {
+		if x6_1.Op != OpPPC64SRDconst || x6_1.AuxInt != 56 || w != x6_1.Args[0] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6)) {
@@ -9010,13 +8767,7 @@ func rewriteValuePPC64_OpPPC64MOVDload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64FMOVDstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpPPC64FMOVDstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -9226,10 +8977,7 @@ func rewriteValuePPC64_OpPPC64MOVDstore_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpPPC64MOVDconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpPPC64MOVDstorezero)
@@ -10252,10 +10000,7 @@ func rewriteValuePPC64_OpPPC64MOVHstore_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpPPC64MOVDconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpPPC64MOVHstorezero)
@@ -10382,10 +10127,7 @@ func rewriteValuePPC64_OpPPC64MOVHstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SRWconst {
-			break
-		}
-		if v_1.AuxInt != 16 {
+		if v_1.Op != OpPPC64SRWconst || v_1.AuxInt != 16 {
 			break
 		}
 		w := v_1.Args[0]
@@ -10398,10 +10140,7 @@ func rewriteValuePPC64_OpPPC64MOVHstore_0(v *Value) bool {
 			break
 		}
 		mem := x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if w != x0.Args[1] {
+		if p != x0.Args[0] || w != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && i1 == i0+2 && clobber(x0)) {
@@ -10424,10 +10163,7 @@ func rewriteValuePPC64_OpPPC64MOVHstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SRDconst {
-			break
-		}
-		if v_1.AuxInt != 16 {
+		if v_1.Op != OpPPC64SRDconst || v_1.AuxInt != 16 {
 			break
 		}
 		w := v_1.Args[0]
@@ -10440,10 +10176,7 @@ func rewriteValuePPC64_OpPPC64MOVHstore_0(v *Value) bool {
 			break
 		}
 		mem := x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if w != x0.Args[1] {
+		if p != x0.Args[0] || w != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && x0.Uses == 1 && i1 == i0+2 && clobber(x0)) {
@@ -11673,10 +11406,7 @@ func rewriteValuePPC64_OpPPC64MOVWstore_0(v *Value) bool {
 		mem := v.Args[2]
 		ptr := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpPPC64MOVDconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpPPC64MOVWstorezero)
@@ -12139,13 +11869,7 @@ func rewriteValuePPC64_OpPPC64OR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1.Type != typ.Int64 {
-			break
-		}
-		if v_0_1.AuxInt != 63 {
+		if v_0_1.Op != OpPPC64ANDconst || v_0_1.Type != typ.Int64 || v_0_1.AuxInt != 63 {
 			break
 		}
 		y := v_0_1.Args[0]
@@ -12158,31 +11882,16 @@ func rewriteValuePPC64_OpPPC64OR_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64SUB || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 64 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1_1.AuxInt != 63 {
-			break
-		}
-		if y != v_1_1_1.Args[0] {
+		if v_1_1_1.Op != OpPPC64ANDconst || v_1_1_1.Type != typ.UInt || v_1_1_1.AuxInt != 63 || y != v_1_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTL)
@@ -12202,28 +11911,16 @@ func rewriteValuePPC64_OpPPC64OR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_0_1.Type != typ.UInt {
+		if v_0_1.Op != OpPPC64SUB || v_0_1.Type != typ.UInt {
 			break
 		}
 		_ = v_0_1.Args[1]
 		v_0_1_0 := v_0_1.Args[0]
-		if v_0_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_0_1_0.AuxInt != 64 {
+		if v_0_1_0.Op != OpPPC64MOVDconst || v_0_1_0.AuxInt != 64 {
 			break
 		}
 		v_0_1_1 := v_0_1.Args[1]
-		if v_0_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1_1.Type != typ.UInt {
-			break
-		}
-		if v_0_1_1.AuxInt != 63 {
+		if v_0_1_1.Op != OpPPC64ANDconst || v_0_1_1.Type != typ.UInt || v_0_1_1.AuxInt != 63 {
 			break
 		}
 		y := v_0_1_1.Args[0]
@@ -12236,16 +11933,7 @@ func rewriteValuePPC64_OpPPC64OR_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.Int64 {
-			break
-		}
-		if v_1_1.AuxInt != 63 {
-			break
-		}
-		if y != v_1_1.Args[0] {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.Int64 || v_1_1.AuxInt != 63 || y != v_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTL)
@@ -12265,13 +11953,7 @@ func rewriteValuePPC64_OpPPC64OR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1.Type != typ.Int32 {
-			break
-		}
-		if v_0_1.AuxInt != 31 {
+		if v_0_1.Op != OpPPC64ANDconst || v_0_1.Type != typ.Int32 || v_0_1.AuxInt != 31 {
 			break
 		}
 		y := v_0_1.Args[0]
@@ -12284,31 +11966,16 @@ func rewriteValuePPC64_OpPPC64OR_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64SUB || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 32 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1_1.AuxInt != 31 {
-			break
-		}
-		if y != v_1_1_1.Args[0] {
+		if v_1_1_1.Op != OpPPC64ANDconst || v_1_1_1.Type != typ.UInt || v_1_1_1.AuxInt != 31 || y != v_1_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTLW)
@@ -12328,28 +11995,16 @@ func rewriteValuePPC64_OpPPC64OR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_0_1.Type != typ.UInt {
+		if v_0_1.Op != OpPPC64SUB || v_0_1.Type != typ.UInt {
 			break
 		}
 		_ = v_0_1.Args[1]
 		v_0_1_0 := v_0_1.Args[0]
-		if v_0_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_0_1_0.AuxInt != 32 {
+		if v_0_1_0.Op != OpPPC64MOVDconst || v_0_1_0.AuxInt != 32 {
 			break
 		}
 		v_0_1_1 := v_0_1.Args[1]
-		if v_0_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1_1.Type != typ.UInt {
-			break
-		}
-		if v_0_1_1.AuxInt != 31 {
+		if v_0_1_1.Op != OpPPC64ANDconst || v_0_1_1.Type != typ.UInt || v_0_1_1.AuxInt != 31 {
 			break
 		}
 		y := v_0_1_1.Args[0]
@@ -12362,16 +12017,7 @@ func rewriteValuePPC64_OpPPC64OR_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.Int32 {
-			break
-		}
-		if v_1_1.AuxInt != 31 {
-			break
-		}
-		if y != v_1_1.Args[0] {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.Int32 || v_1_1.AuxInt != 31 || y != v_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTLW)
@@ -12475,10 +12121,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o1 := v.Args[1]
-		if o1.Op != OpPPC64SLWconst {
-			break
-		}
-		if o1.AuxInt != 8 {
+		if o1.Op != OpPPC64SLWconst || o1.AuxInt != 8 {
 			break
 		}
 		x1 := o1.Args[0]
@@ -12490,10 +12133,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && o1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(o1)) {
@@ -12516,10 +12156,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o1 := v.Args[0]
-		if o1.Op != OpPPC64SLWconst {
-			break
-		}
-		if o1.AuxInt != 8 {
+		if o1.Op != OpPPC64SLWconst || o1.AuxInt != 8 {
 			break
 		}
 		x1 := o1.Args[0]
@@ -12539,10 +12176,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && o1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(o1)) {
@@ -12573,10 +12207,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o1 := v.Args[1]
-		if o1.Op != OpPPC64SLDconst {
-			break
-		}
-		if o1.AuxInt != 8 {
+		if o1.Op != OpPPC64SLDconst || o1.AuxInt != 8 {
 			break
 		}
 		x1 := o1.Args[0]
@@ -12588,10 +12219,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && o1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(o1)) {
@@ -12614,10 +12242,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o1 := v.Args[0]
-		if o1.Op != OpPPC64SLDconst {
-			break
-		}
-		if o1.AuxInt != 8 {
+		if o1.Op != OpPPC64SLDconst || o1.AuxInt != 8 {
 			break
 		}
 		x1 := o1.Args[0]
@@ -12637,10 +12262,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && o1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(o1)) {
@@ -12671,10 +12293,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o1 := v.Args[1]
-		if o1.Op != OpPPC64SLWconst {
-			break
-		}
-		if o1.AuxInt != 8 {
+		if o1.Op != OpPPC64SLWconst || o1.AuxInt != 8 {
 			break
 		}
 		x1 := o1.Args[0]
@@ -12686,10 +12305,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && o1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(o1)) {
@@ -12714,10 +12330,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o1 := v.Args[0]
-		if o1.Op != OpPPC64SLWconst {
-			break
-		}
-		if o1.AuxInt != 8 {
+		if o1.Op != OpPPC64SLWconst || o1.AuxInt != 8 {
 			break
 		}
 		x1 := o1.Args[0]
@@ -12737,10 +12350,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && o1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(o1)) {
@@ -12773,10 +12383,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o1 := v.Args[1]
-		if o1.Op != OpPPC64SLDconst {
-			break
-		}
-		if o1.AuxInt != 8 {
+		if o1.Op != OpPPC64SLDconst || o1.AuxInt != 8 {
 			break
 		}
 		x1 := o1.Args[0]
@@ -12788,10 +12395,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && o1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(o1)) {
@@ -12816,10 +12420,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o1 := v.Args[0]
-		if o1.Op != OpPPC64SLDconst {
-			break
-		}
-		if o1.AuxInt != 8 {
+		if o1.Op != OpPPC64SLDconst || o1.AuxInt != 8 {
 			break
 		}
 		x1 := o1.Args[0]
@@ -12839,10 +12440,7 @@ func rewriteValuePPC64_OpPPC64OR_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && o1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(o1)) {
@@ -12899,10 +12497,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && n1%8 == 0 && n2 == n1+8 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1)) {
@@ -12956,10 +12551,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && n1%8 == 0 && n2 == n1+8 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1)) {
@@ -13013,10 +12605,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && n1%8 == 0 && n2 == n1+8 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1)) {
@@ -13070,10 +12659,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && n1%8 == 0 && n2 == n1+8 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1)) {
@@ -13101,10 +12687,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13116,18 +12699,12 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13139,10 +12716,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -13154,10 +12728,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13180,10 +12751,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13195,10 +12763,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
@@ -13211,17 +12776,11 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13233,10 +12792,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13259,18 +12815,12 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13290,17 +12840,11 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13312,10 +12856,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13338,10 +12879,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
@@ -13354,10 +12892,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13369,17 +12904,11 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13391,10 +12920,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13417,10 +12943,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13432,18 +12955,12 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13455,10 +12972,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		x0 := o0.Args[1]
@@ -13470,10 +12984,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13496,10 +13007,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13511,10 +13019,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
@@ -13527,17 +13032,11 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13549,10 +13048,7 @@ func rewriteValuePPC64_OpPPC64OR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13581,18 +13077,12 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13612,17 +13102,11 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13634,10 +13118,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13660,10 +13141,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
@@ -13676,10 +13154,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13691,17 +13166,11 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13713,10 +13182,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13739,10 +13205,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13754,18 +13217,12 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13777,35 +13234,20 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		x0 := o0.Args[1]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13830,10 +13272,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13845,43 +13284,25 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		x0 := o0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13893,10 +13314,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -13921,18 +13339,12 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -13944,35 +13356,20 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		x0 := o0.Args[1]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -13984,10 +13381,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14012,36 +13406,24 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		x0 := o0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		mem := x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
 		s := x0_0.Aux
 		p := x0_0.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14053,17 +13435,11 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14075,10 +13451,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14103,10 +13476,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14118,18 +13488,12 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14141,35 +13505,20 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		x0 := o0.Args[1]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14194,10 +13543,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s1 := v.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14209,43 +13555,25 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		x0 := o0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14257,10 +13585,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14285,18 +13610,12 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14308,35 +13627,20 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		x0 := o0.Args[1]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14348,10 +13652,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14376,36 +13677,24 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		x0 := o0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		mem := x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
 		s := x0_0.Aux
 		p := x0_0.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 16 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 16 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14417,17 +13706,11 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s1 := v.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 24 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 24 {
 			break
 		}
 		x2 := s1.Args[0]
@@ -14439,10 +13722,7 @@ func rewriteValuePPC64_OpPPC64OR_30(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14481,18 +13761,12 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14504,42 +13778,24 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 16 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 16 {
 			break
 		}
 		x2 := s1.Args[0]
-		if x2.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x2.Type != t {
+		if x2.Op != OpPPC64MOVHBRload || x2.Type != t {
 			break
 		}
 		_ = x2.Args[1]
 		x2_0 := x2.Args[0]
-		if x2_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x2_0.Type != typ.Uintptr {
+		if x2_0.Op != OpPPC64MOVDaddr || x2_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x2_0.AuxInt
-		if x2_0.Aux != s {
-			break
-		}
-		if p != x2_0.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if x2_0.Aux != s || p != x2_0.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14572,50 +13828,29 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 16 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 16 {
 			break
 		}
 		x2 := s1.Args[0]
-		if x2.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x2.Type != t {
+		if x2.Op != OpPPC64MOVHBRload || x2.Type != t {
 			break
 		}
 		_ = x2.Args[1]
 		x2_0 := x2.Args[0]
-		if x2_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x2_0.Type != typ.Uintptr {
+		if x2_0.Op != OpPPC64MOVDaddr || x2_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x2_0.AuxInt
-		if x2_0.Aux != s {
-			break
-		}
-		if p != x2_0.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if x2_0.Aux != s || p != x2_0.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14627,10 +13862,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14655,18 +13887,12 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14678,35 +13904,20 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 16 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 16 {
 			break
 		}
 		x2 := s1.Args[0]
-		if x2.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x2.Type != t {
+		if x2.Op != OpPPC64MOVHBRload || x2.Type != t {
 			break
 		}
 		_ = x2.Args[1]
 		x2_0 := x2.Args[0]
-		if x2_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x2_0.Type != typ.Uintptr {
+		if x2_0.Op != OpPPC64MOVDaddr || x2_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x2_0.AuxInt
-		if x2_0.Aux != s {
-			break
-		}
-		if p != x2_0.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if x2_0.Aux != s || p != x2_0.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		x0 := v.Args[1]
@@ -14718,10 +13929,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14746,43 +13954,28 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLWconst {
-			break
-		}
-		if s1.AuxInt != 16 {
+		if s1.Op != OpPPC64SLWconst || s1.AuxInt != 16 {
 			break
 		}
 		x2 := s1.Args[0]
-		if x2.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x2.Type != t {
+		if x2.Op != OpPPC64MOVHBRload || x2.Type != t {
 			break
 		}
 		mem := x2.Args[1]
 		x2_0 := x2.Args[0]
-		if x2_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x2_0.Type != typ.Uintptr {
+		if x2_0.Op != OpPPC64MOVDaddr || x2_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x2_0.AuxInt
 		s := x2_0.Aux
 		p := x2_0.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14794,10 +13987,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		x0 := v.Args[1]
@@ -14809,10 +13999,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14845,18 +14032,12 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14868,42 +14049,24 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 16 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 16 {
 			break
 		}
 		x2 := s1.Args[0]
-		if x2.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x2.Type != t {
+		if x2.Op != OpPPC64MOVHBRload || x2.Type != t {
 			break
 		}
 		_ = x2.Args[1]
 		x2_0 := x2.Args[0]
-		if x2_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x2_0.Type != typ.Uintptr {
+		if x2_0.Op != OpPPC64MOVDaddr || x2_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x2_0.AuxInt
-		if x2_0.Aux != s {
-			break
-		}
-		if p != x2_0.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if x2_0.Aux != s || p != x2_0.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -14936,50 +14099,29 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 16 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 16 {
 			break
 		}
 		x2 := s1.Args[0]
-		if x2.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x2.Type != t {
+		if x2.Op != OpPPC64MOVHBRload || x2.Type != t {
 			break
 		}
 		_ = x2.Args[1]
 		x2_0 := x2.Args[0]
-		if x2_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x2_0.Type != typ.Uintptr {
+		if x2_0.Op != OpPPC64MOVDaddr || x2_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x2_0.AuxInt
-		if x2_0.Aux != s {
-			break
-		}
-		if p != x2_0.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if x2_0.Aux != s || p != x2_0.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -14991,10 +14133,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15019,18 +14158,12 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15042,35 +14175,20 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 16 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 16 {
 			break
 		}
 		x2 := s1.Args[0]
-		if x2.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x2.Type != t {
+		if x2.Op != OpPPC64MOVHBRload || x2.Type != t {
 			break
 		}
 		_ = x2.Args[1]
 		x2_0 := x2.Args[0]
-		if x2_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x2_0.Type != typ.Uintptr {
+		if x2_0.Op != OpPPC64MOVDaddr || x2_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x2_0.AuxInt
-		if x2_0.Aux != s {
-			break
-		}
-		if p != x2_0.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if x2_0.Aux != s || p != x2_0.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		x0 := v.Args[1]
@@ -15082,10 +14200,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15110,43 +14225,28 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 16 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 16 {
 			break
 		}
 		x2 := s1.Args[0]
-		if x2.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x2.Type != t {
+		if x2.Op != OpPPC64MOVHBRload || x2.Type != t {
 			break
 		}
 		mem := x2.Args[1]
 		x2_0 := x2.Args[0]
-		if x2_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x2_0.Type != typ.Uintptr {
+		if x2_0.Op != OpPPC64MOVDaddr || x2_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x2_0.AuxInt
 		s := x2_0.Aux
 		p := x2_0.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 8 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 8 {
 			break
 		}
 		x1 := s0.Args[0]
@@ -15158,10 +14258,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		x0 := v.Args[1]
@@ -15173,10 +14270,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(o0)) {
@@ -15201,10 +14295,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s2 := v.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 32 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 32 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -15216,18 +14307,12 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 40 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 40 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -15239,42 +14324,24 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 48 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 48 {
 			break
 		}
 		x0 := s0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(o0)) {
@@ -15302,10 +14369,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s2 := v.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 32 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 32 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -15317,50 +14381,29 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 48 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 48 {
 			break
 		}
 		x0 := s0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 40 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 40 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -15372,10 +14415,7 @@ func rewriteValuePPC64_OpPPC64OR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(o0)) {
@@ -15409,18 +14449,12 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 40 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 40 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -15432,42 +14466,24 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 48 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 48 {
 			break
 		}
 		x0 := s0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s2 := v.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 32 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 32 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -15479,10 +14495,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(o0)) {
@@ -15510,43 +14523,28 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 48 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 48 {
 			break
 		}
 		x0 := s0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		mem := x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x0_0.AuxInt
 		s := x0_0.Aux
 		p := x0_0.Args[0]
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 40 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 40 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -15558,17 +14556,11 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s2 := v.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 32 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 32 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -15580,10 +14572,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i2 == i0+2 && i3 == i0+3 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(o0)) {
@@ -15611,10 +14600,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s2 := v.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 56 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 56 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -15626,18 +14612,12 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -15649,42 +14629,24 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x0 := s0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(o0)) {
@@ -15712,10 +14674,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s2 := v.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 56 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 56 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -15727,50 +14686,29 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x0 := s0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -15782,10 +14720,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(o0)) {
@@ -15813,18 +14748,12 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -15836,42 +14765,24 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		s0 := o0.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x0 := s0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		_ = x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
-		if x0_0.Aux != s {
-			break
-		}
-		if p != x0_0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if x0_0.Aux != s || p != x0_0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s2 := v.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 56 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 56 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -15883,10 +14794,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(o0)) {
@@ -15914,43 +14822,28 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s0 := o0.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x0 := s0.Args[0]
-		if x0.Op != OpPPC64MOVHBRload {
-			break
-		}
-		if x0.Type != t {
+		if x0.Op != OpPPC64MOVHBRload || x0.Type != t {
 			break
 		}
 		mem := x0.Args[1]
 		x0_0 := x0.Args[0]
-		if x0_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x0_0.Type != typ.Uintptr {
+		if x0_0.Op != OpPPC64MOVDaddr || x0_0.Type != typ.Uintptr {
 			break
 		}
 		i2 := x0_0.AuxInt
 		s := x0_0.Aux
 		p := x0_0.Args[0]
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -15962,17 +14855,11 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s2 := v.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 56 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 56 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -15984,10 +14871,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && o0.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && mergePoint(b, x0, x1, x2) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(o0)) {
@@ -16015,10 +14899,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s6 := v.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -16030,18 +14911,12 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s5 := o5.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -16053,25 +14928,16 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s4 := o4.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -16083,25 +14949,16 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s3 := o3.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -16113,10 +14970,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x0 := o3.Args[1]
@@ -16128,10 +14982,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -16154,10 +15005,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s6 := v.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -16169,18 +15017,12 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s5 := o5.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -16192,25 +15034,16 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s4 := o4.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -16222,17 +15055,11 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
@@ -16245,17 +15072,11 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s3 := o3.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -16267,10 +15088,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -16293,10 +15111,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s6 := v.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -16308,18 +15123,12 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s5 := o5.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -16331,33 +15140,21 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s3 := o3.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -16369,10 +15166,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x0 := o3.Args[1]
@@ -16384,17 +15178,11 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s4 := o4.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -16406,10 +15194,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -16432,10 +15217,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s6 := v.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -16447,18 +15229,12 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s5 := o5.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -16470,25 +15246,16 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
@@ -16501,17 +15268,11 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s3 := o3.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -16523,17 +15284,11 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s4 := o4.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -16545,10 +15300,7 @@ func rewriteValuePPC64_OpPPC64OR_50(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -16576,10 +15328,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s6 := v.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -16591,26 +15340,17 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s4 := o4.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -16622,25 +15362,16 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s3 := o3.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -16652,10 +15383,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x0 := o3.Args[1]
@@ -16667,17 +15395,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s5 := o5.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -16689,10 +15411,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -16715,10 +15434,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s6 := v.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -16730,26 +15446,17 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s4 := o4.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -16761,17 +15468,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
@@ -16784,17 +15485,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s3 := o3.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -16806,17 +15501,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o5.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -16828,10 +15517,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -16854,10 +15540,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s6 := v.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -16869,34 +15552,22 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s3 := o3.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -16908,10 +15579,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x0 := o3.Args[1]
@@ -16923,17 +15591,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s4 := o4.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -16945,17 +15607,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s5 := o5.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -16967,10 +15623,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -16993,10 +15646,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s6 := v.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -17008,26 +15658,17 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
@@ -17040,17 +15681,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s3 := o3.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -17062,17 +15697,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s4 := o4.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -17084,17 +15713,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s5 := o5.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -17106,10 +15729,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -17132,18 +15752,12 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s5 := o5.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -17155,18 +15769,12 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s4 := o4.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -17178,25 +15786,16 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s3 := o3.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -17208,10 +15807,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x0 := o3.Args[1]
@@ -17223,17 +15819,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s6 := v.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -17245,10 +15835,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -17271,18 +15858,12 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s5 := o5.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -17294,18 +15875,12 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s4 := o4.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -17317,17 +15892,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
@@ -17340,17 +15909,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s3 := o3.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -17362,17 +15925,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s6 := v.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -17384,10 +15941,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -17410,18 +15964,12 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s5 := o5.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -17433,26 +15981,17 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s3 := o3.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -17464,10 +16003,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x0 := o3.Args[1]
@@ -17479,17 +16015,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s4 := o4.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -17501,17 +16031,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := v.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -17523,10 +16047,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -17549,18 +16070,12 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s5 := o5.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -17572,18 +16087,12 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
@@ -17596,17 +16105,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s3 := o3.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -17618,17 +16121,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s4 := o4.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -17640,17 +16137,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := v.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -17662,10 +16153,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -17688,26 +16176,17 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s4 := o4.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -17719,18 +16198,12 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x5.Args[1]
 		p := x5.Args[0]
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s3 := o3.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -17742,10 +16215,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x0 := o3.Args[1]
@@ -17757,17 +16227,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s5 := o5.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -17779,17 +16243,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		s6 := v.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -17801,10 +16259,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -17827,26 +16282,17 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s4 := o4.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -17858,10 +16304,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 		mem := x5.Args[1]
 		p := x5.Args[0]
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
@@ -17874,17 +16317,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s3 := o3.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -17896,17 +16333,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o5.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -17918,17 +16349,11 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		s6 := v.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -17940,10 +16365,7 @@ func rewriteValuePPC64_OpPPC64OR_60(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -17972,34 +16394,22 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s3 := o3.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -18019,17 +16429,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		s4 := o4.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -18041,17 +16445,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s5 := o5.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -18063,17 +16461,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		s6 := v.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -18085,10 +16477,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -18111,26 +16500,17 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
@@ -18143,10 +16523,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		s3 := o3.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x4 := s3.Args[0]
@@ -18158,17 +16535,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s4 := o4.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 40 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 40 {
 			break
 		}
 		x5 := s4.Args[0]
@@ -18180,17 +16551,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s5 := o5.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 48 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 48 {
 			break
 		}
 		x6 := s5.Args[0]
@@ -18202,17 +16567,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		s6 := v.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 56 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 56 {
 			break
 		}
 		x7 := s6.Args[0]
@@ -18224,10 +16583,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i0%4 == 0 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x0.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s3.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x0, x4, x5, x6, x7) != nil && clobber(x0) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(s3) && clobber(s4) && clobber(s5) && clobber(s6) && clobber(o3) && clobber(o4) && clobber(o5)) {
@@ -18250,10 +16606,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -18265,18 +16618,12 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -18288,25 +16635,16 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		o1 := o0.Args[1]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		s2 := o1.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -18318,25 +16656,16 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		o2 := o1.Args[1]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		s3 := o2.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -18348,32 +16677,20 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x4 := o2.Args[1]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -18398,10 +16715,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -18413,18 +16727,12 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -18436,25 +16744,16 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		o1 := o0.Args[1]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		s2 := o1.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -18466,47 +16765,29 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		o2 := o1.Args[1]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		x4 := o2.Args[0]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s3 := o2.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -18518,10 +16799,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -18546,10 +16824,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -18561,18 +16836,12 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -18584,33 +16853,21 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		o1 := o0.Args[1]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		o2 := o1.Args[0]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		s3 := o2.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -18622,39 +16879,24 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x4 := o2.Args[1]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s2 := o1.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -18666,10 +16908,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -18694,10 +16933,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -18709,18 +16945,12 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -18732,55 +16962,34 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		o1 := o0.Args[1]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		o2 := o1.Args[0]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		x4 := o2.Args[0]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s3 := o2.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -18792,17 +17001,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s2 := o1.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -18814,10 +17017,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -18842,10 +17042,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -18857,26 +17054,17 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		o1 := o0.Args[0]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		s2 := o1.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -18888,25 +17076,16 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		o2 := o1.Args[1]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		s3 := o2.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -18918,39 +17097,24 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x4 := o2.Args[1]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -18962,10 +17126,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -18990,10 +17151,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -19005,26 +17163,17 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		o1 := o0.Args[0]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		s2 := o1.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -19036,47 +17185,29 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		o2 := o1.Args[1]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		x4 := o2.Args[0]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s3 := o2.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -19088,17 +17219,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -19110,10 +17235,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -19138,10 +17260,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -19153,34 +17272,22 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		o1 := o0.Args[0]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		o2 := o1.Args[0]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		s3 := o2.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -19192,39 +17299,24 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x4 := o2.Args[1]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s2 := o1.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -19236,17 +17328,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -19258,10 +17344,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -19286,10 +17369,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		s0 := v.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -19301,56 +17381,35 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		o0 := v.Args[1]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		o1 := o0.Args[0]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		o2 := o1.Args[0]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		x4 := o2.Args[0]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s3 := o2.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -19362,17 +17421,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s2 := o1.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -19384,17 +17437,11 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -19406,10 +17453,7 @@ func rewriteValuePPC64_OpPPC64OR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -19440,18 +17484,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -19463,18 +17501,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		o1 := o0.Args[1]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		s2 := o1.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -19486,25 +17518,16 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		o2 := o1.Args[1]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		s3 := o2.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -19516,39 +17539,24 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x4 := o2.Args[1]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := v.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -19560,10 +17568,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -19588,18 +17593,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -19611,18 +17610,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		o1 := o0.Args[1]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		s2 := o1.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -19634,47 +17627,29 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		o2 := o1.Args[1]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		x4 := o2.Args[0]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s3 := o2.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -19686,17 +17661,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s0 := v.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -19708,10 +17677,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -19736,18 +17702,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -19759,26 +17719,17 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		o1 := o0.Args[1]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		o2 := o1.Args[0]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		s3 := o2.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -19790,39 +17741,24 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x4 := o2.Args[1]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s2 := o1.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -19834,17 +17770,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		s0 := v.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -19856,10 +17786,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -19884,18 +17811,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		s1 := o0.Args[0]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -19907,48 +17828,30 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		o1 := o0.Args[1]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		o2 := o1.Args[0]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		x4 := o2.Args[0]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s3 := o2.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -19960,17 +17863,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s2 := o1.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -19982,17 +17879,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		s0 := v.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -20004,10 +17895,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -20032,26 +17920,17 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		o1 := o0.Args[0]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		s2 := o1.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -20063,18 +17942,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o2 := o1.Args[1]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		s3 := o2.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -20086,39 +17959,24 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x4 := o2.Args[1]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -20130,17 +17988,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s0 := v.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -20152,10 +18004,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -20180,26 +18029,17 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		o1 := o0.Args[0]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		s2 := o1.Args[0]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -20211,40 +18051,25 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x2.Args[1]
 		p := x2.Args[0]
 		o2 := o1.Args[1]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		x4 := o2.Args[0]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s3 := o2.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -20256,17 +18081,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -20278,17 +18097,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s0 := v.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -20300,10 +18113,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -20328,34 +18138,22 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		o1 := o0.Args[0]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		o2 := o1.Args[0]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		s3 := o2.Args[0]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -20367,32 +18165,20 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x3.Args[1]
 		p := x3.Args[0]
 		x4 := o2.Args[1]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		_ = x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
-		if p != x4_0.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4_0.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s2 := o1.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -20404,17 +18190,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -20426,17 +18206,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s0 := v.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -20448,10 +18222,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -20476,51 +18247,33 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o0 := v.Args[0]
-		if o0.Op != OpPPC64OR {
-			break
-		}
-		if o0.Type != t {
+		if o0.Op != OpPPC64OR || o0.Type != t {
 			break
 		}
 		_ = o0.Args[1]
 		o1 := o0.Args[0]
-		if o1.Op != OpPPC64OR {
-			break
-		}
-		if o1.Type != t {
+		if o1.Op != OpPPC64OR || o1.Type != t {
 			break
 		}
 		_ = o1.Args[1]
 		o2 := o1.Args[0]
-		if o2.Op != OpPPC64OR {
-			break
-		}
-		if o2.Type != t {
+		if o2.Op != OpPPC64OR || o2.Type != t {
 			break
 		}
 		_ = o2.Args[1]
 		x4 := o2.Args[0]
-		if x4.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x4.Type != t {
+		if x4.Op != OpPPC64MOVWBRload || x4.Type != t {
 			break
 		}
 		mem := x4.Args[1]
 		x4_0 := x4.Args[0]
-		if x4_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x4_0.Type != typ.Uintptr {
+		if x4_0.Op != OpPPC64MOVDaddr || x4_0.Type != typ.Uintptr {
 			break
 		}
 		i4 := x4_0.AuxInt
 		p := x4_0.Args[0]
 		s3 := o2.Args[1]
-		if s3.Op != OpPPC64SLDconst {
-			break
-		}
-		if s3.AuxInt != 32 {
+		if s3.Op != OpPPC64SLDconst || s3.AuxInt != 32 {
 			break
 		}
 		x3 := s3.Args[0]
@@ -20530,17 +18283,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		i3 := x3.AuxInt
 		s := x3.Aux
 		_ = x3.Args[1]
-		if p != x3.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if p != x3.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s2 := o1.Args[1]
-		if s2.Op != OpPPC64SLDconst {
-			break
-		}
-		if s2.AuxInt != 40 {
+		if s2.Op != OpPPC64SLDconst || s2.AuxInt != 40 {
 			break
 		}
 		x2 := s2.Args[0]
@@ -20552,17 +18299,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x2.Args[1]
-		if p != x2.Args[0] {
-			break
-		}
-		if mem != x2.Args[1] {
+		if p != x2.Args[0] || mem != x2.Args[1] {
 			break
 		}
 		s1 := o0.Args[1]
-		if s1.Op != OpPPC64SLDconst {
-			break
-		}
-		if s1.AuxInt != 48 {
+		if s1.Op != OpPPC64SLDconst || s1.AuxInt != 48 {
 			break
 		}
 		x1 := s1.Args[0]
@@ -20574,17 +18315,11 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		s0 := v.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 56 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 56 {
 			break
 		}
 		x0 := s0.Args[0]
@@ -20596,10 +18331,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i1 == i0+1 && i2 == i0+2 && i3 == i0+3 && i4 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && x4.Uses == 1 && o0.Uses == 1 && o1.Uses == 1 && o2.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && s2.Uses == 1 && s3.Uses == 1 && mergePoint(b, x0, x1, x2, x3, x4) != nil && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3) && clobber(x4) && clobber(o0) && clobber(o1) && clobber(o2) && clobber(s0) && clobber(s1) && clobber(s2) && clobber(s3)) {
@@ -20632,18 +18364,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -20655,25 +18381,16 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -20685,25 +18402,16 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -20715,42 +18423,24 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -20783,18 +18473,12 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -20806,25 +18490,16 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -20836,57 +18511,33 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -20898,10 +18549,7 @@ func rewriteValuePPC64_OpPPC64OR_80(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -20940,18 +18588,12 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -20963,33 +18605,21 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -21001,49 +18631,28 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -21055,10 +18664,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -21091,18 +18697,12 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -21114,65 +18714,38 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -21184,17 +18757,11 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -21206,10 +18773,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -21242,26 +18806,17 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -21273,25 +18828,16 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -21303,49 +18849,28 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -21357,10 +18882,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -21393,26 +18915,17 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -21424,57 +18937,33 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -21486,17 +18975,11 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -21508,10 +18991,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -21544,34 +19024,22 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -21583,49 +19051,28 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -21637,17 +19084,11 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -21659,10 +19100,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -21695,66 +19133,39 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -21766,17 +19177,11 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -21788,17 +19193,11 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -21810,10 +19209,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -21838,18 +19234,12 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -21861,18 +19251,12 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -21884,25 +19268,16 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -21914,42 +19289,24 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -21961,10 +19318,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -21989,18 +19343,12 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -22012,18 +19360,12 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -22035,57 +19377,33 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -22097,10 +19415,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -22112,10 +19427,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -22140,18 +19452,12 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -22163,26 +19469,17 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -22194,49 +19491,28 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -22248,10 +19524,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -22263,10 +19536,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -22291,18 +19561,12 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -22314,58 +19578,34 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -22377,17 +19617,11 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -22399,10 +19633,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -22414,10 +19645,7 @@ func rewriteValuePPC64_OpPPC64OR_90(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -22448,26 +19676,17 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -22479,18 +19698,12 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x5.Args[1]
 		p := x5.Args[0]
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -22502,49 +19715,28 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -22556,10 +19748,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -22571,10 +19760,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -22599,26 +19785,17 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -22630,50 +19807,29 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x5.Args[1]
 		p := x5.Args[0]
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -22685,17 +19841,11 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -22707,10 +19857,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -22722,10 +19869,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -22750,34 +19894,22 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -22789,42 +19921,24 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x4.Args[1]
 		p := x4.Args[0]
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -22836,17 +19950,11 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -22858,10 +19966,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -22873,10 +19978,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -22901,59 +20003,38 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLWconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLWconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		mem := x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
 		s := x3_0.Aux
 		p := x3_0.Args[0]
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -22965,17 +20046,11 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -22987,17 +20062,11 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -23009,10 +20078,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -23024,10 +20090,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -23060,18 +20123,12 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -23083,25 +20140,16 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -23113,25 +20161,16 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -23143,42 +20182,24 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -23211,18 +20232,12 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -23234,25 +20249,16 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -23264,57 +20270,33 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -23326,10 +20308,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -23362,18 +20341,12 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -23385,33 +20358,21 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -23423,49 +20384,28 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -23477,10 +20417,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -23513,18 +20450,12 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -23536,65 +20467,38 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -23606,17 +20510,11 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -23628,10 +20526,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -23664,26 +20559,17 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -23695,25 +20581,16 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -23725,49 +20602,28 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -23779,10 +20635,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -23815,26 +20668,17 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -23846,57 +20690,33 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -23908,17 +20728,11 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -23930,10 +20744,7 @@ func rewriteValuePPC64_OpPPC64OR_100(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -23972,34 +20783,22 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -24011,49 +20810,28 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -24065,17 +20843,11 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -24087,10 +20859,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -24123,66 +20892,39 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x7.Args[1]
 		p := x7.Args[0]
 		o5 := v.Args[1]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -24194,17 +20936,11 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -24216,17 +20952,11 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -24238,10 +20968,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -24266,18 +20993,12 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -24289,18 +21010,12 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -24312,25 +21027,16 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -24342,42 +21048,24 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -24389,10 +21077,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -24417,18 +21102,12 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -24440,18 +21119,12 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -24463,57 +21136,33 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -24525,10 +21174,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -24540,10 +21186,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -24568,18 +21211,12 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -24591,26 +21228,17 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -24622,49 +21250,28 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -24676,10 +21283,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -24691,10 +21295,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -24719,18 +21320,12 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		s6 := o5.Args[0]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -24742,58 +21337,34 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x6.Args[1]
 		p := x6.Args[0]
 		o4 := o5.Args[1]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -24805,17 +21376,11 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -24827,10 +21392,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -24842,10 +21404,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -24870,26 +21429,17 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -24901,18 +21451,12 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x5.Args[1]
 		p := x5.Args[0]
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -24924,49 +21468,28 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -24978,10 +21501,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -24993,10 +21513,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -25021,26 +21538,17 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		s5 := o4.Args[0]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -25052,50 +21560,29 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x5.Args[1]
 		p := x5.Args[0]
 		o3 := o4.Args[1]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -25107,17 +21594,11 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -25129,10 +21610,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -25144,10 +21622,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -25172,34 +21647,22 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s4 := o3.Args[0]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -25211,42 +21674,24 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		mem := x4.Args[1]
 		p := x4.Args[0]
 		s0 := o3.Args[1]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		_ = x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
-		if x3_0.Aux != s {
-			break
-		}
-		if p != x3_0.Args[0] {
-			break
-		}
-		if mem != x3.Args[1] {
+		if x3_0.Aux != s || p != x3_0.Args[0] || mem != x3.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -25258,17 +21703,11 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -25280,10 +21719,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -25295,10 +21731,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -25323,59 +21756,38 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 		t := v.Type
 		_ = v.Args[1]
 		o5 := v.Args[0]
-		if o5.Op != OpPPC64OR {
-			break
-		}
-		if o5.Type != t {
+		if o5.Op != OpPPC64OR || o5.Type != t {
 			break
 		}
 		_ = o5.Args[1]
 		o4 := o5.Args[0]
-		if o4.Op != OpPPC64OR {
-			break
-		}
-		if o4.Type != t {
+		if o4.Op != OpPPC64OR || o4.Type != t {
 			break
 		}
 		_ = o4.Args[1]
 		o3 := o4.Args[0]
-		if o3.Op != OpPPC64OR {
-			break
-		}
-		if o3.Type != t {
+		if o3.Op != OpPPC64OR || o3.Type != t {
 			break
 		}
 		_ = o3.Args[1]
 		s0 := o3.Args[0]
-		if s0.Op != OpPPC64SLDconst {
-			break
-		}
-		if s0.AuxInt != 32 {
+		if s0.Op != OpPPC64SLDconst || s0.AuxInt != 32 {
 			break
 		}
 		x3 := s0.Args[0]
-		if x3.Op != OpPPC64MOVWBRload {
-			break
-		}
-		if x3.Type != t {
+		if x3.Op != OpPPC64MOVWBRload || x3.Type != t {
 			break
 		}
 		mem := x3.Args[1]
 		x3_0 := x3.Args[0]
-		if x3_0.Op != OpPPC64MOVDaddr {
-			break
-		}
-		if x3_0.Type != typ.Uintptr {
+		if x3_0.Op != OpPPC64MOVDaddr || x3_0.Type != typ.Uintptr {
 			break
 		}
 		i0 := x3_0.AuxInt
 		s := x3_0.Aux
 		p := x3_0.Args[0]
 		s4 := o3.Args[1]
-		if s4.Op != OpPPC64SLDconst {
-			break
-		}
-		if s4.AuxInt != 24 {
+		if s4.Op != OpPPC64SLDconst || s4.AuxInt != 24 {
 			break
 		}
 		x4 := s4.Args[0]
@@ -25387,17 +21799,11 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x4.Args[1]
-		if p != x4.Args[0] {
-			break
-		}
-		if mem != x4.Args[1] {
+		if p != x4.Args[0] || mem != x4.Args[1] {
 			break
 		}
 		s5 := o4.Args[1]
-		if s5.Op != OpPPC64SLDconst {
-			break
-		}
-		if s5.AuxInt != 16 {
+		if s5.Op != OpPPC64SLDconst || s5.AuxInt != 16 {
 			break
 		}
 		x5 := s5.Args[0]
@@ -25409,17 +21815,11 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x5.Args[1]
-		if p != x5.Args[0] {
-			break
-		}
-		if mem != x5.Args[1] {
+		if p != x5.Args[0] || mem != x5.Args[1] {
 			break
 		}
 		s6 := o5.Args[1]
-		if s6.Op != OpPPC64SLDconst {
-			break
-		}
-		if s6.AuxInt != 8 {
+		if s6.Op != OpPPC64SLDconst || s6.AuxInt != 8 {
 			break
 		}
 		x6 := s6.Args[0]
@@ -25431,10 +21831,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x6.Args[1]
-		if p != x6.Args[0] {
-			break
-		}
-		if mem != x6.Args[1] {
+		if p != x6.Args[0] || mem != x6.Args[1] {
 			break
 		}
 		x7 := v.Args[1]
@@ -25446,10 +21843,7 @@ func rewriteValuePPC64_OpPPC64OR_110(v *Value) bool {
 			break
 		}
 		_ = x7.Args[1]
-		if p != x7.Args[0] {
-			break
-		}
-		if mem != x7.Args[1] {
+		if p != x7.Args[0] || mem != x7.Args[1] {
 			break
 		}
 		if !(!config.BigEndian && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && x3.Uses == 1 && x4.Uses == 1 && x5.Uses == 1 && x6.Uses == 1 && x7.Uses == 1 && o3.Uses == 1 && o4.Uses == 1 && o5.Uses == 1 && s0.Uses == 1 && s4.Uses == 1 && s5.Uses == 1 && s6.Uses == 1 && mergePoint(b, x3, x4, x5, x6, x7) != nil && clobber(x3) && clobber(x4) && clobber(x5) && clobber(x6) && clobber(x7) && clobber(o3) && clobber(o4) && clobber(o5) && clobber(s0) && clobber(s4) && clobber(s5) && clobber(s6)) {
@@ -25477,10 +21871,7 @@ func rewriteValuePPC64_OpPPC64ORN_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1.AuxInt != -1 {
+		if v_1.Op != OpPPC64MOVDconst || v_1.AuxInt != -1 {
 			break
 		}
 		v.reset(OpCopy)
@@ -25678,13 +22069,7 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1.Type != typ.Int64 {
-			break
-		}
-		if v_0_1.AuxInt != 63 {
+		if v_0_1.Op != OpPPC64ANDconst || v_0_1.Type != typ.Int64 || v_0_1.AuxInt != 63 {
 			break
 		}
 		y := v_0_1.Args[0]
@@ -25697,31 +22082,16 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64SUB || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 64 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1_1.AuxInt != 63 {
-			break
-		}
-		if y != v_1_1_1.Args[0] {
+		if v_1_1_1.Op != OpPPC64ANDconst || v_1_1_1.Type != typ.UInt || v_1_1_1.AuxInt != 63 || y != v_1_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTL)
@@ -25741,28 +22111,16 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_0_1.Type != typ.UInt {
+		if v_0_1.Op != OpPPC64SUB || v_0_1.Type != typ.UInt {
 			break
 		}
 		_ = v_0_1.Args[1]
 		v_0_1_0 := v_0_1.Args[0]
-		if v_0_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_0_1_0.AuxInt != 64 {
+		if v_0_1_0.Op != OpPPC64MOVDconst || v_0_1_0.AuxInt != 64 {
 			break
 		}
 		v_0_1_1 := v_0_1.Args[1]
-		if v_0_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1_1.Type != typ.UInt {
-			break
-		}
-		if v_0_1_1.AuxInt != 63 {
+		if v_0_1_1.Op != OpPPC64ANDconst || v_0_1_1.Type != typ.UInt || v_0_1_1.AuxInt != 63 {
 			break
 		}
 		y := v_0_1_1.Args[0]
@@ -25775,16 +22133,7 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.Int64 {
-			break
-		}
-		if v_1_1.AuxInt != 63 {
-			break
-		}
-		if y != v_1_1.Args[0] {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.Int64 || v_1_1.AuxInt != 63 || y != v_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTL)
@@ -25804,13 +22153,7 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1.Type != typ.Int32 {
-			break
-		}
-		if v_0_1.AuxInt != 31 {
+		if v_0_1.Op != OpPPC64ANDconst || v_0_1.Type != typ.Int32 || v_0_1.AuxInt != 31 {
 			break
 		}
 		y := v_0_1.Args[0]
@@ -25823,31 +22166,16 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64SUB || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 32 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1_1.AuxInt != 31 {
-			break
-		}
-		if y != v_1_1_1.Args[0] {
+		if v_1_1_1.Op != OpPPC64ANDconst || v_1_1_1.Type != typ.UInt || v_1_1_1.AuxInt != 31 || y != v_1_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTLW)
@@ -25867,28 +22195,16 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_0_1.Type != typ.UInt {
+		if v_0_1.Op != OpPPC64SUB || v_0_1.Type != typ.UInt {
 			break
 		}
 		_ = v_0_1.Args[1]
 		v_0_1_0 := v_0_1.Args[0]
-		if v_0_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_0_1_0.AuxInt != 32 {
+		if v_0_1_0.Op != OpPPC64MOVDconst || v_0_1_0.AuxInt != 32 {
 			break
 		}
 		v_0_1_1 := v_0_1.Args[1]
-		if v_0_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_0_1_1.Type != typ.UInt {
-			break
-		}
-		if v_0_1_1.AuxInt != 31 {
+		if v_0_1_1.Op != OpPPC64ANDconst || v_0_1_1.Type != typ.UInt || v_0_1_1.AuxInt != 31 {
 			break
 		}
 		y := v_0_1_1.Args[0]
@@ -25901,16 +22217,7 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.Int32 {
-			break
-		}
-		if v_1_1.AuxInt != 31 {
-			break
-		}
-		if y != v_1_1.Args[0] {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.Int32 || v_1_1.AuxInt != 31 || y != v_1_1.Args[0] {
 			break
 		}
 		v.reset(OpPPC64ROTLW)
@@ -26866,10 +23173,7 @@ func rewriteValuePPC64_OpRsh32Ux64_0(v *Value) bool {
 		_ = v_1.Args[1]
 		y := v_1.Args[0]
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1.AuxInt != 31 {
+		if v_1_1.Op != OpPPC64MOVDconst || v_1_1.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SRW)
@@ -26892,10 +23196,7 @@ func rewriteValuePPC64_OpRsh32Ux64_0(v *Value) bool {
 		}
 		y := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 31 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SRW)
@@ -26913,13 +23214,7 @@ func rewriteValuePPC64_OpRsh32Ux64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1.Type != typ.UInt {
-			break
-		}
-		if v_1.AuxInt != 31 {
+		if v_1.Op != OpPPC64ANDconst || v_1.Type != typ.UInt || v_1.AuxInt != 31 {
 			break
 		}
 		y := v_1.Args[0]
@@ -26938,28 +23233,16 @@ func rewriteValuePPC64_OpRsh32Ux64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 32 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1.AuxInt != 31 {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.UInt || v_1_1.AuxInt != 31 {
 			break
 		}
 		y := v_1_1.Args[0]
@@ -26983,34 +23266,22 @@ func rewriteValuePPC64_OpRsh32Ux64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 32 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64AND {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64AND || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		y := v_1_1.Args[0]
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_1.AuxInt != 31 {
+		if v_1_1_1.Op != OpPPC64MOVDconst || v_1_1_1.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SRW)
@@ -27033,33 +23304,21 @@ func rewriteValuePPC64_OpRsh32Ux64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 32 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64AND {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64AND || v_1_1.Type != typ.UInt {
 			break
 		}
 		y := v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 31 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SRW)
@@ -27342,10 +23601,7 @@ func rewriteValuePPC64_OpRsh32x64_0(v *Value) bool {
 		_ = v_1.Args[1]
 		y := v_1.Args[0]
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1.AuxInt != 31 {
+		if v_1_1.Op != OpPPC64MOVDconst || v_1_1.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SRAW)
@@ -27368,10 +23624,7 @@ func rewriteValuePPC64_OpRsh32x64_0(v *Value) bool {
 		}
 		y := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 31 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SRAW)
@@ -27389,13 +23642,7 @@ func rewriteValuePPC64_OpRsh32x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1.Type != typ.UInt {
-			break
-		}
-		if v_1.AuxInt != 31 {
+		if v_1.Op != OpPPC64ANDconst || v_1.Type != typ.UInt || v_1.AuxInt != 31 {
 			break
 		}
 		y := v_1.Args[0]
@@ -27414,28 +23661,16 @@ func rewriteValuePPC64_OpRsh32x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 32 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1.AuxInt != 31 {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.UInt || v_1_1.AuxInt != 31 {
 			break
 		}
 		y := v_1_1.Args[0]
@@ -27459,34 +23694,22 @@ func rewriteValuePPC64_OpRsh32x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 32 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64AND {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64AND || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		y := v_1_1.Args[0]
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_1.AuxInt != 31 {
+		if v_1_1_1.Op != OpPPC64MOVDconst || v_1_1_1.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SRAW)
@@ -27509,33 +23732,21 @@ func rewriteValuePPC64_OpRsh32x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 32 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 32 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64AND {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64AND || v_1_1.Type != typ.UInt {
 			break
 		}
 		y := v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 31 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 31 {
 			break
 		}
 		v.reset(OpPPC64SRAW)
@@ -27816,10 +24027,7 @@ func rewriteValuePPC64_OpRsh64Ux64_0(v *Value) bool {
 		_ = v_1.Args[1]
 		y := v_1.Args[0]
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1.AuxInt != 63 {
+		if v_1_1.Op != OpPPC64MOVDconst || v_1_1.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SRD)
@@ -27842,10 +24050,7 @@ func rewriteValuePPC64_OpRsh64Ux64_0(v *Value) bool {
 		}
 		y := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 63 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SRD)
@@ -27863,13 +24068,7 @@ func rewriteValuePPC64_OpRsh64Ux64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1.Type != typ.UInt {
-			break
-		}
-		if v_1.AuxInt != 63 {
+		if v_1.Op != OpPPC64ANDconst || v_1.Type != typ.UInt || v_1.AuxInt != 63 {
 			break
 		}
 		y := v_1.Args[0]
@@ -27888,28 +24087,16 @@ func rewriteValuePPC64_OpRsh64Ux64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 64 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1.AuxInt != 63 {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.UInt || v_1_1.AuxInt != 63 {
 			break
 		}
 		y := v_1_1.Args[0]
@@ -27933,34 +24120,22 @@ func rewriteValuePPC64_OpRsh64Ux64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 64 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64AND {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64AND || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		y := v_1_1.Args[0]
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_1.AuxInt != 63 {
+		if v_1_1_1.Op != OpPPC64MOVDconst || v_1_1_1.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SRD)
@@ -27983,33 +24158,21 @@ func rewriteValuePPC64_OpRsh64Ux64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 64 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64AND {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64AND || v_1_1.Type != typ.UInt {
 			break
 		}
 		y := v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 63 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SRD)
@@ -28292,10 +24455,7 @@ func rewriteValuePPC64_OpRsh64x64_0(v *Value) bool {
 		_ = v_1.Args[1]
 		y := v_1.Args[0]
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1.AuxInt != 63 {
+		if v_1_1.Op != OpPPC64MOVDconst || v_1_1.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SRAD)
@@ -28318,10 +24478,7 @@ func rewriteValuePPC64_OpRsh64x64_0(v *Value) bool {
 		}
 		y := v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 63 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SRAD)
@@ -28339,13 +24496,7 @@ func rewriteValuePPC64_OpRsh64x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1.Type != typ.UInt {
-			break
-		}
-		if v_1.AuxInt != 63 {
+		if v_1.Op != OpPPC64ANDconst || v_1.Type != typ.UInt || v_1.AuxInt != 63 {
 			break
 		}
 		y := v_1.Args[0]
@@ -28364,28 +24515,16 @@ func rewriteValuePPC64_OpRsh64x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 64 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64ANDconst {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
-			break
-		}
-		if v_1_1.AuxInt != 63 {
+		if v_1_1.Op != OpPPC64ANDconst || v_1_1.Type != typ.UInt || v_1_1.AuxInt != 63 {
 			break
 		}
 		y := v_1_1.Args[0]
@@ -28409,34 +24548,22 @@ func rewriteValuePPC64_OpRsh64x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 64 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64AND {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64AND || v_1_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1_1.Args[1]
 		y := v_1_1.Args[0]
 		v_1_1_1 := v_1_1.Args[1]
-		if v_1_1_1.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_1.AuxInt != 63 {
+		if v_1_1_1.Op != OpPPC64MOVDconst || v_1_1_1.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SRAD)
@@ -28459,33 +24586,21 @@ func rewriteValuePPC64_OpRsh64x64_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpPPC64SUB {
-			break
-		}
-		if v_1.Type != typ.UInt {
+		if v_1.Op != OpPPC64SUB || v_1.Type != typ.UInt {
 			break
 		}
 		_ = v_1.Args[1]
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_0.AuxInt != 64 {
+		if v_1_0.Op != OpPPC64MOVDconst || v_1_0.AuxInt != 64 {
 			break
 		}
 		v_1_1 := v_1.Args[1]
-		if v_1_1.Op != OpPPC64AND {
-			break
-		}
-		if v_1_1.Type != typ.UInt {
+		if v_1_1.Op != OpPPC64AND || v_1_1.Type != typ.UInt {
 			break
 		}
 		y := v_1_1.Args[1]
 		v_1_1_0 := v_1_1.Args[0]
-		if v_1_1_0.Op != OpPPC64MOVDconst {
-			break
-		}
-		if v_1_1_0.AuxInt != 63 {
+		if v_1_1_0.Op != OpPPC64MOVDconst || v_1_1_0.AuxInt != 63 {
 			break
 		}
 		v.reset(OpPPC64SRAD)
@@ -30028,10 +26143,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (EQ (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30053,10 +26165,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (EQ (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30133,10 +26242,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (EQ (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30158,10 +26264,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (EQ (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30183,10 +26286,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (EQ (ANDCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30211,10 +26311,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (EQ (ORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30239,10 +26336,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (EQ (XORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30322,10 +26416,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GE (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30347,10 +26438,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GE (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30372,10 +26460,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GE (ANDCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30400,10 +26485,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GE (ORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30428,10 +26510,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GE (XORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30512,10 +26591,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GT (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30537,10 +26613,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GT (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30562,10 +26635,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GT (ANDCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30590,10 +26660,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GT (ORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30618,10 +26685,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GT (XORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30857,10 +26921,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LE (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30882,10 +26943,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LE (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -30907,10 +26965,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LE (ANDCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30935,10 +26990,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LE (ORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -30963,10 +27015,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LE (XORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -31047,10 +27096,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LT (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31072,10 +27118,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LT (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31097,10 +27140,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LT (ANDCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -31125,10 +27165,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LT (ORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -31153,10 +27190,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LT (XORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -31182,10 +27216,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (EQ cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31203,10 +27234,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (NE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31224,10 +27252,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LT cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31245,10 +27270,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (LE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31266,10 +27288,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GT cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31287,10 +27306,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (GE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31308,10 +27324,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (FLT cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31329,10 +27342,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (FLE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31350,10 +27360,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (FGT cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31371,10 +27378,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (FGE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31392,10 +27396,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (NE (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31417,10 +27418,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (NE (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31496,10 +27494,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (NE (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31521,10 +27516,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (NE (ANDCCconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -31546,10 +27538,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (NE (ANDCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -31574,10 +27563,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (NE (ORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]
@@ -31602,10 +27588,7 @@ func rewriteBlockPPC64(b *Block) bool {
 		// result: (NE (XORCC x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpPPC64CMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpPPC64CMPconst || v.AuxInt != 0 {
 				break
 			}
 			z := v.Args[0]

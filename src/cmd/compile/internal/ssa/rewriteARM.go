@@ -1912,10 +1912,7 @@ func rewriteValueARM_OpARMADD_10(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMRSBconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpARMRSBconst || v_1.AuxInt != 0 {
 			break
 		}
 		y := v_1.Args[0]
@@ -1930,10 +1927,7 @@ func rewriteValueARM_OpARMADD_10(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMRSBconst {
-			break
-		}
-		if v_0.AuxInt != 0 {
+		if v_0.Op != OpARMRSBconst || v_0.AuxInt != 0 {
 			break
 		}
 		y := v_0.Args[0]
@@ -2861,13 +2855,7 @@ func rewriteValueARM_OpARMADDshiftLL_0(v *Value) bool {
 		c := v.AuxInt
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSRLconst {
-			break
-		}
-		if v_0.AuxInt != 32-c {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMSRLconst || v_0.AuxInt != 32-c || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMSRRconst)
@@ -2879,24 +2867,12 @@ func rewriteValueARM_OpARMADDshiftLL_0(v *Value) bool {
 	// cond:
 	// result: (REV16 x)
 	for {
-		if v.Type != typ.UInt16 {
-			break
-		}
-		if v.AuxInt != 8 {
+		if v.Type != typ.UInt16 || v.AuxInt != 8 {
 			break
 		}
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMBFXU {
-			break
-		}
-		if v_0.Type != typ.UInt16 {
-			break
-		}
-		if v_0.AuxInt != armBFAuxInt(8, 8) {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMBFXU || v_0.Type != typ.UInt16 || v_0.AuxInt != armBFAuxInt(8, 8) || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMREV16)
@@ -2907,31 +2883,16 @@ func rewriteValueARM_OpARMADDshiftLL_0(v *Value) bool {
 	// cond: objabi.GOARM>=6
 	// result: (REV16 x)
 	for {
-		if v.Type != typ.UInt16 {
-			break
-		}
-		if v.AuxInt != 8 {
+		if v.Type != typ.UInt16 || v.AuxInt != 8 {
 			break
 		}
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSRLconst {
-			break
-		}
-		if v_0.Type != typ.UInt16 {
-			break
-		}
-		if v_0.AuxInt != 24 {
+		if v_0.Op != OpARMSRLconst || v_0.Type != typ.UInt16 || v_0.AuxInt != 24 {
 			break
 		}
 		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpARMSLLconst {
-			break
-		}
-		if v_0_0.AuxInt != 16 {
-			break
-		}
-		if x != v_0_0.Args[0] {
+		if v_0_0.Op != OpARMSLLconst || v_0_0.AuxInt != 16 || x != v_0_0.Args[0] {
 			break
 		}
 		if !(objabi.GOARM >= 6) {
@@ -3110,13 +3071,7 @@ func rewriteValueARM_OpARMADDshiftRL_0(v *Value) bool {
 		c := v.AuxInt
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSLLconst {
-			break
-		}
-		if v_0.AuxInt != 32-c {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMSLLconst || v_0.AuxInt != 32-c || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMSRRconst)
@@ -4664,10 +4619,7 @@ func rewriteValueARM_OpARMCMN_10(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMRSBconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpARMRSBconst || v_1.AuxInt != 0 {
 			break
 		}
 		y := v_1.Args[0]
@@ -4682,10 +4634,7 @@ func rewriteValueARM_OpARMCMN_10(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMRSBconst {
-			break
-		}
-		if v_0.AuxInt != 0 {
+		if v_0.Op != OpARMRSBconst || v_0.AuxInt != 0 {
 			break
 		}
 		y := v_0.Args[0]
@@ -5476,10 +5425,7 @@ func rewriteValueARM_OpARMCMP_10(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMRSBconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpARMRSBconst || v_1.AuxInt != 0 {
 			break
 		}
 		y := v_1.Args[0]
@@ -5498,10 +5444,7 @@ func rewriteValueARM_OpARMCMPD_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMMOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpARMMOVDconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpARMCMPD0)
@@ -5518,10 +5461,7 @@ func rewriteValueARM_OpARMCMPF_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMMOVFconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpARMMOVFconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpARMCMPF0)
@@ -9434,10 +9374,7 @@ func rewriteValueARM_OpARMMUL_0(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMMOVWconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpARMMOVWconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpARMMOVWconst)
@@ -9450,10 +9387,7 @@ func rewriteValueARM_OpARMMUL_0(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMMOVWconst {
-			break
-		}
-		if v_0.AuxInt != 0 {
+		if v_0.Op != OpARMMOVWconst || v_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpARMMOVWconst)
@@ -9467,10 +9401,7 @@ func rewriteValueARM_OpARMMUL_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMMOVWconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != OpARMMOVWconst || v_1.AuxInt != 1 {
 			break
 		}
 		v.reset(OpCopy)
@@ -9484,10 +9415,7 @@ func rewriteValueARM_OpARMMUL_0(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMMOVWconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != OpARMMOVWconst || v_0.AuxInt != 1 {
 			break
 		}
 		v.reset(OpCopy)
@@ -9864,10 +9792,7 @@ func rewriteValueARM_OpARMMULA_0(v *Value) bool {
 	for {
 		a := v.Args[2]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMMOVWconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpARMMOVWconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpCopy)
@@ -9882,10 +9807,7 @@ func rewriteValueARM_OpARMMULA_0(v *Value) bool {
 		a := v.Args[2]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMMOVWconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != OpARMMOVWconst || v_1.AuxInt != 1 {
 			break
 		}
 		v.reset(OpARMADD)
@@ -10094,10 +10016,7 @@ func rewriteValueARM_OpARMMULA_10(v *Value) bool {
 	for {
 		a := v.Args[2]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMMOVWconst {
-			break
-		}
-		if v_0.AuxInt != 0 {
+		if v_0.Op != OpARMMOVWconst || v_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpCopy)
@@ -10111,10 +10030,7 @@ func rewriteValueARM_OpARMMULA_10(v *Value) bool {
 	for {
 		a := v.Args[2]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMMOVWconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != OpARMMOVWconst || v_0.AuxInt != 1 {
 			break
 		}
 		x := v.Args[1]
@@ -10427,10 +10343,7 @@ func rewriteValueARM_OpARMMULS_0(v *Value) bool {
 	for {
 		a := v.Args[2]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMMOVWconst {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpARMMOVWconst || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpCopy)
@@ -10445,10 +10358,7 @@ func rewriteValueARM_OpARMMULS_0(v *Value) bool {
 		a := v.Args[2]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpARMMOVWconst {
-			break
-		}
-		if v_1.AuxInt != 1 {
+		if v_1.Op != OpARMMOVWconst || v_1.AuxInt != 1 {
 			break
 		}
 		v.reset(OpARMRSB)
@@ -10657,10 +10567,7 @@ func rewriteValueARM_OpARMMULS_10(v *Value) bool {
 	for {
 		a := v.Args[2]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMMOVWconst {
-			break
-		}
-		if v_0.AuxInt != 0 {
+		if v_0.Op != OpARMMOVWconst || v_0.AuxInt != 0 {
 			break
 		}
 		v.reset(OpCopy)
@@ -10674,10 +10581,7 @@ func rewriteValueARM_OpARMMULS_10(v *Value) bool {
 	for {
 		a := v.Args[2]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMMOVWconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != OpARMMOVWconst || v_0.AuxInt != 1 {
 			break
 		}
 		x := v.Args[1]
@@ -11647,13 +11551,7 @@ func rewriteValueARM_OpARMORshiftLL_0(v *Value) bool {
 		c := v.AuxInt
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSRLconst {
-			break
-		}
-		if v_0.AuxInt != 32-c {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMSRLconst || v_0.AuxInt != 32-c || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMSRRconst)
@@ -11665,24 +11563,12 @@ func rewriteValueARM_OpARMORshiftLL_0(v *Value) bool {
 	// cond:
 	// result: (REV16 x)
 	for {
-		if v.Type != typ.UInt16 {
-			break
-		}
-		if v.AuxInt != 8 {
+		if v.Type != typ.UInt16 || v.AuxInt != 8 {
 			break
 		}
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMBFXU {
-			break
-		}
-		if v_0.Type != typ.UInt16 {
-			break
-		}
-		if v_0.AuxInt != armBFAuxInt(8, 8) {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMBFXU || v_0.Type != typ.UInt16 || v_0.AuxInt != armBFAuxInt(8, 8) || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMREV16)
@@ -11693,31 +11579,16 @@ func rewriteValueARM_OpARMORshiftLL_0(v *Value) bool {
 	// cond: objabi.GOARM>=6
 	// result: (REV16 x)
 	for {
-		if v.Type != typ.UInt16 {
-			break
-		}
-		if v.AuxInt != 8 {
+		if v.Type != typ.UInt16 || v.AuxInt != 8 {
 			break
 		}
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSRLconst {
-			break
-		}
-		if v_0.Type != typ.UInt16 {
-			break
-		}
-		if v_0.AuxInt != 24 {
+		if v_0.Op != OpARMSRLconst || v_0.Type != typ.UInt16 || v_0.AuxInt != 24 {
 			break
 		}
 		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpARMSLLconst {
-			break
-		}
-		if v_0_0.AuxInt != 16 {
-			break
-		}
-		if x != v_0_0.Args[0] {
+		if v_0_0.Op != OpARMSLLconst || v_0_0.AuxInt != 16 || x != v_0_0.Args[0] {
 			break
 		}
 		if !(objabi.GOARM >= 6) {
@@ -11942,13 +11813,7 @@ func rewriteValueARM_OpARMORshiftRL_0(v *Value) bool {
 		c := v.AuxInt
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSLLconst {
-			break
-		}
-		if v_0.AuxInt != 32-c {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMSLLconst || v_0.AuxInt != 32-c || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMSRRconst)
@@ -16758,13 +16623,7 @@ func rewriteValueARM_OpARMXORshiftLL_0(v *Value) bool {
 		c := v.AuxInt
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSRLconst {
-			break
-		}
-		if v_0.AuxInt != 32-c {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMSRLconst || v_0.AuxInt != 32-c || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMSRRconst)
@@ -16776,24 +16635,12 @@ func rewriteValueARM_OpARMXORshiftLL_0(v *Value) bool {
 	// cond:
 	// result: (REV16 x)
 	for {
-		if v.Type != typ.UInt16 {
-			break
-		}
-		if v.AuxInt != 8 {
+		if v.Type != typ.UInt16 || v.AuxInt != 8 {
 			break
 		}
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMBFXU {
-			break
-		}
-		if v_0.Type != typ.UInt16 {
-			break
-		}
-		if v_0.AuxInt != armBFAuxInt(8, 8) {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMBFXU || v_0.Type != typ.UInt16 || v_0.AuxInt != armBFAuxInt(8, 8) || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMREV16)
@@ -16804,31 +16651,16 @@ func rewriteValueARM_OpARMXORshiftLL_0(v *Value) bool {
 	// cond: objabi.GOARM>=6
 	// result: (REV16 x)
 	for {
-		if v.Type != typ.UInt16 {
-			break
-		}
-		if v.AuxInt != 8 {
+		if v.Type != typ.UInt16 || v.AuxInt != 8 {
 			break
 		}
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSRLconst {
-			break
-		}
-		if v_0.Type != typ.UInt16 {
-			break
-		}
-		if v_0.AuxInt != 24 {
+		if v_0.Op != OpARMSRLconst || v_0.Type != typ.UInt16 || v_0.AuxInt != 24 {
 			break
 		}
 		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpARMSLLconst {
-			break
-		}
-		if v_0_0.AuxInt != 16 {
-			break
-		}
-		if x != v_0_0.Args[0] {
+		if v_0_0.Op != OpARMSLLconst || v_0_0.AuxInt != 16 || x != v_0_0.Args[0] {
 			break
 		}
 		if !(objabi.GOARM >= 6) {
@@ -17051,13 +16883,7 @@ func rewriteValueARM_OpARMXORshiftRL_0(v *Value) bool {
 		c := v.AuxInt
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpARMSLLconst {
-			break
-		}
-		if v_0.AuxInt != 32-c {
-			break
-		}
-		if x != v_0.Args[0] {
+		if v_0.Op != OpARMSLLconst || v_0.AuxInt != 32-c || x != v_0.Args[0] {
 			break
 		}
 		v.reset(OpARMSRRconst)
@@ -20631,10 +20457,7 @@ func rewriteValueARM_OpSelect0_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpARMMOVWconst {
-			break
-		}
-		if v_0_1.AuxInt != 1 {
+		if v_0_1.Op != OpARMMOVWconst || v_0_1.AuxInt != 1 {
 			break
 		}
 		v.reset(OpCopy)
@@ -20701,10 +20524,7 @@ func rewriteValueARM_OpSelect1_0(v *Value) bool {
 		}
 		_ = v_0.Args[1]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpARMMOVWconst {
-			break
-		}
-		if v_0_1.AuxInt != 1 {
+		if v_0_1.Op != OpARMMOVWconst || v_0_1.AuxInt != 1 {
 			break
 		}
 		v.reset(OpARMMOVWconst)
@@ -21528,10 +21348,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMP x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21556,10 +21373,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMP a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21588,10 +21402,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMPconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21616,10 +21427,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMPshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21646,10 +21454,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMPshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21676,10 +21481,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMPshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21706,10 +21508,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMPshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21736,10 +21535,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMPshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21766,10 +21562,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMPshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21796,10 +21589,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMN x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21824,10 +21614,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMN a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21856,10 +21643,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMNconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21884,10 +21668,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMNshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21914,10 +21695,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMNshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21944,10 +21722,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMNshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -21974,10 +21749,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMNshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22004,10 +21776,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMNshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22034,10 +21803,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (CMNshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22064,10 +21830,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TST x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22092,10 +21855,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TSTconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22120,10 +21880,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TSTshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22150,10 +21907,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TSTshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22180,10 +21934,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TSTshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22210,10 +21961,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TSTshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22240,10 +21988,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TSTshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22270,10 +22015,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TSTshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22300,10 +22042,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TEQ x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22328,10 +22067,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TEQconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22356,10 +22092,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TEQshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22386,10 +22119,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TEQshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22416,10 +22146,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TEQshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22446,10 +22173,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TEQshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22476,10 +22200,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TEQshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22506,10 +22227,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ (TEQshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22618,10 +22336,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMP x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22646,10 +22361,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMP a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22678,10 +22390,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMPconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22706,10 +22415,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMPshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22736,10 +22442,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMPshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22766,10 +22469,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMPshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22796,10 +22496,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMPshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22826,10 +22523,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMPshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22856,10 +22550,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMPshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22886,10 +22577,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMN x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22914,10 +22602,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMN a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22946,10 +22631,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMNconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -22974,10 +22656,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMNshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23004,10 +22683,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMNshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23034,10 +22710,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMNshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23064,10 +22737,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMNshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23094,10 +22764,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMNshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23124,10 +22791,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (CMNshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23154,10 +22818,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TST x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23182,10 +22843,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TSTconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23210,10 +22868,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TSTshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23240,10 +22895,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TSTshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23270,10 +22922,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TSTshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23300,10 +22949,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TSTshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23330,10 +22976,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TSTshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23360,10 +23003,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TSTshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23390,10 +23030,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TEQ x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23418,10 +23055,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TEQconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23446,10 +23080,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TEQshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23476,10 +23107,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TEQshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23506,10 +23134,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TEQshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23536,10 +23161,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TEQshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23566,10 +23188,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TEQshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23596,10 +23215,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE (TEQshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23709,10 +23325,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMP x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23737,10 +23350,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMP a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23769,10 +23379,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMPconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23797,10 +23404,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMPshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23827,10 +23431,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMPshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23857,10 +23458,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMPshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23887,10 +23485,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMPshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23917,10 +23512,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMPshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23947,10 +23539,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMPshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -23977,10 +23566,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMN x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24005,10 +23591,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMNconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24033,10 +23616,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMNshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24063,10 +23643,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMNshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24093,10 +23670,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMNshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24123,10 +23697,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMNshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24153,10 +23724,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMNshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24183,10 +23751,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMNshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24213,10 +23778,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TST x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24241,10 +23803,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (CMN a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24273,10 +23832,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TSTconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24301,10 +23857,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TSTshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24331,10 +23884,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TSTshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24361,10 +23911,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TSTshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24391,10 +23938,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TSTshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24421,10 +23965,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TSTshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24451,10 +23992,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TSTshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24481,10 +24019,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TEQ x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24509,10 +24044,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TEQconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24537,10 +24069,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TEQshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24567,10 +24096,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TEQshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24597,10 +24123,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TEQshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24627,10 +24150,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TEQshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24657,10 +24177,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TEQshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24687,10 +24204,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT (TEQshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24955,10 +24469,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMP x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -24983,10 +24494,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMP a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25015,10 +24523,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMPconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25043,10 +24548,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMPshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25073,10 +24575,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMPshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25103,10 +24602,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMPshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25133,10 +24629,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMPshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25163,10 +24656,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMPshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25193,10 +24683,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMPshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25223,10 +24710,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMN x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25251,10 +24735,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMN a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25283,10 +24764,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMNconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25311,10 +24789,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMNshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25341,10 +24816,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMNshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25371,10 +24843,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMNshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25401,10 +24870,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMNshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25431,10 +24897,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMNshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25461,10 +24924,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (CMNshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25491,10 +24951,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TST x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25519,10 +24976,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TSTconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25547,10 +25001,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TSTshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25577,10 +25028,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TSTshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25607,10 +25055,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TSTshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25637,10 +25082,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TSTshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25667,10 +25109,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TSTshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25697,10 +25136,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TSTshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25727,10 +25163,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TEQ x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25755,10 +25188,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TEQconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25783,10 +25213,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TEQshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25813,10 +25240,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TEQshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25843,10 +25267,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TEQshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25873,10 +25294,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TEQshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25903,10 +25321,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TEQshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -25933,10 +25348,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE (TEQshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26046,10 +25458,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMP x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26074,10 +25483,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMP a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26106,10 +25512,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMPconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26134,10 +25537,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMPshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26164,10 +25564,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMPshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26194,10 +25591,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMPshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26224,10 +25618,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMPshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26254,10 +25645,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMPshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26284,10 +25672,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMPshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26314,10 +25699,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMN x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26342,10 +25724,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMN a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26374,10 +25753,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMNconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26402,10 +25778,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMNshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26432,10 +25805,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMNshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26462,10 +25832,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMNshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26492,10 +25859,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMNshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26522,10 +25886,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMNshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26552,10 +25913,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (CMNshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26582,10 +25940,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TST x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26610,10 +25965,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TSTconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26638,10 +25990,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TSTshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26668,10 +26017,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TSTshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26698,10 +26044,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TSTshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26728,10 +26071,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TSTshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26758,10 +26098,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TSTshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26788,10 +26125,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TSTshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26818,10 +26152,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TEQ x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26846,10 +26177,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TEQconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26874,10 +26202,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TEQshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26904,10 +26229,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TEQshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26934,10 +26256,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TEQshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26964,10 +26283,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TEQshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -26994,10 +26310,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TEQshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27024,10 +26337,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT (TEQshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27055,10 +26365,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (EQ cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27076,10 +26383,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27097,10 +26401,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LT cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27118,10 +26419,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (ULT cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27139,10 +26437,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (LE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27160,10 +26455,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (ULE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27181,10 +26473,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GT cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27202,10 +26491,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (UGT cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27223,10 +26509,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (GE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27244,10 +26527,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (UGE cc yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -27345,10 +26625,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMP x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27373,10 +26650,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMP a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27405,10 +26679,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMPconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27433,10 +26704,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMPshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27463,10 +26731,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMPshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27493,10 +26758,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMPshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27523,10 +26785,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMPshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27553,10 +26812,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMPshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27583,10 +26839,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMPshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27613,10 +26866,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMN x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27641,10 +26891,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMN a (MUL <x.Type> x y)) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27673,10 +26920,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMNconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27701,10 +26945,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMNshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27731,10 +26972,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMNshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27761,10 +26999,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMNshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27791,10 +27026,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMNshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27821,10 +27053,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMNshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27851,10 +27080,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (CMNshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27881,10 +27107,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TST x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27909,10 +27132,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TSTconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27937,10 +27157,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TSTshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27967,10 +27184,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TSTshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -27997,10 +27211,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TSTshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28027,10 +27238,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TSTshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28057,10 +27265,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TSTshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28087,10 +27292,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TSTshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28117,10 +27319,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TEQ x y) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28145,10 +27344,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TEQconst [c] x) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28173,10 +27369,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TEQshiftLL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28203,10 +27396,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TEQshiftRL x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28233,10 +27423,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TEQshiftRA x y [c]) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28263,10 +27450,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TEQshiftLLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28293,10 +27477,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TEQshiftRLreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]
@@ -28323,10 +27504,7 @@ func rewriteBlockARM(b *Block) bool {
 		// result: (NE (TEQshiftRAreg x y z) yes no)
 		for {
 			v := b.Control
-			if v.Op != OpARMCMPconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpARMCMPconst || v.AuxInt != 0 {
 				break
 			}
 			l := v.Args[0]

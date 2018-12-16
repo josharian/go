@@ -394,7 +394,8 @@ func genMatch(w io.Writer, arch arch, match string, loc string) (string, bool) {
 	return genMatch0(w, arch, match, "v", map[string]struct{}{}, true, loc)
 }
 
-func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, top bool, loc string) (string, bool) {
+func genMatch0(out io.Writer, arch arch, match, v string, m map[string]struct{}, top bool, loc string) (string, bool) {
+	w := new(bytes.Buffer)
 	if match[0] != '(' || match[len(match)-1] != ')' {
 		panic("non-compound expr in genMatch0: " + match)
 	}
@@ -405,7 +406,7 @@ func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, t
 
 	// check op
 	if !top {
-		fmt.Fprintf(w, "if %s.Op != Op%s%s {\nbreak\n}\n", v, oparch, op.name)
+		fmt.Fprintf(w, "if %s.Op != Op%s%s { break }\n", v, oparch, op.name)
 		canFail = true
 	}
 	if op.faultOnNilArg0 || op.faultOnNilArg1 {
@@ -416,13 +417,13 @@ func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, t
 	if typ != "" {
 		if !isVariable(typ) {
 			// code. We must match the results of this code.
-			fmt.Fprintf(w, "if %s.Type != %s {\nbreak\n}\n", v, typ)
+			fmt.Fprintf(w, "if %s.Type != %s { break }\n", v, typ)
 			canFail = true
 		} else {
 			// variable
 			if _, ok := m[typ]; ok {
 				// must match previous variable
-				fmt.Fprintf(w, "if %s.Type != %s {\nbreak\n}\n", v, typ)
+				fmt.Fprintf(w, "if %s.Type != %s { break }\n", v, typ)
 				canFail = true
 			} else {
 				m[typ] = struct{}{}
@@ -434,12 +435,12 @@ func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, t
 	if auxint != "" {
 		if !isVariable(auxint) {
 			// code
-			fmt.Fprintf(w, "if %s.AuxInt != %s {\nbreak\n}\n", v, auxint)
+			fmt.Fprintf(w, "if %s.AuxInt != %s { break }\n", v, auxint)
 			canFail = true
 		} else {
 			// variable
 			if _, ok := m[auxint]; ok {
-				fmt.Fprintf(w, "if %s.AuxInt != %s {\nbreak\n}\n", v, auxint)
+				fmt.Fprintf(w, "if %s.AuxInt != %s { break }\n", v, auxint)
 				canFail = true
 			} else {
 				m[auxint] = struct{}{}
@@ -451,12 +452,12 @@ func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, t
 	if aux != "" {
 		if !isVariable(aux) {
 			// code
-			fmt.Fprintf(w, "if %s.Aux != %s {\nbreak\n}\n", v, aux)
+			fmt.Fprintf(w, "if %s.Aux != %s { break }\n", v, aux)
 			canFail = true
 		} else {
 			// variable
 			if _, ok := m[aux]; ok {
-				fmt.Fprintf(w, "if %s.Aux != %s {\nbreak\n}\n", v, aux)
+				fmt.Fprintf(w, "if %s.Aux != %s { break }\n", v, aux)
 				canFail = true
 			} else {
 				m[aux] = struct{}{}
@@ -489,7 +490,7 @@ func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, t
 				// the old definition and the new definition match.
 				// For example, (add x x).  Equality is just pointer equality
 				// on Values (so cse is important to do before lowering).
-				fmt.Fprintf(w, "if %s != %s.Args[%d] {\nbreak\n}\n", arg, v, i)
+				fmt.Fprintf(w, "if %s != %s.Args[%d] { break }\n", arg, v, i)
 				canFail = true
 			} else {
 				// remember that this variable references the given value
@@ -529,8 +530,31 @@ func genMatch0(w io.Writer, arch arch, match, v string, m map[string]struct{}, t
 	}
 
 	if op.argLength == -1 {
-		fmt.Fprintf(w, "if len(%s.Args) != %d {\nbreak\n}\n", v, len(args))
+		fmt.Fprintf(w, "if len(%s.Args) != %d { break }\n", v, len(args))
 		canFail = true
+	}
+
+	b := w.Bytes()
+	lines := bytes.Split(b, []byte{'\n'})
+	if_ := []byte("if ")
+	brk := []byte(" { break }")
+	ischeck := func(line []byte) bool { return bytes.HasPrefix(line, if_) && bytes.HasSuffix(line, brk) }
+	middle := func(line []byte) string { return string(line[len(if_) : len(line)-len(brk)]) }
+	for i := 0; i+1 < len(lines); i++ {
+		j := i + 1
+		if ischeck(lines[i]) && ischeck(lines[j]) {
+			both := "if " + middle(lines[i]) + " || " + middle(lines[j]) + " { break }"
+			lines[i] = []byte(both)
+			copy(lines[j:], lines[j+1:])
+			lines = lines[:len(lines)-1]
+		}
+	}
+
+	for _, line := range lines {
+		out.Write(line)
+		if len(line) > 0 && line[len(line)-1] != '\n' {
+			out.Write([]byte{'\n'})
+		}
 	}
 	return pos, canFail
 }

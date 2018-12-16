@@ -4932,10 +4932,7 @@ func rewriteValueWasm_OpWasmI64Eq_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpWasmI64Const {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpWasmI64Const || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpWasmI64Eqz)
@@ -5244,10 +5241,7 @@ func rewriteValueWasm_OpWasmI64Ne_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpWasmI64Const {
-			break
-		}
-		if v_1.AuxInt != 0 {
+		if v_1.Op != OpWasmI64Const || v_1.AuxInt != 0 {
 			break
 		}
 		v.reset(OpWasmI64Eqz)

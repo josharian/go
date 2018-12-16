@@ -7287,13 +7287,7 @@ func rewriteValueS390X_OpS390XADDload_0(v *Value) bool {
 		x := v.Args[0]
 		ptr1 := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XFMOVDstore {
-			break
-		}
-		if v_2.AuxInt != off {
-			break
-		}
-		if v_2.Aux != sym {
+		if v_2.Op != OpS390XFMOVDstore || v_2.AuxInt != off || v_2.Aux != sym {
 			break
 		}
 		_ = v_2.Args[2]
@@ -7450,10 +7444,7 @@ func rewriteValueS390X_OpS390XAND_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0xFF {
+		if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 0xFF {
 			break
 		}
 		v.reset(OpS390XMOVBZreg)
@@ -7466,10 +7457,7 @@ func rewriteValueS390X_OpS390XAND_0(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_0.AuxInt != 0xFF {
+		if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0xFF {
 			break
 		}
 		v.reset(OpS390XMOVBZreg)
@@ -7483,10 +7471,7 @@ func rewriteValueS390X_OpS390XAND_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0xFFFF {
+		if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 0xFFFF {
 			break
 		}
 		v.reset(OpS390XMOVHZreg)
@@ -7499,10 +7484,7 @@ func rewriteValueS390X_OpS390XAND_0(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_0.AuxInt != 0xFFFF {
+		if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0xFFFF {
 			break
 		}
 		v.reset(OpS390XMOVHZreg)
@@ -7516,10 +7498,7 @@ func rewriteValueS390X_OpS390XAND_0(v *Value) bool {
 		_ = v.Args[1]
 		x := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_1.AuxInt != 0xFFFFFFFF {
+		if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 0xFFFFFFFF {
 			break
 		}
 		v.reset(OpS390XMOVWZreg)
@@ -7532,10 +7511,7 @@ func rewriteValueS390X_OpS390XAND_0(v *Value) bool {
 	for {
 		x := v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_0.AuxInt != 0xFFFFFFFF {
+		if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0xFFFFFFFF {
 			break
 		}
 		v.reset(OpS390XMOVWZreg)
@@ -8173,13 +8149,7 @@ func rewriteValueS390X_OpS390XANDload_0(v *Value) bool {
 		x := v.Args[0]
 		ptr1 := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XFMOVDstore {
-			break
-		}
-		if v_2.AuxInt != off {
-			break
-		}
-		if v_2.Aux != sym {
+		if v_2.Op != OpS390XFMOVDstore || v_2.AuxInt != off || v_2.Aux != sym {
 			break
 		}
 		_ = v_2.Args[2]
@@ -9349,13 +9319,7 @@ func rewriteValueS390X_OpS390XFMOVDload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVDstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XMOVDstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -9377,13 +9341,7 @@ func rewriteValueS390X_OpS390XFMOVDload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XFMOVDstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XFMOVDstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -9724,13 +9682,7 @@ func rewriteValueS390X_OpS390XFMOVSload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XFMOVSstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XFMOVSstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -10167,17 +10119,11 @@ func rewriteValueS390X_OpS390XLDGR_0(v *Value) bool {
 	for {
 		t := v.Type
 		v_0 := v.Args[0]
-		if v_0.Op != OpS390XSRDconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != OpS390XSRDconst || v_0.AuxInt != 1 {
 			break
 		}
 		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpS390XSLDconst {
-			break
-		}
-		if v_0_0.AuxInt != 1 {
+		if v_0_0.Op != OpS390XSLDconst || v_0_0.AuxInt != 1 {
 			break
 		}
 		x := v_0_0.Args[0]
@@ -10198,10 +10144,7 @@ func rewriteValueS390X_OpS390XLDGR_0(v *Value) bool {
 		}
 		x := v_0.Args[1]
 		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_0_0.AuxInt != -1<<63 {
+		if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != -1<<63 {
 			break
 		}
 		v.reset(OpS390XLNDFR)
@@ -10222,10 +10165,7 @@ func rewriteValueS390X_OpS390XLDGR_0(v *Value) bool {
 		_ = v_0.Args[1]
 		x := v_0.Args[0]
 		v_0_1 := v_0.Args[1]
-		if v_0_1.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_0_1.AuxInt != -1<<63 {
+		if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != -1<<63 {
 			break
 		}
 		v.reset(OpS390XLNDFR)
@@ -10248,10 +10188,7 @@ func rewriteValueS390X_OpS390XLDGR_0(v *Value) bool {
 		sym := x.Aux
 		mem := x.Args[2]
 		x_0 := x.Args[0]
-		if x_0.Op != OpS390XMOVDconst {
-			break
-		}
-		if x_0.AuxInt != -1<<63 {
+		if x_0.Op != OpS390XMOVDconst || x_0.AuxInt != -1<<63 {
 			break
 		}
 		ptr := x.Args[1]
@@ -10383,13 +10320,7 @@ func rewriteValueS390X_OpS390XMOVBZload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVBstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XMOVBstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -11018,13 +10949,7 @@ func rewriteValueS390X_OpS390XMOVBload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVBstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XMOVBstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -11616,13 +11541,7 @@ func rewriteValueS390X_OpS390XMOVBstore_0(v *Value) bool {
 		p := v.Args[0]
 		w := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -11630,13 +11549,7 @@ func rewriteValueS390X_OpS390XMOVBstore_0(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRDconst {
-			break
-		}
-		if x_1.AuxInt != 8 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRDconst || x_1.AuxInt != 8 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -11665,13 +11578,7 @@ func rewriteValueS390X_OpS390XMOVBstore_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -11679,13 +11586,7 @@ func rewriteValueS390X_OpS390XMOVBstore_0(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRDconst {
-			break
-		}
-		if x_1.AuxInt != j+8 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRDconst || x_1.AuxInt != j+8 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -11709,13 +11610,7 @@ func rewriteValueS390X_OpS390XMOVBstore_0(v *Value) bool {
 		p := v.Args[0]
 		w := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -11723,13 +11618,7 @@ func rewriteValueS390X_OpS390XMOVBstore_0(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRWconst {
-			break
-		}
-		if x_1.AuxInt != 8 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRWconst || x_1.AuxInt != 8 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -11761,13 +11650,7 @@ func rewriteValueS390X_OpS390XMOVBstore_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -11775,13 +11658,7 @@ func rewriteValueS390X_OpS390XMOVBstore_10(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRWconst {
-			break
-		}
-		if x_1.AuxInt != j+8 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRWconst || x_1.AuxInt != j+8 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -11804,28 +11681,16 @@ func rewriteValueS390X_OpS390XMOVBstore_10(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSRDconst {
-			break
-		}
-		if v_1.AuxInt != 8 {
+		if v_1.Op != OpS390XSRDconst || v_1.AuxInt != 8 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -11854,13 +11719,7 @@ func rewriteValueS390X_OpS390XMOVBstore_10(v *Value) bool {
 		j := v_1.AuxInt
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -11868,13 +11727,7 @@ func rewriteValueS390X_OpS390XMOVBstore_10(v *Value) bool {
 			break
 		}
 		w0 := x.Args[1]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -11897,28 +11750,16 @@ func rewriteValueS390X_OpS390XMOVBstore_10(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSRWconst {
-			break
-		}
-		if v_1.AuxInt != 8 {
+		if v_1.Op != OpS390XSRWconst || v_1.AuxInt != 8 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -11947,13 +11788,7 @@ func rewriteValueS390X_OpS390XMOVBstore_10(v *Value) bool {
 		j := v_1.AuxInt
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVBstore {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstore || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -11961,13 +11796,7 @@ func rewriteValueS390X_OpS390XMOVBstore_10(v *Value) bool {
 			break
 		}
 		w0 := x.Args[1]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -12183,30 +12012,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_0(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12232,30 +12046,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_0(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12281,30 +12080,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_0(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12330,30 +12114,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_0(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12384,30 +12153,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12438,30 +12192,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12495,30 +12234,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12549,30 +12273,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12598,30 +12307,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12647,30 +12341,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12696,30 +12375,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12745,30 +12409,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != 8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != 8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12799,30 +12448,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != j+8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != j+8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12853,30 +12487,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != j+8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != j+8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12907,30 +12526,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != j+8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != j+8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -12961,30 +12565,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != j+8 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != j+8 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13012,31 +12601,16 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13061,31 +12635,16 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13110,31 +12669,16 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13159,31 +12703,16 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13214,30 +12743,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13268,30 +12782,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13322,30 +12821,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13376,30 +12860,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13424,31 +12893,16 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRWconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != OpS390XSRWconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13473,31 +12927,16 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_20(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRWconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != OpS390XSRWconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13525,31 +12964,16 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_30(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRWconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != OpS390XSRWconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13574,31 +12998,16 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_30(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRWconst {
-			break
-		}
-		if v_2.AuxInt != 8 {
+		if v_2.Op != OpS390XSRWconst || v_2.AuxInt != 8 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13629,30 +13038,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_30(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13683,30 +13077,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_30(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13737,30 +13116,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_30(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -13791,30 +13155,15 @@ func rewriteValueS390X_OpS390XMOVBstoreidx_30(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVBstoreidx {
-			break
-		}
-		if x.AuxInt != i-1 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVBstoreidx || x.AuxInt != i-1 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-8 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-8 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -14336,13 +13685,7 @@ func rewriteValueS390X_OpS390XMOVDload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVDstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XMOVDstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -14364,13 +13707,7 @@ func rewriteValueS390X_OpS390XMOVDload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XFMOVDstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XFMOVDstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -15564,13 +14901,7 @@ func rewriteValueS390X_OpS390XMOVDstore_0(v *Value) bool {
 		p := v.Args[0]
 		w1 := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVDstore {
-			break
-		}
-		if x.AuxInt != i-8 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVDstore || x.AuxInt != i-8 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -15600,13 +14931,7 @@ func rewriteValueS390X_OpS390XMOVDstore_0(v *Value) bool {
 		p := v.Args[0]
 		w2 := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XSTMG2 {
-			break
-		}
-		if x.AuxInt != i-16 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XSTMG2 || x.AuxInt != i-16 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
@@ -15638,13 +14963,7 @@ func rewriteValueS390X_OpS390XMOVDstore_0(v *Value) bool {
 		p := v.Args[0]
 		w3 := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XSTMG3 {
-			break
-		}
-		if x.AuxInt != i-24 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XSTMG3 || x.AuxInt != i-24 || x.Aux != s {
 			break
 		}
 		mem := x.Args[4]
@@ -15841,28 +15160,16 @@ func rewriteValueS390X_OpS390XMOVHBRstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSRDconst {
-			break
-		}
-		if v_1.AuxInt != 16 {
+		if v_1.Op != OpS390XSRDconst || v_1.AuxInt != 16 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVHBRstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -15891,13 +15198,7 @@ func rewriteValueS390X_OpS390XMOVHBRstore_0(v *Value) bool {
 		j := v_1.AuxInt
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVHBRstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -15905,13 +15206,7 @@ func rewriteValueS390X_OpS390XMOVHBRstore_0(v *Value) bool {
 			break
 		}
 		w0 := x.Args[1]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -15934,28 +15229,16 @@ func rewriteValueS390X_OpS390XMOVHBRstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSRWconst {
-			break
-		}
-		if v_1.AuxInt != 16 {
+		if v_1.Op != OpS390XSRWconst || v_1.AuxInt != 16 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVHBRstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -15984,13 +15267,7 @@ func rewriteValueS390X_OpS390XMOVHBRstore_0(v *Value) bool {
 		j := v_1.AuxInt
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVHBRstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -15998,13 +15275,7 @@ func rewriteValueS390X_OpS390XMOVHBRstore_0(v *Value) bool {
 			break
 		}
 		w0 := x.Args[1]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16031,31 +15302,16 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16080,31 +15336,16 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16129,31 +15370,16 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16178,31 +15404,16 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16233,30 +15444,15 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16287,30 +15483,15 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16341,30 +15522,15 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16395,30 +15561,15 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16443,31 +15594,16 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRWconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != OpS390XSRWconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16492,31 +15628,16 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRWconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != OpS390XSRWconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16544,31 +15665,16 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_10(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRWconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != OpS390XSRWconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16593,31 +15699,16 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_10(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRWconst {
-			break
-		}
-		if v_2.AuxInt != 16 {
+		if v_2.Op != OpS390XSRWconst || v_2.AuxInt != 16 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16648,30 +15739,15 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_10(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16702,30 +15778,15 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_10(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16756,30 +15817,15 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_10(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16810,30 +15856,15 @@ func rewriteValueS390X_OpS390XMOVHBRstoreidx_10(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHBRstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRWconst {
-			break
-		}
-		if w0.AuxInt != j-16 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRWconst || w0.AuxInt != j-16 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -16860,13 +15891,7 @@ func rewriteValueS390X_OpS390XMOVHZload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVHstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XMOVHstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -17314,13 +16339,7 @@ func rewriteValueS390X_OpS390XMOVHload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVHstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XMOVHstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -17968,13 +16987,7 @@ func rewriteValueS390X_OpS390XMOVHstore_0(v *Value) bool {
 		p := v.Args[0]
 		w := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVHstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -17982,13 +16995,7 @@ func rewriteValueS390X_OpS390XMOVHstore_0(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRDconst {
-			break
-		}
-		if x_1.AuxInt != 16 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRDconst || x_1.AuxInt != 16 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -18017,13 +17024,7 @@ func rewriteValueS390X_OpS390XMOVHstore_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVHstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -18031,13 +17032,7 @@ func rewriteValueS390X_OpS390XMOVHstore_0(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRDconst {
-			break
-		}
-		if x_1.AuxInt != j+16 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRDconst || x_1.AuxInt != j+16 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -18061,13 +17056,7 @@ func rewriteValueS390X_OpS390XMOVHstore_0(v *Value) bool {
 		p := v.Args[0]
 		w := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVHstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -18075,13 +17064,7 @@ func rewriteValueS390X_OpS390XMOVHstore_0(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRWconst {
-			break
-		}
-		if x_1.AuxInt != 16 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRWconst || x_1.AuxInt != 16 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -18113,13 +17096,7 @@ func rewriteValueS390X_OpS390XMOVHstore_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVHstore {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstore || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -18127,13 +17104,7 @@ func rewriteValueS390X_OpS390XMOVHstore_10(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRWconst {
-			break
-		}
-		if x_1.AuxInt != j+16 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRWconst || x_1.AuxInt != j+16 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -18354,30 +17325,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_0(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18403,30 +17359,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_0(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18452,30 +17393,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_0(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18501,30 +17427,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_0(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18555,30 +17466,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18609,30 +17505,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18666,30 +17547,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18720,30 +17586,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18769,30 +17620,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != 16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != 16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18818,30 +17654,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != 16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != 16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18867,30 +17688,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != 16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != 16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18916,30 +17722,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != 16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != 16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -18970,30 +17761,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != j+16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != j+16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19024,30 +17800,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != j+16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != j+16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19078,30 +17839,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != j+16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != j+16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19132,30 +17878,15 @@ func rewriteValueS390X_OpS390XMOVHstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVHstoreidx {
-			break
-		}
-		if x.AuxInt != i-2 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVHstoreidx || x.AuxInt != i-2 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRWconst {
-			break
-		}
-		if x_2.AuxInt != j+16 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRWconst || x_2.AuxInt != j+16 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19182,28 +17913,16 @@ func rewriteValueS390X_OpS390XMOVWBRstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSRDconst {
-			break
-		}
-		if v_1.AuxInt != 32 {
+		if v_1.Op != OpS390XSRDconst || v_1.AuxInt != 32 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVWBRstore {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstore || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19232,13 +17951,7 @@ func rewriteValueS390X_OpS390XMOVWBRstore_0(v *Value) bool {
 		j := v_1.AuxInt
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVWBRstore {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstore || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -19246,13 +17959,7 @@ func rewriteValueS390X_OpS390XMOVWBRstore_0(v *Value) bool {
 			break
 		}
 		w0 := x.Args[1]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-32 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-32 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19279,31 +17986,16 @@ func rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 32 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 32 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19328,31 +18020,16 @@ func rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v *Value) bool {
 		p := v.Args[0]
 		idx := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 32 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 32 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19377,31 +18054,16 @@ func rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 32 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 32 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if p != x.Args[0] || idx != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19426,31 +18088,16 @@ func rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v *Value) bool {
 		idx := v.Args[0]
 		p := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XSRDconst {
-			break
-		}
-		if v_2.AuxInt != 32 {
+		if v_2.Op != OpS390XSRDconst || v_2.AuxInt != 32 {
 			break
 		}
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
-			break
-		}
-		if w != x.Args[2] {
+		if idx != x.Args[0] || p != x.Args[1] || w != x.Args[2] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19481,30 +18128,15 @@ func rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-32 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-32 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19535,30 +18167,15 @@ func rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-32 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-32 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19589,30 +18206,15 @@ func rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-32 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-32 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19643,30 +18245,15 @@ func rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v *Value) bool {
 		j := v_2.AuxInt
 		w := v_2.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWBRstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWBRstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		w0 := x.Args[2]
-		if w0.Op != OpS390XSRDconst {
-			break
-		}
-		if w0.AuxInt != j-32 {
-			break
-		}
-		if w != w0.Args[0] {
+		if w0.Op != OpS390XSRDconst || w0.AuxInt != j-32 || w != w0.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -19693,13 +18280,7 @@ func rewriteValueS390X_OpS390XMOVWZload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVWstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XMOVWstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -20154,13 +18735,7 @@ func rewriteValueS390X_OpS390XMOVWload_0(v *Value) bool {
 		_ = v.Args[1]
 		ptr1 := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVWstore {
-			break
-		}
-		if v_1.AuxInt != off {
-			break
-		}
-		if v_1.Aux != sym {
+		if v_1.Op != OpS390XMOVWstore || v_1.AuxInt != off || v_1.Aux != sym {
 			break
 		}
 		_ = v_1.Args[2]
@@ -20835,28 +19410,16 @@ func rewriteValueS390X_OpS390XMOVWstore_0(v *Value) bool {
 		_ = v.Args[2]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSRDconst {
-			break
-		}
-		if v_1.AuxInt != 32 {
+		if v_1.Op != OpS390XSRDconst || v_1.AuxInt != 32 {
 			break
 		}
 		w := v_1.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVWstore {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstore || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
-		if p != x.Args[0] {
-			break
-		}
-		if w != x.Args[1] {
+		if p != x.Args[0] || w != x.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -20885,13 +19448,7 @@ func rewriteValueS390X_OpS390XMOVWstore_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVWstore {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstore || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -20899,13 +19456,7 @@ func rewriteValueS390X_OpS390XMOVWstore_0(v *Value) bool {
 			break
 		}
 		x_1 := x.Args[1]
-		if x_1.Op != OpS390XSRDconst {
-			break
-		}
-		if x_1.AuxInt != j+32 {
-			break
-		}
-		if w != x_1.Args[0] {
+		if x_1.Op != OpS390XSRDconst || x_1.AuxInt != j+32 || w != x_1.Args[0] {
 			break
 		}
 		if !(p.Op != OpSB && x.Uses == 1 && clobber(x)) {
@@ -20929,13 +19480,7 @@ func rewriteValueS390X_OpS390XMOVWstore_0(v *Value) bool {
 		p := v.Args[0]
 		w1 := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XMOVWstore {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstore || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[2]
@@ -20968,13 +19513,7 @@ func rewriteValueS390X_OpS390XMOVWstore_10(v *Value) bool {
 		p := v.Args[0]
 		w2 := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XSTM2 {
-			break
-		}
-		if x.AuxInt != i-8 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XSTM2 || x.AuxInt != i-8 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
@@ -21006,13 +19545,7 @@ func rewriteValueS390X_OpS390XMOVWstore_10(v *Value) bool {
 		p := v.Args[0]
 		w3 := v.Args[1]
 		x := v.Args[2]
-		if x.Op != OpS390XSTM3 {
-			break
-		}
-		if x.AuxInt != i-12 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XSTM3 || x.AuxInt != i-12 || x.Aux != s {
 			break
 		}
 		mem := x.Args[4]
@@ -21243,30 +19776,15 @@ func rewriteValueS390X_OpS390XMOVWstoreidx_0(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 32 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 32 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -21292,30 +19810,15 @@ func rewriteValueS390X_OpS390XMOVWstoreidx_0(v *Value) bool {
 		idx := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 32 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 32 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -21341,30 +19844,15 @@ func rewriteValueS390X_OpS390XMOVWstoreidx_0(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 32 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 32 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -21390,30 +19878,15 @@ func rewriteValueS390X_OpS390XMOVWstoreidx_0(v *Value) bool {
 		p := v.Args[1]
 		w := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != 32 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != 32 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -21444,30 +19917,15 @@ func rewriteValueS390X_OpS390XMOVWstoreidx_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+32 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+32 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -21498,30 +19956,15 @@ func rewriteValueS390X_OpS390XMOVWstoreidx_0(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+32 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+32 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -21555,30 +19998,15 @@ func rewriteValueS390X_OpS390XMOVWstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if p != x.Args[0] {
-			break
-		}
-		if idx != x.Args[1] {
+		if p != x.Args[0] || idx != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+32 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+32 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -21609,30 +20037,15 @@ func rewriteValueS390X_OpS390XMOVWstoreidx_10(v *Value) bool {
 		j := w0.AuxInt
 		w := w0.Args[0]
 		x := v.Args[3]
-		if x.Op != OpS390XMOVWstoreidx {
-			break
-		}
-		if x.AuxInt != i-4 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XMOVWstoreidx || x.AuxInt != i-4 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
-		if idx != x.Args[0] {
-			break
-		}
-		if p != x.Args[1] {
+		if idx != x.Args[0] || p != x.Args[1] {
 			break
 		}
 		x_2 := x.Args[2]
-		if x_2.Op != OpS390XSRDconst {
-			break
-		}
-		if x_2.AuxInt != j+32 {
-			break
-		}
-		if w != x_2.Args[0] {
+		if x_2.Op != OpS390XSRDconst || x_2.AuxInt != j+32 || w != x_2.Args[0] {
 			break
 		}
 		if !(x.Uses == 1 && clobber(x)) {
@@ -21910,13 +20323,7 @@ func rewriteValueS390X_OpS390XMULLDload_0(v *Value) bool {
 		x := v.Args[0]
 		ptr1 := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XFMOVDstore {
-			break
-		}
-		if v_2.AuxInt != off {
-			break
-		}
-		if v_2.Aux != sym {
+		if v_2.Op != OpS390XFMOVDstore || v_2.AuxInt != off || v_2.Aux != sym {
 			break
 		}
 		_ = v_2.Args[2]
@@ -22576,10 +20983,7 @@ func rewriteValueS390X_OpS390XOR_0(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_0.AuxInt != -1<<63 {
+		if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != -1<<63 {
 			break
 		}
 		v_1 := v.Args[1]
@@ -22607,10 +21011,7 @@ func rewriteValueS390X_OpS390XOR_0(v *Value) bool {
 		t := v_0.Type
 		x := v_0.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XMOVDconst {
-			break
-		}
-		if v_1.AuxInt != -1<<63 {
+		if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != -1<<63 {
 			break
 		}
 		v.reset(OpS390XLGDR)
@@ -22626,17 +21027,11 @@ func rewriteValueS390X_OpS390XOR_0(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpS390XSLDconst {
-			break
-		}
-		if v_0.AuxInt != 63 {
+		if v_0.Op != OpS390XSLDconst || v_0.AuxInt != 63 {
 			break
 		}
 		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpS390XSRDconst {
-			break
-		}
-		if v_0_0.AuxInt != 63 {
+		if v_0_0.Op != OpS390XSRDconst || v_0_0.AuxInt != 63 {
 			break
 		}
 		v_0_0_0 := v_0_0.Args[0]
@@ -22677,17 +21072,11 @@ func rewriteValueS390X_OpS390XOR_0(v *Value) bool {
 		t := v_0_0.Type
 		y := v_0_0.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSLDconst {
-			break
-		}
-		if v_1.AuxInt != 63 {
+		if v_1.Op != OpS390XSLDconst || v_1.AuxInt != 63 {
 			break
 		}
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpS390XSRDconst {
-			break
-		}
-		if v_1_0.AuxInt != 63 {
+		if v_1_0.Op != OpS390XSRDconst || v_1_0.AuxInt != 63 {
 			break
 		}
 		v_1_0_0 := v_1_0.Args[0]
@@ -22708,17 +21097,11 @@ func rewriteValueS390X_OpS390XOR_0(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		v_0 := v.Args[0]
-		if v_0.Op != OpS390XSLDconst {
-			break
-		}
-		if v_0.AuxInt != 63 {
+		if v_0.Op != OpS390XSLDconst || v_0.AuxInt != 63 {
 			break
 		}
 		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpS390XSRDconst {
-			break
-		}
-		if v_0_0.AuxInt != 63 {
+		if v_0_0.Op != OpS390XSRDconst || v_0_0.AuxInt != 63 {
 			break
 		}
 		v_0_0_0 := v_0_0.Args[0]
@@ -22754,17 +21137,11 @@ func rewriteValueS390X_OpS390XOR_0(v *Value) bool {
 		}
 		c := v_0.AuxInt
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSLDconst {
-			break
-		}
-		if v_1.AuxInt != 63 {
+		if v_1.Op != OpS390XSLDconst || v_1.AuxInt != 63 {
 			break
 		}
 		v_1_0 := v_1.Args[0]
-		if v_1_0.Op != OpS390XSRDconst {
-			break
-		}
-		if v_1_0.AuxInt != 63 {
+		if v_1_0.Op != OpS390XSRDconst || v_1_0.AuxInt != 63 {
 			break
 		}
 		v_1_0_0 := v_1_0.Args[0]
@@ -22960,10 +21337,7 @@ func rewriteValueS390X_OpS390XOR_10(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -22975,10 +21349,7 @@ func rewriteValueS390X_OpS390XOR_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23000,10 +21371,7 @@ func rewriteValueS390X_OpS390XOR_10(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23023,10 +21391,7 @@ func rewriteValueS390X_OpS390XOR_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23056,10 +21421,7 @@ func rewriteValueS390X_OpS390XOR_10(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23071,10 +21433,7 @@ func rewriteValueS390X_OpS390XOR_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23101,10 +21460,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23124,10 +21480,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23157,10 +21510,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23172,10 +21522,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23197,10 +21544,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23220,10 +21564,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23276,10 +21617,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -23339,10 +21677,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -23401,10 +21736,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -23464,10 +21796,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -23526,10 +21855,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -23589,10 +21915,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -23651,10 +21974,7 @@ func rewriteValueS390X_OpS390XOR_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -23719,10 +22039,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -23759,10 +22076,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23774,13 +22088,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23812,10 +22120,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23827,13 +22132,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23865,10 +22164,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23880,13 +22176,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23918,10 +22208,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23933,13 +22220,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -23962,10 +22243,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -23986,13 +22264,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24015,10 +22287,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24039,13 +22308,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24068,10 +22331,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24092,13 +22352,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24121,10 +22375,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24145,13 +22396,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24183,10 +22428,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24198,13 +22440,7 @@ func rewriteValueS390X_OpS390XOR_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24241,10 +22477,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24256,13 +22489,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24294,10 +22521,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24309,13 +22533,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24347,10 +22565,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24362,13 +22577,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24391,10 +22600,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24415,13 +22621,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24444,10 +22644,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24468,13 +22665,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24497,10 +22688,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24521,13 +22709,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24550,10 +22732,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24574,13 +22753,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24612,10 +22785,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24627,13 +22797,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24665,10 +22829,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24680,13 +22841,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24718,10 +22873,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24733,13 +22885,7 @@ func rewriteValueS390X_OpS390XOR_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24776,10 +22922,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24791,13 +22934,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24820,10 +22957,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24844,13 +22978,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24873,10 +23001,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24897,13 +23022,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24926,10 +23045,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -24950,13 +23066,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -24979,10 +23089,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -25003,13 +23110,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -25064,13 +23165,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25131,13 +23226,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25198,13 +23287,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25265,13 +23348,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25333,13 +23410,7 @@ func rewriteValueS390X_OpS390XOR_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25406,13 +23477,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25474,13 +23539,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25542,13 +23601,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25609,13 +23662,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25676,13 +23723,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25744,13 +23785,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25812,13 +23847,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25879,13 +23908,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -25946,13 +23969,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26014,13 +24031,7 @@ func rewriteValueS390X_OpS390XOR_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26087,13 +24098,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26154,13 +24159,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26221,13 +24220,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26288,13 +24281,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26355,13 +24342,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26423,13 +24404,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26491,13 +24466,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26559,13 +24528,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26627,13 +24590,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26694,13 +24651,7 @@ func rewriteValueS390X_OpS390XOR_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26766,13 +24717,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26834,13 +24779,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26902,13 +24841,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -26969,13 +24902,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27036,13 +24963,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27104,13 +25025,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27172,13 +25087,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0-16 && j1%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27215,10 +25124,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -27230,10 +25136,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -27257,10 +25160,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -27280,10 +25180,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -27319,10 +25216,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -27338,10 +25232,7 @@ func rewriteValueS390X_OpS390XOR_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -27370,10 +25261,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -27401,10 +25289,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -27440,10 +25325,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -27459,10 +25341,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -27484,10 +25363,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -27515,10 +25391,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -27571,10 +25444,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27636,10 +25506,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27700,10 +25567,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27765,10 +25629,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27837,10 +25698,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27910,10 +25768,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -27982,10 +25837,7 @@ func rewriteValueS390X_OpS390XOR_90(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -28060,10 +25912,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -28102,10 +25951,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -28117,13 +25963,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -28157,10 +25997,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -28172,13 +26009,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -28212,10 +26043,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -28227,13 +26055,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -28267,10 +26089,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -28282,13 +26101,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -28313,10 +26126,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -28337,13 +26147,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -28368,10 +26172,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -28392,13 +26193,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -28423,10 +26218,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -28447,13 +26239,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -28478,10 +26264,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -28502,13 +26285,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -28546,10 +26323,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -28565,13 +26339,7 @@ func rewriteValueS390X_OpS390XOR_100(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -28614,10 +26382,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -28633,13 +26398,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -28677,10 +26436,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -28696,13 +26452,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -28740,10 +26490,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -28759,13 +26506,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -28790,10 +26531,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -28822,13 +26560,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -28853,10 +26585,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -28885,13 +26614,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -28916,10 +26639,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -28948,13 +26668,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -28979,10 +26693,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29011,13 +26722,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29055,10 +26760,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29074,13 +26776,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29116,10 +26812,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29135,13 +26828,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29177,10 +26864,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29196,13 +26880,7 @@ func rewriteValueS390X_OpS390XOR_110(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29243,10 +26921,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29262,13 +26937,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29291,10 +26960,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29323,13 +26989,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29352,10 +27012,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29384,13 +27041,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29413,10 +27064,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29445,13 +27093,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29474,10 +27116,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLDconst {
-			break
-		}
-		if sh.AuxInt != 32 {
+		if sh.Op != OpS390XSLDconst || sh.AuxInt != 32 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -29506,13 +27145,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+4 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -29567,13 +27200,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -29636,13 +27263,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -29705,13 +27326,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -29774,13 +27389,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -29844,13 +27453,7 @@ func rewriteValueS390X_OpS390XOR_120(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -29919,13 +27522,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -29989,13 +27586,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30059,13 +27650,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30128,13 +27713,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30197,13 +27776,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30267,13 +27840,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30337,13 +27904,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30406,13 +27967,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30475,13 +28030,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30545,13 +28094,7 @@ func rewriteValueS390X_OpS390XOR_130(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30620,13 +28163,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30697,13 +28234,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30774,13 +28305,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30851,13 +28376,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -30928,13 +28447,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31006,13 +28519,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31084,13 +28591,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31162,13 +28663,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31240,13 +28735,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31317,13 +28806,7 @@ func rewriteValueS390X_OpS390XOR_140(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31399,13 +28882,7 @@ func rewriteValueS390X_OpS390XOR_150(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31477,13 +28954,7 @@ func rewriteValueS390X_OpS390XOR_150(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31555,13 +29026,7 @@ func rewriteValueS390X_OpS390XOR_150(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31632,13 +29097,7 @@ func rewriteValueS390X_OpS390XOR_150(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31709,13 +29168,7 @@ func rewriteValueS390X_OpS390XOR_150(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31787,13 +29240,7 @@ func rewriteValueS390X_OpS390XOR_150(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -31865,13 +29312,7 @@ func rewriteValueS390X_OpS390XOR_150(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && j1 == j0+16 && j0%32 == 0 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -32228,10 +29669,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32243,10 +29681,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32268,10 +29703,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32291,10 +29723,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32324,10 +29753,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 		mem := x1.Args[1]
 		p := x1.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32339,10 +29765,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32364,10 +29787,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32387,10 +29807,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32443,10 +29860,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -32506,10 +29920,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -32568,10 +29979,7 @@ func rewriteValueS390X_OpS390XORW_10(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -32636,10 +30044,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -32676,10 +30081,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32691,13 +30093,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32729,10 +30125,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32744,13 +30137,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32782,10 +30169,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32797,13 +30181,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32835,10 +30213,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32850,13 +30225,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32879,10 +30248,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32903,13 +30269,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32932,10 +30292,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -32956,13 +30313,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -32985,10 +30336,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33009,13 +30357,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33038,10 +30380,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33062,13 +30401,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33100,10 +30433,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33115,13 +30445,7 @@ func rewriteValueS390X_OpS390XORW_20(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33158,10 +30482,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33173,13 +30494,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33211,10 +30526,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 		p := x1.Args[0]
 		idx := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33226,13 +30538,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33264,10 +30570,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 		idx := x1.Args[0]
 		p := x1.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33279,13 +30582,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33308,10 +30605,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33332,13 +30626,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33361,10 +30649,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33385,13 +30670,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33414,10 +30693,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33438,13 +30714,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33467,10 +30737,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		x0 := sh.Args[0]
@@ -33491,13 +30758,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && p.Op != OpSB && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -33552,13 +30813,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -33619,13 +30874,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -33686,13 +30935,7 @@ func rewriteValueS390X_OpS390XORW_30(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -33758,13 +31001,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -33826,13 +31063,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -33894,13 +31125,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -33962,13 +31187,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34030,13 +31249,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34097,13 +31310,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34164,13 +31371,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34232,13 +31433,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34300,13 +31495,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34367,13 +31556,7 @@ func rewriteValueS390X_OpS390XORW_40(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34439,13 +31622,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34507,13 +31684,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34575,13 +31746,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+1 && j1 == j0-8 && j1%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34618,10 +31783,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -34633,10 +31795,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -34660,10 +31819,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -34683,10 +31839,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -34722,10 +31875,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 		mem := x0.Args[1]
 		p := x0.Args[0]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -34741,10 +31891,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -34766,10 +31913,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -34797,10 +31941,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -34853,10 +31994,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34918,10 +32056,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x0.Args[1]
-		if p != x0.Args[0] {
-			break
-		}
-		if mem != x0.Args[1] {
+		if p != x0.Args[0] || mem != x0.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -34982,10 +32117,7 @@ func rewriteValueS390X_OpS390XORW_50(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -35052,10 +32184,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[1]
-		if p != x1.Args[0] {
-			break
-		}
-		if mem != x1.Args[1] {
+		if p != x1.Args[0] || mem != x1.Args[1] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -35094,10 +32223,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -35109,13 +32235,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -35149,10 +32269,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -35164,13 +32281,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -35204,10 +32315,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -35219,13 +32327,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -35259,10 +32361,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -35274,13 +32373,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -35305,10 +32398,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -35329,13 +32419,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -35360,10 +32444,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -35384,13 +32465,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -35415,10 +32490,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -35439,13 +32511,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -35470,10 +32536,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 8 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 8 {
 			break
 		}
 		x1 := sh.Args[0]
@@ -35494,13 +32557,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && x0.Uses == 1 && x1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(sh)) {
@@ -35538,10 +32595,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -35557,13 +32611,7 @@ func rewriteValueS390X_OpS390XORW_60(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -35604,10 +32652,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -35623,13 +32668,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -35665,10 +32704,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 		p := x0.Args[0]
 		idx := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -35684,13 +32720,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -35726,10 +32756,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 		idx := x0.Args[0]
 		p := x0.Args[1]
 		sh := v.Args[1]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -35745,13 +32772,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -35774,10 +32795,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -35806,13 +32824,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -35835,10 +32847,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -35867,13 +32876,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -35896,10 +32899,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -35928,13 +32928,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -35957,10 +32951,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 	for {
 		_ = v.Args[1]
 		sh := v.Args[0]
-		if sh.Op != OpS390XSLWconst {
-			break
-		}
-		if sh.AuxInt != 16 {
+		if sh.Op != OpS390XSLWconst || sh.AuxInt != 16 {
 			break
 		}
 		r1 := sh.Args[0]
@@ -35989,13 +32980,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(i1 == i0+2 && x0.Uses == 1 && x1.Uses == 1 && r0.Uses == 1 && r1.Uses == 1 && sh.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(r0) && clobber(r1) && clobber(sh)) {
@@ -36050,13 +33035,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36119,13 +33098,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36188,13 +33161,7 @@ func rewriteValueS390X_OpS390XORW_70(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36262,13 +33229,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36332,13 +33293,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36402,13 +33357,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if p != x0.Args[0] {
-			break
-		}
-		if idx != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if p != x0.Args[0] || idx != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36472,13 +33421,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36542,13 +33485,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x0.Args[2]
-		if idx != x0.Args[0] {
-			break
-		}
-		if p != x0.Args[1] {
-			break
-		}
-		if mem != x0.Args[2] {
+		if idx != x0.Args[0] || p != x0.Args[1] || mem != x0.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36611,13 +33548,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36680,13 +33611,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36750,13 +33675,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36820,13 +33739,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if p != x1.Args[0] {
-			break
-		}
-		if idx != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if p != x1.Args[0] || idx != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36889,13 +33802,7 @@ func rewriteValueS390X_OpS390XORW_80(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -36963,13 +33870,7 @@ func rewriteValueS390X_OpS390XORW_90(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -37033,13 +33934,7 @@ func rewriteValueS390X_OpS390XORW_90(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -37103,13 +33998,7 @@ func rewriteValueS390X_OpS390XORW_90(v *Value) bool {
 			break
 		}
 		_ = x1.Args[2]
-		if idx != x1.Args[0] {
-			break
-		}
-		if p != x1.Args[1] {
-			break
-		}
-		if mem != x1.Args[2] {
+		if idx != x1.Args[0] || p != x1.Args[1] || mem != x1.Args[2] {
 			break
 		}
 		if !(p.Op != OpSB && i1 == i0+1 && j1 == j0+8 && j0%16 == 0 && x0.Uses == 1 && x1.Uses == 1 && s0.Uses == 1 && s1.Uses == 1 && or.Uses == 1 && mergePoint(b, x0, x1) != nil && clobber(x0) && clobber(x1) && clobber(s0) && clobber(s1) && clobber(or)) {
@@ -37287,13 +34176,7 @@ func rewriteValueS390X_OpS390XORload_0(v *Value) bool {
 		x := v.Args[0]
 		ptr1 := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XFMOVDstore {
-			break
-		}
-		if v_2.AuxInt != off {
-			break
-		}
-		if v_2.Aux != sym {
+		if v_2.Op != OpS390XFMOVDstore || v_2.AuxInt != off || v_2.Aux != sym {
 			break
 		}
 		_ = v_2.Args[2]
@@ -38469,10 +35352,7 @@ func rewriteValueS390X_OpS390XSRDconst_0(v *Value) bool {
 			break
 		}
 		v_0 := v.Args[0]
-		if v_0.Op != OpS390XSLDconst {
-			break
-		}
-		if v_0.AuxInt != 1 {
+		if v_0.Op != OpS390XSLDconst || v_0.AuxInt != 1 {
 			break
 		}
 		v_0_0 := v_0.Args[0]
@@ -38707,13 +35587,7 @@ func rewriteValueS390X_OpS390XSTM2_0(v *Value) bool {
 		w2 := v.Args[1]
 		w3 := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XSTM2 {
-			break
-		}
-		if x.AuxInt != i-8 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XSTM2 || x.AuxInt != i-8 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
@@ -38745,10 +35619,7 @@ func rewriteValueS390X_OpS390XSTM2_0(v *Value) bool {
 		mem := v.Args[3]
 		p := v.Args[0]
 		v_1 := v.Args[1]
-		if v_1.Op != OpS390XSRDconst {
-			break
-		}
-		if v_1.AuxInt != 32 {
+		if v_1.Op != OpS390XSRDconst || v_1.AuxInt != 32 {
 			break
 		}
 		x := v_1.Args[0]
@@ -38777,13 +35648,7 @@ func rewriteValueS390X_OpS390XSTMG2_0(v *Value) bool {
 		w2 := v.Args[1]
 		w3 := v.Args[2]
 		x := v.Args[3]
-		if x.Op != OpS390XSTMG2 {
-			break
-		}
-		if x.AuxInt != i-16 {
-			break
-		}
-		if x.Aux != s {
+		if x.Op != OpS390XSTMG2 || x.AuxInt != i-16 || x.Aux != s {
 			break
 		}
 		mem := x.Args[3]
@@ -39150,13 +36015,7 @@ func rewriteValueS390X_OpS390XSUBload_0(v *Value) bool {
 		x := v.Args[0]
 		ptr1 := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XFMOVDstore {
-			break
-		}
-		if v_2.AuxInt != off {
-			break
-		}
-		if v_2.Aux != sym {
+		if v_2.Op != OpS390XFMOVDstore || v_2.AuxInt != off || v_2.Aux != sym {
 			break
 		}
 		_ = v_2.Args[2]
@@ -39976,13 +36835,7 @@ func rewriteValueS390X_OpS390XXORload_0(v *Value) bool {
 		x := v.Args[0]
 		ptr1 := v.Args[1]
 		v_2 := v.Args[2]
-		if v_2.Op != OpS390XFMOVDstore {
-			break
-		}
-		if v_2.AuxInt != off {
-			break
-		}
-		if v_2.Aux != sym {
+		if v_2.Op != OpS390XFMOVDstore || v_2.AuxInt != off || v_2.Aux != sym {
 			break
 		}
 		_ = v_2.Args[2]
@@ -41022,17 +37875,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v.Args[2]
 			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
+			if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0 {
 				break
 			}
 			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
+			if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XLT
@@ -41050,17 +37897,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v.Args[2]
 			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
+			if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0 {
 				break
 			}
 			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
+			if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XLE
@@ -41078,17 +37919,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v.Args[2]
 			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
+			if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0 {
 				break
 			}
 			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
+			if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XGT
@@ -41106,17 +37941,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v.Args[2]
 			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
+			if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0 {
 				break
 			}
 			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
+			if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XGE
@@ -41134,17 +37963,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v.Args[2]
 			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
+			if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0 {
 				break
 			}
 			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
+			if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XEQ
@@ -41162,17 +37985,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v.Args[2]
 			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
+			if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0 {
 				break
 			}
 			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
+			if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XNE
@@ -41190,17 +38007,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v.Args[2]
 			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
+			if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0 {
 				break
 			}
 			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
+			if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XGTF
@@ -41218,17 +38029,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v.Args[2]
 			v_0 := v.Args[0]
-			if v_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0.AuxInt != 0 {
+			if v_0.Op != OpS390XMOVDconst || v_0.AuxInt != 0 {
 				break
 			}
 			v_1 := v.Args[1]
-			if v_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_1.AuxInt != 1 {
+			if v_1.Op != OpS390XMOVDconst || v_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XGEF
@@ -41370,10 +38175,7 @@ func rewriteBlockS390X(b *Block) bool {
 		// result: (LT cmp yes no)
 		for {
 			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpS390XCMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -41382,17 +38184,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v_0.Args[2]
 			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
+			if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != 0 {
 				break
 			}
 			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
+			if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XLT
@@ -41405,10 +38201,7 @@ func rewriteBlockS390X(b *Block) bool {
 		// result: (LE cmp yes no)
 		for {
 			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpS390XCMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -41417,17 +38210,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v_0.Args[2]
 			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
+			if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != 0 {
 				break
 			}
 			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
+			if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XLE
@@ -41440,10 +38227,7 @@ func rewriteBlockS390X(b *Block) bool {
 		// result: (GT cmp yes no)
 		for {
 			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpS390XCMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -41452,17 +38236,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v_0.Args[2]
 			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
+			if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != 0 {
 				break
 			}
 			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
+			if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XGT
@@ -41475,10 +38253,7 @@ func rewriteBlockS390X(b *Block) bool {
 		// result: (GE cmp yes no)
 		for {
 			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpS390XCMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -41487,17 +38262,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v_0.Args[2]
 			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
+			if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != 0 {
 				break
 			}
 			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
+			if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XGE
@@ -41510,10 +38279,7 @@ func rewriteBlockS390X(b *Block) bool {
 		// result: (EQ cmp yes no)
 		for {
 			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpS390XCMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -41522,17 +38288,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v_0.Args[2]
 			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
+			if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != 0 {
 				break
 			}
 			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
+			if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XEQ
@@ -41545,10 +38305,7 @@ func rewriteBlockS390X(b *Block) bool {
 		// result: (NE cmp yes no)
 		for {
 			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpS390XCMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -41557,17 +38314,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v_0.Args[2]
 			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
+			if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != 0 {
 				break
 			}
 			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
+			if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XNE
@@ -41580,10 +38331,7 @@ func rewriteBlockS390X(b *Block) bool {
 		// result: (GTF cmp yes no)
 		for {
 			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpS390XCMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -41592,17 +38340,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v_0.Args[2]
 			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
+			if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != 0 {
 				break
 			}
 			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
+			if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XGTF
@@ -41615,10 +38357,7 @@ func rewriteBlockS390X(b *Block) bool {
 		// result: (GEF cmp yes no)
 		for {
 			v := b.Control
-			if v.Op != OpS390XCMPWconst {
-				break
-			}
-			if v.AuxInt != 0 {
+			if v.Op != OpS390XCMPWconst || v.AuxInt != 0 {
 				break
 			}
 			v_0 := v.Args[0]
@@ -41627,17 +38366,11 @@ func rewriteBlockS390X(b *Block) bool {
 			}
 			cmp := v_0.Args[2]
 			v_0_0 := v_0.Args[0]
-			if v_0_0.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_0.AuxInt != 0 {
+			if v_0_0.Op != OpS390XMOVDconst || v_0_0.AuxInt != 0 {
 				break
 			}
 			v_0_1 := v_0.Args[1]
-			if v_0_1.Op != OpS390XMOVDconst {
-				break
-			}
-			if v_0_1.AuxInt != 1 {
+			if v_0_1.Op != OpS390XMOVDconst || v_0_1.AuxInt != 1 {
 				break
 			}
 			b.Kind = BlockS390XGEF
