@@ -5,6 +5,9 @@
 package ssa
 
 import (
+	amd64rewrite "cmd/compile/internal/amd64/rewrite"
+	arm64rewrite "cmd/compile/internal/arm64/rewrite"
+	s390xrewrite "cmd/compile/internal/s390x/rewrite"
 	"cmd/compile/internal/types"
 	"cmd/internal/obj"
 	"cmd/internal/obj/arm64"
@@ -20,10 +23,14 @@ var Opt = opt
 var Deadcode = deadcode
 var Copyelim = copyelim
 
-var testCtxts = map[string]*obj.Link{
-	"amd64": obj.Linknew(&x86.Linkamd64),
-	"s390x": obj.Linknew(&s390x.Links390x),
-	"arm64": obj.Linknew(&arm64.Linkarm64),
+var testArchs = map[string]struct {
+	ctxt       *obj.Link
+	lowerBlock ssa.BlockRewriter
+	lowerValue ssa.ValueRewriter
+}{
+	"amd64": {obj.Linknew(&x86.Linkamd64), amd64rewrite.BlockAMD64, amd64rewrite.ValueAMD64},
+	"s390x": {obj.Linknew(&s390x.Links390x), s390xrewrite.BlockS390X, s390xrewrite.ValueS390X},
+	"arm64": {obj.Linknew(&arm64.Linkarm64), arm64rewrite.BlockARM64, arm64rewrite.ValueARM64},
 }
 
 func testConfig(tb testing.TB) *Conf      { return testConfigArch(tb, "amd64") }
@@ -31,7 +38,7 @@ func testConfigS390X(tb testing.TB) *Conf { return testConfigArch(tb, "s390x") }
 func testConfigARM64(tb testing.TB) *Conf { return testConfigArch(tb, "arm64") }
 
 func testConfigArch(tb testing.TB, arch string) *Conf {
-	ctxt, ok := testCtxts[arch]
+	a, ok := testCtxts[arch]
 	if !ok {
 		tb.Fatalf("unknown arch %s", arch)
 	}
@@ -39,9 +46,11 @@ func testConfigArch(tb testing.TB, arch string) *Conf {
 		tb.Fatal("dummyTypes is 64-bit only")
 	}
 	c := &Conf{
-		config: NewConfig(arch, dummyTypes, ctxt, true),
+		config: NewConfig(arch, dummyTypes, a.ctxt, true),
 		tb:     tb,
 	}
+	c.config.SSALowerBlock = a.lowerBlock
+	c.config.SSALowerValue = a.lowerValue
 	return c
 }
 
