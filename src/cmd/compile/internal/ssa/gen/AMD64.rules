@@ -587,30 +587,30 @@
 // mutandis, for UGE and SETAE, and CC and SETCC.
 ((NE|EQ) (TESTL (SHLL (MOVLconst [1]) x) y)) && !config.NaCl -> ((ULT|UGE) (BTL x y))
 ((NE|EQ) (TESTQ (SHLQ (MOVQconst [1]) x) y)) && !config.NaCl -> ((ULT|UGE) (BTQ x y))
-((NE|EQ) (TESTLconst [c] x)) && IsUint32PowerOfTwo(c) && !config.NaCl
-    -> ((ULT|UGE) (BTLconst [Log2uint32(c)] x))
-((NE|EQ) (TESTQconst [c] x)) && IsUint64PowerOfTwo(c) && !config.NaCl
+((NE|EQ) (TESTLconst [c] x)) && isUint32PowerOfTwo(c) && !config.NaCl
+    -> ((ULT|UGE) (BTLconst [log2uint32(c)] x))
+((NE|EQ) (TESTQconst [c] x)) && isUint64PowerOfTwo(c) && !config.NaCl
     -> ((ULT|UGE) (BTQconst [Log2(c)] x))
-((NE|EQ) (TESTQ (MOVQconst [c]) x)) && IsUint64PowerOfTwo(c) && !config.NaCl
+((NE|EQ) (TESTQ (MOVQconst [c]) x)) && isUint64PowerOfTwo(c) && !config.NaCl
     -> ((ULT|UGE) (BTQconst [Log2(c)] x))
 (SET(NE|EQ) (TESTL (SHLL (MOVLconst [1]) x) y)) && !config.NaCl -> (SET(B|AE)  (BTL x y))
 (SET(NE|EQ) (TESTQ (SHLQ (MOVQconst [1]) x) y)) && !config.NaCl -> (SET(B|AE)  (BTQ x y))
-(SET(NE|EQ) (TESTLconst [c] x)) && IsUint32PowerOfTwo(c) && !config.NaCl
-    -> (SET(B|AE)  (BTLconst [Log2uint32(c)] x))
-(SET(NE|EQ) (TESTQconst [c] x)) && IsUint64PowerOfTwo(c) && !config.NaCl
+(SET(NE|EQ) (TESTLconst [c] x)) && isUint32PowerOfTwo(c) && !config.NaCl
+    -> (SET(B|AE)  (BTLconst [log2uint32(c)] x))
+(SET(NE|EQ) (TESTQconst [c] x)) && isUint64PowerOfTwo(c) && !config.NaCl
     -> (SET(B|AE)  (BTQconst [Log2(c)] x))
-(SET(NE|EQ) (TESTQ (MOVQconst [c]) x)) && IsUint64PowerOfTwo(c) && !config.NaCl
+(SET(NE|EQ) (TESTQ (MOVQconst [c]) x)) && isUint64PowerOfTwo(c) && !config.NaCl
     -> (SET(B|AE)  (BTQconst [Log2(c)] x))
 // SET..store variant
 (SET(NE|EQ)store [off] {sym} ptr (TESTL (SHLL (MOVLconst [1]) x) y) mem) && !config.NaCl
     -> (SET(B|AE)store  [off] {sym} ptr (BTL x y) mem)
 (SET(NE|EQ)store [off] {sym} ptr (TESTQ (SHLQ (MOVQconst [1]) x) y) mem) && !config.NaCl
     -> (SET(B|AE)store  [off] {sym} ptr (BTQ x y) mem)
-(SET(NE|EQ)store [off] {sym} ptr (TESTLconst [c] x) mem) && IsUint32PowerOfTwo(c) && !config.NaCl
-    -> (SET(B|AE)store  [off] {sym} ptr (BTLconst [Log2uint32(c)] x) mem)
-(SET(NE|EQ)store [off] {sym} ptr (TESTQconst [c] x) mem) && IsUint64PowerOfTwo(c) && !config.NaCl
+(SET(NE|EQ)store [off] {sym} ptr (TESTLconst [c] x) mem) && isUint32PowerOfTwo(c) && !config.NaCl
+    -> (SET(B|AE)store  [off] {sym} ptr (BTLconst [log2uint32(c)] x) mem)
+(SET(NE|EQ)store [off] {sym} ptr (TESTQconst [c] x) mem) && isUint64PowerOfTwo(c) && !config.NaCl
     -> (SET(B|AE)store  [off] {sym} ptr (BTQconst [Log2(c)] x) mem)
-(SET(NE|EQ)store [off] {sym} ptr (TESTQ (MOVQconst [c]) x) mem) && IsUint64PowerOfTwo(c) && !config.NaCl
+(SET(NE|EQ)store [off] {sym} ptr (TESTQ (MOVQconst [c]) x) mem) && isUint64PowerOfTwo(c) && !config.NaCl
     -> (SET(B|AE)store  [off] {sym} ptr (BTQconst [Log2(c)] x) mem)
 
 // Handle bit-testing in the form (a>>b)&1 != 0 by building the above rules
@@ -635,25 +635,25 @@
 
 // Convert ORconst into BTS, if the code gets smaller, with boundary being
 // (ORL $40,AX is 3 bytes, ORL $80,AX is 6 bytes).
-((ORQ|XORQ)const [c] x) && IsUint64PowerOfTwo(c) && uint64(c) >= 128 && !config.NaCl
+((ORQ|XORQ)const [c] x) && isUint64PowerOfTwo(c) && uint64(c) >= 128 && !config.NaCl
     -> (BT(S|C)Qconst [Log2(c)] x)
-((ORL|XORL)const [c] x) && IsUint32PowerOfTwo(c) && uint64(c) >= 128 && !config.NaCl
-    -> (BT(S|C)Lconst [Log2uint32(c)] x)
-((ORQ|XORQ) (MOVQconst [c]) x) && IsUint64PowerOfTwo(c) && uint64(c) >= 128 && !config.NaCl
+((ORL|XORL)const [c] x) && isUint32PowerOfTwo(c) && uint64(c) >= 128 && !config.NaCl
+    -> (BT(S|C)Lconst [log2uint32(c)] x)
+((ORQ|XORQ) (MOVQconst [c]) x) && isUint64PowerOfTwo(c) && uint64(c) >= 128 && !config.NaCl
     -> (BT(S|C)Qconst [Log2(c)] x)
-((ORL|XORL) (MOVLconst [c]) x) && IsUint32PowerOfTwo(c) && uint64(c) >= 128 && !config.NaCl
-    -> (BT(S|C)Lconst [Log2uint32(c)] x)
+((ORL|XORL) (MOVLconst [c]) x) && isUint32PowerOfTwo(c) && uint64(c) >= 128 && !config.NaCl
+    -> (BT(S|C)Lconst [log2uint32(c)] x)
 
 // Recognize bit clearing: a &^= 1<<b
 (AND(Q|L) (NOT(Q|L) (SHL(Q|L) (MOV(Q|L)const [1]) y)) x) && !config.NaCl -> (BTR(Q|L) x y)
-(ANDQconst [c] x) && IsUint64PowerOfTwo(^c) && uint64(^c) >= 128 && !config.NaCl
+(ANDQconst [c] x) && isUint64PowerOfTwo(^c) && uint64(^c) >= 128 && !config.NaCl
     -> (BTRQconst [Log2(^c)] x)
-(ANDLconst [c] x) && IsUint32PowerOfTwo(^c) && uint64(^c) >= 128 && !config.NaCl
-    -> (BTRLconst [Log2uint32(^c)] x)
-(ANDQ (MOVQconst [c]) x) && IsUint64PowerOfTwo(^c) && uint64(^c) >= 128 && !config.NaCl
+(ANDLconst [c] x) && isUint32PowerOfTwo(^c) && uint64(^c) >= 128 && !config.NaCl
+    -> (BTRLconst [log2uint32(^c)] x)
+(ANDQ (MOVQconst [c]) x) && isUint64PowerOfTwo(^c) && uint64(^c) >= 128 && !config.NaCl
     -> (BTRQconst [Log2(^c)] x)
-(ANDL (MOVLconst [c]) x) && IsUint32PowerOfTwo(^c) && uint64(^c) >= 128 && !config.NaCl
-    -> (BTRLconst [Log2uint32(^c)] x)
+(ANDL (MOVLconst [c]) x) && isUint32PowerOfTwo(^c) && uint64(^c) >= 128 && !config.NaCl
+    -> (BTRLconst [log2uint32(^c)] x)
 
 // Special-case bit patterns on first/last bit.
 // generic.rules changes ANDs of high-part/low-part masks into a couple of shifts,

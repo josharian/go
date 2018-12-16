@@ -4461,7 +4461,7 @@ func rewriteValueARM64_OpARM64CSEL_0(v *Value) bool {
 	}
 	// match: (CSEL {cc} (MOVDconst [0]) y flag)
 	// cond:
-	// result: (CSEL0 {ARM64Negate(cc.(Op))} y flag)
+	// result: (CSEL0 {negate(cc.(Op))} y flag)
 	for {
 		cc := v.Aux
 		_ = v.Args[2]
@@ -4475,14 +4475,14 @@ func rewriteValueARM64_OpARM64CSEL_0(v *Value) bool {
 		y := v.Args[1]
 		flag := v.Args[2]
 		v.Reset(OpARM64CSEL0)
-		v.Aux = ARM64Negate(cc.(Op))
+		v.Aux = negate(cc.(Op))
 		v.AddArg(y)
 		v.AddArg(flag)
 		return true
 	}
 	// match: (CSEL {cc} x y (InvertFlags cmp))
 	// cond:
-	// result: (CSEL {ARM64Invert(cc.(Op))} x y cmp)
+	// result: (CSEL {invert(cc.(Op))} x y cmp)
 	for {
 		cc := v.Aux
 		_ = v.Args[2]
@@ -4494,21 +4494,21 @@ func rewriteValueARM64_OpARM64CSEL_0(v *Value) bool {
 		}
 		cmp := v_2.Args[0]
 		v.Reset(OpARM64CSEL)
-		v.Aux = ARM64Invert(cc.(Op))
+		v.Aux = invert(cc.(Op))
 		v.AddArg(x)
 		v.AddArg(y)
 		v.AddArg(cmp)
 		return true
 	}
 	// match: (CSEL {cc} x _ flag)
-	// cond: CCarm64Eval(cc, flag) > 0
+	// cond: ccEval(cc, flag) > 0
 	// result: x
 	for {
 		cc := v.Aux
 		_ = v.Args[2]
 		x := v.Args[0]
 		flag := v.Args[2]
-		if !(CCarm64Eval(cc, flag) > 0) {
+		if !(ccEval(cc, flag) > 0) {
 			break
 		}
 		v.Reset(OpCopy)
@@ -4517,14 +4517,14 @@ func rewriteValueARM64_OpARM64CSEL_0(v *Value) bool {
 		return true
 	}
 	// match: (CSEL {cc} _ y flag)
-	// cond: CCarm64Eval(cc, flag) < 0
+	// cond: ccEval(cc, flag) < 0
 	// result: y
 	for {
 		cc := v.Aux
 		_ = v.Args[2]
 		y := v.Args[1]
 		flag := v.Args[2]
-		if !(CCarm64Eval(cc, flag) < 0) {
+		if !(ccEval(cc, flag) < 0) {
 			break
 		}
 		v.Reset(OpCopy)
@@ -4560,7 +4560,7 @@ func rewriteValueARM64_OpARM64CSEL_0(v *Value) bool {
 	}
 	// match: (CSEL {cc} x y (CMPWconst [0] bool))
 	// cond: cc.(Op) == OpARM64Equal && FlagArg(bool) != nil
-	// result: (CSEL {ARM64Negate(bool.Op)} x y FlagArg(bool))
+	// result: (CSEL {negate(bool.Op)} x y FlagArg(bool))
 	for {
 		cc := v.Aux
 		_ = v.Args[2]
@@ -4578,7 +4578,7 @@ func rewriteValueARM64_OpARM64CSEL_0(v *Value) bool {
 			break
 		}
 		v.Reset(OpARM64CSEL)
-		v.Aux = ARM64Negate(bool.Op)
+		v.Aux = negate(bool.Op)
 		v.AddArg(x)
 		v.AddArg(y)
 		v.AddArg(FlagArg(bool))
@@ -4589,7 +4589,7 @@ func rewriteValueARM64_OpARM64CSEL_0(v *Value) bool {
 func rewriteValueARM64_OpARM64CSEL0_0(v *Value) bool {
 	// match: (CSEL0 {cc} x (InvertFlags cmp))
 	// cond:
-	// result: (CSEL0 {ARM64Invert(cc.(Op))} x cmp)
+	// result: (CSEL0 {invert(cc.(Op))} x cmp)
 	for {
 		cc := v.Aux
 		_ = v.Args[1]
@@ -4600,20 +4600,20 @@ func rewriteValueARM64_OpARM64CSEL0_0(v *Value) bool {
 		}
 		cmp := v_1.Args[0]
 		v.Reset(OpARM64CSEL0)
-		v.Aux = ARM64Invert(cc.(Op))
+		v.Aux = invert(cc.(Op))
 		v.AddArg(x)
 		v.AddArg(cmp)
 		return true
 	}
 	// match: (CSEL0 {cc} x flag)
-	// cond: CCarm64Eval(cc, flag) > 0
+	// cond: ccEval(cc, flag) > 0
 	// result: x
 	for {
 		cc := v.Aux
 		_ = v.Args[1]
 		x := v.Args[0]
 		flag := v.Args[1]
-		if !(CCarm64Eval(cc, flag) > 0) {
+		if !(ccEval(cc, flag) > 0) {
 			break
 		}
 		v.Reset(OpCopy)
@@ -4622,13 +4622,13 @@ func rewriteValueARM64_OpARM64CSEL0_0(v *Value) bool {
 		return true
 	}
 	// match: (CSEL0 {cc} _ flag)
-	// cond: CCarm64Eval(cc, flag) < 0
+	// cond: ccEval(cc, flag) < 0
 	// result: (MOVDconst [0])
 	for {
 		cc := v.Aux
 		_ = v.Args[1]
 		flag := v.Args[1]
-		if !(CCarm64Eval(cc, flag) < 0) {
+		if !(ccEval(cc, flag) < 0) {
 			break
 		}
 		v.Reset(OpARM64MOVDconst)
@@ -4661,7 +4661,7 @@ func rewriteValueARM64_OpARM64CSEL0_0(v *Value) bool {
 	}
 	// match: (CSEL0 {cc} x (CMPWconst [0] bool))
 	// cond: cc.(Op) == OpARM64Equal && FlagArg(bool) != nil
-	// result: (CSEL0 {ARM64Negate(bool.Op)} x FlagArg(bool))
+	// result: (CSEL0 {negate(bool.Op)} x FlagArg(bool))
 	for {
 		cc := v.Aux
 		_ = v.Args[1]
@@ -4678,7 +4678,7 @@ func rewriteValueARM64_OpARM64CSEL0_0(v *Value) bool {
 			break
 		}
 		v.Reset(OpARM64CSEL0)
-		v.Aux = ARM64Negate(bool.Op)
+		v.Aux = negate(bool.Op)
 		v.AddArg(x)
 		v.AddArg(FlagArg(bool))
 		return true
@@ -39156,7 +39156,7 @@ func BlockARM64(b *Block) bool {
 			return true
 		}
 		// match: (EQ (TSTconst [c] x) yes no)
-		// cond: OneBit(c)
+		// cond: oneBit(c)
 		// result: (TBZ {Ntz(c)} x yes no)
 		for {
 			v := b.Control
@@ -39165,7 +39165,7 @@ func BlockARM64(b *Block) bool {
 			}
 			c := v.AuxInt
 			x := v.Args[0]
-			if !(OneBit(c)) {
+			if !(oneBit(c)) {
 				break
 			}
 			b.Kind = BlockARM64TBZ
@@ -39174,7 +39174,7 @@ func BlockARM64(b *Block) bool {
 			return true
 		}
 		// match: (EQ (TSTWconst [c] x) yes no)
-		// cond: OneBit(int64(uint32(c)))
+		// cond: oneBit(int64(uint32(c)))
 		// result: (TBZ {Ntz(int64(uint32(c)))} x yes no)
 		for {
 			v := b.Control
@@ -39183,7 +39183,7 @@ func BlockARM64(b *Block) bool {
 			}
 			c := v.AuxInt
 			x := v.Args[0]
-			if !(OneBit(int64(uint32(c)))) {
+			if !(oneBit(int64(uint32(c)))) {
 				break
 			}
 			b.Kind = BlockARM64TBZ
@@ -41921,7 +41921,7 @@ func BlockARM64(b *Block) bool {
 			return true
 		}
 		// match: (NE (TSTconst [c] x) yes no)
-		// cond: OneBit(c)
+		// cond: oneBit(c)
 		// result: (TBNZ {Ntz(c)} x yes no)
 		for {
 			v := b.Control
@@ -41930,7 +41930,7 @@ func BlockARM64(b *Block) bool {
 			}
 			c := v.AuxInt
 			x := v.Args[0]
-			if !(OneBit(c)) {
+			if !(oneBit(c)) {
 				break
 			}
 			b.Kind = BlockARM64TBNZ
@@ -41939,7 +41939,7 @@ func BlockARM64(b *Block) bool {
 			return true
 		}
 		// match: (NE (TSTWconst [c] x) yes no)
-		// cond: OneBit(int64(uint32(c)))
+		// cond: oneBit(int64(uint32(c)))
 		// result: (TBNZ {Ntz(int64(uint32(c)))} x yes no)
 		for {
 			v := b.Control
@@ -41948,7 +41948,7 @@ func BlockARM64(b *Block) bool {
 			}
 			c := v.AuxInt
 			x := v.Args[0]
-			if !(OneBit(int64(uint32(c)))) {
+			if !(oneBit(int64(uint32(c)))) {
 				break
 			}
 			b.Kind = BlockARM64TBNZ
@@ -42178,7 +42178,7 @@ func BlockARM64(b *Block) bool {
 			return true
 		}
 		// match: (NZ (ANDconst [c] x) yes no)
-		// cond: OneBit(c)
+		// cond: oneBit(c)
 		// result: (TBNZ {Ntz(c)} x yes no)
 		for {
 			v := b.Control
@@ -42187,7 +42187,7 @@ func BlockARM64(b *Block) bool {
 			}
 			c := v.AuxInt
 			x := v.Args[0]
-			if !(OneBit(c)) {
+			if !(oneBit(c)) {
 				break
 			}
 			b.Kind = BlockARM64TBNZ
@@ -42231,7 +42231,7 @@ func BlockARM64(b *Block) bool {
 		}
 	case BlockARM64NZW:
 		// match: (NZW (ANDconst [c] x) yes no)
-		// cond: OneBit(int64(uint32(c)))
+		// cond: oneBit(int64(uint32(c)))
 		// result: (TBNZ {Ntz(int64(uint32(c)))} x yes no)
 		for {
 			v := b.Control
@@ -42240,7 +42240,7 @@ func BlockARM64(b *Block) bool {
 			}
 			c := v.AuxInt
 			x := v.Args[0]
-			if !(OneBit(int64(uint32(c)))) {
+			if !(oneBit(int64(uint32(c)))) {
 				break
 			}
 			b.Kind = BlockARM64TBNZ
@@ -42615,7 +42615,7 @@ func BlockARM64(b *Block) bool {
 		}
 	case BlockARM64Z:
 		// match: (Z (ANDconst [c] x) yes no)
-		// cond: OneBit(c)
+		// cond: oneBit(c)
 		// result: (TBZ {Ntz(c)} x yes no)
 		for {
 			v := b.Control
@@ -42624,7 +42624,7 @@ func BlockARM64(b *Block) bool {
 			}
 			c := v.AuxInt
 			x := v.Args[0]
-			if !(OneBit(c)) {
+			if !(oneBit(c)) {
 				break
 			}
 			b.Kind = BlockARM64TBZ
@@ -42668,7 +42668,7 @@ func BlockARM64(b *Block) bool {
 		}
 	case BlockARM64ZW:
 		// match: (ZW (ANDconst [c] x) yes no)
-		// cond: OneBit(int64(uint32(c)))
+		// cond: oneBit(int64(uint32(c)))
 		// result: (TBZ {Ntz(int64(uint32(c)))} x yes no)
 		for {
 			v := b.Control
@@ -42677,7 +42677,7 @@ func BlockARM64(b *Block) bool {
 			}
 			c := v.AuxInt
 			x := v.Args[0]
-			if !(OneBit(int64(uint32(c)))) {
+			if !(oneBit(int64(uint32(c)))) {
 				break
 			}
 			b.Kind = BlockARM64TBZ

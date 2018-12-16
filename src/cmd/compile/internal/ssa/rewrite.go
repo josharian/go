@@ -350,10 +350,6 @@ func Ntz(x int64) int64 {
 	return int64(bits.TrailingZeros64(uint64(x)))
 }
 
-func OneBit(x int64) bool {
-	return bits.OnesCount64(uint64(x)) == 1
-}
-
 // nlo returns the number of leading ones.
 func nlo(x int64) int64 {
 	return nlz(^x)
@@ -370,26 +366,8 @@ func Log2(n int64) int64 {
 	return int64(bits.Len64(uint64(n))) - 1
 }
 
-// Log2uint32 returns logarithm in base 2 of uint32(n), with Log2(0) = -1.
-// Rounds down.
-func Log2uint32(n int64) int64 {
-	return int64(bits.Len32(uint32(n))) - 1
-}
-
 // IsPowerOfTwo reports whether n is a power of 2.
 func IsPowerOfTwo(n int64) bool {
-	return n > 0 && n&(n-1) == 0
-}
-
-// IsUint64PowerOfTwo reports whether uint64(n) is a power of 2.
-func IsUint64PowerOfTwo(in int64) bool {
-	n := uint64(in)
-	return n > 0 && n&(n-1) == 0
-}
-
-// IsUint32PowerOfTwo reports whether uint32(n) is a power of 2.
-func IsUint32PowerOfTwo(in int64) bool {
-	n := uint64(uint32(in))
 	return n > 0 && n&(n-1) == 0
 }
 
@@ -702,123 +680,6 @@ func FlagArg(v *Value) *Value {
 		return nil
 	}
 	return v.Args[0]
-}
-
-// ARM64Negate finds the complement to an ARM64 condition code,
-// for example Equal -> NotEqual or LessThan -> GreaterEqual
-//
-// TODO: add floating-point conditions
-func ARM64Negate(op Op) Op {
-	switch op {
-	case OpARM64LessThan:
-		return OpARM64GreaterEqual
-	case OpARM64LessThanU:
-		return OpARM64GreaterEqualU
-	case OpARM64GreaterThan:
-		return OpARM64LessEqual
-	case OpARM64GreaterThanU:
-		return OpARM64LessEqualU
-	case OpARM64LessEqual:
-		return OpARM64GreaterThan
-	case OpARM64LessEqualU:
-		return OpARM64GreaterThanU
-	case OpARM64GreaterEqual:
-		return OpARM64LessThan
-	case OpARM64GreaterEqualU:
-		return OpARM64LessThanU
-	case OpARM64Equal:
-		return OpARM64NotEqual
-	case OpARM64NotEqual:
-		return OpARM64Equal
-	default:
-		panic("unreachable")
-	}
-}
-
-// ARM64Invert evaluates (InvertFlags op), which
-// is the same as altering the condition codes such
-// that the same result would be produced if the arguments
-// to the flag-generating instruction were reversed, e.g.
-// (InvertFlags (CMP x y)) -> (CMP y x)
-//
-// TODO: add floating-point conditions
-func ARM64Invert(op Op) Op {
-	switch op {
-	case OpARM64LessThan:
-		return OpARM64GreaterThan
-	case OpARM64LessThanU:
-		return OpARM64GreaterThanU
-	case OpARM64GreaterThan:
-		return OpARM64LessThan
-	case OpARM64GreaterThanU:
-		return OpARM64LessThanU
-	case OpARM64LessEqual:
-		return OpARM64GreaterEqual
-	case OpARM64LessEqualU:
-		return OpARM64GreaterEqualU
-	case OpARM64GreaterEqual:
-		return OpARM64LessEqual
-	case OpARM64GreaterEqualU:
-		return OpARM64LessEqualU
-	case OpARM64Equal, OpARM64NotEqual:
-		return op
-	default:
-		panic("unreachable")
-	}
-}
-
-// evaluate an ARM64 op against a flags value
-// that is potentially constant; return 1 for true,
-// -1 for false, and 0 for not constant.
-func CCarm64Eval(cc interface{}, flags *Value) int {
-	op := cc.(Op)
-	fop := flags.Op
-	switch fop {
-	case OpARM64InvertFlags:
-		return -CCarm64Eval(op, flags.Args[0])
-	case OpARM64FlagEQ:
-		switch op {
-		case OpARM64Equal, OpARM64GreaterEqual, OpARM64LessEqual,
-			OpARM64GreaterEqualU, OpARM64LessEqualU:
-			return 1
-		default:
-			return -1
-		}
-	case OpARM64FlagLT_ULT:
-		switch op {
-		case OpARM64LessThan, OpARM64LessThanU,
-			OpARM64LessEqual, OpARM64LessEqualU:
-			return 1
-		default:
-			return -1
-		}
-	case OpARM64FlagLT_UGT:
-		switch op {
-		case OpARM64LessThan, OpARM64GreaterThanU,
-			OpARM64LessEqual, OpARM64GreaterEqualU:
-			return 1
-		default:
-			return -1
-		}
-	case OpARM64FlagGT_ULT:
-		switch op {
-		case OpARM64GreaterThan, OpARM64LessThanU,
-			OpARM64GreaterEqual, OpARM64LessEqualU:
-			return 1
-		default:
-			return -1
-		}
-	case OpARM64FlagGT_UGT:
-		switch op {
-		case OpARM64GreaterThan, OpARM64GreaterThanU,
-			OpARM64GreaterEqual, OpARM64GreaterEqualU:
-			return 1
-		default:
-			return -1
-		}
-	default:
-		return 0
-	}
 }
 
 // logRule logs the use of the rule s. This will only be enabled if

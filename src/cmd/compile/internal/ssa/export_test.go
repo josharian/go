@@ -53,7 +53,7 @@ type Conf struct {
 
 func (c *Conf) Frontend() Frontend {
 	if c.fe == nil {
-		c.fe = DummyFrontend{t: c.tb, ctxt: c.config.ctxt}
+		c.fe = DummyFrontend{t: c.tb, ctxt: c.config.Ctxt}
 	}
 	return c.fe
 }

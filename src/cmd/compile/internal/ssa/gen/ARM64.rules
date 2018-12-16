@@ -688,14 +688,14 @@
 (GT (CMPWconst [0] z:(MSUBW a x y)) yes no) && z.Uses==1 -> (GT (CMPW a (MULW <x.Type> x y)) yes no)
 
 // Absorb bit-tests into block
-(Z  (ANDconst [c] x) yes no) && OneBit(c) -> (TBZ  {Ntz(c)} x yes no)
-(NZ (ANDconst [c] x) yes no) && OneBit(c) -> (TBNZ {Ntz(c)} x yes no)
-(ZW  (ANDconst [c] x) yes no) && OneBit(int64(uint32(c))) -> (TBZ  {Ntz(int64(uint32(c)))} x yes no)
-(NZW (ANDconst [c] x) yes no) && OneBit(int64(uint32(c))) -> (TBNZ {Ntz(int64(uint32(c)))} x yes no)
-(EQ (TSTconst [c] x) yes no) && OneBit(c) -> (TBZ  {Ntz(c)} x yes no)
-(NE (TSTconst [c] x) yes no) && OneBit(c) -> (TBNZ {Ntz(c)} x yes no)
-(EQ (TSTWconst [c] x) yes no) && OneBit(int64(uint32(c))) -> (TBZ  {Ntz(int64(uint32(c)))} x yes no)
-(NE (TSTWconst [c] x) yes no) && OneBit(int64(uint32(c))) -> (TBNZ {Ntz(int64(uint32(c)))} x yes no)
+(Z  (ANDconst [c] x) yes no) && oneBit(c) -> (TBZ  {Ntz(c)} x yes no)
+(NZ (ANDconst [c] x) yes no) && oneBit(c) -> (TBNZ {Ntz(c)} x yes no)
+(ZW  (ANDconst [c] x) yes no) && oneBit(int64(uint32(c))) -> (TBZ  {Ntz(int64(uint32(c)))} x yes no)
+(NZW (ANDconst [c] x) yes no) && oneBit(int64(uint32(c))) -> (TBNZ {Ntz(int64(uint32(c)))} x yes no)
+(EQ (TSTconst [c] x) yes no) && oneBit(c) -> (TBZ  {Ntz(c)} x yes no)
+(NE (TSTconst [c] x) yes no) && oneBit(c) -> (TBNZ {Ntz(c)} x yes no)
+(EQ (TSTWconst [c] x) yes no) && oneBit(int64(uint32(c))) -> (TBZ  {Ntz(int64(uint32(c)))} x yes no)
+(NE (TSTWconst [c] x) yes no) && oneBit(int64(uint32(c))) -> (TBNZ {Ntz(int64(uint32(c)))} x yes no)
 
 // Test sign-bit for signed comparisons against zero
 (GE (CMPWconst [0] x) yes no) -> (TBZ  {int64(31)} x yes no)
@@ -1321,7 +1321,7 @@
 (XOR x (MVN y)) -> (EON x y)
 (OR  x (MVN y)) -> (ORN x y)
 (CSEL {cc} x (MOVDconst [0]) flag) -> (CSEL0 {cc} x flag)
-(CSEL {cc} (MOVDconst [0]) y flag) -> (CSEL0 {ARM64Negate(cc.(Op))} y flag)
+(CSEL {cc} (MOVDconst [0]) y flag) -> (CSEL0 {negate(cc.(Op))} y flag)
 (SUB x (SUB y z)) -> (SUB (ADD <v.Type> x z) y)
 (SUB (SUB x y) z) -> (SUB x (ADD <y.Type> y z))
 
@@ -1508,8 +1508,8 @@
 (NE (InvertFlags cmp) yes no) -> (NE cmp yes no)
 
 // absorb InvertFlags into CSEL(0)
-(CSEL {cc} x y (InvertFlags cmp)) -> (CSEL {ARM64Invert(cc.(Op))} x y cmp)
-(CSEL0 {cc} x (InvertFlags cmp)) -> (CSEL0 {ARM64Invert(cc.(Op))} x cmp)
+(CSEL {cc} x y (InvertFlags cmp)) -> (CSEL {invert(cc.(Op))} x y cmp)
+(CSEL0 {cc} x (InvertFlags cmp)) -> (CSEL0 {invert(cc.(Op))} x cmp)
 
 // absorb flag constants into boolean values
 (Equal (FlagEQ)) -> (MOVDconst [1])
@@ -1589,20 +1589,20 @@
 (MOVBUreg x) && x.Type.IsBoolean() -> (MOVDreg x)
 
 // absorb flag constants into conditional instructions
-(CSEL {cc} x _ flag) && CCarm64Eval(cc, flag) > 0 -> x
-(CSEL {cc} _ y flag) && CCarm64Eval(cc, flag) < 0 -> y
-(CSEL0 {cc} x flag) && CCarm64Eval(cc, flag) > 0 -> x
-(CSEL0 {cc} _ flag) && CCarm64Eval(cc, flag) < 0 -> (MOVDconst [0])
+(CSEL {cc} x _ flag) && ccEval(cc, flag) > 0 -> x
+(CSEL {cc} _ y flag) && ccEval(cc, flag) < 0 -> y
+(CSEL0 {cc} x flag) && ccEval(cc, flag) > 0 -> x
+(CSEL0 {cc} _ flag) && ccEval(cc, flag) < 0 -> (MOVDconst [0])
 
 // absorb flags back into boolean CSEL
 (CSEL {cc} x y (CMPWconst [0] bool)) && cc.(Op) == OpARM64NotEqual && FlagArg(bool) != nil ->
       (CSEL {bool.Op} x y FlagArg(bool))
 (CSEL {cc} x y (CMPWconst [0] bool)) && cc.(Op) == OpARM64Equal && FlagArg(bool) != nil ->
-      (CSEL {ARM64Negate(bool.Op)} x y FlagArg(bool))
+      (CSEL {negate(bool.Op)} x y FlagArg(bool))
 (CSEL0 {cc} x (CMPWconst [0] bool)) && cc.(Op) == OpARM64NotEqual && FlagArg(bool) != nil ->
       (CSEL0 {bool.Op} x FlagArg(bool))
 (CSEL0 {cc} x (CMPWconst [0] bool)) && cc.(Op) == OpARM64Equal && FlagArg(bool) != nil ->
-      (CSEL0 {ARM64Negate(bool.Op)} x FlagArg(bool))
+      (CSEL0 {negate(bool.Op)} x FlagArg(bool))
 
 // absorb shifts into ops
 (NEG x:(SLLconst [c] y)) && ClobberIfDead(x) -> (NEGshiftLL [c] y)
