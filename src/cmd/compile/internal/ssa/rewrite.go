@@ -1037,42 +1037,6 @@ func isInlinableMemmove(dst, src *Value, sz int64, c *Config) bool {
 	return false
 }
 
-// encodes the lsb and width for arm64 bitfield ops into the expected auxInt format.
-func ARM64BFAuxInt(lsb, width int64) int64 {
-	if lsb < 0 || lsb > 63 {
-		panic("ARM64 bit field lsb constant out of range")
-	}
-	if width < 1 || width > 64 {
-		panic("ARM64 bit field width constant out of range")
-	}
-	return width | lsb<<8
-}
-
-// returns the lsb part of the auxInt field of arm64 bitfield ops.
-func GetARM64BFlsb(bfc int64) int64 {
-	return int64(uint64(bfc) >> 8)
-}
-
-// returns the width part of the auxInt field of arm64 bitfield ops.
-func GetARM64BFwidth(bfc int64) int64 {
-	return bfc & 0xff
-}
-
-// checks if mask >> rshift applied at lsb is a valid arm64 bitfield op mask.
-func IsARM64BFMask(lsb, mask, rshift int64) bool {
-	shiftedMask := int64(uint64(mask) >> uint64(rshift))
-	return shiftedMask != 0 && IsPowerOfTwo(shiftedMask+1) && nto(shiftedMask)+lsb < 64
-}
-
-// returns the bitfield width of mask >> rshift for arm64 bitfield ops
-func ARM64BFWidth(mask, rshift int64) int64 {
-	shiftedMask := int64(uint64(mask) >> uint64(rshift))
-	if shiftedMask == 0 {
-		panic("ARM64 BF mask is zero")
-	}
-	return nto(shiftedMask)
-}
-
 // SizeOf returns the size of t in bytes.
 // It will panic if t is not a *types.Type.
 func SizeOf(t interface{}) int64 {
