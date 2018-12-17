@@ -178,12 +178,16 @@ func genRules(arch arch) {
 	fmt.Fprintf(w, "switch v.Op {\n")
 	for _, op := range ops {
 		fmt.Fprintf(w, "case %s:\n", op)
-		fmt.Fprint(w, "return ")
-		for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
-			if chunk > 0 {
-				fmt.Fprint(w, " || ")
+		if len(oprules[op]) == 1 {
+			genValueRewriteBody(w, arch, oprules[op], true)
+		} else {
+			fmt.Fprint(w, "return ")
+			for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
+				if chunk > 0 {
+					fmt.Fprint(w, " || ")
+				}
+				fmt.Fprintf(w, "rewriteValue%s_%s_%d(v)", arch.name, op, chunk)
 			}
-			fmt.Fprintf(w, "rewriteValue%s_%s_%d(v)", arch.name, op, chunk)
 		}
 		fmt.Fprintln(w)
 	}
@@ -194,72 +198,17 @@ func genRules(arch arch) {
 	// Generate a routine per op. Note that we don't make one giant routine
 	// because it is too big for some compilers.
 	for _, op := range ops {
-		for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
-			buf := new(bytes.Buffer)
-			var canFail bool
-			endchunk := chunk + chunkSize
-			if endchunk > len(oprules[op]) {
-				endchunk = len(oprules[op])
-			}
-			for i, rule := range oprules[op][chunk:endchunk] {
-				match, cond, result := rule.parse()
-				fmt.Fprintf(buf, "// match: %s\n", match)
-				fmt.Fprintf(buf, "// cond: %s\n", cond)
-				fmt.Fprintf(buf, "// result: %s\n", result)
-
-				canFail = false
-				fmt.Fprintf(buf, "for {\n")
-				if genMatch(buf, arch, match, rule.loc) {
-					canFail = true
+		if len(oprules[op]) != 1 {
+			for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
+				fmt.Fprintf(w, "func rewriteValue%s_%s_%d(v *Value) bool {\n", arch.name, op, chunk)
+				endchunk := chunk + chunkSize
+				if endchunk > len(oprules[op]) {
+					endchunk = len(oprules[op])
 				}
-
-				if cond != "" {
-					fmt.Fprintf(buf, "if !(%s) {\nbreak\n}\n", cond)
-					canFail = true
-				}
-				if !canFail && i+chunk != len(oprules[op])-1 {
-					log.Fatalf("unconditional rule %s is followed by other rules", match)
-				}
-
-				genResult(buf, arch, result, rule.loc)
-				if *genLog {
-					fmt.Fprintf(buf, "logRule(\"%s\")\n", rule.loc)
-				}
-				fmt.Fprintf(buf, "return true\n")
-
-				fmt.Fprintf(buf, "}\n")
+				rules := oprules[op][chunk:endchunk]
+				genValueRewriteBody(w, arch, rules, chunk+chunkSize >= len(oprules[op]))
+				fmt.Fprintf(w, "}\n")
 			}
-			if canFail {
-				fmt.Fprintf(buf, "return false\n")
-			}
-
-			body := buf.String()
-			// Do a rough match to predict whether we need b, config, fe, and/or types.
-			// It's not precise--thus the blank assignments--but it's good enough
-			// to avoid generating needless code and doing pointless nil checks.
-			hasb := strings.Contains(body, "b.")
-			hasconfig := strings.Contains(body, "config.") || strings.Contains(body, "config)")
-			hasfe := strings.Contains(body, "fe.")
-			hastyps := strings.Contains(body, "typ.")
-			fmt.Fprintf(w, "func rewriteValue%s_%s_%d(v *Value) bool {\n", arch.name, op, chunk)
-			if hasb || hasconfig || hasfe || hastyps {
-				fmt.Fprintln(w, "b := v.Block")
-				fmt.Fprintln(w, "_ = b")
-			}
-			if hasconfig {
-				fmt.Fprintln(w, "config := b.Func.Config")
-				fmt.Fprintln(w, "_ = config")
-			}
-			if hasfe {
-				fmt.Fprintln(w, "fe := b.Func.fe")
-				fmt.Fprintln(w, "_ = fe")
-			}
-			if hastyps {
-				fmt.Fprintln(w, "typ := &b.Func.Config.Types")
-				fmt.Fprintln(w, "_ = typ")
-			}
-			fmt.Fprint(w, body)
-			fmt.Fprintf(w, "}\n")
 		}
 	}
 
@@ -384,6 +333,68 @@ func genRules(arch arch) {
 	if err != nil {
 		log.Fatalf("can't write output: %v\n", err)
 	}
+}
+
+func genValueRewriteBody(w io.Writer, arch arch, rules []Rule, lastchunk bool) {
+	buf := new(bytes.Buffer)
+	var canFail bool
+	for i, rule := range rules {
+		match, cond, result := rule.parse()
+		fmt.Fprintf(buf, "// match: %s\n", match)
+		fmt.Fprintf(buf, "// cond: %s\n", cond)
+		fmt.Fprintf(buf, "// result: %s\n", result)
+
+		canFail = false
+		fmt.Fprintf(buf, "for {\n")
+		if genMatch(buf, arch, match, rule.loc) {
+			canFail = true
+		}
+
+		if cond != "" {
+			fmt.Fprintf(buf, "if !(%s) {\nbreak\n}\n", cond)
+			canFail = true
+		}
+		if !canFail && (!lastchunk || i != len(rules)-1) {
+			log.Fatalf("unconditional rule %s is followed by other rules", match)
+		}
+
+		genResult(buf, arch, result, rule.loc)
+		if *genLog {
+			fmt.Fprintf(buf, "logRule(\"%s\")\n", rule.loc)
+		}
+		fmt.Fprintf(buf, "return true\n")
+
+		fmt.Fprintf(buf, "}\n")
+	}
+	if canFail {
+		fmt.Fprintf(buf, "return false\n")
+	}
+
+	body := buf.String()
+	// Do a rough match to predict whether we need b, config, fe, and/or types.
+	// It's not precise--thus the blank assignments--but it's good enough
+	// to avoid generating needless code and doing pointless nil checks.
+	hasb := strings.Contains(body, "b.")
+	hasconfig := strings.Contains(body, "config.") || strings.Contains(body, "config)")
+	hasfe := strings.Contains(body, "fe.")
+	hastyps := strings.Contains(body, "typ.")
+	if hasb || hasconfig || hasfe || hastyps {
+		fmt.Fprintln(w, "b := v.Block")
+		fmt.Fprintln(w, "_ = b")
+	}
+	if hasconfig {
+		fmt.Fprintln(w, "config := b.Func.Config")
+		fmt.Fprintln(w, "_ = config")
+	}
+	if hasfe {
+		fmt.Fprintln(w, "fe := b.Func.fe")
+		fmt.Fprintln(w, "_ = fe")
+	}
+	if hastyps {
+		fmt.Fprintln(w, "typ := &b.Func.Config.Types")
+		fmt.Fprintln(w, "_ = typ")
+	}
+	fmt.Fprint(w, body)
 }
 
 // genMatch reports whether the match can fail.
