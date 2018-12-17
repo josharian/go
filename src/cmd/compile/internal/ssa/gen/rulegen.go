@@ -172,17 +172,19 @@ func genRules(arch arch) {
 	fmt.Fprintln(w, "var _ = types.TypeMem // in case not otherwise used")
 	fmt.Fprintln(w)
 
-	const chunkSize = 10
 	// Main rewrite routine is a switch on v.Op.
 	fmt.Fprintf(w, "func rewriteValue%s(v *Value) bool {\n", arch.name)
 	fmt.Fprintf(w, "switch v.Op {\n")
 	for _, op := range ops {
 		fmt.Fprintf(w, "case %s:\n", op)
-		if len(oprules[op]) == 1 {
+		chunked := chunkRules(oprules[op])
+		if len(chunked) == 0 {
+			// inline body
 			genValueRewriteBody(w, arch, oprules[op], true)
 		} else {
+			// call each chunk in turn
 			fmt.Fprint(w, "return ")
-			for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
+			for chunk := range chunked {
 				if chunk > 0 {
 					fmt.Fprint(w, " || ")
 				}
@@ -198,17 +200,15 @@ func genRules(arch arch) {
 	// Generate a routine per op. Note that we don't make one giant routine
 	// because it is too big for some compilers.
 	for _, op := range ops {
-		if len(oprules[op]) != 1 {
-			for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
-				fmt.Fprintf(w, "func rewriteValue%s_%s_%d(v *Value) bool {\n", arch.name, op, chunk)
-				endchunk := chunk + chunkSize
-				if endchunk > len(oprules[op]) {
-					endchunk = len(oprules[op])
-				}
-				rules := oprules[op][chunk:endchunk]
-				genValueRewriteBody(w, arch, rules, chunk+chunkSize >= len(oprules[op]))
-				fmt.Fprintf(w, "}\n")
-			}
+		chunked := chunkRules(oprules[op])
+		if len(oprules[op]) == 0 {
+			// body was inlined
+			continue
+		}
+		for chunk, rules := range chunked {
+			fmt.Fprintf(w, "func rewriteValue%s_%s_%d(v *Value) bool {\n", arch.name, op, chunk)
+			genValueRewriteBody(w, arch, rules, chunk == len(chunked)-1)
+			fmt.Fprintf(w, "}\n")
 		}
 	}
 
@@ -333,6 +333,22 @@ func genRules(arch arch) {
 	if err != nil {
 		log.Fatalf("can't write output: %v\n", err)
 	}
+}
+
+func chunkRules(rules []Rule) [][]Rule {
+	const chunkSize = 10
+	var chunked [][]Rule
+	if len(rules) <= 1 {
+		return chunked
+	}
+	for chunk := 0; chunk < len(rules); chunk += chunkSize {
+		endchunk := chunk + chunkSize
+		if endchunk > len(rules) {
+			endchunk = len(rules)
+		}
+		chunked = append(chunked, rules[chunk:endchunk])
+	}
+	return chunked
 }
 
 func genValueRewriteBody(w io.Writer, arch arch, rules []Rule, lastchunk bool) {
