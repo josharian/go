@@ -338,9 +338,9 @@ func genRules(arch arch) {
 func chunkRules(rules []Rule) [][]Rule {
 	const chunkSize = 10
 	var chunked [][]Rule
-	if len(rules) <= 1 {
-		return chunked
-	}
+	// if len(rules) <= 1 {
+	// 	return chunked
+	// }
 	for chunk := 0; chunk < len(rules); chunk += chunkSize {
 		endchunk := chunk + chunkSize
 		if endchunk > len(rules) {
