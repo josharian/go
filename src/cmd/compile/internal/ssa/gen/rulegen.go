@@ -341,8 +341,12 @@ func chunkRules(rules []Rule) [][]Rule {
 	// if len(rules) <= 1 {
 	// 	return chunked
 	// }
-	for chunk := 0; chunk < len(rules); chunk += chunkSize {
-		endchunk := chunk + chunkSize
+	var endchunk int
+	for chunk := 0; chunk < len(rules); chunk = endchunk {
+		endchunk = chunk + chunkSize
+		if endchunk+chunkSize/2 >= len(rules) {
+			endchunk += chunkSize / 2
+		}
 		if endchunk > len(rules) {
 			endchunk = len(rules)
 		}
