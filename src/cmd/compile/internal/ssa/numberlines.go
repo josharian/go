@@ -51,7 +51,7 @@ func nextGoodStatementIndex(v *Value, i int, b *Block) int {
 		if b.Values[j].Pos.IsStmt() == src.PosNotStmt { // ignore non-statements
 			continue
 		}
-		if b.Values[j].Pos.Line() == v.Pos.Line() {
+		if b.Values[j].Pos.Line() == v.Pos.Line() && v.Pos.SameFile(b.Values[j].Pos) {
 			return j
 		}
 		return i
@@ -76,14 +76,25 @@ func notStmtBoundary(op Op) bool {
 func numberLines(f *Func) {
 	po := f.Postorder()
 	endlines := make(map[ID]src.XPos)
-	last := uint(0)              // uint follows type of XPos.Line()
-	first := uint(math.MaxInt32) // unsigned, but large valid int when cast
-	note := func(line uint) {
-		if line < first {
-			first = line
+	ranges := make(map[int]linepair)
+	note := func(p src.XPos) {
+		line := uint32(p.Line())
+		i := int(p.Index())
+		lp, found := ranges[i]
+		if !found {
+			lp.first = math.MaxInt32
 		}
-		if line > last {
-			last = line
+		change := false
+		if line < lp.first {
+			lp.first = line
+			change = true
+		}
+		if line > lp.last {
+			lp.last = line
+			change = true
+		}
+		if change {
+			ranges[i] = lp
 		}
 	}
 
@@ -94,12 +105,12 @@ func numberLines(f *Func) {
 		firstPos := src.NoXPos
 		firstPosIndex := -1
 		if b.Pos.IsStmt() != src.PosNotStmt {
-			note(b.Pos.Line())
+			note(b.Pos)
 		}
 		for i := 0; i < len(b.Values); i++ {
 			v := b.Values[i]
 			if v.Pos.IsStmt() != src.PosNotStmt {
-				note(v.Pos.Line())
+				note(v.Pos)
 				// skip ahead to better instruction for this line if possible
 				i = nextGoodStatementIndex(v, i, b)
 				v = b.Values[i]
@@ -151,7 +162,7 @@ func numberLines(f *Func) {
 			if v.Pos.IsStmt() == src.PosNotStmt {
 				continue
 			}
-			note(v.Pos.Line())
+			note(v.Pos)
 			// skip ahead if possible
 			i = nextGoodStatementIndex(v, i, b)
 			v = b.Values[i]
@@ -168,5 +179,5 @@ func numberLines(f *Func) {
 		}
 		endlines[b.ID] = firstPos
 	}
-	f.cachedLineStarts = newBiasedSparseMap(int(first), int(last))
+	f.cachedLineStarts = newXposmap(ranges)
 }

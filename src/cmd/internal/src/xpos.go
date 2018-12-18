@@ -73,6 +73,11 @@ func (p XPos) LineNumber() string {
 	return p.lico.lineNumber()
 }
 
+// Expose this to allow efficient indexing in SSA phase.
+func (p XPos) Index() int32 {
+	return p.index
+}
+
 func (p XPos) LineNumberHTML() string {
 	if !p.IsKnown() {
 		return "?"
