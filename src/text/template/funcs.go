@@ -570,7 +570,7 @@ func HTMLEscaper(args ...interface{}) string {
 
 var (
 	jsLowUni = []byte(`\u00`)
-	hex      = []byte("0123456789ABCDEF")
+	hex      = [...]byte{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'}
 
 	jsBackslash = []byte(`\\`)
 	jsApos      = []byte(`\'`)
@@ -632,7 +632,7 @@ func JSEscapeString(s string) string {
 	if strings.IndexFunc(s, jsIsSpecial) < 0 {
 		return s
 	}
-	var b bytes.Buffer
+	var b strings.Builder
 	JSEscape(&b, []byte(s))
 	return b.String()
 }
