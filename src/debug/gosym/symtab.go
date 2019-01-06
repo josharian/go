@@ -597,6 +597,9 @@ func (t *Table) SymByAddr(addr uint64) *Sym {
 // Go 1.2 and later use a simpler format, documented at golang.org/s/go12symtab.
 
 func (o *Obj) lineFromAline(aline int) (string, int) {
+	if o == nil {
+		return "", 0
+	}
 	type stackEnt struct {
 		path   string
 		start  int
