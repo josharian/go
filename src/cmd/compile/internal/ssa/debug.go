@@ -881,6 +881,9 @@ func (state *debugState) buildLocationLists(blockLocs []*BlockDebug) {
 	for _, b := range state.f.Blocks {
 		state.mergePredecessors(b, blockLocs, prevBlock)
 
+		if blockLocs[b.ID] == nil {
+			continue
+		}
 		if !blockLocs[b.ID].relevant {
 			// Handle any differences among predecessor blocks and previous block (perhaps not a predecessor)
 			for _, varID := range state.changedVars.contents() {

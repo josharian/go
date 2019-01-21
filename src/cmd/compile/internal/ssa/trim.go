@@ -113,11 +113,32 @@ func emptyBlock(b *Block) bool {
 //  - it either is the single predecessor of the successor block or
 //    contains no actual instructions
 func trimmableBlock(b *Block) bool {
-	if b.Kind != BlockPlain || b == b.Func.Entry {
+	if b == b.Func.Entry {
 		return false
 	}
-	s := b.Succs[0].b
-	return s != b && (len(s.Preds) == 1 || emptyBlock(b))
+	switch b.Kind {
+	case BlockDefer, BlockRet, BlockRetJmp, BlockExit:
+		return false
+	case BlockPlain:
+		s := b.Succs[0].b
+		return s != b && (len(s.Preds) == 1 || emptyBlock(b))
+	}
+	if len(b.Preds) != 1 {
+		return false
+	}
+	p := b.Preds[0].b
+	if p.Kind != b.Kind || p.Control != b.Control {
+		// TODO: detect inverted kind?
+		return false
+	}
+	s0, s1 := b.Succs[0].b, b.Succs[1].b
+	if s0 == b || s1 == b {
+		return false
+	}
+	if p.Succs[0].b != b { // TODO: allow b in either position
+		return false
+	}
+	return true
 }
 
 // mergePhi adjusts the number of `v`s arguments to account for merge
