@@ -761,6 +761,9 @@ func prove(f *Func) {
 				}
 				ft.caps[v.Args[0].ID] = v
 				ft.update(b, v, ft.zero, signed, gt|eq)
+			case OpBitLen8:
+				ft.update(b, v, constInt64(0), signed, gt|eq)
+				ft.update(b, v, constInt64(8), signed, lt)
 			}
 		}
 	}
