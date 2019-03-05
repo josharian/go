@@ -146,6 +146,9 @@ func TestIntendedInlining(t *testing.T) {
 		},
 		"math/big": {
 			"bigEndianWord",
+			// Following functions require math_big_pure_go build tag.
+			"addVW",
+			"subVW",
 		},
 	}
 
@@ -189,7 +192,7 @@ func TestIntendedInlining(t *testing.T) {
 		}
 	}
 
-	args := append([]string{"build", "-a", "-gcflags=all=-m -m"}, pkgs...)
+	args := append([]string{"build", "-a", "-gcflags=all=-m -m", "-tags=math_big_pure_go"}, pkgs...)
 	cmd := testenv.CleanCmdEnv(exec.Command(testenv.GoToolPath(t), args...))
 	pr, pw := io.Pipe()
 	cmd.Stdout = pw
