@@ -1405,6 +1405,13 @@ func typecheck1(n *Node, top int) (res *Node) {
 		// any side effects disappear; ignore init
 		setintconst(n, evalunsafe(n))
 
+	case OUNREACHABLE:
+		ok |= ctxStmt
+		if !zeroargs(n, "unsafe.Unreachable") {
+			n.Type = nil
+			return n
+		}
+
 	case OCAP, OLEN:
 		ok |= ctxExpr
 		if !onearg(n, "%v", n.Op) {
@@ -2367,6 +2374,14 @@ func implicitstar(n *Node) *Node {
 	n.SetImplicit(true)
 	n = typecheck(n, ctxExpr)
 	return n
+}
+
+func zeroargs(n *Node, f string) bool {
+	if n.List.Len() != 0 {
+		yyerror("too many arguments to %s: %v", f, n)
+		return false
+	}
+	return true
 }
 
 func onearg(n *Node, f string, args ...interface{}) bool {

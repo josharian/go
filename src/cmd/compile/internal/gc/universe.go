@@ -83,6 +83,7 @@ var unsafeFuncs = [...]struct {
 	{"Alignof", OALIGNOF},
 	{"Offsetof", OOFFSETOF},
 	{"Sizeof", OSIZEOF},
+	{"Unreachable", OUNREACHABLE},
 }
 
 // initUniverse initializes the universe block.

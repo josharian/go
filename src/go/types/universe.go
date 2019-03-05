@@ -130,6 +130,7 @@ const (
 	_Alignof
 	_Offsetof
 	_Sizeof
+	_Unreachable
 
 	// testing support
 	_Assert
@@ -158,9 +159,10 @@ var predeclaredFuncs = [...]struct {
 	_Real:    {"real", 1, false, expression},
 	_Recover: {"recover", 0, false, statement},
 
-	_Alignof:  {"Alignof", 1, false, expression},
-	_Offsetof: {"Offsetof", 1, false, expression},
-	_Sizeof:   {"Sizeof", 1, false, expression},
+	_Alignof:     {"Alignof", 1, false, expression},
+	_Offsetof:    {"Offsetof", 1, false, expression},
+	_Sizeof:      {"Sizeof", 1, false, expression},
+	_Unreachable: {"Unreachable", 0, false, statement},
 
 	_Assert: {"assert", 1, false, statement},
 	_Trace:  {"trace", 0, true, statement},

@@ -97,6 +97,8 @@ var builtinCalls = []struct {
 	{"Sizeof", `_ = unsafe.Sizeof(0)`, `invalid type`},                 // constant
 	{"Sizeof", `var x struct{}; _ = unsafe.Sizeof(x)`, `invalid type`}, // constant
 
+	{"Unreachable", `unsafe.Unreachable()`, `invalid type`},
+
 	{"assert", `assert(true)`, `invalid type`},                                    // constant
 	{"assert", `type B bool; const pred B = 1 < 2; assert(pred)`, `invalid type`}, // constant
 

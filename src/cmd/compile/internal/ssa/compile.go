@@ -393,6 +393,7 @@ var passes = [...]pass{
 	{name: "phiopt", fn: phiopt},
 	{name: "nilcheckelim", fn: nilcheckelim},
 	{name: "prove", fn: prove},
+	{name: "unreachable", fn: unreachable}, // TODO: is this in the right place? TODO: flag to disable?
 	{name: "fuse plain", fn: fusePlain},
 	{name: "decompose builtin", fn: decomposeBuiltIn, required: true},
 	{name: "softfloat", fn: softfloat, required: true},
@@ -447,6 +448,8 @@ var passOrder = [...]constraint{
 	{"generic cse", "prove"},
 	// deadcode after prove to eliminate all new dead blocks.
 	{"prove", "generic deadcode"},
+	// unreachable after prove so that prove can use unreachability information
+	{"prove", "unreachable"},
 	// common-subexpression before dead-store elim, so that we recognize
 	// when two address expressions are the same.
 	{"generic cse", "dse"},
