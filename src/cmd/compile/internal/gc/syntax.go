@@ -728,6 +728,8 @@ const (
 	OSWITCH // switch Ninit; Left { List } (List is a list of OXCASE or OCASE)
 	OTYPESW // Left = Right.(type) (appears as .Left of OSWITCH)
 
+	OUNREACHABLE // unsafe.Unreachable()
+
 	// types
 	OTCHAN   // chan int
 	OTMAP    // map[string]int
