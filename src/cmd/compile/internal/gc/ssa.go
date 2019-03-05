@@ -804,6 +804,12 @@ func (s *state) stmt(n *Node) {
 				// go through SSA.
 			}
 		}
+	case OUNREACHABLE:
+		m := s.mem()
+		b := s.endBlock()
+		b.Kind = ssa.BlockExit
+		b.Aux = "unreachable" // TODO: new block kind instead of this hack
+		b.SetControl(m)
 	case ODEFER:
 		s.call(n.Left, callDefer)
 	case OGO:
