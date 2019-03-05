@@ -586,6 +586,9 @@ func (check *Checker) builtin(x *operand, call *ast.CallExpr, id builtinId) (_ b
 		x.typ = Typ[Uintptr]
 		// result is constant - no need to record signature
 
+	case _Unreachable:
+		x.mode = novalue
+
 	case _Sizeof:
 		// unsafe.Sizeof(x T) uintptr
 		check.assignment(x, nil, "argument to unsafe.Sizeof")

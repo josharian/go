@@ -122,12 +122,12 @@ func walkstmt(n *Node) *Node {
 
 	switch n.Op {
 	default:
-		if n.Op == ONAME {
-			yyerror("%v is not a top level statement", n.Sym)
-		} else {
-			yyerror("%v is not a top level statement", n.Op)
-		}
 		Dump("nottop", n)
+		if n.Op == ONAME {
+			Fatalf("%v is not a top level statement", n.Sym)
+		} else {
+			Fatalf("%v is not a top level statement", n.Op)
+		}
 
 	case OAS,
 		OASOP,
@@ -187,7 +187,8 @@ func walkstmt(n *Node) *Node {
 		OCHECKNIL,
 		OVARDEF,
 		OVARKILL,
-		OVARLIVE:
+		OVARLIVE,
+		OUNREACHABLE:
 		break
 
 	case ODCL:
