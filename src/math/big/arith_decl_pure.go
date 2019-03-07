@@ -15,7 +15,7 @@ func divWW(x1, x0, y Word) (q, r Word) {
 }
 
 func addVV(z, x, y []Word) (c Word) {
-	return addVV_g(z, x, y)
+	return addVV_g_unrolled(z, x, y)
 }
 
 func subVV(z, x, y []Word) (c Word) {
