@@ -69,7 +69,58 @@ func divWW_g(u1, u0, v Word) (q, r Word) {
 // The resulting carry c is either 0 or 1.
 func addVV_g(z, x, y []Word) (c Word) {
 	// The comment near the top of this file discusses this for loop condition.
-	for i := 0; i < len(z) && i < len(x) && i < len(y); i++ {
+	for i := 0; i < len(z); i++ {
+		if i >= len(x) || i >= len(y) {
+			unsafeUnreachable()
+		}
+		zi, cc := bits.Add(uint(x[i]), uint(y[i]), uint(c))
+		z[i] = Word(zi)
+		c = Word(cc)
+	}
+	return
+}
+
+// The resulting carry c is either 0 or 1.
+func addVV_g_unrolled(z, x, y []Word) (c Word) {
+	// The comment near the top of this file discusses this for loop condition.
+	for i := 0; i < len(z)-4; {
+		if i < 0 || i >= len(x) || i >= len(y) || i >= len(z) {
+			unsafeUnreachable()
+		}
+		zi, cc := bits.Add(uint(x[i]), uint(y[i]), uint(c))
+		z[i] = Word(zi)
+		c = Word(cc)
+		i++
+
+		if i < 0 || i >= len(x) || i >= len(y) || i >= len(z) {
+			unsafeUnreachable()
+		}
+		zi, cc = bits.Add(uint(x[i]), uint(y[i]), uint(c))
+		z[i] = Word(zi)
+		c = Word(cc)
+		i++
+
+		if i < 0 || i >= len(x) || i >= len(y) || i >= len(z) {
+			unsafeUnreachable()
+		}
+		zi, cc = bits.Add(uint(x[i]), uint(y[i]), uint(c))
+		z[i] = Word(zi)
+		c = Word(cc)
+		i++
+
+		if i < 0 || i >= len(x) || i >= len(y) || i >= len(z) {
+			unsafeUnreachable()
+		}
+		zi, cc = bits.Add(uint(x[i]), uint(y[i]), uint(c))
+		z[i] = Word(zi)
+		c = Word(cc)
+		i++
+	}
+
+	for i := 0; i < len(z); i++ {
+		if i >= len(x) || i >= len(y) {
+			unsafeUnreachable()
+		}
 		zi, cc := bits.Add(uint(x[i]), uint(y[i]), uint(c))
 		z[i] = Word(zi)
 		c = Word(cc)
