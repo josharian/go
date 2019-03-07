@@ -243,6 +243,12 @@ func (v *Value) SetArgs2(a *Value, b *Value) {
 	v.AddArg(a)
 	v.AddArg(b)
 }
+func (v *Value) SetArgs3(a, b, c *Value) {
+	v.resetArgs()
+	v.AddArg(a)
+	v.AddArg(b)
+	v.AddArg(c)
+}
 
 func (v *Value) resetArgs() {
 	for _, a := range v.Args {

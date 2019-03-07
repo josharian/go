@@ -4,6 +4,8 @@
 
 package ssa
 
+import "fmt"
+
 // When breaking up a combined load-compare to separated load and compare operations,
 // opLoad specifies the load operation, and opCmp specifies the compare operation.
 type typeCmdLoadMap struct {
@@ -26,6 +28,8 @@ var opCmpLoadMap = map[Op]typeCmdLoadMap{
 	Op386CMPLconstload:   {Op386MOVLload, Op386CMPLconst},
 	Op386CMPWconstload:   {Op386MOVWload, Op386CMPWconst},
 	Op386CMPBconstload:   {Op386MOVBload, Op386CMPBconst},
+
+	OpAMD64ADCQload: {OpAMD64MOVQload, OpAMD64ADCQ},
 }
 
 // flagalloc allocates the flag register among all the flag-generating
@@ -83,6 +87,8 @@ func flagalloc(f *Func) {
 		}
 	}
 
+	debug := f.Name == "addVV_g_unrolled"
+
 	// Compute which flags values will need to be spilled.
 	spill := map[ID]bool{}
 	for _, b := range f.Blocks {
@@ -91,21 +97,39 @@ func flagalloc(f *Func) {
 			flag = end[b.Preds[0].b.ID]
 		}
 		for _, v := range b.Values {
+			if debug {
+				fmt.Println("consider", v.LongString())
+			}
 			for _, a := range v.Args {
 				if !a.Type.IsFlags() {
+					if debug {
+						fmt.Println("\t arg %v is not flags", a)
+					}
 					continue
 				}
 				if a == flag {
+					if debug {
+						fmt.Println("\t arg %v == flag", a)
+					}
 					continue
 				}
 				// a will need to be restored here.
+				if debug {
+					fmt.Println("\t need to spill arg %v", a.LongString())
+				}
 				spill[a.ID] = true
 				flag = a
 			}
 			if v.clobbersFlags() {
+				if debug {
+					fmt.Println("\t clobbers flags")
+				}
 				flag = nil
 			}
 			if v.Type.IsFlags() {
+				if debug {
+					fmt.Println("\t is flags")
+				}
 				flag = v
 			}
 		}
@@ -143,66 +167,17 @@ func flagalloc(f *Func) {
 			// If v will be spilled, and v uses memory, then we must split it
 			// into a load + a flag generator.
 			// TODO: figure out how to do this without arch-dependent code.
-			if spill[v.ID] && v.MemoryArg() != nil {
-				switch v.Op {
-				case OpAMD64CMPQload:
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt64, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = 0
-					v.Aux = nil
-					v.SetArgs2(load, v.Args[1])
-				case OpAMD64CMPLload, Op386CMPLload:
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt32, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = 0
-					v.Aux = nil
-					v.SetArgs2(load, v.Args[1])
-				case OpAMD64CMPWload, Op386CMPWload:
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt16, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = 0
-					v.Aux = nil
-					v.SetArgs2(load, v.Args[1])
-				case OpAMD64CMPBload, Op386CMPBload:
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt8, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = 0
-					v.Aux = nil
-					v.SetArgs2(load, v.Args[1])
-
-				case OpAMD64CMPQconstload:
-					vo := v.AuxValAndOff()
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt64, vo.Off(), v.Aux, v.Args[0], v.Args[1])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = vo.Val()
-					v.Aux = nil
-					v.SetArgs1(load)
-				case OpAMD64CMPLconstload, Op386CMPLconstload:
-					vo := v.AuxValAndOff()
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt32, vo.Off(), v.Aux, v.Args[0], v.Args[1])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = vo.Val()
-					v.Aux = nil
-					v.SetArgs1(load)
-				case OpAMD64CMPWconstload, Op386CMPWconstload:
-					vo := v.AuxValAndOff()
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt16, vo.Off(), v.Aux, v.Args[0], v.Args[1])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = vo.Val()
-					v.Aux = nil
-					v.SetArgs1(load)
-				case OpAMD64CMPBconstload, Op386CMPBconstload:
-					vo := v.AuxValAndOff()
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt8, vo.Off(), v.Aux, v.Args[0], v.Args[1])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = vo.Val()
-					v.Aux = nil
-					v.SetArgs1(load)
-
-				default:
-					f.Fatalf("can't split flag generator: %s", v.LongString())
+			if debug {
+				fmt.Println("PRE", v.LongString(), "??", spill[v.ID])
+			}
+			if spill[v.ID] && (v.MemoryArg() != nil || (v.Op == OpSelect1 && v.Args[0].MemoryArg() != nil)) {
+				if debug {
+					fmt.Println("splitFlagLoad 1", v.LongString(), v.Args[0].LongString())
 				}
-
+				splitFlagLoad(b, v)
+				if debug {
+					fmt.Println("splitFlagLoad 2", v.LongString(), v.Args[0].LongString())
+				}
 			}
 
 			// Make sure any flag arg of v is in the flags register.
@@ -213,6 +188,9 @@ func flagalloc(f *Func) {
 				}
 				if a == flag {
 					continue
+				}
+				if debug {
+					fmt.Println("RECALC", a.LongString(), "FOR", v.LongString())
 				}
 				// Recalculate a
 				c := copyFlags(a, b)
@@ -264,6 +242,9 @@ func (v *Value) clobbersFlags() bool {
 		// so we must consider flags clobbered by the tuple-generating instruction.
 		return true
 	}
+	if v.Op == OpSelect0 || v.Op == OpSelect1 {
+		return v.Args[0].clobbersFlags()
+	}
 	return false
 }
 
@@ -281,4 +262,76 @@ func copyFlags(v *Value, b *Block) *Value {
 		c.SetArg(i, a)
 	}
 	return c
+}
+
+func splitFlagLoad(b *Block, v *Value) {
+	f := b.Func
+	switch v.Op {
+	case OpAMD64CMPQload:
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt64, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = 0
+		v.Aux = nil
+		v.SetArgs2(load, v.Args[1])
+	case OpAMD64CMPLload, Op386CMPLload:
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt32, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = 0
+		v.Aux = nil
+		v.SetArgs2(load, v.Args[1])
+	case OpAMD64CMPWload, Op386CMPWload:
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt16, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = 0
+		v.Aux = nil
+		v.SetArgs2(load, v.Args[1])
+	case OpAMD64CMPBload, Op386CMPBload:
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt8, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = 0
+		v.Aux = nil
+		v.SetArgs2(load, v.Args[1])
+
+	case OpAMD64CMPQconstload:
+		vo := v.AuxValAndOff()
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt64, vo.Off(), v.Aux, v.Args[0], v.Args[1])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = vo.Val()
+		v.Aux = nil
+		v.SetArgs1(load)
+	case OpAMD64CMPLconstload, Op386CMPLconstload:
+		vo := v.AuxValAndOff()
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt32, vo.Off(), v.Aux, v.Args[0], v.Args[1])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = vo.Val()
+		v.Aux = nil
+		v.SetArgs1(load)
+	case OpAMD64CMPWconstload, Op386CMPWconstload:
+		vo := v.AuxValAndOff()
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt16, vo.Off(), v.Aux, v.Args[0], v.Args[1])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = vo.Val()
+		v.Aux = nil
+		v.SetArgs1(load)
+	case OpAMD64CMPBconstload, Op386CMPBconstload:
+		vo := v.AuxValAndOff()
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt8, vo.Off(), v.Aux, v.Args[0], v.Args[1])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = vo.Val()
+		v.Aux = nil
+		v.SetArgs1(load)
+	case OpAMD64ADCQload:
+		fmt.Println("SPLIT ADCload")
+		load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt64, v.AuxInt, v.Aux, v.Args[0], v.Args[3])
+		v.Op = opCmpLoadMap[v.Op].opCmp
+		v.AuxInt = 0
+		v.Aux = nil
+		v.SetArgs3(load, v.Args[1], v.Args[2])
+	case OpSelect1:
+		fmt.Println("SPLIT OpSelect1")
+		splitFlagLoad(b, v.Args[0])
+	default:
+		f.Fatalf("can't split flag generator: %s", v.LongString())
+	}
+
 }

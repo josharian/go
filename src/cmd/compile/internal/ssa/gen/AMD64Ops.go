@@ -120,11 +120,12 @@ func init() {
 		gp21flags      = regInfo{inputs: []regMask{gp, gp}, outputs: []regMask{gp, 0}}
 		gp2flags1flags = regInfo{inputs: []regMask{gp, gp, 0}, outputs: []regMask{gp, 0}}
 
-		gp2flags     = regInfo{inputs: []regMask{gpsp, gpsp}}
-		gp1flags     = regInfo{inputs: []regMask{gpsp}}
-		gp0flagsLoad = regInfo{inputs: []regMask{gpspsb, 0}}
-		gp1flagsLoad = regInfo{inputs: []regMask{gpspsb, gpsp, 0}}
-		flagsgp      = regInfo{inputs: nil, outputs: gponly}
+		gp2flags           = regInfo{inputs: []regMask{gpsp, gpsp}}
+		gp1flags           = regInfo{inputs: []regMask{gpsp}}
+		gp0flagsLoad       = regInfo{inputs: []regMask{gpspsb, 0}}
+		gp1flagsLoad       = regInfo{inputs: []regMask{gpspsb, gpsp, 0}}
+		gp2flags1flagsLoad = regInfo{inputs: []regMask{gpspsb, gp, 0, 0}, outputs: []regMask{gp, 0}}
+		flagsgp            = regInfo{inputs: nil, outputs: gponly}
 
 		gp11flags      = regInfo{inputs: []regMask{gp}, outputs: []regMask{gp, 0}}
 		gp1flags1flags = regInfo{inputs: []regMask{gp, 0}, outputs: []regMask{gp, 0}}
@@ -233,12 +234,14 @@ func init() {
 		{name: "DIVWU", argLength: 2, reg: gp11div, typ: "(UInt16,UInt16)", asm: "DIVW", clobberFlags: true}, // [arg0 / arg1, arg0 % arg1]
 
 		{name: "NEGLflags", argLength: 1, reg: gp11flags, typ: "(UInt32,Flags)", asm: "NEGL", resultInArg0: true}, // -arg0, flags set for 0-arg0.
-		// The following 4 add opcodes return the low 64 bits of the sum in the first result and
+		// The following ADCQ/ADDQ opcodes return the low 64 bits of the sum in the first result and
 		// the carry (the 65th bit) in the carry flag.
-		{name: "ADDQcarry", argLength: 2, reg: gp21flags, typ: "(UInt64,Flags)", asm: "ADDQ", commutative: true, resultInArg0: true}, // r = arg0+arg1
-		{name: "ADCQ", argLength: 3, reg: gp2flags1flags, typ: "(UInt64,Flags)", asm: "ADCQ", commutative: true, resultInArg0: true}, // r = arg0+arg1+carry(arg2)
-		{name: "ADDQconstcarry", argLength: 1, reg: gp11flags, typ: "(UInt64,Flags)", asm: "ADDQ", aux: "Int32", resultInArg0: true}, // r = arg0+auxint
-		{name: "ADCQconst", argLength: 2, reg: gp1flags1flags, typ: "(UInt64,Flags)", asm: "ADCQ", aux: "Int32", resultInArg0: true}, // r = arg0+auxint+carry(arg1)
+		{name: "Add64carryload", argLength: 4, reg: gp2flags1flagsLoad, typ: "(UInt64,Flags)", aux: "SymOff", symEffect: "Read", asm: "ADCQ", faultOnNilArg0: true}, // r = *(arg0+auxint+aux)+arg1+carry(arg2), arg3 is mem
+		{name: "ADDQcarry", argLength: 2, reg: gp21flags, typ: "(UInt64,Flags)", asm: "ADDQ", commutative: true, resultInArg0: true},                                // r = arg0+arg1
+		{name: "ADCQ", argLength: 3, reg: gp2flags1flags, typ: "(UInt64,Flags)", asm: "ADCQ", commutative: true, resultInArg0: true},                                // r = arg0+arg1+carry(arg2)
+		{name: "ADDQconstcarry", argLength: 1, reg: gp11flags, typ: "(UInt64,Flags)", asm: "ADDQ", aux: "Int32", resultInArg0: true},                                // r = arg0+auxint
+		{name: "ADCQconst", argLength: 2, reg: gp1flags1flags, typ: "(UInt64,Flags)", asm: "ADCQ", aux: "Int32", resultInArg0: true},                                // r = arg0+auxint+carry(arg1)
+		{name: "ADCQload", argLength: 4, reg: gp2flags1flagsLoad, typ: "(UInt64,Flags)", aux: "SymOff", symEffect: "Read", asm: "ADCQ", faultOnNilArg0: true},       // r = *(arg0+auxint+aux)+arg1+carry(arg2), arg3 is mem
 
 		// The following 4 add opcodes return the low 64 bits of the difference in the first result and
 		// the borrow (if the result is negative) in the carry flag.

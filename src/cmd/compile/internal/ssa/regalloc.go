@@ -510,9 +510,12 @@ func (s *regAllocState) allocValToReg(v *Value, mask regMask, nospill bool, pos 
 		c = v.copyIntoWithXPos(s.curBlock, pos)
 	} else {
 		// Load v from its spill location.
+		if s.f.pass.debug > logSpills {
+			s.f.Warnl(vi.spill.Pos, "make spill in %v for %v", s.curBlock, v)
+		}
 		spill := s.makeSpill(v, s.curBlock)
 		if s.f.pass.debug > logSpills {
-			s.f.Warnl(vi.spill.Pos, "load spill for %v from %v", v, spill)
+			s.f.Warnl(vi.spill.Pos, "load spill for %v from %v (%v)", v, spill, v.LongString())
 		}
 		c = s.curBlock.NewValue1(pos, OpLoadReg, v.Type, spill)
 	}

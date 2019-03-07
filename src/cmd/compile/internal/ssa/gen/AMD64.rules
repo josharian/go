@@ -29,6 +29,8 @@
 (Div8u x y) -> (Select0 (DIVWU (ZeroExt8to16 x) (ZeroExt8to16 y)))
 (Div(32|64)F x y) -> (DIVS(S|D) x y)
 
+(Add64carry l:(MOVQload {sym} [off] ptr mem) x c) && canMergeLoad(v, l) && clobber(l) -> @l.Block (Add64carryload {sym} [off] ptr x c mem)
+
 (Select0 (Add64carry x y c)) ->
 	(Select0 <typ.UInt64> (ADCQ x y (Select1 <types.TypeFlags> (NEGLflags c))))
 (Select1 (Add64carry x y c)) ->
@@ -37,12 +39,18 @@
 	(Select0 <typ.UInt64> (SBBQ x y (Select1 <types.TypeFlags> (NEGLflags c))))
 (Select1 (Sub64borrow x y c)) ->
 	(NEGQ <typ.UInt64> (SBBQcarrymask <typ.UInt64> (Select1 <types.TypeFlags> (SBBQ x y (Select1 <types.TypeFlags> (NEGLflags c))))))
+(Select0 (Add64carryload {sym} [ptr] x y c m)) ->
+	(Select0 <typ.UInt64> (ADCQload {sym} [ptr] x y (Select1 <types.TypeFlags> (NEGLflags c)) m))
+(Select1 (Add64carryload {sym} [ptr] x y c m)) ->
+	(NEGQ <typ.UInt64> (SBBQcarrymask <typ.UInt64> (Select1 <types.TypeFlags> (ADCQload {sym} [ptr] x y (Select1 <types.TypeFlags> (NEGLflags c)) m))))
 
 // Optimize ADCQ and friends
 (ADCQ x (MOVQconst [c]) carry) && is32Bit(c) -> (ADCQconst x [c] carry)
 (ADCQ x y (FlagEQ)) -> (ADDQcarry x y)
 (ADCQconst x [c] (FlagEQ)) -> (ADDQconstcarry x [c])
 (ADDQcarry x (MOVQconst [c])) && is32Bit(c) -> (ADDQconstcarry x [c])
+//(ADCQ l:(MOVQload {sym} [off] ptr mem) x c) && canMergeLoad(v, l) && clobber(l) -> @l.Block (ADCQload {sym} [off] ptr x c mem)
+
 (SBBQ x (MOVQconst [c]) borrow) && is32Bit(c) -> (SBBQconst x [c] borrow)
 (SBBQ x y (FlagEQ)) -> (SUBQborrow x y)
 (SBBQconst x [c] (FlagEQ)) -> (SUBQconstborrow x [c])

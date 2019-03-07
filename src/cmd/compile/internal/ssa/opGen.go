@@ -524,10 +524,12 @@ const (
 	OpAMD64DIVLU
 	OpAMD64DIVWU
 	OpAMD64NEGLflags
+	OpAMD64Add64carryload
 	OpAMD64ADDQcarry
 	OpAMD64ADCQ
 	OpAMD64ADDQconstcarry
 	OpAMD64ADCQconst
+	OpAMD64ADCQload
 	OpAMD64SUBQborrow
 	OpAMD64SBBQ
 	OpAMD64SUBQconstborrow
@@ -6571,6 +6573,24 @@ var opcodeTable = [...]opInfo{
 		},
 	},
 	{
+		name:           "Add64carryload",
+		auxType:        auxSymOff,
+		argLen:         4,
+		faultOnNilArg0: true,
+		symEffect:      SymRead,
+		asm:            x86.AADCQ,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{1, 65519},      // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{0, 4295032831}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15 SB
+			},
+			outputs: []outputInfo{
+				{1, 0},
+				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
 		name:         "ADDQcarry",
 		argLen:       2,
 		commutative:  true,
@@ -6629,6 +6649,24 @@ var opcodeTable = [...]opInfo{
 		reg: regInfo{
 			inputs: []inputInfo{
 				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+			outputs: []outputInfo{
+				{1, 0},
+				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
+		name:           "ADCQload",
+		auxType:        auxSymOff,
+		argLen:         4,
+		faultOnNilArg0: true,
+		symEffect:      SymRead,
+		asm:            x86.AADCQ,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{1, 65519},      // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{0, 4295032831}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15 SB
 			},
 			outputs: []outputInfo{
 				{1, 0},

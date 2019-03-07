@@ -609,6 +609,8 @@ func rewriteValueAMD64(v *Value) bool {
 		return rewriteValueAMD64_OpAdd64_0(v)
 	case OpAdd64F:
 		return rewriteValueAMD64_OpAdd64F_0(v)
+	case OpAdd64carry:
+		return rewriteValueAMD64_OpAdd64carry_0(v)
 	case OpAdd8:
 		return rewriteValueAMD64_OpAdd8_0(v)
 	case OpAddPtr:
@@ -57897,6 +57899,75 @@ func rewriteValueAMD64_OpAdd64F_0(v *Value) bool {
 		return true
 	}
 }
+func rewriteValueAMD64_OpAdd64carry_0(v *Value) bool {
+	b := v.Block
+	_ = b
+	typ := &b.Func.Config.Types
+	_ = typ
+	// match: (Add64carry l:(MOVQload {sym} [off] ptr mem) x c)
+	// cond: canMergeLoad(v, l) && clobber(l)
+	// result: @l.Block (Add64carryload {sym} [off] ptr x c mem)
+	for {
+		_ = v.Args[2]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQload {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[1]
+		ptr := l.Args[0]
+		mem := l.Args[1]
+		x := v.Args[1]
+		c := v.Args[2]
+		if !(canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		b = l.Block
+		v0 := b.NewValue0(l.Pos, OpAMD64Add64carryload, types.NewTuple(typ.UInt64, types.TypeFlags))
+		v.reset(OpCopy)
+		v.AddArg(v0)
+		v0.AuxInt = off
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(x)
+		v0.AddArg(c)
+		v0.AddArg(mem)
+		return true
+	}
+	// match: (Add64carry x l:(MOVQload {sym} [off] ptr mem) c)
+	// cond: canMergeLoad(v, l) && clobber(l)
+	// result: @l.Block (Add64carryload {sym} [off] ptr x c mem)
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQload {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[1]
+		ptr := l.Args[0]
+		mem := l.Args[1]
+		c := v.Args[2]
+		if !(canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		b = l.Block
+		v0 := b.NewValue0(l.Pos, OpAMD64Add64carryload, types.NewTuple(typ.UInt64, types.TypeFlags))
+		v.reset(OpCopy)
+		v.AddArg(v0)
+		v0.AuxInt = off
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(x)
+		v0.AddArg(c)
+		v0.AddArg(mem)
+		return true
+	}
+	return false
+}
 func rewriteValueAMD64_OpAdd8_0(v *Value) bool {
 	// match: (Add8 x y)
 	// cond:
@@ -65200,6 +65271,37 @@ func rewriteValueAMD64_OpSelect0_0(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
+	// match: (Select0 (Add64carryload {sym} [ptr] x y c m))
+	// cond:
+	// result: (Select0 <typ.UInt64> (ADCQload {sym} [ptr] x y (Select1 <types.TypeFlags> (NEGLflags c)) m))
+	for {
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64Add64carryload {
+			break
+		}
+		ptr := v_0.AuxInt
+		sym := v_0.Aux
+		_ = v_0.Args[3]
+		x := v_0.Args[0]
+		y := v_0.Args[1]
+		c := v_0.Args[2]
+		m := v_0.Args[3]
+		v.reset(OpSelect0)
+		v.Type = typ.UInt64
+		v0 := b.NewValue0(v_0.Pos, OpAMD64ADCQload, types.NewTuple(typ.UInt64, types.TypeFlags))
+		v0.AuxInt = ptr
+		v0.Aux = sym
+		v0.AddArg(x)
+		v0.AddArg(y)
+		v1 := b.NewValue0(v_0.Pos, OpSelect1, types.TypeFlags)
+		v2 := b.NewValue0(v_0.Pos, OpAMD64NEGLflags, types.NewTuple(typ.UInt32, types.TypeFlags))
+		v2.AddArg(c)
+		v1.AddArg(v2)
+		v0.AddArg(v1)
+		v0.AddArg(m)
+		v.AddArg(v0)
+		return true
+	}
 	// match: (Select0 <t> (AddTupleFirst32 val tuple))
 	// cond:
 	// result: (ADDL val (Select0 <t> tuple))
@@ -65338,6 +65440,41 @@ func rewriteValueAMD64_OpSelect1_0(v *Value) bool {
 		v4.AddArg(c)
 		v3.AddArg(v4)
 		v2.AddArg(v3)
+		v1.AddArg(v2)
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (Select1 (Add64carryload {sym} [ptr] x y c m))
+	// cond:
+	// result: (NEGQ <typ.UInt64> (SBBQcarrymask <typ.UInt64> (Select1 <types.TypeFlags> (ADCQload {sym} [ptr] x y (Select1 <types.TypeFlags> (NEGLflags c)) m))))
+	for {
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64Add64carryload {
+			break
+		}
+		ptr := v_0.AuxInt
+		sym := v_0.Aux
+		_ = v_0.Args[3]
+		x := v_0.Args[0]
+		y := v_0.Args[1]
+		c := v_0.Args[2]
+		m := v_0.Args[3]
+		v.reset(OpAMD64NEGQ)
+		v.Type = typ.UInt64
+		v0 := b.NewValue0(v_0.Pos, OpAMD64SBBQcarrymask, typ.UInt64)
+		v1 := b.NewValue0(v_0.Pos, OpSelect1, types.TypeFlags)
+		v2 := b.NewValue0(v_0.Pos, OpAMD64ADCQload, types.NewTuple(typ.UInt64, types.TypeFlags))
+		v2.AuxInt = ptr
+		v2.Aux = sym
+		v2.AddArg(x)
+		v2.AddArg(y)
+		v3 := b.NewValue0(v_0.Pos, OpSelect1, types.TypeFlags)
+		v4 := b.NewValue0(v_0.Pos, OpAMD64NEGLflags, types.NewTuple(typ.UInt32, types.TypeFlags))
+		v4.AddArg(c)
+		v3.AddArg(v4)
+		v2.AddArg(v3)
+		v2.AddArg(m)
 		v1.AddArg(v2)
 		v0.AddArg(v1)
 		v.AddArg(v0)
