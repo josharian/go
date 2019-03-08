@@ -1089,10 +1089,6 @@
 	((ADD|SUB|AND|OR|XOR)Qload [off1+off2] {sym} val base mem)
 ((ADD|SUB|AND|OR|XOR)Lload [off1] {sym} val (ADDQconst [off2] base) mem) && is32Bit(off1+off2) ->
 	((ADD|SUB|AND|OR|XOR)Lload [off1+off2] {sym} val base mem)
-(CMP(Q|L|W|B)load [off1] {sym} (ADDQconst [off2] base) val mem) && is32Bit(off1+off2) ->
-	(CMP(Q|L|W|B)load [off1+off2] {sym} base val mem)
-(CMP(Q|L|W|B)constload [valoff1] {sym} (ADDQconst [off2] base) mem) && ValAndOff(valoff1).canAdd(off2) ->
-	(CMP(Q|L|W|B)constload [ValAndOff(valoff1).add(off2)] {sym} base mem)
 
 ((ADD|SUB|MUL|DIV)SSload [off1] {sym} val (ADDQconst [off2] base) mem) && is32Bit(off1+off2) ->
 	((ADD|SUB|MUL|DIV)SSload [off1+off2] {sym} val base mem)
@@ -1140,12 +1136,6 @@
 ((ADD|SUB|AND|OR|XOR)Lload [off1] {sym1} val (LEAQ [off2] {sym2} base) mem)
 	&& is32Bit(off1+off2) && canMergeSym(sym1, sym2) ->
 	((ADD|SUB|AND|OR|XOR)Lload [off1+off2] {mergeSym(sym1,sym2)} val base mem)
-(CMP(Q|L|W|B)load [off1] {sym1} (LEAQ [off2] {sym2} base) val mem)
-	&& is32Bit(off1+off2) && canMergeSym(sym1, sym2) ->
-	(CMP(Q|L|W|B)load [off1+off2] {mergeSym(sym1,sym2)} base val mem)
-(CMP(Q|L|W|B)constload [valoff1] {sym1} (LEAQ [off2] {sym2} base) mem)
-	&& ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) ->
-	(CMP(Q|L|W|B)constload [ValAndOff(valoff1).add(off2)] {mergeSym(sym1,sym2)} base mem)
 
 ((ADD|SUB|MUL|DIV)SSload [off1] {sym1} val (LEAQ [off2] {sym2} base) mem)
 	&& is32Bit(off1+off2) && canMergeSym(sym1, sym2) ->
@@ -1509,10 +1499,10 @@
 (TESTB (MOVLconst [c]) x) -> (TESTBconst [c] x)
 
 // TEST %reg,%reg is shorter than CMP
-(CMPQconst x [0]) -> (TESTQ x x)
-(CMPLconst x [0]) -> (TESTL x x)
-(CMPWconst x [0]) -> (TESTW x x)
-(CMPBconst x [0]) -> (TESTB x x)
+(CMPQconst x [0]) && x.Op != OpAMD64MOVQload -> (TESTQ x x)
+(CMPLconst x [0]) && x.Op != OpAMD64MOVLload -> (TESTL x x)
+(CMPWconst x [0]) && x.Op != OpAMD64MOVWload -> (TESTW x x)
+(CMPBconst x [0]) && x.Op != OpAMD64MOVBload -> (TESTB x x)
 (TESTQconst [-1] x) && x.Op != OpAMD64MOVQconst -> (TESTQ x x)
 (TESTLconst [-1] x) && x.Op != OpAMD64MOVLconst -> (TESTL x x)
 (TESTWconst [-1] x) && x.Op != OpAMD64MOVLconst -> (TESTW x x)
@@ -2521,28 +2511,17 @@
 (HMUL(Q|L)  x y) && !x.rematerializeable() && y.rematerializeable() -> (HMUL(Q|L)  y x)
 (HMUL(Q|L)U x y) && !x.rematerializeable() && y.rematerializeable() -> (HMUL(Q|L)U y x)
 
-// Fold loads into compares
-// Note: these may be undone by the flagalloc pass.
-(CMP(Q|L|W|B) l:(MOV(Q|L|W|B)load {sym} [off] ptr mem) x) && canMergeLoad(v, l) && clobber(l) -> (CMP(Q|L|W|B)load {sym} [off] ptr x mem)
-(CMP(Q|L|W|B) x l:(MOV(Q|L|W|B)load {sym} [off] ptr mem)) && canMergeLoad(v, l) && clobber(l) -> (InvertFlags (CMP(Q|L|W|B)load {sym} [off] ptr x mem))
+(CMP(Q|L|W|B)const l:(MOV(Q|L|W|B)load [off] _ _) [c])
+    && l.Uses == 1
+    && validValAndOff(c, off)
+    && l.Block != v.Block ->
+  @l.Block (CMP(Q|L|W|B)const l [c])
 
-(CMP(Q|L|W|B)const l:(MOV(Q|L|W|B)load {sym} [off] ptr mem) [c])
-	&& l.Uses == 1
-	&& validValAndOff(c, off)
-	&& clobber(l) ->
-  @l.Block (CMP(Q|L|W|B)constload {sym} [makeValAndOff(c,off)] ptr mem)
-
-(CMPQload {sym} [off] ptr (MOVQconst [c]) mem) && validValAndOff(c,off) -> (CMPQconstload {sym} [makeValAndOff(c,off)] ptr mem)
-(CMPLload {sym} [off] ptr (MOVLconst [c]) mem) && validValAndOff(c,off) -> (CMPLconstload {sym} [makeValAndOff(c,off)] ptr mem)
-(CMPWload {sym} [off] ptr (MOVLconst [c]) mem) && validValAndOff(int64(int16(c)),off) -> (CMPWconstload {sym} [makeValAndOff(int64(int16(c)),off)] ptr mem)
-(CMPBload {sym} [off] ptr (MOVLconst [c]) mem) && validValAndOff(int64(int8(c)),off) -> (CMPBconstload {sym} [makeValAndOff(int64(int8(c)),off)] ptr mem)
-
-(TEST(Q|L|W|B)  l:(MOV(Q|L|W|B)load {sym} [off] ptr mem) l2)
+(TEST(Q|L|W|B)  l:(MOV(Q|L|W|B)load [off] _ _) l2)
         && l == l2
 	&& l.Uses == 2
-	&& validValAndOff(0,off)
-	&& clobber(l) ->
-  @l.Block (CMP(Q|L|W|B)constload {sym} [makeValAndOff(0,off)] ptr mem)
+	&& validValAndOff(0,off) ->
+  @l.Block (CMP(Q|L|W|B)const [0] l)
 
 (MOVBload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVLconst [int64(read8(sym, off))])
 (MOVWload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVLconst [int64(read16(sym, off, config.BigEndian))])
