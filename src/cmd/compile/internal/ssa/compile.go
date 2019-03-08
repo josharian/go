@@ -423,6 +423,7 @@ var passes = [...]pass{
 	{name: "schedule", fn: schedule, required: true}, // schedule values
 	{name: "late nilcheck", fn: nilcheckelim2},
 	{name: "flagalloc", fn: flagalloc, required: true}, // allocate flags register
+	{name: "combineloadstore", fn: combineloadstore},   // combine loads and stores with other values; amd64+386 only
 	{name: "regalloc", fn: regalloc, required: true},   // allocate int & float registers + stack slots
 	{name: "loop rotate", fn: loopRotate},
 	{name: "stackframe", fn: stackframe, required: true},
@@ -483,6 +484,11 @@ var passOrder = [...]constraint{
 	{"schedule", "late nilcheck"},
 	// flagalloc needs instructions to be scheduled.
 	{"schedule", "flagalloc"},
+	// combineloadstore needs flags to be allocated,
+	// to avoid flagalloc needing to know how to spill memory args.
+	{"flagalloc", "combineloadstore"},
+	// Can't run combineloadstore after regalloc.
+	{"combineloadstore", "regalloc"},
 	// regalloc needs flags to be allocated first.
 	{"flagalloc", "regalloc"},
 	// loopRotate will confuse regalloc.

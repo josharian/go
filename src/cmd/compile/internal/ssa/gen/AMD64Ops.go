@@ -120,11 +120,14 @@ func init() {
 		gp21flags      = regInfo{inputs: []regMask{gp, gp}, outputs: []regMask{gp, 0}}
 		gp2flags1flags = regInfo{inputs: []regMask{gp, gp, 0}, outputs: []regMask{gp, 0}}
 
-		gp2flags     = regInfo{inputs: []regMask{gpsp, gpsp}}
-		gp1flags     = regInfo{inputs: []regMask{gpsp}}
-		gp0flagsLoad = regInfo{inputs: []regMask{gpspsb, 0}}
-		gp1flagsLoad = regInfo{inputs: []regMask{gpspsb, gpsp, 0}}
-		flagsgp      = regInfo{inputs: nil, outputs: gponly}
+		gp2flags              = regInfo{inputs: []regMask{gpsp, gpsp}}
+		gp1flags              = regInfo{inputs: []regMask{gpsp}}
+		gp0flagsLoad          = regInfo{inputs: []regMask{gpspsb, 0}}
+		gp1flagsLoad          = regInfo{inputs: []regMask{gpspsb, gpsp, 0}}
+		gp2flagsLoad          = regInfo{inputs: []regMask{gpspsb, gpsp, gpsp, 0}}
+		gp2flags1flagsLoad    = regInfo{inputs: []regMask{gpspsb, gp, 0, 0}, outputs: []regMask{gp, 0}}
+		gp2flags1flagsLoadidx = regInfo{inputs: []regMask{gpspsb, gpsp, gp, 0, 0}, outputs: []regMask{gp, 0}}
+		flagsgp               = regInfo{inputs: nil, outputs: gponly}
 
 		gp11flags      = regInfo{inputs: []regMask{gp}, outputs: []regMask{gp, 0}}
 		gp1flags1flags = regInfo{inputs: []regMask{gp, 0}, outputs: []regMask{gp, 0}}
@@ -240,12 +243,20 @@ func init() {
 		{name: "ADDQconstcarry", argLength: 1, reg: gp11flags, typ: "(UInt64,Flags)", asm: "ADDQ", aux: "Int32", resultInArg0: true}, // r = arg0+auxint
 		{name: "ADCQconst", argLength: 2, reg: gp1flags1flags, typ: "(UInt64,Flags)", asm: "ADCQ", aux: "Int32", resultInArg0: true}, // r = arg0+auxint+carry(arg1)
 
+		{name: "ADCQload", argLength: 4, reg: gp2flags1flagsLoad, typ: "(UInt64,Flags)", aux: "SymOff", symEffect: "Read", asm: "ADCQ", faultOnNilArg0: true},                  // r = *(arg0+auxint+aux)+arg1+carry(arg2), arg3 is mem
+		{name: "ADCQloadidx1", argLength: 5, reg: gp2flags1flagsLoadidx, typ: "(UInt64,Flags)", aux: "SymOff", symEffect: "Read", asm: "ADCQ", scale: 1, faultOnNilArg0: true}, // r = *(arg0+auxint+aux)+arg1+carry(arg2), arg3 is mem
+		{name: "ADCQloadidx8", argLength: 5, reg: gp2flags1flagsLoadidx, typ: "(UInt64,Flags)", aux: "SymOff", symEffect: "Read", asm: "ADCQ", scale: 8, faultOnNilArg0: true}, // r = *(arg0+auxint+aux)+arg1+carry(arg2), arg3 is mem
+
 		// The following 4 add opcodes return the low 64 bits of the difference in the first result and
 		// the borrow (if the result is negative) in the carry flag.
 		{name: "SUBQborrow", argLength: 2, reg: gp21flags, typ: "(UInt64,Flags)", asm: "SUBQ", resultInArg0: true},                    // r = arg0-arg1
 		{name: "SBBQ", argLength: 3, reg: gp2flags1flags, typ: "(UInt64,Flags)", asm: "SBBQ", resultInArg0: true},                     // r = arg0-(arg1+carry(arg2))
 		{name: "SUBQconstborrow", argLength: 1, reg: gp11flags, typ: "(UInt64,Flags)", asm: "SUBQ", aux: "Int32", resultInArg0: true}, // r = arg0-auxint
 		{name: "SBBQconst", argLength: 2, reg: gp1flags1flags, typ: "(UInt64,Flags)", asm: "SBBQ", aux: "Int32", resultInArg0: true},  // r = arg0-(auxint+carry(arg1))
+
+		{name: "SBBQload", argLength: 4, reg: gp2flags1flagsLoad, typ: "(UInt64,Flags)", aux: "SymOff", symEffect: "Read", asm: "SBBQ", faultOnNilArg0: true},                  // r = *(arg0+auxint+aux)+arg1+carry(arg2), arg3 is mem
+		{name: "SBBQloadidx1", argLength: 5, reg: gp2flags1flagsLoadidx, typ: "(UInt64,Flags)", aux: "SymOff", symEffect: "Read", asm: "SBBQ", scale: 1, faultOnNilArg0: true}, // r = *(arg0+auxint+aux)+arg1+carry(arg2), arg3 is mem
+		{name: "SBBQloadidx8", argLength: 5, reg: gp2flags1flagsLoadidx, typ: "(UInt64,Flags)", aux: "SymOff", symEffect: "Read", asm: "SBBQ", scale: 8, faultOnNilArg0: true}, // r = *(arg0+auxint+aux)+arg1+carry(arg2), arg3 is mem
 
 		{name: "MULQU2", argLength: 2, reg: regInfo{inputs: []regMask{ax, gpsp}, outputs: []regMask{dx, ax}}, commutative: true, asm: "MULQ", clobberFlags: true}, // arg0 * arg1, returns (hi, lo)
 		{name: "DIVQU2", argLength: 3, reg: regInfo{inputs: []regMask{dx, ax, gpsp}, outputs: []regMask{ax, dx}}, asm: "DIVQ", clobberFlags: true},                // arg0:arg1 / arg2 (128-bit divided by 64-bit), returns (q, r)
@@ -286,11 +297,32 @@ func init() {
 		{name: "CMPWload", argLength: 3, reg: gp1flagsLoad, asm: "CMPW", aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 		{name: "CMPBload", argLength: 3, reg: gp1flagsLoad, asm: "CMPB", aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 
+		// compare *(arg0+arg1+auxint+aux) to arg2 (in that order). arg3=mem
+		// TODO: more docs
+		{name: "CMPQloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "CMPQ", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPQloadidx8", argLength: 4, reg: gp2flagsLoad, asm: "CMPQ", scale: 8, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "CMPL", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLloadidx4", argLength: 4, reg: gp2flagsLoad, asm: "CMPL", scale: 4, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLloadidx8", argLength: 4, reg: gp2flagsLoad, asm: "CMPL", scale: 8, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPWloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "CMPW", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPWloadidx2", argLength: 4, reg: gp2flagsLoad, asm: "CMPW", scale: 2, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPBloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "CMPB", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+
 		// compare *(arg0+ValAndOff(AuxInt).Off()+aux) to ValAndOff(AuxInt).Val() (in that order). arg1=mem.
 		{name: "CMPQconstload", argLength: 2, reg: gp0flagsLoad, asm: "CMPQ", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 		{name: "CMPLconstload", argLength: 2, reg: gp0flagsLoad, asm: "CMPL", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 		{name: "CMPWconstload", argLength: 2, reg: gp0flagsLoad, asm: "CMPW", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 		{name: "CMPBconstload", argLength: 2, reg: gp0flagsLoad, asm: "CMPB", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+
+		// TODO: doc
+		{name: "CMPQconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "CMPQ", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPQconstloadidx8", argLength: 3, reg: gp1flagsLoad, asm: "CMPQ", scale: 8, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "CMPL", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLconstloadidx4", argLength: 3, reg: gp1flagsLoad, asm: "CMPL", scale: 4, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLconstloadidx8", argLength: 3, reg: gp1flagsLoad, asm: "CMPL", scale: 8, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPWconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "CMPW", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPWconstloadidx2", argLength: 3, reg: gp1flagsLoad, asm: "CMPW", scale: 2, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPBconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "CMPB", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 
 		{name: "UCOMISS", argLength: 2, reg: fp2flags, asm: "UCOMISS", typ: "Flags"}, // arg0 compare to arg1, f32
 		{name: "UCOMISD", argLength: 2, reg: fp2flags, asm: "UCOMISD", typ: "Flags"}, // arg0 compare to arg1, f64
@@ -311,6 +343,22 @@ func init() {
 		{name: "BTRQconst", argLength: 1, reg: gp11, asm: "BTRQ", resultInArg0: true, clobberFlags: true, aux: "Int8"}, // reset bit auxint in arg0, 0 <= auxint < 64
 		{name: "BTSLconst", argLength: 1, reg: gp11, asm: "BTSL", resultInArg0: true, clobberFlags: true, aux: "Int8"}, // set bit auxint in arg0, 0 <= auxint < 32
 		{name: "BTSQconst", argLength: 1, reg: gp11, asm: "BTSQ", resultInArg0: true, clobberFlags: true, aux: "Int8"}, // set bit auxint in arg0, 0 <= auxint < 64
+
+		{name: "BTLload", argLength: 3, reg: gp1flagsLoad, asm: "BTL", aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},               // test whether bit arg1%32 in *(arg0+arg1/32) is set, arg2 is mem
+		{name: "BTQload", argLength: 3, reg: gp1flagsLoad, asm: "BTQ", aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},               // test whether bit arg1%64 in *(arg0+arg1/64) is set, arg2 is mem
+		{name: "BTQloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "BTQ", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%64 in *(arg0+1*arg1+auxint+aux+arg2/64) is set, arg3 is mem
+		{name: "BTQloadidx8", argLength: 4, reg: gp2flagsLoad, asm: "BTQ", scale: 8, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%64 in *(arg0+8*arg1+auxint+aux+arg2/64) is set, arg3 is mem
+		{name: "BTLloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "BTL", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%32 in *(arg0+1*arg1+auxint+aux+arg2/32) is set, arg3 is mem
+		{name: "BTLloadidx4", argLength: 4, reg: gp2flagsLoad, asm: "BTL", scale: 4, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%32 in *(arg0+4*arg1+auxint+aux+arg2/32) is set, arg3 is mem
+		{name: "BTLloadidx8", argLength: 4, reg: gp2flagsLoad, asm: "BTL", scale: 8, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%32 in *(arg0+8*arg1+auxint+aux+arg2/32) is set, arg3 is mem
+
+		{name: "BTLconstload", argLength: 2, reg: gp0flagsLoad, asm: "BTL", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTQconstload", argLength: 2, reg: gp0flagsLoad, asm: "BTQ", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTQconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "BTQ", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTQconstloadidx8", argLength: 3, reg: gp1flagsLoad, asm: "BTQ", scale: 8, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTLconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "BTL", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTLconstloadidx4", argLength: 3, reg: gp1flagsLoad, asm: "BTL", scale: 4, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTLconstloadidx8", argLength: 3, reg: gp1flagsLoad, asm: "BTL", scale: 8, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 
 		// direct bit operation on memory operand
 		{name: "BTCQmodify", argLength: 3, reg: gpstore, asm: "BTCQ", aux: "SymOff", typ: "Mem", clobberFlags: true, faultOnNilArg0: true, symEffect: "Read,Write"},     // complement bit arg1 in 64-bit arg0+auxint+aux, arg2=mem

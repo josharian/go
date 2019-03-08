@@ -12,7 +12,7 @@ type typeCmdLoadMap struct {
 }
 
 var opCmpLoadMap = map[Op]typeCmdLoadMap{
-	OpAMD64CMPQload:      {OpAMD64MOVQload, OpAMD64CMPQ},
+	// OpAMD64CMPQload:      {OpAMD64MOVQload, OpAMD64CMPQ},
 	OpAMD64CMPLload:      {OpAMD64MOVLload, OpAMD64CMPL},
 	OpAMD64CMPWload:      {OpAMD64MOVWload, OpAMD64CMPW},
 	OpAMD64CMPBload:      {OpAMD64MOVBload, OpAMD64CMPB},
@@ -145,12 +145,12 @@ func flagalloc(f *Func) {
 			// TODO: figure out how to do this without arch-dependent code.
 			if spill[v.ID] && v.MemoryArg() != nil {
 				switch v.Op {
-				case OpAMD64CMPQload:
-					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt64, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
-					v.Op = opCmpLoadMap[v.Op].opCmp
-					v.AuxInt = 0
-					v.Aux = nil
-					v.SetArgs2(load, v.Args[1])
+				// case OpAMD64CMPQload:
+				// 	load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt64, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
+				// 	v.Op = opCmpLoadMap[v.Op].opCmp
+				// 	v.AuxInt = 0
+				// 	v.Aux = nil
+				// 	v.SetArgs2(load, v.Args[1])
 				case OpAMD64CMPLload, Op386CMPLload:
 					load := b.NewValue2IA(v.Pos, opCmpLoadMap[v.Op].opLoad, f.Config.Types.UInt32, v.AuxInt, v.Aux, v.Args[0], v.Args[2])
 					v.Op = opCmpLoadMap[v.Op].opCmp
