@@ -83,7 +83,8 @@ func addVV_g(z, x, y []Word) (c Word) {
 // The resulting carry c is either 0 or 1.
 func addVV_g_unrolled(z, x, y []Word) (c Word) {
 	// The comment near the top of this file discusses this for loop condition.
-	for i := 0; i < len(z)-4; {
+	var i int
+	for i < len(z)-4 {
 		if i < 0 || i >= len(x) || i >= len(y) || i >= len(z) {
 			unsafeUnreachable()
 		}
@@ -117,13 +118,14 @@ func addVV_g_unrolled(z, x, y []Word) (c Word) {
 		i++
 	}
 
-	for i := 0; i < len(z); i++ {
+	for i < len(z) {
 		if i >= len(x) || i >= len(y) {
 			unsafeUnreachable()
 		}
 		zi, cc := bits.Add(uint(x[i]), uint(y[i]), uint(c))
 		z[i] = Word(zi)
 		c = Word(cc)
+		i++
 	}
 	return
 }
