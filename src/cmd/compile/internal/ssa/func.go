@@ -46,6 +46,9 @@ type Func struct {
 	laidout   bool // Blocks are ordered
 	NoSplit   bool // true if function is marked as nosplit.  Used by schedule check pass.
 
+	// during mergeLoad pass, holds state
+	mergeLoadState *mergeLoadState
+
 	// when register allocation is done, maps value ids to locations
 	RegAlloc []Location
 

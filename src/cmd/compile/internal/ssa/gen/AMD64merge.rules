@@ -1,0 +1,67 @@
+// Copyright 2019 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Special care must be taken with these rules.
+// They are run after layout, schedule, and flagalloc.
+// No new values may be created; you must only overwrite the inbound value.
+// (Other work that must be done, such as inverting flags elsewhere,
+// must happen via functions such as invertFlags, which are implemented
+// independently in the mergeLoads pass.)
+// Any values that are to be eliminated must be explicitly clobbered.
+
+
+(CMP(Q|L|W|B) load:(MOV(Q|L|W|B)load     {sym} [off] ptr     mem) x) && canMergeLoadLate(v, load) && clobber(load) -> (CMP(Q|L|W|B)load     {sym} [off] ptr     x mem)
+(CMP(Q|L|W|B) load:(MOV(Q|L|W|B)loadidx1 {sym} [off] ptr idx mem) x) && canMergeLoadLate(v, load) && clobber(load) -> (CMP(Q|L|W|B)loadidx1 {sym} [off] ptr idx x mem)
+(CMPW         load:(MOVWloadidx2         {sym} [off] ptr idx mem) x) && canMergeLoadLate(v, load) && clobber(load) -> (CMPWloadidx2         {sym} [off] ptr idx x mem)
+(CMPL         load:(MOVLloadidx4         {sym} [off] ptr idx mem) x) && canMergeLoadLate(v, load) && clobber(load) -> (CMPLloadidx4         {sym} [off] ptr idx x mem)
+(CMP(Q|L)     load:(MOV(Q|L)loadidx8     {sym} [off] ptr idx mem) x) && canMergeLoadLate(v, load) && clobber(load) -> (CMP(Q|L)loadidx8     {sym} [off] ptr idx x mem)
+
+(CMP(Q|L|W|B) x load:(MOV(Q|L|W|B)load     {sym} [off] ptr     mem)) && canMergeLoadLate(v, load) && clobber(load) && invertFlags(v) -> (CMP(Q|L|W|B)load     {sym} [off] ptr     x mem)
+(CMP(Q|L|W|B) x load:(MOV(Q|L|W|B)loadidx1 {sym} [off] ptr idx mem)) && canMergeLoadLate(v, load) && clobber(load) && invertFlags(v) -> (CMP(Q|L|W|B)loadidx1 {sym} [off] ptr idx x mem)
+(CMPW         x load:(MOVWloadidx2         {sym} [off] ptr idx mem)) && canMergeLoadLate(v, load) && clobber(load) && invertFlags(v) -> (CMPWloadidx2         {sym} [off] ptr idx x mem)
+(CMPL         x load:(MOVLloadidx4         {sym} [off] ptr idx mem)) && canMergeLoadLate(v, load) && clobber(load) && invertFlags(v) -> (CMPLloadidx4         {sym} [off] ptr idx x mem)
+(CMP(Q|L)     x load:(MOV(Q|L)loadidx8     {sym} [off] ptr idx mem)) && canMergeLoadLate(v, load) && clobber(load) && invertFlags(v) -> (CMP(Q|L)loadidx8     {sym} [off] ptr idx x mem)
+
+(CMP(Q|L)const [c] load:(MOV(Q|L)load     {sym} [off] ptr     mem)) && validValAndOff(            c  , off) && canMergeLoadLate(v, load) && clobber(load) -> (CMP(Q|L)constload     {sym} [makeValAndOff(            c  , off)] ptr     mem)
+(CMPWconst     [c] load:(MOVWload         {sym} [off] ptr     mem)) && validValAndOff(int64(int16(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (CMPWconstload         {sym} [makeValAndOff(int64(int16(c)), off)] ptr     mem)
+(CMPBconst     [c] load:(MOVBload         {sym} [off] ptr     mem)) && validValAndOff(int64( int8(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (CMPBconstload         {sym} [makeValAndOff(int64( int8(c)), off)] ptr     mem)
+(CMP(Q|L)const [c] load:(MOV(Q|L)loadidx1 {sym} [off] ptr idx mem)) && validValAndOff(            c  , off) && canMergeLoadLate(v, load) && clobber(load) -> (CMP(Q|L)constloadidx1 {sym} [makeValAndOff(            c  , off)] ptr idx mem)
+(CMPWconst     [c] load:(MOVWloadidx1     {sym} [off] ptr idx mem)) && validValAndOff(int64(int16(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (CMPWconstloadidx1     {sym} [makeValAndOff(int64(int16(c)), off)] ptr idx mem)
+(CMPBconst     [c] load:(MOVBloadidx1     {sym} [off] ptr idx mem)) && validValAndOff(int64( int8(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (CMPBconstloadidx1     {sym} [makeValAndOff(int64( int8(c)), off)] ptr idx mem)
+(CMPWconst     [c] load:(MOVWloadidx2     {sym} [off] ptr idx mem)) && validValAndOff(int64(int16(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (CMPWconstloadidx2     {sym} [makeValAndOff(int64(int16(c)), off)] ptr idx mem)
+(CMPLconst     [c] load:(MOVLloadidx4     {sym} [off] ptr idx mem)) && validValAndOff(            c  , off) && canMergeLoadLate(v, load) && clobber(load) -> (CMPLconstloadidx4     {sym} [makeValAndOff(            c  , off)] ptr idx mem)
+(CMP(Q|L)const [c] load:(MOV(Q|L)loadidx8 {sym} [off] ptr idx mem)) && validValAndOff(            c  , off) && canMergeLoadLate(v, load) && clobber(load) -> (CMP(Q|L)constloadidx8 {sym} [makeValAndOff(            c  , off)] ptr idx mem)
+
+
+// It is tempting to add BTQ -> BTQload rewrite rules here.
+// Sadly, it is not safe. BTQ and BTQload have subtly different semantics.
+// The BTQ instruction, which operates on two registers,
+// ignores the top bits of the requested bit offset.
+// So if you ask for bit x via 1<<(x&63), we drop the "&63" part and use just x.
+// But BTQload, which reads from memory, does not ignore the top bits.
+// If x is large, this causes it to go read from some other bit of memory.
+// We can't arrange here to re-introduce the mask, and a MOVQload+BTQ
+// may be just as good as an ANDQ+BTQload. (I haven't investigated.)
+// It would be nice to somehow mark the cases earlier where the z in 1<<z is known small,
+// and then enable the following rules in just those cases.
+//
+// (BT(Q|L) x load:(MOV(Q|L)load     {sym} [off] ptr     mem)) && canMergeLoadLate(v, load) && clobber(load) -> (BT(Q|L)load     {sym} [off] ptr     x mem)
+// (BT(Q|L) x load:(MOV(Q|L)loadidx1 {sym} [off] ptr idx mem)) && canMergeLoadLate(v, load) && clobber(load) -> (BT(Q|L)loadidx1 {sym} [off] ptr idx x mem)
+// (BTL     x load:(MOVLloadidx4     {sym} [off] ptr idx mem)) && canMergeLoadLate(v, load) && clobber(load) -> (BTLloadidx4     {sym} [off] ptr idx x mem)
+// (BT(Q|L) x load:(MOV(Q|L)loadidx8 {sym} [off] ptr idx mem)) && canMergeLoadLate(v, load) && clobber(load) -> (BT(Q|L)loadidx8 {sym} [off] ptr idx x mem)
+
+(BT(Q|L)const [c] load:(MOV(Q|L)load     {sym} [off] ptr     mem)) && validValAndOff(int64(int8(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (BT(Q|L)constload     {sym} [makeValAndOff(int64(int8(c)), off)] ptr     mem)
+(BT(Q|L)const [c] load:(MOV(Q|L)loadidx1 {sym} [off] ptr idx mem)) && validValAndOff(int64(int8(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (BT(Q|L)constloadidx1 {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+(BTLconst     [c] load:(MOVLloadidx4     {sym} [off] ptr idx mem)) && validValAndOff(int64(int8(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (BTLconstloadidx4     {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+(BT(Q|L)const [c] load:(MOV(Q|L)loadidx8 {sym} [off] ptr idx mem)) && validValAndOff(int64(int8(c)), off) && canMergeLoadLate(v, load) && clobber(load) -> (BT(Q|L)constloadidx8 {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+
+
+(ADCQ load:(MOVQload     {sym} [off] ptr     mem) x carry) && canMergeLoadLateClobber(v, load, x) && clobber(load) -> (ADCQload     {sym} [off] ptr     x carry mem)
+(ADCQ load:(MOVQloadidx1 {sym} [off] ptr idx mem) x carry) && canMergeLoadLateClobber(v, load, x) && clobber(load) -> (ADCQloadidx1 {sym} [off] ptr idx x carry mem)
+(ADCQ load:(MOVQloadidx8 {sym} [off] ptr idx mem) x carry) && canMergeLoadLateClobber(v, load, x) && clobber(load) -> (ADCQloadidx8 {sym} [off] ptr idx x carry mem)
+
+(SBBQ x load:(MOVQload     {sym} [off] ptr     mem) carry) && canMergeLoadLateClobber(v, load, x) && clobber(load) -> (SBBQload     {sym} [off] ptr     x carry mem)
+(SBBQ x load:(MOVQloadidx1 {sym} [off] ptr idx mem) carry) && canMergeLoadLateClobber(v, load, x) && clobber(load) -> (SBBQloadidx1 {sym} [off] ptr idx x carry mem)
+(SBBQ x load:(MOVQloadidx8 {sym} [off] ptr idx mem) carry) && canMergeLoadLateClobber(v, load, x) && clobber(load) -> (SBBQloadidx8 {sym} [off] ptr idx x carry mem)
+
