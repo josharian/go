@@ -8832,7 +8832,7 @@ func rewriteValueAMD64_OpAMD64CMPB_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPB l:(MOVBload {sym} [off] ptr mem) x)
-	// cond: canMergeLoad(v, l) && clobber(l)
+	// cond: canMergeLoad(v, l) && clobber(l) && noteRule("OPT9")
 	// result: (CMPBload {sym} [off] ptr x mem)
 	for {
 		_ = v.Args[1]
@@ -8846,7 +8846,7 @@ func rewriteValueAMD64_OpAMD64CMPB_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		x := v.Args[1]
-		if !(canMergeLoad(v, l) && clobber(l)) {
+		if !(canMergeLoad(v, l) && clobber(l) && noteRule("OPT9")) {
 			break
 		}
 		v.reset(OpAMD64CMPBload)
@@ -8858,7 +8858,7 @@ func rewriteValueAMD64_OpAMD64CMPB_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPB x l:(MOVBload {sym} [off] ptr mem))
-	// cond: canMergeLoad(v, l) && clobber(l)
+	// cond: canMergeLoad(v, l) && clobber(l) && noteRule("OPT10")
 	// result: (InvertFlags (CMPBload {sym} [off] ptr x mem))
 	for {
 		_ = v.Args[1]
@@ -8872,7 +8872,7 @@ func rewriteValueAMD64_OpAMD64CMPB_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(canMergeLoad(v, l) && clobber(l)) {
+		if !(canMergeLoad(v, l) && clobber(l) && noteRule("OPT10")) {
 			break
 		}
 		v.reset(OpAMD64InvertFlags)
@@ -9024,20 +9024,23 @@ func rewriteValueAMD64_OpAMD64CMPBconst_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPBconst x [0])
-	// cond:
+	// cond: noteRule("OPT8")
 	// result: (TESTB x x)
 	for {
 		if v.AuxInt != 0 {
 			break
 		}
 		x := v.Args[0]
+		if !(noteRule("OPT8")) {
+			break
+		}
 		v.reset(OpAMD64TESTB)
 		v.AddArg(x)
 		v.AddArg(x)
 		return true
 	}
 	// match: (CMPBconst l:(MOVBload {sym} [off] ptr mem) [c])
-	// cond: l.Uses == 1 && validValAndOff(c, off) && clobber(l)
+	// cond: l.Uses == 1 && validValAndOff(c, off) && clobber(l) && noteRule("OPT11")
 	// result: @l.Block (CMPBconstload {sym} [makeValAndOff(c,off)] ptr mem)
 	for {
 		c := v.AuxInt
@@ -9050,7 +9053,7 @@ func rewriteValueAMD64_OpAMD64CMPBconst_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(l.Uses == 1 && validValAndOff(c, off) && clobber(l)) {
+		if !(l.Uses == 1 && validValAndOff(c, off) && clobber(l) && noteRule("OPT11")) {
 			break
 		}
 		b = l.Block
@@ -9067,7 +9070,7 @@ func rewriteValueAMD64_OpAMD64CMPBconst_0(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64CMPBconstload_0(v *Value) bool {
 	// match: (CMPBconstload [valoff1] {sym} (ADDQconst [off2] base) mem)
-	// cond: ValAndOff(valoff1).canAdd(off2)
+	// cond: ValAndOff(valoff1).canAdd(off2) && noteRule("OPT2")
 	// result: (CMPBconstload [ValAndOff(valoff1).add(off2)] {sym} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -9080,7 +9083,7 @@ func rewriteValueAMD64_OpAMD64CMPBconstload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).canAdd(off2)) {
+		if !(ValAndOff(valoff1).canAdd(off2) && noteRule("OPT2")) {
 			break
 		}
 		v.reset(OpAMD64CMPBconstload)
@@ -9091,7 +9094,7 @@ func rewriteValueAMD64_OpAMD64CMPBconstload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPBconstload [valoff1] {sym1} (LEAQ [off2] {sym2} base) mem)
-	// cond: ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2)
+	// cond: ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) && noteRule("OPT4")
 	// result: (CMPBconstload [ValAndOff(valoff1).add(off2)] {mergeSym(sym1,sym2)} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -9105,7 +9108,7 @@ func rewriteValueAMD64_OpAMD64CMPBconstload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2)) {
+		if !(ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) && noteRule("OPT4")) {
 			break
 		}
 		v.reset(OpAMD64CMPBconstload)
@@ -9119,7 +9122,7 @@ func rewriteValueAMD64_OpAMD64CMPBconstload_0(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64CMPBload_0(v *Value) bool {
 	// match: (CMPBload [off1] {sym} (ADDQconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: is32Bit(off1+off2) && noteRule("OPT1")
 	// result: (CMPBload [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -9133,7 +9136,7 @@ func rewriteValueAMD64_OpAMD64CMPBload_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(is32Bit(off1+off2) && noteRule("OPT1")) {
 			break
 		}
 		v.reset(OpAMD64CMPBload)
@@ -9145,7 +9148,7 @@ func rewriteValueAMD64_OpAMD64CMPBload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPBload [off1] {sym1} (LEAQ [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && canMergeSym(sym1, sym2)
+	// cond: is32Bit(off1+off2) && canMergeSym(sym1, sym2) && noteRule("OPT3")
 	// result: (CMPBload [off1+off2] {mergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -9160,7 +9163,7 @@ func rewriteValueAMD64_OpAMD64CMPBload_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && canMergeSym(sym1, sym2)) {
+		if !(is32Bit(off1+off2) && canMergeSym(sym1, sym2) && noteRule("OPT3")) {
 			break
 		}
 		v.reset(OpAMD64CMPBload)
@@ -9172,7 +9175,7 @@ func rewriteValueAMD64_OpAMD64CMPBload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPBload {sym} [off] ptr (MOVLconst [c]) mem)
-	// cond: validValAndOff(int64(int8(c)),off)
+	// cond: validValAndOff(int64(int8(c)),off) && noteRule("OPT15")
 	// result: (CMPBconstload {sym} [makeValAndOff(int64(int8(c)),off)] ptr mem)
 	for {
 		off := v.AuxInt
@@ -9185,7 +9188,7 @@ func rewriteValueAMD64_OpAMD64CMPBload_0(v *Value) bool {
 		}
 		c := v_1.AuxInt
 		mem := v.Args[2]
-		if !(validValAndOff(int64(int8(c)), off)) {
+		if !(validValAndOff(int64(int8(c)), off) && noteRule("OPT15")) {
 			break
 		}
 		v.reset(OpAMD64CMPBconstload)
@@ -9235,7 +9238,7 @@ func rewriteValueAMD64_OpAMD64CMPL_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPL l:(MOVLload {sym} [off] ptr mem) x)
-	// cond: canMergeLoad(v, l) && clobber(l)
+	// cond: canMergeLoad(v, l) && clobber(l) && noteRule("OPT9")
 	// result: (CMPLload {sym} [off] ptr x mem)
 	for {
 		_ = v.Args[1]
@@ -9249,7 +9252,7 @@ func rewriteValueAMD64_OpAMD64CMPL_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		x := v.Args[1]
-		if !(canMergeLoad(v, l) && clobber(l)) {
+		if !(canMergeLoad(v, l) && clobber(l) && noteRule("OPT9")) {
 			break
 		}
 		v.reset(OpAMD64CMPLload)
@@ -9261,7 +9264,7 @@ func rewriteValueAMD64_OpAMD64CMPL_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPL x l:(MOVLload {sym} [off] ptr mem))
-	// cond: canMergeLoad(v, l) && clobber(l)
+	// cond: canMergeLoad(v, l) && clobber(l) && noteRule("OPT10")
 	// result: (InvertFlags (CMPLload {sym} [off] ptr x mem))
 	for {
 		_ = v.Args[1]
@@ -9275,7 +9278,7 @@ func rewriteValueAMD64_OpAMD64CMPL_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(canMergeLoad(v, l) && clobber(l)) {
+		if !(canMergeLoad(v, l) && clobber(l) && noteRule("OPT10")) {
 			break
 		}
 		v.reset(OpAMD64InvertFlags)
@@ -9441,13 +9444,16 @@ func rewriteValueAMD64_OpAMD64CMPLconst_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPLconst x [0])
-	// cond:
+	// cond: noteRule("OPT6")
 	// result: (TESTL x x)
 	for {
 		if v.AuxInt != 0 {
 			break
 		}
 		x := v.Args[0]
+		if !(noteRule("OPT6")) {
+			break
+		}
 		v.reset(OpAMD64TESTL)
 		v.AddArg(x)
 		v.AddArg(x)
@@ -9459,7 +9465,7 @@ func rewriteValueAMD64_OpAMD64CMPLconst_10(v *Value) bool {
 	b := v.Block
 	_ = b
 	// match: (CMPLconst l:(MOVLload {sym} [off] ptr mem) [c])
-	// cond: l.Uses == 1 && validValAndOff(c, off) && clobber(l)
+	// cond: l.Uses == 1 && validValAndOff(c, off) && clobber(l) && noteRule("OPT11")
 	// result: @l.Block (CMPLconstload {sym} [makeValAndOff(c,off)] ptr mem)
 	for {
 		c := v.AuxInt
@@ -9472,7 +9478,7 @@ func rewriteValueAMD64_OpAMD64CMPLconst_10(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(l.Uses == 1 && validValAndOff(c, off) && clobber(l)) {
+		if !(l.Uses == 1 && validValAndOff(c, off) && clobber(l) && noteRule("OPT11")) {
 			break
 		}
 		b = l.Block
@@ -9489,7 +9495,7 @@ func rewriteValueAMD64_OpAMD64CMPLconst_10(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64CMPLconstload_0(v *Value) bool {
 	// match: (CMPLconstload [valoff1] {sym} (ADDQconst [off2] base) mem)
-	// cond: ValAndOff(valoff1).canAdd(off2)
+	// cond: ValAndOff(valoff1).canAdd(off2) && noteRule("OPT2")
 	// result: (CMPLconstload [ValAndOff(valoff1).add(off2)] {sym} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -9502,7 +9508,7 @@ func rewriteValueAMD64_OpAMD64CMPLconstload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).canAdd(off2)) {
+		if !(ValAndOff(valoff1).canAdd(off2) && noteRule("OPT2")) {
 			break
 		}
 		v.reset(OpAMD64CMPLconstload)
@@ -9513,7 +9519,7 @@ func rewriteValueAMD64_OpAMD64CMPLconstload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPLconstload [valoff1] {sym1} (LEAQ [off2] {sym2} base) mem)
-	// cond: ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2)
+	// cond: ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) && noteRule("OPT4")
 	// result: (CMPLconstload [ValAndOff(valoff1).add(off2)] {mergeSym(sym1,sym2)} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -9527,7 +9533,7 @@ func rewriteValueAMD64_OpAMD64CMPLconstload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2)) {
+		if !(ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) && noteRule("OPT4")) {
 			break
 		}
 		v.reset(OpAMD64CMPLconstload)
@@ -9541,7 +9547,7 @@ func rewriteValueAMD64_OpAMD64CMPLconstload_0(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64CMPLload_0(v *Value) bool {
 	// match: (CMPLload [off1] {sym} (ADDQconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: is32Bit(off1+off2) && noteRule("OPT1")
 	// result: (CMPLload [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -9555,7 +9561,7 @@ func rewriteValueAMD64_OpAMD64CMPLload_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(is32Bit(off1+off2) && noteRule("OPT1")) {
 			break
 		}
 		v.reset(OpAMD64CMPLload)
@@ -9567,7 +9573,7 @@ func rewriteValueAMD64_OpAMD64CMPLload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPLload [off1] {sym1} (LEAQ [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && canMergeSym(sym1, sym2)
+	// cond: is32Bit(off1+off2) && canMergeSym(sym1, sym2) && noteRule("OPT3")
 	// result: (CMPLload [off1+off2] {mergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -9582,7 +9588,7 @@ func rewriteValueAMD64_OpAMD64CMPLload_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && canMergeSym(sym1, sym2)) {
+		if !(is32Bit(off1+off2) && canMergeSym(sym1, sym2) && noteRule("OPT3")) {
 			break
 		}
 		v.reset(OpAMD64CMPLload)
@@ -9594,7 +9600,7 @@ func rewriteValueAMD64_OpAMD64CMPLload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPLload {sym} [off] ptr (MOVLconst [c]) mem)
-	// cond: validValAndOff(c,off)
+	// cond: validValAndOff(c,off) && noteRule("OPT13")
 	// result: (CMPLconstload {sym} [makeValAndOff(c,off)] ptr mem)
 	for {
 		off := v.AuxInt
@@ -9607,7 +9613,7 @@ func rewriteValueAMD64_OpAMD64CMPLload_0(v *Value) bool {
 		}
 		c := v_1.AuxInt
 		mem := v.Args[2]
-		if !(validValAndOff(c, off)) {
+		if !(validValAndOff(c, off) && noteRule("OPT13")) {
 			break
 		}
 		v.reset(OpAMD64CMPLconstload)
@@ -9663,7 +9669,7 @@ func rewriteValueAMD64_OpAMD64CMPQ_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPQ l:(MOVQload {sym} [off] ptr mem) x)
-	// cond: canMergeLoad(v, l) && clobber(l)
+	// cond: canMergeLoad(v, l) && clobber(l) && noteRule("OPT9")
 	// result: (CMPQload {sym} [off] ptr x mem)
 	for {
 		_ = v.Args[1]
@@ -9677,7 +9683,7 @@ func rewriteValueAMD64_OpAMD64CMPQ_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		x := v.Args[1]
-		if !(canMergeLoad(v, l) && clobber(l)) {
+		if !(canMergeLoad(v, l) && clobber(l) && noteRule("OPT9")) {
 			break
 		}
 		v.reset(OpAMD64CMPQload)
@@ -9689,7 +9695,7 @@ func rewriteValueAMD64_OpAMD64CMPQ_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPQ x l:(MOVQload {sym} [off] ptr mem))
-	// cond: canMergeLoad(v, l) && clobber(l)
+	// cond: canMergeLoad(v, l) && clobber(l) && noteRule("OPT10")
 	// result: (InvertFlags (CMPQload {sym} [off] ptr x mem))
 	for {
 		_ = v.Args[1]
@@ -9703,7 +9709,7 @@ func rewriteValueAMD64_OpAMD64CMPQ_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(canMergeLoad(v, l) && clobber(l)) {
+		if !(canMergeLoad(v, l) && clobber(l) && noteRule("OPT10")) {
 			break
 		}
 		v.reset(OpAMD64InvertFlags)
@@ -9991,20 +9997,23 @@ func rewriteValueAMD64_OpAMD64CMPQconst_10(v *Value) bool {
 		return true
 	}
 	// match: (CMPQconst x [0])
-	// cond:
+	// cond: noteRule("OPT5")
 	// result: (TESTQ x x)
 	for {
 		if v.AuxInt != 0 {
 			break
 		}
 		x := v.Args[0]
+		if !(noteRule("OPT5")) {
+			break
+		}
 		v.reset(OpAMD64TESTQ)
 		v.AddArg(x)
 		v.AddArg(x)
 		return true
 	}
 	// match: (CMPQconst l:(MOVQload {sym} [off] ptr mem) [c])
-	// cond: l.Uses == 1 && validValAndOff(c, off) && clobber(l)
+	// cond: l.Uses == 1 && validValAndOff(c, off) && clobber(l) && noteRule("OPT11")
 	// result: @l.Block (CMPQconstload {sym} [makeValAndOff(c,off)] ptr mem)
 	for {
 		c := v.AuxInt
@@ -10017,7 +10026,7 @@ func rewriteValueAMD64_OpAMD64CMPQconst_10(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(l.Uses == 1 && validValAndOff(c, off) && clobber(l)) {
+		if !(l.Uses == 1 && validValAndOff(c, off) && clobber(l) && noteRule("OPT11")) {
 			break
 		}
 		b = l.Block
@@ -10034,7 +10043,7 @@ func rewriteValueAMD64_OpAMD64CMPQconst_10(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64CMPQconstload_0(v *Value) bool {
 	// match: (CMPQconstload [valoff1] {sym} (ADDQconst [off2] base) mem)
-	// cond: ValAndOff(valoff1).canAdd(off2)
+	// cond: ValAndOff(valoff1).canAdd(off2) && noteRule("OPT2")
 	// result: (CMPQconstload [ValAndOff(valoff1).add(off2)] {sym} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -10047,7 +10056,7 @@ func rewriteValueAMD64_OpAMD64CMPQconstload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).canAdd(off2)) {
+		if !(ValAndOff(valoff1).canAdd(off2) && noteRule("OPT2")) {
 			break
 		}
 		v.reset(OpAMD64CMPQconstload)
@@ -10058,7 +10067,7 @@ func rewriteValueAMD64_OpAMD64CMPQconstload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPQconstload [valoff1] {sym1} (LEAQ [off2] {sym2} base) mem)
-	// cond: ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2)
+	// cond: ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) && noteRule("OPT4")
 	// result: (CMPQconstload [ValAndOff(valoff1).add(off2)] {mergeSym(sym1,sym2)} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -10072,7 +10081,7 @@ func rewriteValueAMD64_OpAMD64CMPQconstload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2)) {
+		if !(ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) && noteRule("OPT4")) {
 			break
 		}
 		v.reset(OpAMD64CMPQconstload)
@@ -10086,7 +10095,7 @@ func rewriteValueAMD64_OpAMD64CMPQconstload_0(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64CMPQload_0(v *Value) bool {
 	// match: (CMPQload [off1] {sym} (ADDQconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: is32Bit(off1+off2) && noteRule("OPT1")
 	// result: (CMPQload [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -10100,7 +10109,7 @@ func rewriteValueAMD64_OpAMD64CMPQload_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(is32Bit(off1+off2) && noteRule("OPT1")) {
 			break
 		}
 		v.reset(OpAMD64CMPQload)
@@ -10112,7 +10121,7 @@ func rewriteValueAMD64_OpAMD64CMPQload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPQload [off1] {sym1} (LEAQ [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && canMergeSym(sym1, sym2)
+	// cond: is32Bit(off1+off2) && canMergeSym(sym1, sym2) && noteRule("OPT3")
 	// result: (CMPQload [off1+off2] {mergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -10127,7 +10136,7 @@ func rewriteValueAMD64_OpAMD64CMPQload_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && canMergeSym(sym1, sym2)) {
+		if !(is32Bit(off1+off2) && canMergeSym(sym1, sym2) && noteRule("OPT3")) {
 			break
 		}
 		v.reset(OpAMD64CMPQload)
@@ -10139,7 +10148,7 @@ func rewriteValueAMD64_OpAMD64CMPQload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPQload {sym} [off] ptr (MOVQconst [c]) mem)
-	// cond: validValAndOff(c,off)
+	// cond: validValAndOff(c,off) && noteRule("OPT12")
 	// result: (CMPQconstload {sym} [makeValAndOff(c,off)] ptr mem)
 	for {
 		off := v.AuxInt
@@ -10152,7 +10161,7 @@ func rewriteValueAMD64_OpAMD64CMPQload_0(v *Value) bool {
 		}
 		c := v_1.AuxInt
 		mem := v.Args[2]
-		if !(validValAndOff(c, off)) {
+		if !(validValAndOff(c, off) && noteRule("OPT12")) {
 			break
 		}
 		v.reset(OpAMD64CMPQconstload)
@@ -10202,7 +10211,7 @@ func rewriteValueAMD64_OpAMD64CMPW_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPW l:(MOVWload {sym} [off] ptr mem) x)
-	// cond: canMergeLoad(v, l) && clobber(l)
+	// cond: canMergeLoad(v, l) && clobber(l) && noteRule("OPT9")
 	// result: (CMPWload {sym} [off] ptr x mem)
 	for {
 		_ = v.Args[1]
@@ -10216,7 +10225,7 @@ func rewriteValueAMD64_OpAMD64CMPW_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		x := v.Args[1]
-		if !(canMergeLoad(v, l) && clobber(l)) {
+		if !(canMergeLoad(v, l) && clobber(l) && noteRule("OPT9")) {
 			break
 		}
 		v.reset(OpAMD64CMPWload)
@@ -10228,7 +10237,7 @@ func rewriteValueAMD64_OpAMD64CMPW_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPW x l:(MOVWload {sym} [off] ptr mem))
-	// cond: canMergeLoad(v, l) && clobber(l)
+	// cond: canMergeLoad(v, l) && clobber(l) && noteRule("OPT10")
 	// result: (InvertFlags (CMPWload {sym} [off] ptr x mem))
 	for {
 		_ = v.Args[1]
@@ -10242,7 +10251,7 @@ func rewriteValueAMD64_OpAMD64CMPW_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(canMergeLoad(v, l) && clobber(l)) {
+		if !(canMergeLoad(v, l) && clobber(l) && noteRule("OPT10")) {
 			break
 		}
 		v.reset(OpAMD64InvertFlags)
@@ -10394,20 +10403,23 @@ func rewriteValueAMD64_OpAMD64CMPWconst_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPWconst x [0])
-	// cond:
+	// cond: noteRule("OPT7")
 	// result: (TESTW x x)
 	for {
 		if v.AuxInt != 0 {
 			break
 		}
 		x := v.Args[0]
+		if !(noteRule("OPT7")) {
+			break
+		}
 		v.reset(OpAMD64TESTW)
 		v.AddArg(x)
 		v.AddArg(x)
 		return true
 	}
 	// match: (CMPWconst l:(MOVWload {sym} [off] ptr mem) [c])
-	// cond: l.Uses == 1 && validValAndOff(c, off) && clobber(l)
+	// cond: l.Uses == 1 && validValAndOff(c, off) && clobber(l) && noteRule("OPT11")
 	// result: @l.Block (CMPWconstload {sym} [makeValAndOff(c,off)] ptr mem)
 	for {
 		c := v.AuxInt
@@ -10420,7 +10432,7 @@ func rewriteValueAMD64_OpAMD64CMPWconst_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(l.Uses == 1 && validValAndOff(c, off) && clobber(l)) {
+		if !(l.Uses == 1 && validValAndOff(c, off) && clobber(l) && noteRule("OPT11")) {
 			break
 		}
 		b = l.Block
@@ -10437,7 +10449,7 @@ func rewriteValueAMD64_OpAMD64CMPWconst_0(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64CMPWconstload_0(v *Value) bool {
 	// match: (CMPWconstload [valoff1] {sym} (ADDQconst [off2] base) mem)
-	// cond: ValAndOff(valoff1).canAdd(off2)
+	// cond: ValAndOff(valoff1).canAdd(off2) && noteRule("OPT2")
 	// result: (CMPWconstload [ValAndOff(valoff1).add(off2)] {sym} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -10450,7 +10462,7 @@ func rewriteValueAMD64_OpAMD64CMPWconstload_0(v *Value) bool {
 		off2 := v_0.AuxInt
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).canAdd(off2)) {
+		if !(ValAndOff(valoff1).canAdd(off2) && noteRule("OPT2")) {
 			break
 		}
 		v.reset(OpAMD64CMPWconstload)
@@ -10461,7 +10473,7 @@ func rewriteValueAMD64_OpAMD64CMPWconstload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPWconstload [valoff1] {sym1} (LEAQ [off2] {sym2} base) mem)
-	// cond: ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2)
+	// cond: ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) && noteRule("OPT4")
 	// result: (CMPWconstload [ValAndOff(valoff1).add(off2)] {mergeSym(sym1,sym2)} base mem)
 	for {
 		valoff1 := v.AuxInt
@@ -10475,7 +10487,7 @@ func rewriteValueAMD64_OpAMD64CMPWconstload_0(v *Value) bool {
 		sym2 := v_0.Aux
 		base := v_0.Args[0]
 		mem := v.Args[1]
-		if !(ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2)) {
+		if !(ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) && noteRule("OPT4")) {
 			break
 		}
 		v.reset(OpAMD64CMPWconstload)
@@ -10489,7 +10501,7 @@ func rewriteValueAMD64_OpAMD64CMPWconstload_0(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64CMPWload_0(v *Value) bool {
 	// match: (CMPWload [off1] {sym} (ADDQconst [off2] base) val mem)
-	// cond: is32Bit(off1+off2)
+	// cond: is32Bit(off1+off2) && noteRule("OPT1")
 	// result: (CMPWload [off1+off2] {sym} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -10503,7 +10515,7 @@ func rewriteValueAMD64_OpAMD64CMPWload_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1 + off2)) {
+		if !(is32Bit(off1+off2) && noteRule("OPT1")) {
 			break
 		}
 		v.reset(OpAMD64CMPWload)
@@ -10515,7 +10527,7 @@ func rewriteValueAMD64_OpAMD64CMPWload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPWload [off1] {sym1} (LEAQ [off2] {sym2} base) val mem)
-	// cond: is32Bit(off1+off2) && canMergeSym(sym1, sym2)
+	// cond: is32Bit(off1+off2) && canMergeSym(sym1, sym2) && noteRule("OPT3")
 	// result: (CMPWload [off1+off2] {mergeSym(sym1,sym2)} base val mem)
 	for {
 		off1 := v.AuxInt
@@ -10530,7 +10542,7 @@ func rewriteValueAMD64_OpAMD64CMPWload_0(v *Value) bool {
 		base := v_0.Args[0]
 		val := v.Args[1]
 		mem := v.Args[2]
-		if !(is32Bit(off1+off2) && canMergeSym(sym1, sym2)) {
+		if !(is32Bit(off1+off2) && canMergeSym(sym1, sym2) && noteRule("OPT3")) {
 			break
 		}
 		v.reset(OpAMD64CMPWload)
@@ -10542,7 +10554,7 @@ func rewriteValueAMD64_OpAMD64CMPWload_0(v *Value) bool {
 		return true
 	}
 	// match: (CMPWload {sym} [off] ptr (MOVLconst [c]) mem)
-	// cond: validValAndOff(int64(int16(c)),off)
+	// cond: validValAndOff(int64(int16(c)),off) && noteRule("OPT14")
 	// result: (CMPWconstload {sym} [makeValAndOff(int64(int16(c)),off)] ptr mem)
 	for {
 		off := v.AuxInt
@@ -10555,7 +10567,7 @@ func rewriteValueAMD64_OpAMD64CMPWload_0(v *Value) bool {
 		}
 		c := v_1.AuxInt
 		mem := v.Args[2]
-		if !(validValAndOff(int64(int16(c)), off)) {
+		if !(validValAndOff(int64(int16(c)), off) && noteRule("OPT14")) {
 			break
 		}
 		v.reset(OpAMD64CMPWconstload)
@@ -55893,7 +55905,7 @@ func rewriteValueAMD64_OpAMD64TESTB_0(v *Value) bool {
 		return true
 	}
 	// match: (TESTB l:(MOVBload {sym} [off] ptr mem) l2)
-	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l)
+	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l) && noteRule("OPT16")
 	// result: @l.Block (CMPBconstload {sym} [makeValAndOff(0,off)] ptr mem)
 	for {
 		_ = v.Args[1]
@@ -55907,7 +55919,7 @@ func rewriteValueAMD64_OpAMD64TESTB_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		l2 := v.Args[1]
-		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l)) {
+		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l) && noteRule("OPT16")) {
 			break
 		}
 		b = l.Block
@@ -55921,7 +55933,7 @@ func rewriteValueAMD64_OpAMD64TESTB_0(v *Value) bool {
 		return true
 	}
 	// match: (TESTB l2 l:(MOVBload {sym} [off] ptr mem))
-	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l)
+	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l) && noteRule("OPT16")
 	// result: @l.Block (CMPBconstload {sym} [makeValAndOff(0,off)] ptr mem)
 	for {
 		_ = v.Args[1]
@@ -55935,7 +55947,7 @@ func rewriteValueAMD64_OpAMD64TESTB_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l)) {
+		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l) && noteRule("OPT16")) {
 			break
 		}
 		b = l.Block
@@ -56005,7 +56017,7 @@ func rewriteValueAMD64_OpAMD64TESTL_0(v *Value) bool {
 		return true
 	}
 	// match: (TESTL l:(MOVLload {sym} [off] ptr mem) l2)
-	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l)
+	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l) && noteRule("OPT16")
 	// result: @l.Block (CMPLconstload {sym} [makeValAndOff(0,off)] ptr mem)
 	for {
 		_ = v.Args[1]
@@ -56019,7 +56031,7 @@ func rewriteValueAMD64_OpAMD64TESTL_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		l2 := v.Args[1]
-		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l)) {
+		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l) && noteRule("OPT16")) {
 			break
 		}
 		b = l.Block
@@ -56033,7 +56045,7 @@ func rewriteValueAMD64_OpAMD64TESTL_0(v *Value) bool {
 		return true
 	}
 	// match: (TESTL l2 l:(MOVLload {sym} [off] ptr mem))
-	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l)
+	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l) && noteRule("OPT16")
 	// result: @l.Block (CMPLconstload {sym} [makeValAndOff(0,off)] ptr mem)
 	for {
 		_ = v.Args[1]
@@ -56047,7 +56059,7 @@ func rewriteValueAMD64_OpAMD64TESTL_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l)) {
+		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l) && noteRule("OPT16")) {
 			break
 		}
 		b = l.Block
@@ -56123,7 +56135,7 @@ func rewriteValueAMD64_OpAMD64TESTQ_0(v *Value) bool {
 		return true
 	}
 	// match: (TESTQ l:(MOVQload {sym} [off] ptr mem) l2)
-	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l)
+	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l) && noteRule("OPT16")
 	// result: @l.Block (CMPQconstload {sym} [makeValAndOff(0,off)] ptr mem)
 	for {
 		_ = v.Args[1]
@@ -56137,7 +56149,7 @@ func rewriteValueAMD64_OpAMD64TESTQ_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		l2 := v.Args[1]
-		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l)) {
+		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l) && noteRule("OPT16")) {
 			break
 		}
 		b = l.Block
@@ -56151,7 +56163,7 @@ func rewriteValueAMD64_OpAMD64TESTQ_0(v *Value) bool {
 		return true
 	}
 	// match: (TESTQ l2 l:(MOVQload {sym} [off] ptr mem))
-	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l)
+	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l) && noteRule("OPT16")
 	// result: @l.Block (CMPQconstload {sym} [makeValAndOff(0,off)] ptr mem)
 	for {
 		_ = v.Args[1]
@@ -56165,7 +56177,7 @@ func rewriteValueAMD64_OpAMD64TESTQ_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l)) {
+		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l) && noteRule("OPT16")) {
 			break
 		}
 		b = l.Block
@@ -56235,7 +56247,7 @@ func rewriteValueAMD64_OpAMD64TESTW_0(v *Value) bool {
 		return true
 	}
 	// match: (TESTW l:(MOVWload {sym} [off] ptr mem) l2)
-	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l)
+	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l) && noteRule("OPT16")
 	// result: @l.Block (CMPWconstload {sym} [makeValAndOff(0,off)] ptr mem)
 	for {
 		_ = v.Args[1]
@@ -56249,7 +56261,7 @@ func rewriteValueAMD64_OpAMD64TESTW_0(v *Value) bool {
 		ptr := l.Args[0]
 		mem := l.Args[1]
 		l2 := v.Args[1]
-		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l)) {
+		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l) && noteRule("OPT16")) {
 			break
 		}
 		b = l.Block
@@ -56263,7 +56275,7 @@ func rewriteValueAMD64_OpAMD64TESTW_0(v *Value) bool {
 		return true
 	}
 	// match: (TESTW l2 l:(MOVWload {sym} [off] ptr mem))
-	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l)
+	// cond: l == l2 && l.Uses == 2 && validValAndOff(0,off) && clobber(l) && noteRule("OPT16")
 	// result: @l.Block (CMPWconstload {sym} [makeValAndOff(0,off)] ptr mem)
 	for {
 		_ = v.Args[1]
@@ -56277,7 +56289,7 @@ func rewriteValueAMD64_OpAMD64TESTW_0(v *Value) bool {
 		_ = l.Args[1]
 		ptr := l.Args[0]
 		mem := l.Args[1]
-		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l)) {
+		if !(l == l2 && l.Uses == 2 && validValAndOff(0, off) && clobber(l) && noteRule("OPT16")) {
 			break
 		}
 		b = l.Block
