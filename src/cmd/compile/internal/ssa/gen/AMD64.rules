@@ -1101,8 +1101,16 @@
 	((ADD|SUB|AND|OR|XOR)Lload [off1+off2] {sym} val base mem)
 (CMP(Q|L|W|B)load [off1] {sym} (ADDQconst [off2] base) val mem) && is32Bit(off1+off2) ->
 	(CMP(Q|L|W|B)load [off1+off2] {sym} base val mem)
+(CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) [off1] {sym} (ADDQconst [off2] base) idx val mem) && is32Bit(off1+off2) ->
+    (CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) [off1+off2] {sym} base idx val mem)
+(CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) [off1] {sym} ptr (ADDQconst [off2] base) val mem) && is32Bit(off1+off2) ->
+    (CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) [off1+off2] {sym} ptr base val mem)
 (CMP(Q|L|W|B)constload [valoff1] {sym} (ADDQconst [off2] base) mem) && ValAndOff(valoff1).canAdd(off2) ->
 	(CMP(Q|L|W|B)constload [ValAndOff(valoff1).add(off2)] {sym} base mem)
+(CMP(Q|L|W|B|W|L|Q|L)constloadidx(1|1|1|1|2|4|8|8) [valoff1] {sym} (ADDQconst [off2] base) idx mem) && ValAndOff(valoff1).canAdd(off2) ->
+	(CMP(Q|L|W|B|W|L|Q|L)constloadidx(1|1|1|1|2|4|8|8) [ValAndOff(valoff1).add(off2)] {sym} base idx mem)
+(CMP(Q|L|W|B|W|L|Q|L)constloadidx(1|1|1|1|2|4|8|8) [valoff1] {sym} ptr (ADDQconst [off2] base) mem) && ValAndOff(valoff1).canAdd(off2) ->
+	(CMP(Q|L|W|B|W|L|Q|L)constloadidx(1|1|1|1|2|4|8|8) [ValAndOff(valoff1).add(off2)] {sym} ptr base mem)
 
 ((ADD|SUB|MUL|DIV)SSload [off1] {sym} val (ADDQconst [off2] base) mem) && is32Bit(off1+off2) ->
 	((ADD|SUB|MUL|DIV)SSload [off1+off2] {sym} val base mem)
@@ -1153,6 +1161,8 @@
 (CMP(Q|L|W|B)load [off1] {sym1} (LEAQ [off2] {sym2} base) val mem)
 	&& is32Bit(off1+off2) && canMergeSym(sym1, sym2) ->
 	(CMP(Q|L|W|B)load [off1+off2] {mergeSym(sym1,sym2)} base val mem)
+(CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) [off1] {sym1} (LEAQ [off2] {sym2} base) idx val mem) && is32Bit(off1+off2) && canMergeSym(sym1, sym2) && base.Op != OpSB ->
+    (CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) [off1+off2] {mergeSym(sym1,sym2)} base idx val mem)
 (CMP(Q|L|W|B)constload [valoff1] {sym1} (LEAQ [off2] {sym2} base) mem)
 	&& ValAndOff(valoff1).canAdd(off2) && canMergeSym(sym1, sym2) ->
 	(CMP(Q|L|W|B)constload [ValAndOff(valoff1).add(off2)] {mergeSym(sym1,sym2)} base mem)
@@ -2536,11 +2546,22 @@
 (CMP(Q|L|W|B) l:(MOV(Q|L|W|B)load {sym} [off] ptr mem) x) && canMergeLoad(v, l) && clobber(l) -> (CMP(Q|L|W|B)load {sym} [off] ptr x mem)
 (CMP(Q|L|W|B) x l:(MOV(Q|L|W|B)load {sym} [off] ptr mem)) && canMergeLoad(v, l) && clobber(l) -> (InvertFlags (CMP(Q|L|W|B)load {sym} [off] ptr x mem))
 
+(CMP(Q|L|W|B|W|L|Q|L) l:(MOV(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [off] ptr idx mem) x) && canMergeLoad(v, l) && clobber(l) ->
+  (CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [off] ptr idx x mem)
+(CMP(Q|L|W|B|W|L|Q|L) x l:(MOV(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [off] ptr idx mem)) && canMergeLoad(v, l) && clobber(l) ->
+  (InvertFlags (CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [off] ptr idx x mem))
+
 (CMP(Q|L|W|B)const l:(MOV(Q|L|W|B)load {sym} [off] ptr mem) [c])
 	&& l.Uses == 1
 	&& validValAndOff(c, off)
 	&& clobber(l) ->
   @l.Block (CMP(Q|L|W|B)constload {sym} [makeValAndOff(c,off)] ptr mem)
+
+(CMP(Q|L|W|B|W|L|Q|L)const l:(MOV(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [off] ptr idx mem) [c])
+	&& l.Uses == 1
+	&& validValAndOff(c, off)
+	&& clobber(l) ->
+  @l.Block (CMP(Q|L|W|B|W|L|Q|L)constloadidx(1|1|1|1|2|4|8|8) {sym} [makeValAndOff(c,off)] ptr idx mem)
 
 (CMPQload {sym} [off] ptr (MOVQconst [c]) mem) && validValAndOff(c,off) -> (CMPQconstload {sym} [makeValAndOff(c,off)] ptr mem)
 (CMPLload {sym} [off] ptr (MOVLconst [c]) mem) && validValAndOff(c,off) -> (CMPLconstload {sym} [makeValAndOff(c,off)] ptr mem)
@@ -2553,6 +2574,13 @@
 	&& validValAndOff(0,off)
 	&& clobber(l) ->
   @l.Block (CMP(Q|L|W|B)constload {sym} [makeValAndOff(0,off)] ptr mem)
+
+(TEST(Q|L|W|B|W|L|Q|L)  l:(MOV(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [off] ptr idx mem) l2)
+        && l == l2
+	&& l.Uses == 2
+	&& validValAndOff(0,off)
+	&& clobber(l) ->
+  @l.Block (CMP(Q|L|W|B|W|L|Q|L)constloadidx(1|1|1|1|2|4|8|8) {sym} [makeValAndOff(0,off)] ptr idx mem)
 
 (MOVBload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVLconst [int64(read8(sym, off))])
 (MOVWload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVLconst [int64(read16(sym, off, config.BigEndian))])

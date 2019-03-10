@@ -14,3 +14,9 @@
 (CMP(Q|L|W|B)load {sym} [off] ptr x mem) -> (CMP(Q|L|W|B) (MOV(Q|L|W|B)load {sym} [off] ptr mem) x)
 
 (CMP(Q|L|W|B)constload {sym} [vo] ptr mem) -> (CMP(Q|L|W|B)const (MOV(Q|L|W|B)load {sym} [offOnly(vo)] ptr mem) [valOnly(vo)])
+
+(CMP(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [off] ptr idx x mem) ->
+    (CMP(Q|L|W|B|W|L|Q|L) (MOV(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [off] ptr idx mem) x)
+
+(CMP(Q|L|W|B|W|L|Q|L)constloadidx(1|1|1|1|2|4|8|8) {sym} [vo] ptr idx mem) ->
+    (CMP(Q|L|W|B|W|L|Q|L)const (MOV(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [offOnly(vo)] ptr idx mem) [valOnly(vo)])

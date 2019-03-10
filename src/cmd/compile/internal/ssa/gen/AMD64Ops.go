@@ -126,6 +126,7 @@ func init() {
 		gp1flags     = regInfo{inputs: []regMask{gpsp}}
 		gp0flagsLoad = regInfo{inputs: []regMask{gpspsb, 0}}
 		gp1flagsLoad = regInfo{inputs: []regMask{gpspsb, gpsp, 0}}
+		gp2flagsLoad = regInfo{inputs: []regMask{gpspsb, gpsp, gpsp, 0}}
 		flagsgp      = regInfo{inputs: nil, outputs: gponly}
 
 		gp11flags      = regInfo{inputs: []regMask{gp}, outputs: []regMask{gp, 0}}
@@ -288,11 +289,31 @@ func init() {
 		{name: "CMPWload", argLength: 3, reg: gp1flagsLoad, asm: "CMPW", aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 		{name: "CMPBload", argLength: 3, reg: gp1flagsLoad, asm: "CMPB", aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 
+		// compare *(arg0+scale*arg1+auxint+aux) to arg2 (in that order). arg3=mem
+		{name: "CMPQloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "CMPQ", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPQloadidx8", argLength: 4, reg: gp2flagsLoad, asm: "CMPQ", scale: 8, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "CMPL", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLloadidx4", argLength: 4, reg: gp2flagsLoad, asm: "CMPL", scale: 4, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLloadidx8", argLength: 4, reg: gp2flagsLoad, asm: "CMPL", scale: 8, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPWloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "CMPW", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPWloadidx2", argLength: 4, reg: gp2flagsLoad, asm: "CMPW", scale: 2, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPBloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "CMPB", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+
 		// compare *(arg0+ValAndOff(AuxInt).Off()+aux) to ValAndOff(AuxInt).Val() (in that order). arg1=mem.
 		{name: "CMPQconstload", argLength: 2, reg: gp0flagsLoad, asm: "CMPQ", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 		{name: "CMPLconstload", argLength: 2, reg: gp0flagsLoad, asm: "CMPL", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 		{name: "CMPWconstload", argLength: 2, reg: gp0flagsLoad, asm: "CMPW", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 		{name: "CMPBconstload", argLength: 2, reg: gp0flagsLoad, asm: "CMPB", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+
+		// compare *(arg0+scale*arg1+ValAndOff(AuxInt).Off()+aux) to ValAndOff(AuxInt).Val() (in that order). arg2=mem
+		{name: "CMPQconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "CMPQ", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPQconstloadidx8", argLength: 3, reg: gp1flagsLoad, asm: "CMPQ", scale: 8, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "CMPL", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLconstloadidx4", argLength: 3, reg: gp1flagsLoad, asm: "CMPL", scale: 4, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPLconstloadidx8", argLength: 3, reg: gp1flagsLoad, asm: "CMPL", scale: 8, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPWconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "CMPW", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPWconstloadidx2", argLength: 3, reg: gp1flagsLoad, asm: "CMPW", scale: 2, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "CMPBconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "CMPB", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
 
 		{name: "UCOMISS", argLength: 2, reg: fp2flags, asm: "UCOMISS", typ: "Flags"}, // arg0 compare to arg1, f32
 		{name: "UCOMISD", argLength: 2, reg: fp2flags, asm: "UCOMISD", typ: "Flags"}, // arg0 compare to arg1, f64
