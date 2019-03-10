@@ -28,11 +28,26 @@ func mergeload(f *Func) {
 	defer func() { f.mergeLoadState = nil }()
 
 	for _, b := range f.Blocks {
-		if b.Control != nil {
-			f.Config.mergeValue(b.Control)
-		}
-		for _, v := range b.Values {
-			f.Config.mergeValue(v)
+		// if b.Control != nil {
+		// 	f.Config.mergeValue(b.Control)
+		// }
+		for i, v := range b.Values {
+			if f.Config.mergeValue(v) {
+				// Fix up memory arg. Eeeeeeeeeeek.
+				for ; i >= 0; i-- {
+					w := b.Values[i]
+					if w.Type.IsMemory() {
+						if w == v.MemoryArg() {
+							break
+						}
+						if w.Op != OpVarDef || w.Aux == v.Aux {
+							f.Fatalf("load moved through possibly aliased memory states")
+						}
+						v.SetArg(len(v.Args)-1, w)
+						break
+					}
+				}
+			}
 		}
 	}
 
@@ -117,6 +132,7 @@ func canMergeLoadLateClobber(target, load, x *Value) bool {
 
 // canMergeLoadLate reports whether the load can be merged into target without
 // invalidating the schedule.
+// TODO: does this correctly handle block Control values??
 func canMergeLoadLate(target, load *Value) bool {
 	if target.Block.ID != load.Block.ID {
 		// If the load is in a different block do not merge it.
@@ -140,11 +156,14 @@ func canMergeLoadLate(target, load *Value) bool {
 	for ; b.Values[i] != target; i++ {
 		// TODO: if/when we have alias analysis, if we can prove
 		// b.Values[i] doesn't clobber load, we can keep going.
-		if b.Values[i].Type.IsMemory() {
+		v := b.Values[i]
+		if v.Type.IsMemory() {
+			if v.Op == OpVarDef && v.Aux != load.Aux {
+				continue
+			}
 			return false
 		}
 	}
-
 	return true
 }
 
