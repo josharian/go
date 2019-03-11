@@ -18,7 +18,7 @@ import (
 	"path/filepath"
 )
 
-func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
+func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter, runDeadcode bool) {
 	// repeat rewrites until we find no more rewrites
 	pendingLines := f.cachedLineStarts // Holds statement boundaries that need to be moved to a new value/block
 	pendingLines.clear()
@@ -87,6 +87,16 @@ func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
 						}
 					}
 				}
+			}
+		}
+		if !change && runDeadcode {
+			// See whether deadcode removes any values or blocks.
+			// If so, that may enable more rewrite rules to trigger.
+			nv := f.countValues()
+			nb := len(f.Blocks)
+			deadcode(f)
+			if len(f.Blocks) != nb || f.countValues() != nv {
+				change = true
 			}
 		}
 		if !change {

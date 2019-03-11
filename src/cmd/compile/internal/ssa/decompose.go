@@ -23,9 +23,9 @@ func decomposeBuiltIn(f *Func) {
 	}
 
 	// Decompose other values
-	applyRewrite(f, rewriteBlockdec, rewriteValuedec)
+	applyRewrite(f, rewriteBlockdec, rewriteValuedec, false)
 	if f.Config.RegSize == 4 {
-		applyRewrite(f, rewriteBlockdec64, rewriteValuedec64)
+		applyRewrite(f, rewriteBlockdec64, rewriteValuedec64, false)
 	}
 
 	// Split up named values into their components.
@@ -215,7 +215,7 @@ func decomposeInterfacePhi(v *Value) {
 }
 
 func decomposeArgs(f *Func) {
-	applyRewrite(f, rewriteBlockdecArgs, rewriteValuedecArgs)
+	applyRewrite(f, rewriteBlockdecArgs, rewriteValuedecArgs, false)
 }
 
 func decomposeUser(f *Func) {
