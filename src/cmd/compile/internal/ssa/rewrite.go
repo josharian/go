@@ -128,6 +128,30 @@ func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
 	}
 }
 
+func applyRewriteDeadcodeCSE(f *Func, rb blockRewriter, rv valueRewriter) {
+	// repeat rewrites+deadcode+cse until we stabilize
+	for {
+		applyRewrite(f, rb, rv)
+		// See whether deadcode removes any values or blocks.
+		// That may enable more rewrite rules to trigger.
+		nv, nb := f.countValues(), len(f.Blocks)
+		deadcode(f)
+		change := len(f.Blocks) != nb || f.countValues() != nv
+		if !change {
+			// deadcode made no changes.
+			// Give cse+deadcode a change to combine values.
+			// That may enable more rewrite rules to trigger.
+			nv, nb := f.countValues(), len(f.Blocks)
+			cse(f)
+			deadcode(f)
+			change = len(f.Blocks) != nb || f.countValues() != nv
+		}
+		if !change {
+			return
+		}
+	}
+}
+
 // Common functions called from rewriting rules
 
 func is64BitFloat(t *types.Type) bool {

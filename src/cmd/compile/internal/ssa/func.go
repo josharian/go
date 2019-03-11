@@ -91,6 +91,15 @@ func (f *Func) NumValues() int {
 	return f.vid.num()
 }
 
+// countValues returns the sum of len(b.Values) across all blocks.
+func (f *Func) countValues() int {
+	nv := 0
+	for _, b := range f.Blocks {
+		nv += len(b.Values)
+	}
+	return nv
+}
+
 // newSparseSet returns a sparse set that can store at least up to n integers.
 func (f *Func) newSparseSet(n int) *sparseSet {
 	for i, scr := range f.Cache.scrSparseSet {

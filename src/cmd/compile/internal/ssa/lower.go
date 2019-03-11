@@ -6,8 +6,7 @@ package ssa
 
 // convert to machine-dependent ops
 func lower(f *Func) {
-	// repeat rewrites until we find no more rewrites
-	applyRewrite(f, f.Config.lowerBlock, f.Config.lowerValue)
+	applyRewriteDeadcodeCSE(f, f.Config.lowerBlock, f.Config.lowerValue)
 }
 
 // checkLower checks for unlowered opcodes and fails if we find one.
