@@ -22,7 +22,7 @@ func rewriteValueAMD64(v *Value) bool {
 	case OpAMD64ADCQconst:
 		return rewriteValueAMD64_OpAMD64ADCQconst_0(v)
 	case OpAMD64ADDL:
-		return rewriteValueAMD64_OpAMD64ADDL_0(v) || rewriteValueAMD64_OpAMD64ADDL_10(v) || rewriteValueAMD64_OpAMD64ADDL_20(v)
+		return rewriteValueAMD64_OpAMD64ADDL_0(v) || rewriteValueAMD64_OpAMD64ADDL_10(v) || rewriteValueAMD64_OpAMD64ADDL_20(v) || rewriteValueAMD64_OpAMD64ADDL_30(v)
 	case OpAMD64ADDLconst:
 		return rewriteValueAMD64_OpAMD64ADDLconst_0(v) || rewriteValueAMD64_OpAMD64ADDLconst_10(v)
 	case OpAMD64ADDLconstmodify:
@@ -52,7 +52,7 @@ func rewriteValueAMD64(v *Value) bool {
 	case OpAMD64ADDSSload:
 		return rewriteValueAMD64_OpAMD64ADDSSload_0(v)
 	case OpAMD64ANDL:
-		return rewriteValueAMD64_OpAMD64ANDL_0(v)
+		return rewriteValueAMD64_OpAMD64ANDL_0(v) || rewriteValueAMD64_OpAMD64ANDL_10(v)
 	case OpAMD64ANDLconst:
 		return rewriteValueAMD64_OpAMD64ANDLconst_0(v)
 	case OpAMD64ANDLconstmodify:
@@ -62,7 +62,7 @@ func rewriteValueAMD64(v *Value) bool {
 	case OpAMD64ANDLmodify:
 		return rewriteValueAMD64_OpAMD64ANDLmodify_0(v)
 	case OpAMD64ANDQ:
-		return rewriteValueAMD64_OpAMD64ANDQ_0(v)
+		return rewriteValueAMD64_OpAMD64ANDQ_0(v) || rewriteValueAMD64_OpAMD64ANDQ_10(v)
 	case OpAMD64ANDQconst:
 		return rewriteValueAMD64_OpAMD64ANDQconst_0(v)
 	case OpAMD64ANDQconstmodify:
@@ -430,7 +430,7 @@ func rewriteValueAMD64(v *Value) bool {
 	case OpAMD64NOTQ:
 		return rewriteValueAMD64_OpAMD64NOTQ_0(v)
 	case OpAMD64ORL:
-		return rewriteValueAMD64_OpAMD64ORL_0(v) || rewriteValueAMD64_OpAMD64ORL_10(v) || rewriteValueAMD64_OpAMD64ORL_20(v) || rewriteValueAMD64_OpAMD64ORL_30(v) || rewriteValueAMD64_OpAMD64ORL_40(v) || rewriteValueAMD64_OpAMD64ORL_50(v) || rewriteValueAMD64_OpAMD64ORL_60(v) || rewriteValueAMD64_OpAMD64ORL_70(v) || rewriteValueAMD64_OpAMD64ORL_80(v) || rewriteValueAMD64_OpAMD64ORL_90(v) || rewriteValueAMD64_OpAMD64ORL_100(v) || rewriteValueAMD64_OpAMD64ORL_110(v) || rewriteValueAMD64_OpAMD64ORL_120(v) || rewriteValueAMD64_OpAMD64ORL_130(v)
+		return rewriteValueAMD64_OpAMD64ORL_0(v) || rewriteValueAMD64_OpAMD64ORL_10(v) || rewriteValueAMD64_OpAMD64ORL_20(v) || rewriteValueAMD64_OpAMD64ORL_30(v) || rewriteValueAMD64_OpAMD64ORL_40(v) || rewriteValueAMD64_OpAMD64ORL_50(v) || rewriteValueAMD64_OpAMD64ORL_60(v) || rewriteValueAMD64_OpAMD64ORL_70(v) || rewriteValueAMD64_OpAMD64ORL_80(v) || rewriteValueAMD64_OpAMD64ORL_90(v) || rewriteValueAMD64_OpAMD64ORL_100(v) || rewriteValueAMD64_OpAMD64ORL_110(v) || rewriteValueAMD64_OpAMD64ORL_120(v) || rewriteValueAMD64_OpAMD64ORL_130(v) || rewriteValueAMD64_OpAMD64ORL_140(v)
 	case OpAMD64ORLconst:
 		return rewriteValueAMD64_OpAMD64ORLconst_0(v)
 	case OpAMD64ORLconstmodify:
@@ -440,7 +440,7 @@ func rewriteValueAMD64(v *Value) bool {
 	case OpAMD64ORLmodify:
 		return rewriteValueAMD64_OpAMD64ORLmodify_0(v)
 	case OpAMD64ORQ:
-		return rewriteValueAMD64_OpAMD64ORQ_0(v) || rewriteValueAMD64_OpAMD64ORQ_10(v) || rewriteValueAMD64_OpAMD64ORQ_20(v) || rewriteValueAMD64_OpAMD64ORQ_30(v) || rewriteValueAMD64_OpAMD64ORQ_40(v) || rewriteValueAMD64_OpAMD64ORQ_50(v) || rewriteValueAMD64_OpAMD64ORQ_60(v) || rewriteValueAMD64_OpAMD64ORQ_70(v) || rewriteValueAMD64_OpAMD64ORQ_80(v) || rewriteValueAMD64_OpAMD64ORQ_90(v) || rewriteValueAMD64_OpAMD64ORQ_100(v) || rewriteValueAMD64_OpAMD64ORQ_110(v) || rewriteValueAMD64_OpAMD64ORQ_120(v) || rewriteValueAMD64_OpAMD64ORQ_130(v) || rewriteValueAMD64_OpAMD64ORQ_140(v) || rewriteValueAMD64_OpAMD64ORQ_150(v) || rewriteValueAMD64_OpAMD64ORQ_160(v)
+		return rewriteValueAMD64_OpAMD64ORQ_0(v) || rewriteValueAMD64_OpAMD64ORQ_10(v) || rewriteValueAMD64_OpAMD64ORQ_20(v) || rewriteValueAMD64_OpAMD64ORQ_30(v) || rewriteValueAMD64_OpAMD64ORQ_40(v) || rewriteValueAMD64_OpAMD64ORQ_50(v) || rewriteValueAMD64_OpAMD64ORQ_60(v) || rewriteValueAMD64_OpAMD64ORQ_70(v) || rewriteValueAMD64_OpAMD64ORQ_80(v) || rewriteValueAMD64_OpAMD64ORQ_90(v) || rewriteValueAMD64_OpAMD64ORQ_100(v) || rewriteValueAMD64_OpAMD64ORQ_110(v) || rewriteValueAMD64_OpAMD64ORQ_120(v) || rewriteValueAMD64_OpAMD64ORQ_130(v) || rewriteValueAMD64_OpAMD64ORQ_140(v) || rewriteValueAMD64_OpAMD64ORQ_150(v) || rewriteValueAMD64_OpAMD64ORQ_160(v) || rewriteValueAMD64_OpAMD64ORQ_170(v)
 	case OpAMD64ORQconst:
 		return rewriteValueAMD64_OpAMD64ORQconst_0(v)
 	case OpAMD64ORQconstmodify:
@@ -612,7 +612,7 @@ func rewriteValueAMD64(v *Value) bool {
 	case OpAMD64XCHGQ:
 		return rewriteValueAMD64_OpAMD64XCHGQ_0(v)
 	case OpAMD64XORL:
-		return rewriteValueAMD64_OpAMD64XORL_0(v) || rewriteValueAMD64_OpAMD64XORL_10(v)
+		return rewriteValueAMD64_OpAMD64XORL_0(v) || rewriteValueAMD64_OpAMD64XORL_10(v) || rewriteValueAMD64_OpAMD64XORL_20(v)
 	case OpAMD64XORLconst:
 		return rewriteValueAMD64_OpAMD64XORLconst_0(v) || rewriteValueAMD64_OpAMD64XORLconst_10(v)
 	case OpAMD64XORLconstmodify:
@@ -1860,6 +1860,168 @@ func rewriteValueAMD64_OpAMD64ADDL_20(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	// match: (ADDL x l:(MOVLloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADDL l:(MOVLloadidx1 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	return false
+}
+func rewriteValueAMD64_OpAMD64ADDL_30(v *Value) bool {
+	// match: (ADDL x l:(MOVLloadidx4 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADDL l:(MOVLloadidx4 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADDL x l:(MOVLloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADDL l:(MOVLloadidx8 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64ADDLconst_0(v *Value) bool {
@@ -2745,6 +2907,112 @@ func rewriteValueAMD64_OpAMD64ADDQ_20(v *Value) bool {
 		v.Aux = sym
 		v.AddArg(x)
 		v.AddArg(ptr)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADDQ x l:(MOVQloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADDQ l:(MOVQloadidx1 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADDQ x l:(MOVQloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADDQ l:(MOVQloadidx8 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADDQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADDQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
 		v.AddArg(mem)
 		return true
 	}
@@ -3666,6 +3934,168 @@ func rewriteValueAMD64_OpAMD64ANDL_0(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	// match: (ANDL x l:(MOVLloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	return false
+}
+func rewriteValueAMD64_OpAMD64ANDL_10(v *Value) bool {
+	// match: (ANDL l:(MOVLloadidx1 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ANDL x l:(MOVLloadidx4 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ANDL l:(MOVLloadidx4 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ANDL x l:(MOVLloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ANDL l:(MOVLloadidx8 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64ANDLconst_0(v *Value) bool {
@@ -4169,6 +4599,115 @@ func rewriteValueAMD64_OpAMD64ANDQ_0(v *Value) bool {
 		v.Aux = sym
 		v.AddArg(x)
 		v.AddArg(ptr)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ANDQ x l:(MOVQloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	return false
+}
+func rewriteValueAMD64_OpAMD64ANDQ_10(v *Value) bool {
+	// match: (ANDQ l:(MOVQloadidx1 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ANDQ x l:(MOVQloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ANDQ l:(MOVQloadidx8 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ANDQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ANDQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
 		v.AddArg(mem)
 		return true
 	}
@@ -36077,6 +36616,168 @@ func rewriteValueAMD64_OpAMD64ORL_130(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	// match: (ORL x l:(MOVLloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ORL l:(MOVLloadidx1 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ORL x l:(MOVLloadidx4 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ORL l:(MOVLloadidx4 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ORL x l:(MOVLloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	return false
+}
+func rewriteValueAMD64_OpAMD64ORL_140(v *Value) bool {
+	// match: (ORL l:(MOVLloadidx8 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64ORLconst_0(v *Value) bool {
@@ -46889,6 +47590,115 @@ func rewriteValueAMD64_OpAMD64ORQ_160(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	// match: (ORQ x l:(MOVQloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ORQ l:(MOVQloadidx1 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ORQ x l:(MOVQloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	return false
+}
+func rewriteValueAMD64_OpAMD64ORQ_170(v *Value) bool {
+	// match: (ORQ l:(MOVQloadidx8 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ORQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ORQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64ORQconst_0(v *Value) bool {
@@ -55593,6 +56403,87 @@ func rewriteValueAMD64_OpAMD64SUBL_0(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	// match: (SUBL x l:(MOVLloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (SUBLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64SUBLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (SUBL x l:(MOVLloadidx4 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (SUBLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64SUBLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (SUBL x l:(MOVLloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (SUBLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64SUBLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64SUBLconst_0(v *Value) bool {
@@ -55838,6 +56729,60 @@ func rewriteValueAMD64_OpAMD64SUBQ_0(v *Value) bool {
 		v.Aux = sym
 		v.AddArg(x)
 		v.AddArg(ptr)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (SUBQ x l:(MOVQloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (SUBQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64SUBQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (SUBQ x l:(MOVQloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (SUBQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64SUBQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
 		v.AddArg(mem)
 		return true
 	}
@@ -57705,6 +58650,168 @@ func rewriteValueAMD64_OpAMD64XORL_10(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	// match: (XORL x l:(MOVLloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (XORL l:(MOVLloadidx1 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORLloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORLloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (XORL x l:(MOVLloadidx4 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (XORL l:(MOVLloadidx4 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORLloadidx4 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORLloadidx4)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (XORL x l:(MOVLloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	return false
+}
+func rewriteValueAMD64_OpAMD64XORL_20(v *Value) bool {
+	// match: (XORL l:(MOVLloadidx8 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORLloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORLloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64XORLconst_0(v *Value) bool {
@@ -58383,6 +59490,112 @@ func rewriteValueAMD64_OpAMD64XORQ_10(v *Value) bool {
 		v.Aux = sym
 		v.AddArg(x)
 		v.AddArg(ptr)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (XORQ x l:(MOVQloadidx1 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (XORQ l:(MOVQloadidx1 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORQloadidx1 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (XORQ x l:(MOVQloadidx8 [off] {sym} ptr idx mem))
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (XORQ l:(MOVQloadidx8 [off] {sym} ptr idx mem) x)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (XORQloadidx8 x [off] {sym} ptr idx mem)
+	for {
+		x := v.Args[1]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		mem := l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64XORQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(x)
+		v.AddArg(ptr)
+		v.AddArg(idx)
 		v.AddArg(mem)
 		return true
 	}

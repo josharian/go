@@ -2392,7 +2392,12 @@
 // Merge load and op
 // TODO: add indexed variants?
 ((ADD|SUB|AND|OR|XOR)Q x l:(MOVQload [off] {sym} ptr mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|AND|OR|XOR)Qload x [off] {sym} ptr mem)
+((ADD|SUB|AND|OR|XOR)Q x l:(MOVQloadidx1 [off] {sym} ptr idx mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|AND|OR|XOR)Qloadidx1 x [off] {sym} ptr idx mem)
+((ADD|SUB|AND|OR|XOR)Q x l:(MOVQloadidx8 [off] {sym} ptr idx mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|AND|OR|XOR)Qloadidx8 x [off] {sym} ptr idx mem)
 ((ADD|SUB|AND|OR|XOR)L x l:(MOVLload [off] {sym} ptr mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|AND|OR|XOR)Lload x [off] {sym} ptr mem)
+((ADD|SUB|AND|OR|XOR)L x l:(MOVLloadidx1 [off] {sym} ptr idx mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|AND|OR|XOR)Lloadidx1 x [off] {sym} ptr idx mem)
+((ADD|SUB|AND|OR|XOR)L x l:(MOVLloadidx4 [off] {sym} ptr idx mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|AND|OR|XOR)Lloadidx4 x [off] {sym} ptr idx mem)
+((ADD|SUB|AND|OR|XOR)L x l:(MOVLloadidx8 [off] {sym} ptr idx mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|AND|OR|XOR)Lloadidx8 x [off] {sym} ptr idx mem)
 ((ADD|SUB|MUL|DIV)SD x l:(MOVSDload [off] {sym} ptr mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|MUL|DIV)SDload x [off] {sym} ptr mem)
 ((ADD|SUB|MUL|DIV)SS x l:(MOVSSload [off] {sym} ptr mem)) && canMergeLoadClobber(v, l, x) && clobber(l) -> ((ADD|SUB|MUL|DIV)SSload x [off] {sym} ptr mem)
 (MOVLstore {sym} [off] ptr y:((ADD|AND|OR|XOR)Lload x [off] {sym} ptr mem) mem) && y.Uses==1 && clobber(y) -> ((ADD|AND|OR|XOR)Lmodify [off] {sym} ptr x mem)
