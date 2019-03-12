@@ -403,6 +403,13 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		p.To.Type = obj.TYPE_REG
 		p.To.Reg = v.Reg0()
 
+	case ssa.OpAMD64SBBQloadidx1, ssa.OpAMD64SBBQloadidx8:
+		p := s.Prog(v.Op.Asm())
+		memIdx(&p.From, v)
+		gc.AddAux(&p.From, v)
+		p.To.Type = obj.TYPE_REG
+		p.To.Reg = v.Reg0()
+
 	case ssa.OpAMD64ADDQconstcarry, ssa.OpAMD64ADCQconst, ssa.OpAMD64SUBQconstborrow, ssa.OpAMD64SBBQconst:
 		p := s.Prog(v.Op.Asm())
 		p.From.Type = obj.TYPE_CONST
@@ -667,7 +674,8 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		p.From.Offset = v.AuxInt
 		p.To.Type = obj.TYPE_REG
 		p.To.Reg = v.Args[0].Reg()
-	case ssa.OpAMD64CMPQload, ssa.OpAMD64CMPLload, ssa.OpAMD64CMPWload, ssa.OpAMD64CMPBload:
+	case ssa.OpAMD64CMPQload, ssa.OpAMD64CMPLload, ssa.OpAMD64CMPWload, ssa.OpAMD64CMPBload,
+		ssa.OpAMD64ADCQload:
 		p := s.Prog(v.Op.Asm())
 		p.From.Type = obj.TYPE_MEM
 		p.From.Reg = v.Args[0].Reg()
@@ -678,7 +686,8 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 	case ssa.OpAMD64CMPQloadidx1, ssa.OpAMD64CMPQloadidx8,
 		ssa.OpAMD64CMPLloadidx1, ssa.OpAMD64CMPLloadidx4, ssa.OpAMD64CMPLloadidx8,
 		ssa.OpAMD64CMPWloadidx1, ssa.OpAMD64CMPWloadidx2,
-		ssa.OpAMD64CMPBloadidx1:
+		ssa.OpAMD64CMPBloadidx1,
+		ssa.OpAMD64ADCQloadidx1, ssa.OpAMD64ADCQloadidx8:
 		p := s.Prog(v.Op.Asm())
 		memIdx(&p.From, v)
 		gc.AddAux(&p.From, v)
@@ -1144,7 +1153,7 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		if gc.Debug_checknil != 0 && v.Pos.Line() > 1 { // v.Pos.Line()==1 in generated wrappers
 			gc.Warnl(v.Pos, "generated nil check")
 		}
-	case ssa.OpAMD64MOVLatomicload, ssa.OpAMD64MOVQatomicload:
+	case ssa.OpAMD64MOVLatomicload, ssa.OpAMD64MOVQatomicload, ssa.OpAMD64SBBQload:
 		p := s.Prog(v.Op.Asm())
 		p.From.Type = obj.TYPE_MEM
 		p.From.Reg = v.Args[0].Reg()

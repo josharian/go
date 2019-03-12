@@ -23,3 +23,8 @@
 
 (BT(Q|L)constload {sym} [vo] ptr mem) -> (BT(Q|L)const [valOnly(vo)] (MOV(Q|L)load {sym} [offOnly(vo)] ptr mem))
 (BT(Q|L|L|Q|L)constloadidx(1|1|4|8|8) {sym} [vo] ptr idx mem) -> (BT(Q|L|L|Q|L)const [valOnly(vo)] (MOV(Q|L|L|Q|L)loadidx(1|1|4|8|8) {sym} [offOnly(vo)] ptr idx mem))
+
+(ADCQload         {sym} [off] ptr     x carry mem) -> (ADCQ (MOVQload         {sym} [off] ptr     mem) x carry)
+(ADCQloadidx(1|8) {sym} [off] ptr idx x carry mem) -> (ADCQ (MOVQloadidx(1|8) {sym} [off] ptr idx mem) x carry)
+(SBBQload         {sym} [off] ptr     x carry mem) -> (SBBQ (MOVQload         {sym} [off] ptr     mem) x carry)
+(SBBQloadidx(1|8) {sym} [off] ptr idx x carry mem) -> (SBBQ (MOVQloadidx(1|8) {sym} [off] ptr idx mem) x carry)

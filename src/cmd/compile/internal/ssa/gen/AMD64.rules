@@ -2610,3 +2610,20 @@
 
 (BT(Q|L)const [c] l:(MOV(Q|L)load {sym} [off] ptr mem)) && validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l) -> (BT(Q|L)constload {sym} [makeValAndOff(int64(int8(c)), off)] ptr mem)
 (BT(Q|L|L|Q|L)const [c] l:(MOV(Q|L|L|Q|L)loadidx(1|1|4|8|8) {sym} [off] ptr idx mem)) && validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l) -> (BT(Q|L|L|Q|L)constloadidx(1|1|4|8|8) {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+
+(ADCQ l:(MOVQload {sym} [off] ptr mem) x carry) 
+    && canMergeLoadClobber(v, l, x)
+    && clobber(l) ->
+  (ADCQload {sym} [off] ptr x carry mem)
+(ADCQ l:(MOVQloadidx(1|8) {sym} [off] ptr idx mem) x carry)
+    && canMergeLoadClobber(v, l, x)
+    && clobber(l) ->
+  (ADCQloadidx(1|8) {sym} [off] ptr idx x carry mem)
+(SBBQ x l:(MOVQload {sym} [off] ptr mem) carry)
+    && canMergeLoadClobber(v, l, x)
+    && clobber(l) ->
+  (SBBQload {sym} [off] ptr x carry mem)
+(SBBQ x l:(MOVQloadidx(1|8) {sym} [off] ptr idx mem) carry)
+    && canMergeLoadClobber(v, l, x)
+    && clobber(l) ->
+  (SBBQloadidx(1|8) {sym} [off] ptr idx x carry mem)

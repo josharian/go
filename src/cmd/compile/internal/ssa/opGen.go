@@ -542,10 +542,16 @@ const (
 	OpAMD64ADCQ
 	OpAMD64ADDQconstcarry
 	OpAMD64ADCQconst
+	OpAMD64ADCQload
+	OpAMD64ADCQloadidx1
+	OpAMD64ADCQloadidx8
 	OpAMD64SUBQborrow
 	OpAMD64SBBQ
 	OpAMD64SUBQconstborrow
 	OpAMD64SBBQconst
+	OpAMD64SBBQload
+	OpAMD64SBBQloadidx1
+	OpAMD64SBBQloadidx8
 	OpAMD64MULQU2
 	OpAMD64DIVQU2
 	OpAMD64ANDQ
@@ -6833,6 +6839,64 @@ var opcodeTable = [...]opInfo{
 		},
 	},
 	{
+		name:           "ADCQload",
+		auxType:        auxSymOff,
+		argLen:         4,
+		faultOnNilArg0: true,
+		symEffect:      SymRead,
+		asm:            x86.AADCQ,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{1, 65519},      // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{0, 4295032831}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15 SB
+			},
+			outputs: []outputInfo{
+				{1, 0},
+				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
+		name:           "ADCQloadidx1",
+		auxType:        auxSymOff,
+		argLen:         5,
+		faultOnNilArg0: true,
+		symEffect:      SymRead,
+		asm:            x86.AADCQ,
+		scale:          1,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{2, 65519},      // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{1, 65535},      // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{0, 4295032831}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15 SB
+			},
+			outputs: []outputInfo{
+				{1, 0},
+				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
+		name:           "ADCQloadidx8",
+		auxType:        auxSymOff,
+		argLen:         5,
+		faultOnNilArg0: true,
+		symEffect:      SymRead,
+		asm:            x86.AADCQ,
+		scale:          8,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{2, 65519},      // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{1, 65535},      // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{0, 4295032831}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15 SB
+			},
+			outputs: []outputInfo{
+				{1, 0},
+				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
 		name:         "SUBQborrow",
 		argLen:       2,
 		resultInArg0: true,
@@ -6889,6 +6953,64 @@ var opcodeTable = [...]opInfo{
 		reg: regInfo{
 			inputs: []inputInfo{
 				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+			outputs: []outputInfo{
+				{1, 0},
+				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
+		name:           "SBBQload",
+		auxType:        auxSymOff,
+		argLen:         4,
+		faultOnNilArg0: true,
+		symEffect:      SymRead,
+		asm:            x86.ASBBQ,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{1, 65519},      // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{0, 4295032831}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15 SB
+			},
+			outputs: []outputInfo{
+				{1, 0},
+				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
+		name:           "SBBQloadidx1",
+		auxType:        auxSymOff,
+		argLen:         5,
+		faultOnNilArg0: true,
+		symEffect:      SymRead,
+		asm:            x86.ASBBQ,
+		scale:          1,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{2, 65519},      // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{1, 65535},      // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{0, 4295032831}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15 SB
+			},
+			outputs: []outputInfo{
+				{1, 0},
+				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+			},
+		},
+	},
+	{
+		name:           "SBBQloadidx8",
+		auxType:        auxSymOff,
+		argLen:         5,
+		faultOnNilArg0: true,
+		symEffect:      SymRead,
+		asm:            x86.ASBBQ,
+		scale:          8,
+		reg: regInfo{
+			inputs: []inputInfo{
+				{2, 65519},      // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{1, 65535},      // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
+				{0, 4295032831}, // AX CX DX BX SP BP SI DI R8 R9 R10 R11 R12 R13 R14 R15 SB
 			},
 			outputs: []outputInfo{
 				{1, 0},

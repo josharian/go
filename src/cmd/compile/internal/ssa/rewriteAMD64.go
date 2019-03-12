@@ -1251,6 +1251,182 @@ func rewriteValueAMD64_OpAMD64ADCQ_0(v *Value) bool {
 		v.AddArg(y)
 		return true
 	}
+	// match: (ADCQ l:(MOVQload {sym} [off] ptr mem) x carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADCQload {sym} [off] ptr x carry mem)
+	for {
+		_ = v.Args[2]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQload {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[1]
+		ptr := l.Args[0]
+		mem := l.Args[1]
+		x := v.Args[1]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADCQload)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADCQ x l:(MOVQload {sym} [off] ptr mem) carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADCQload {sym} [off] ptr x carry mem)
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQload {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[1]
+		ptr := l.Args[0]
+		mem := l.Args[1]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADCQload)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADCQ l:(MOVQloadidx1 {sym} [off] ptr idx mem) x carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADCQloadidx1 {sym} [off] ptr idx x carry mem)
+	for {
+		_ = v.Args[2]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		x := v.Args[1]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADCQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADCQ x l:(MOVQloadidx1 {sym} [off] ptr idx mem) carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADCQloadidx1 {sym} [off] ptr idx x carry mem)
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADCQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADCQ l:(MOVQloadidx8 {sym} [off] ptr idx mem) x carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADCQloadidx8 {sym} [off] ptr idx x carry mem)
+	for {
+		_ = v.Args[2]
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		x := v.Args[1]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADCQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (ADCQ x l:(MOVQloadidx8 {sym} [off] ptr idx mem) carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (ADCQloadidx8 {sym} [off] ptr idx x carry mem)
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64ADCQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64ADCQconst_0(v *Value) bool {
@@ -49559,6 +49735,94 @@ func rewriteValueAMD64_OpAMD64SBBQ_0(v *Value) bool {
 		v.reset(OpAMD64SUBQborrow)
 		v.AddArg(x)
 		v.AddArg(y)
+		return true
+	}
+	// match: (SBBQ x l:(MOVQload {sym} [off] ptr mem) carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (SBBQload {sym} [off] ptr x carry mem)
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQload {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[1]
+		ptr := l.Args[0]
+		mem := l.Args[1]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64SBBQload)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (SBBQ x l:(MOVQloadidx1 {sym} [off] ptr idx mem) carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (SBBQloadidx1 {sym} [off] ptr idx x carry mem)
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64SBBQloadidx1)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (SBBQ x l:(MOVQloadidx8 {sym} [off] ptr idx mem) carry)
+	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
+	// result: (SBBQloadidx8 {sym} [off] ptr idx x carry mem)
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		l := v.Args[1]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		carry := v.Args[2]
+		if !(canMergeLoadClobber(v, l, x) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64SBBQloadidx8)
+		v.AuxInt = off
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(x)
+		v.AddArg(carry)
+		v.AddArg(mem)
 		return true
 	}
 	return false
