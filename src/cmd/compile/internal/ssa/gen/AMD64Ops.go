@@ -336,6 +336,28 @@ func init() {
 		{name: "BTSLconst", argLength: 1, reg: gp11, asm: "BTSL", resultInArg0: true, clobberFlags: true, aux: "Int8"}, // set bit auxint in arg0, 0 <= auxint < 32
 		{name: "BTSQconst", argLength: 1, reg: gp11, asm: "BTSQ", resultInArg0: true, clobberFlags: true, aux: "Int8"}, // set bit auxint in arg0, 0 <= auxint < 64
 
+		// Caution! BTQ <load> x is not the same as BTQload x unless 0 ≤ x < 64.
+		// The former (BTL reg reg) uses only the bottom bits of x;
+		// the latter (BTL mem reg) uses all bits of x.
+		{name: "BTLload", argLength: 3, reg: gp1flagsLoad, asm: "BTL", aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},               // test whether bit arg1%32 in *(arg0+arg1/32) is set, arg2 is mem
+		{name: "BTQload", argLength: 3, reg: gp1flagsLoad, asm: "BTQ", aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},               // test whether bit arg1%64 in *(arg0+arg1/64) is set, arg2 is mem
+		{name: "BTQloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "BTQ", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%64 in *(arg0+1*arg1+auxint+aux+arg2/64) is set, arg3 is mem
+		{name: "BTQloadidx8", argLength: 4, reg: gp2flagsLoad, asm: "BTQ", scale: 8, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%64 in *(arg0+8*arg1+auxint+aux+arg2/64) is set, arg3 is mem
+		{name: "BTLloadidx1", argLength: 4, reg: gp2flagsLoad, asm: "BTL", scale: 1, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%32 in *(arg0+1*arg1+auxint+aux+arg2/32) is set, arg3 is mem
+		{name: "BTLloadidx4", argLength: 4, reg: gp2flagsLoad, asm: "BTL", scale: 4, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%32 in *(arg0+4*arg1+auxint+aux+arg2/32) is set, arg3 is mem
+		{name: "BTLloadidx8", argLength: 4, reg: gp2flagsLoad, asm: "BTL", scale: 8, aux: "SymOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true}, // test whether bit arg2%32 in *(arg0+8*arg1+auxint+aux+arg2/32) is set, arg3 is mem
+
+		// For all BTxconstload and BTxconstloadidxN, 0 ≤ bit offset < 32; for BTQ, 0 ≤ bit offset < 64.
+		// BTxconstload tests whether bit offset ValAndOff(AuxInt).Val() is set in *(arg0+ValAndOff(AuxInt).Off()+aux), arg1 is mem
+		{name: "BTLconstload", argLength: 2, reg: gp0flagsLoad, asm: "BTL", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTQconstload", argLength: 2, reg: gp0flagsLoad, asm: "BTQ", aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		// BTxconstloadidxN tests whether bit offset ValAndOff(AuxInt).Val() is set in *(arg0+scale*arg1+ValAndOff(AuxInt).Off()+aux), arg2 is mem
+		{name: "BTQconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "BTQ", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTQconstloadidx8", argLength: 3, reg: gp1flagsLoad, asm: "BTQ", scale: 8, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTLconstloadidx1", argLength: 3, reg: gp1flagsLoad, asm: "BTL", scale: 1, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTLconstloadidx4", argLength: 3, reg: gp1flagsLoad, asm: "BTL", scale: 4, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+		{name: "BTLconstloadidx8", argLength: 3, reg: gp1flagsLoad, asm: "BTL", scale: 8, aux: "SymValAndOff", typ: "Flags", symEffect: "Read", faultOnNilArg0: true},
+
 		// direct bit operation on memory operand
 		{name: "BTCQmodify", argLength: 3, reg: gpstore, asm: "BTCQ", aux: "SymOff", typ: "Mem", clobberFlags: true, faultOnNilArg0: true, symEffect: "Read,Write"},     // complement bit arg1 in 64-bit arg0+auxint+aux, arg2=mem
 		{name: "BTCLmodify", argLength: 3, reg: gpstore, asm: "BTCL", aux: "SymOff", typ: "Mem", clobberFlags: true, faultOnNilArg0: true, symEffect: "Read,Write"},     // complement bit arg1 in 32-bit arg0+auxint+aux, arg2=mem

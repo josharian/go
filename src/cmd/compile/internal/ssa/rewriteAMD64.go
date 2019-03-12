@@ -5500,6 +5500,108 @@ func rewriteValueAMD64_OpAMD64BTLconst_0(v *Value) bool {
 		v.AddArg(x)
 		return true
 	}
+	// match: (BTLconst [c] l:(MOVLload {sym} [off] ptr mem))
+	// cond: validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)
+	// result: (BTLconstload {sym} [makeValAndOff(int64(int8(c)), off)] ptr mem)
+	for {
+		c := v.AuxInt
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLload {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[1]
+		ptr := l.Args[0]
+		mem := l.Args[1]
+		if !(validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64BTLconstload)
+		v.AuxInt = makeValAndOff(int64(int8(c)), off)
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (BTLconst [c] l:(MOVLloadidx1 {sym} [off] ptr idx mem))
+	// cond: validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)
+	// result: (BTLconstloadidx1 {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+	for {
+		c := v.AuxInt
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		if !(validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64BTLconstloadidx1)
+		v.AuxInt = makeValAndOff(int64(int8(c)), off)
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (BTLconst [c] l:(MOVLloadidx4 {sym} [off] ptr idx mem))
+	// cond: validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)
+	// result: (BTLconstloadidx4 {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+	for {
+		c := v.AuxInt
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx4 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		if !(validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64BTLconstloadidx4)
+		v.AuxInt = makeValAndOff(int64(int8(c)), off)
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (BTLconst [c] l:(MOVLloadidx8 {sym} [off] ptr idx mem))
+	// cond: validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)
+	// result: (BTLconstloadidx8 {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+	for {
+		c := v.AuxInt
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVLloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		if !(validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64BTLconstloadidx8)
+		v.AuxInt = makeValAndOff(int64(int8(c)), off)
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64BTQconst_0(v *Value) bool {
@@ -5557,6 +5659,82 @@ func rewriteValueAMD64_OpAMD64BTQconst_0(v *Value) bool {
 		v.reset(OpAMD64BTQ)
 		v.AddArg(y)
 		v.AddArg(x)
+		return true
+	}
+	// match: (BTQconst [c] l:(MOVQload {sym} [off] ptr mem))
+	// cond: validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)
+	// result: (BTQconstload {sym} [makeValAndOff(int64(int8(c)), off)] ptr mem)
+	for {
+		c := v.AuxInt
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQload {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[1]
+		ptr := l.Args[0]
+		mem := l.Args[1]
+		if !(validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64BTQconstload)
+		v.AuxInt = makeValAndOff(int64(int8(c)), off)
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (BTQconst [c] l:(MOVQloadidx1 {sym} [off] ptr idx mem))
+	// cond: validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)
+	// result: (BTQconstloadidx1 {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+	for {
+		c := v.AuxInt
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx1 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		if !(validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64BTQconstloadidx1)
+		v.AuxInt = makeValAndOff(int64(int8(c)), off)
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
+		return true
+	}
+	// match: (BTQconst [c] l:(MOVQloadidx8 {sym} [off] ptr idx mem))
+	// cond: validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)
+	// result: (BTQconstloadidx8 {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)
+	for {
+		c := v.AuxInt
+		l := v.Args[0]
+		if l.Op != OpAMD64MOVQloadidx8 {
+			break
+		}
+		off := l.AuxInt
+		sym := l.Aux
+		_ = l.Args[2]
+		ptr := l.Args[0]
+		idx := l.Args[1]
+		mem := l.Args[2]
+		if !(validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l)) {
+			break
+		}
+		v.reset(OpAMD64BTQconstloadidx8)
+		v.AuxInt = makeValAndOff(int64(int8(c)), off)
+		v.Aux = sym
+		v.AddArg(ptr)
+		v.AddArg(idx)
+		v.AddArg(mem)
 		return true
 	}
 	return false

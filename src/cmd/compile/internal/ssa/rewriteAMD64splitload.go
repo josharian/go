@@ -17,6 +17,20 @@ var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValueAMD64splitload(v *Value) bool {
 	switch v.Op {
+	case OpAMD64BTLconstload:
+		return rewriteValueAMD64splitload_OpAMD64BTLconstload_0(v)
+	case OpAMD64BTLconstloadidx1:
+		return rewriteValueAMD64splitload_OpAMD64BTLconstloadidx1_0(v)
+	case OpAMD64BTLconstloadidx4:
+		return rewriteValueAMD64splitload_OpAMD64BTLconstloadidx4_0(v)
+	case OpAMD64BTLconstloadidx8:
+		return rewriteValueAMD64splitload_OpAMD64BTLconstloadidx8_0(v)
+	case OpAMD64BTQconstload:
+		return rewriteValueAMD64splitload_OpAMD64BTQconstload_0(v)
+	case OpAMD64BTQconstloadidx1:
+		return rewriteValueAMD64splitload_OpAMD64BTQconstloadidx1_0(v)
+	case OpAMD64BTQconstloadidx8:
+		return rewriteValueAMD64splitload_OpAMD64BTQconstloadidx8_0(v)
 	case OpAMD64CMPBconstload:
 		return rewriteValueAMD64splitload_OpAMD64CMPBconstload_0(v)
 	case OpAMD64CMPBconstloadidx1:
@@ -67,6 +81,191 @@ func rewriteValueAMD64splitload(v *Value) bool {
 		return rewriteValueAMD64splitload_OpAMD64CMPWloadidx2_0(v)
 	}
 	return false
+}
+func rewriteValueAMD64splitload_OpAMD64BTLconstload_0(v *Value) bool {
+	b := v.Block
+	_ = b
+	typ := &b.Func.Config.Types
+	_ = typ
+	// match: (BTLconstload {sym} [vo] ptr mem)
+	// cond:
+	// result: (BTLconst [valOnly(vo)] (MOVLload {sym} [offOnly(vo)] ptr mem))
+	for {
+		vo := v.AuxInt
+		sym := v.Aux
+		_ = v.Args[1]
+		ptr := v.Args[0]
+		mem := v.Args[1]
+		v.reset(OpAMD64BTLconst)
+		v.AuxInt = valOnly(vo)
+		v0 := b.NewValue0(v.Pos, OpAMD64MOVLload, typ.UInt32)
+		v0.AuxInt = offOnly(vo)
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(mem)
+		v.AddArg(v0)
+		return true
+	}
+}
+func rewriteValueAMD64splitload_OpAMD64BTLconstloadidx1_0(v *Value) bool {
+	b := v.Block
+	_ = b
+	typ := &b.Func.Config.Types
+	_ = typ
+	// match: (BTLconstloadidx1 {sym} [vo] ptr idx mem)
+	// cond:
+	// result: (BTLconst [valOnly(vo)] (MOVLloadidx1 {sym} [offOnly(vo)] ptr idx mem))
+	for {
+		vo := v.AuxInt
+		sym := v.Aux
+		_ = v.Args[2]
+		ptr := v.Args[0]
+		idx := v.Args[1]
+		mem := v.Args[2]
+		v.reset(OpAMD64BTLconst)
+		v.AuxInt = valOnly(vo)
+		v0 := b.NewValue0(v.Pos, OpAMD64MOVLloadidx1, typ.UInt32)
+		v0.AuxInt = offOnly(vo)
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(idx)
+		v0.AddArg(mem)
+		v.AddArg(v0)
+		return true
+	}
+}
+func rewriteValueAMD64splitload_OpAMD64BTLconstloadidx4_0(v *Value) bool {
+	b := v.Block
+	_ = b
+	typ := &b.Func.Config.Types
+	_ = typ
+	// match: (BTLconstloadidx4 {sym} [vo] ptr idx mem)
+	// cond:
+	// result: (BTLconst [valOnly(vo)] (MOVLloadidx4 {sym} [offOnly(vo)] ptr idx mem))
+	for {
+		vo := v.AuxInt
+		sym := v.Aux
+		_ = v.Args[2]
+		ptr := v.Args[0]
+		idx := v.Args[1]
+		mem := v.Args[2]
+		v.reset(OpAMD64BTLconst)
+		v.AuxInt = valOnly(vo)
+		v0 := b.NewValue0(v.Pos, OpAMD64MOVLloadidx4, typ.UInt32)
+		v0.AuxInt = offOnly(vo)
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(idx)
+		v0.AddArg(mem)
+		v.AddArg(v0)
+		return true
+	}
+}
+func rewriteValueAMD64splitload_OpAMD64BTLconstloadidx8_0(v *Value) bool {
+	b := v.Block
+	_ = b
+	typ := &b.Func.Config.Types
+	_ = typ
+	// match: (BTLconstloadidx8 {sym} [vo] ptr idx mem)
+	// cond:
+	// result: (BTLconst [valOnly(vo)] (MOVLloadidx8 {sym} [offOnly(vo)] ptr idx mem))
+	for {
+		vo := v.AuxInt
+		sym := v.Aux
+		_ = v.Args[2]
+		ptr := v.Args[0]
+		idx := v.Args[1]
+		mem := v.Args[2]
+		v.reset(OpAMD64BTLconst)
+		v.AuxInt = valOnly(vo)
+		v0 := b.NewValue0(v.Pos, OpAMD64MOVLloadidx8, typ.UInt32)
+		v0.AuxInt = offOnly(vo)
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(idx)
+		v0.AddArg(mem)
+		v.AddArg(v0)
+		return true
+	}
+}
+func rewriteValueAMD64splitload_OpAMD64BTQconstload_0(v *Value) bool {
+	b := v.Block
+	_ = b
+	typ := &b.Func.Config.Types
+	_ = typ
+	// match: (BTQconstload {sym} [vo] ptr mem)
+	// cond:
+	// result: (BTQconst [valOnly(vo)] (MOVQload {sym} [offOnly(vo)] ptr mem))
+	for {
+		vo := v.AuxInt
+		sym := v.Aux
+		_ = v.Args[1]
+		ptr := v.Args[0]
+		mem := v.Args[1]
+		v.reset(OpAMD64BTQconst)
+		v.AuxInt = valOnly(vo)
+		v0 := b.NewValue0(v.Pos, OpAMD64MOVQload, typ.UInt64)
+		v0.AuxInt = offOnly(vo)
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(mem)
+		v.AddArg(v0)
+		return true
+	}
+}
+func rewriteValueAMD64splitload_OpAMD64BTQconstloadidx1_0(v *Value) bool {
+	b := v.Block
+	_ = b
+	typ := &b.Func.Config.Types
+	_ = typ
+	// match: (BTQconstloadidx1 {sym} [vo] ptr idx mem)
+	// cond:
+	// result: (BTQconst [valOnly(vo)] (MOVQloadidx1 {sym} [offOnly(vo)] ptr idx mem))
+	for {
+		vo := v.AuxInt
+		sym := v.Aux
+		_ = v.Args[2]
+		ptr := v.Args[0]
+		idx := v.Args[1]
+		mem := v.Args[2]
+		v.reset(OpAMD64BTQconst)
+		v.AuxInt = valOnly(vo)
+		v0 := b.NewValue0(v.Pos, OpAMD64MOVQloadidx1, typ.UInt64)
+		v0.AuxInt = offOnly(vo)
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(idx)
+		v0.AddArg(mem)
+		v.AddArg(v0)
+		return true
+	}
+}
+func rewriteValueAMD64splitload_OpAMD64BTQconstloadidx8_0(v *Value) bool {
+	b := v.Block
+	_ = b
+	typ := &b.Func.Config.Types
+	_ = typ
+	// match: (BTQconstloadidx8 {sym} [vo] ptr idx mem)
+	// cond:
+	// result: (BTQconst [valOnly(vo)] (MOVQloadidx8 {sym} [offOnly(vo)] ptr idx mem))
+	for {
+		vo := v.AuxInt
+		sym := v.Aux
+		_ = v.Args[2]
+		ptr := v.Args[0]
+		idx := v.Args[1]
+		mem := v.Args[2]
+		v.reset(OpAMD64BTQconst)
+		v.AuxInt = valOnly(vo)
+		v0 := b.NewValue0(v.Pos, OpAMD64MOVQloadidx8, typ.UInt64)
+		v0.AuxInt = offOnly(vo)
+		v0.Aux = sym
+		v0.AddArg(ptr)
+		v0.AddArg(idx)
+		v0.AddArg(mem)
+		v.AddArg(v0)
+		return true
+	}
 }
 func rewriteValueAMD64splitload_OpAMD64CMPBconstload_0(v *Value) bool {
 	b := v.Block

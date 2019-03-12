@@ -2591,3 +2591,22 @@
 (MOVWload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVLconst [int64(read16(sym, off, config.BigEndian))])
 (MOVLload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVQconst [int64(read32(sym, off, config.BigEndian))])
 (MOVQload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVQconst [int64(read64(sym, off, config.BigEndian))])
+
+
+// It is tempting to add BTQ -> BTQload rewrite rules here.
+// Sadly, it is not safe. BTQ and BTQload have subtly different semantics.
+// The BTQ instruction, which operates on two registers,
+// ignores the top bits of the requested bit offset.
+// So if you ask for bit x via 1<<(x&63), we drop the "&63" part and use just x.
+// But BTQload, which reads from memory, does not ignore the top bits.
+// If x is large, this causes it to go read from some other bit of memory.
+// We can't arrange here to re-introduce the mask, and a MOVQload+BTQ
+// may be just as good as an ANDQ+BTQload. (I haven't investigated.)
+// It would be nice to somehow mark the cases earlier where the z in 1<<z is known small,
+// and then enable the following rules in just those cases.
+//
+// (BT(Q|L) x l:(MOV(Q|L)load {sym} [off] ptr mem)) && canMergeLoad(v, l) && clobber(l) -> (BT(Q|L)load {sym} [off] ptr x mem)
+// (BT(Q|L|L|Q|L) x l:(MOV(Q|L|L|Q|L)loadidx(1|1|4|8|8) {sym} [off] ptr idx mem)) && canMergeLoad(v, l) && clobber(l) -> (BT(Q|L|L|Q|L)loadidx(1|1|4|8|8) {sym} [off] ptr idx x mem)
+
+(BT(Q|L)const [c] l:(MOV(Q|L)load {sym} [off] ptr mem)) && validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l) -> (BT(Q|L)constload {sym} [makeValAndOff(int64(int8(c)), off)] ptr mem)
+(BT(Q|L|L|Q|L)const [c] l:(MOV(Q|L|L|Q|L)loadidx(1|1|4|8|8) {sym} [off] ptr idx mem)) && validValAndOff(int64(int8(c)), off) && canMergeLoad(v, l) && clobber(l) -> (BT(Q|L|L|Q|L)constloadidx(1|1|4|8|8) {sym} [makeValAndOff(int64(int8(c)), off)] ptr idx mem)

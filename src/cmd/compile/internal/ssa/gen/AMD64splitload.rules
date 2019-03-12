@@ -20,3 +20,6 @@
 
 (CMP(Q|L|W|B|W|L|Q|L)constloadidx(1|1|1|1|2|4|8|8) {sym} [vo] ptr idx mem) ->
     (CMP(Q|L|W|B|W|L|Q|L)const (MOV(Q|L|W|B|W|L|Q|L)loadidx(1|1|1|1|2|4|8|8) {sym} [offOnly(vo)] ptr idx mem) [valOnly(vo)])
+
+(BT(Q|L)constload {sym} [vo] ptr mem) -> (BT(Q|L)const [valOnly(vo)] (MOV(Q|L)load {sym} [offOnly(vo)] ptr mem))
+(BT(Q|L|L|Q|L)constloadidx(1|1|4|8|8) {sym} [vo] ptr idx mem) -> (BT(Q|L|L|Q|L)const [valOnly(vo)] (MOV(Q|L|L|Q|L)loadidx(1|1|4|8|8) {sym} [offOnly(vo)] ptr idx mem))
