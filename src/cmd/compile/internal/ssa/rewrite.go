@@ -202,14 +202,34 @@ func canMergeLoadClobber(target, load, x *Value) bool {
 // canMergeLoad reports whether the load can be merged into target without
 // invalidating the schedule.
 func canMergeLoad(target, load *Value) bool {
-	if target.Block.ID != load.Block.ID {
-		// If the load is in a different block do not merge it.
+	if target.Type.IsFlags() && target.Block != load.Block {
+		fmt.Println("FLAGBLOCK")
 		return false
 	}
+	f := target.Block.Func
+	idom := f.Idom()
+	b := target.Block
+	for b != load.Block {
+		for _, a := range target.Args {
+			if a.Block == b {
+				fmt.Println("ARG BLOCK")
+				return false
+			}
+		}
+		// fmt.Println("UP")
+		b = idom[b.ID]
+	}
+	// for _, a := range target.Args {
+	// 	if a.Block == b {
+	// 		fmt.Println("ARG BLOCK2")
+	// 		return false
+	// 	}
+	// }
 
 	// We can't merge the load into the target if the load
 	// has more than one use.
 	if load.Uses != 1 {
+		fmt.Println("USES")
 		return false
 	}
 
@@ -244,6 +264,7 @@ func canMergeLoad(target, load *Value) bool {
 		const limit = 100
 		if i >= limit {
 			// Give up if we have done a lot of iterations.
+			fmt.Println("LIMIT")
 			return false
 		}
 		v := args[len(args)-1]
@@ -262,6 +283,7 @@ func canMergeLoad(target, load *Value) bool {
 		if v.Type.IsTuple() && v.Type.FieldType(1).IsMemory() {
 			// We could handle this situation however it is likely
 			// to be very rare.
+			fmt.Println("TUPLE")
 			return false
 		}
 		if v.Op.SymEffect()&SymAddr != 0 {
@@ -276,6 +298,7 @@ func canMergeLoad(target, load *Value) bool {
 			// We don't want to combine the CMPQ with the load, because
 			// that would force the CMPQ to schedule before the VARDEF, which
 			// in turn requires the LEAQ to schedule before the VARDEF.
+			fmt.Println("VARDEF")
 			return false
 		}
 		if v.Type.IsMemory() {
@@ -317,6 +340,7 @@ func canMergeLoad(target, load *Value) bool {
 			if memPreds[v] {
 				continue
 			}
+			fmt.Println("MEMPRED")
 			return false
 		}
 		if len(v.Args) > 0 && v.Args[len(v.Args)-1] == mem {
@@ -330,7 +354,7 @@ func canMergeLoad(target, load *Value) bool {
 			}
 		}
 	}
-
+	fmt.Println("OK")
 	return true
 }
 
