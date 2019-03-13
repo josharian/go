@@ -477,15 +477,17 @@ func (enc *Encoding) Decode(dst, src []byte) (n int, err error) {
 
 	si := 0
 	for strconv.IntSize >= 64 && len(src)-si >= 8 && len(dst)-n >= 8 {
+		_ = dst[n:]
+		s := src[si : si+8]
 		if dn, ok := assemble64(
-			enc.decodeMap[src[si+0]],
-			enc.decodeMap[src[si+1]],
-			enc.decodeMap[src[si+2]],
-			enc.decodeMap[src[si+3]],
-			enc.decodeMap[src[si+4]],
-			enc.decodeMap[src[si+5]],
-			enc.decodeMap[src[si+6]],
-			enc.decodeMap[src[si+7]],
+			enc.decodeMap[s[0]],
+			enc.decodeMap[s[1]],
+			enc.decodeMap[s[2]],
+			enc.decodeMap[s[3]],
+			enc.decodeMap[s[4]],
+			enc.decodeMap[s[5]],
+			enc.decodeMap[s[6]],
+			enc.decodeMap[s[7]],
 		); ok {
 			binary.BigEndian.PutUint64(dst[n:], dn)
 			n += 6
@@ -501,11 +503,13 @@ func (enc *Encoding) Decode(dst, src []byte) (n int, err error) {
 	}
 
 	for len(src)-si >= 4 && len(dst)-n >= 4 {
+		_ = dst[n : n+4]
+		s := src[si : si+4]
 		if dn, ok := assemble32(
-			enc.decodeMap[src[si+0]],
-			enc.decodeMap[src[si+1]],
-			enc.decodeMap[src[si+2]],
-			enc.decodeMap[src[si+3]],
+			enc.decodeMap[s[0]],
+			enc.decodeMap[s[1]],
+			enc.decodeMap[s[2]],
+			enc.decodeMap[s[3]],
 		); ok {
 			binary.BigEndian.PutUint32(dst[n:], dn)
 			n += 3
@@ -537,14 +541,14 @@ func (enc *Encoding) Decode(dst, src []byte) (n int, err error) {
 func assemble32(n1, n2, n3, n4 byte) (dn uint32, ok bool) {
 	// Check that all the digits are valid. If any of them was 0xff, their
 	// bitwise OR will be 0xff.
-	if n1|n2|n3|n4 == 0xff {
-		return 0, false
-	}
-	return uint32(n1)<<26 |
+	if n1|n2|n3|n4 != 0xff {
+		dn = uint32(n1)<<26 |
 			uint32(n2)<<20 |
 			uint32(n3)<<14 |
-			uint32(n4)<<8,
-		true
+			uint32(n4)<<8
+		ok = true
+	}
+	return
 }
 
 // assemble64 assembles 8 base64 digits into 6 bytes.
@@ -553,18 +557,18 @@ func assemble32(n1, n2, n3, n4 byte) (dn uint32, ok bool) {
 func assemble64(n1, n2, n3, n4, n5, n6, n7, n8 byte) (dn uint64, ok bool) {
 	// Check that all the digits are valid. If any of them was 0xff, their
 	// bitwise OR will be 0xff.
-	if n1|n2|n3|n4|n5|n6|n7|n8 == 0xff {
-		return 0, false
-	}
-	return uint64(n1)<<58 |
+	if n1|n2|n3|n4|n5|n6|n7|n8 != 0xff {
+		dn = uint64(n1)<<58 |
 			uint64(n2)<<52 |
 			uint64(n3)<<46 |
 			uint64(n4)<<40 |
 			uint64(n5)<<34 |
 			uint64(n6)<<28 |
 			uint64(n7)<<22 |
-			uint64(n8)<<16,
-		true
+			uint64(n8)<<16
+		ok = true
+	}
+	return
 }
 
 type newlineFilteringReader struct {
