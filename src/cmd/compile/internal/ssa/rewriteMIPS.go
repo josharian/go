@@ -318,7 +318,7 @@ func rewriteValueMIPS(v *Value) bool {
 	case OpMIPSSGTUzero:
 		return rewriteValueMIPS_OpMIPSSGTUzero_0(v)
 	case OpMIPSSGTconst:
-		return rewriteValueMIPS_OpMIPSSGTconst_0(v) || rewriteValueMIPS_OpMIPSSGTconst_10(v)
+		return rewriteValueMIPS_OpMIPSSGTconst_0(v) || rewriteValueMIPS_OpMIPSSGTconst_1(v)
 	case OpMIPSSGTzero:
 		return rewriteValueMIPS_OpMIPSSGTzero_0(v)
 	case OpMIPSSLL:
@@ -354,7 +354,7 @@ func rewriteValueMIPS(v *Value) bool {
 	case OpMod8u:
 		return rewriteValueMIPS_OpMod8u_0(v)
 	case OpMove:
-		return rewriteValueMIPS_OpMove_0(v) || rewriteValueMIPS_OpMove_10(v)
+		return rewriteValueMIPS_OpMove_0(v) || rewriteValueMIPS_OpMove_1(v)
 	case OpMul16:
 		return rewriteValueMIPS_OpMul16_0(v)
 	case OpMul32:
@@ -458,9 +458,9 @@ func rewriteValueMIPS(v *Value) bool {
 	case OpRsh8x8:
 		return rewriteValueMIPS_OpRsh8x8_0(v)
 	case OpSelect0:
-		return rewriteValueMIPS_OpSelect0_0(v) || rewriteValueMIPS_OpSelect0_10(v)
+		return rewriteValueMIPS_OpSelect0_0(v) || rewriteValueMIPS_OpSelect0_1(v)
 	case OpSelect1:
-		return rewriteValueMIPS_OpSelect1_0(v) || rewriteValueMIPS_OpSelect1_10(v)
+		return rewriteValueMIPS_OpSelect1_0(v) || rewriteValueMIPS_OpSelect1_1(v)
 	case OpSignExt16to32:
 		return rewriteValueMIPS_OpSignExt16to32_0(v)
 	case OpSignExt8to16:
@@ -506,7 +506,7 @@ func rewriteValueMIPS(v *Value) bool {
 	case OpXor8:
 		return rewriteValueMIPS_OpXor8_0(v)
 	case OpZero:
-		return rewriteValueMIPS_OpZero_0(v) || rewriteValueMIPS_OpZero_10(v)
+		return rewriteValueMIPS_OpZero_0(v) || rewriteValueMIPS_OpZero_1(v)
 	case OpZeroExt16to32:
 		return rewriteValueMIPS_OpZeroExt16to32_0(v)
 	case OpZeroExt8to16:
@@ -5571,7 +5571,7 @@ func rewriteValueMIPS_OpMIPSSGTconst_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS_OpMIPSSGTconst_10(v *Value) bool {
+func rewriteValueMIPS_OpMIPSSGTconst_1(v *Value) bool {
 	// match: (SGTconst [c] (ANDconst [m] _))
 	// cond: 0 <= int32(m) && int32(m) < int32(c)
 	// result: (MOVWconst [1])
@@ -6444,7 +6444,7 @@ func rewriteValueMIPS_OpMove_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS_OpMove_10(v *Value) bool {
+func rewriteValueMIPS_OpMove_1(v *Value) bool {
 	b := v.Block
 	config := b.Func.Config
 	typ := &b.Func.Config.Types
@@ -7997,7 +7997,7 @@ func rewriteValueMIPS_OpSelect0_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS_OpSelect0_10(v *Value) bool {
+func rewriteValueMIPS_OpSelect0_1(v *Value) bool {
 	// match: (Select0 (MULTU (MOVWconst [c]) (MOVWconst [d])))
 	// cond:
 	// result: (MOVWconst [(c*d)>>32])
@@ -8308,7 +8308,7 @@ func rewriteValueMIPS_OpSelect1_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS_OpSelect1_10(v *Value) bool {
+func rewriteValueMIPS_OpSelect1_1(v *Value) bool {
 	// match: (Select1 (MULTU (MOVWconst [c]) (MOVWconst [d])))
 	// cond:
 	// result: (MOVWconst [int64(int32(uint32(c)*uint32(d)))])
@@ -9034,7 +9034,7 @@ func rewriteValueMIPS_OpZero_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS_OpZero_10(v *Value) bool {
+func rewriteValueMIPS_OpZero_1(v *Value) bool {
 	b := v.Block
 	config := b.Func.Config
 	typ := &b.Func.Config.Types

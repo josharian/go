@@ -172,18 +172,18 @@ func genRules(arch arch) {
 	fmt.Fprintln(w, "var _ = types.TypeMem // in case not otherwise used")
 	fmt.Fprintln(w)
 
-	const chunkSize = 10
 	// Main rewrite routine is a switch on v.Op.
 	fmt.Fprintf(w, "func rewriteValue%s(v *Value) bool {\n", arch.name)
 	fmt.Fprintf(w, "switch v.Op {\n")
 	for _, op := range ops {
 		fmt.Fprintf(w, "case %s:\n", op)
 		fmt.Fprint(w, "return ")
-		for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
-			if chunk > 0 {
+		chunks := chunkRules(oprules[op])
+		for i := range chunks {
+			if i > 0 {
 				fmt.Fprint(w, " || ")
 			}
-			fmt.Fprintf(w, "rewriteValue%s_%s_%d(v)", arch.name, op, chunk)
+			fmt.Fprintf(w, "rewriteValue%s_%s_%d(v)", arch.name, op, i)
 		}
 		fmt.Fprintln(w)
 	}
@@ -194,14 +194,12 @@ func genRules(arch arch) {
 	// Generate a routine per op. Note that we don't make one giant routine
 	// because it is too big for some compilers.
 	for _, op := range ops {
-		for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
+		chunks := chunkRules(oprules[op])
+		for c, chunk := range chunks {
+			lastchunk := c == len(chunks)-1
 			buf := new(bytes.Buffer)
 			var canFail bool
-			endchunk := chunk + chunkSize
-			if endchunk > len(oprules[op]) {
-				endchunk = len(oprules[op])
-			}
-			for i, rule := range oprules[op][chunk:endchunk] {
+			for _, rule := range chunk {
 				match, cond, result := rule.parse()
 				fmt.Fprintf(buf, "// match: %s\n", match)
 				fmt.Fprintf(buf, "// cond: %s\n", cond)
@@ -221,7 +219,7 @@ func genRules(arch arch) {
 					fmt.Fprintf(buf, "if !(%s) {\nbreak\n}\n", cond)
 					canFail = true
 				}
-				if !canFail && i+chunk != len(oprules[op])-1 {
+				if !canFail && !lastchunk {
 					log.Fatalf("unconditional rule %s is followed by other rules", match)
 				}
 
@@ -243,7 +241,7 @@ func genRules(arch arch) {
 			hasconfig := strings.Contains(body, "config.") || strings.Contains(body, "config)")
 			hasfe := strings.Contains(body, "fe.")
 			hastyps := strings.Contains(body, "typ.")
-			fmt.Fprintf(w, "func rewriteValue%s_%s_%d(v *Value) bool {\n", arch.name, op, chunk)
+			fmt.Fprintf(w, "func rewriteValue%s_%s_%d(v *Value) bool {\n", arch.name, op, c)
 			if hasb || hasconfig || hasfe || hastyps {
 				fmt.Fprintln(w, "b := v.Block")
 			}
@@ -386,6 +384,22 @@ func genRules(arch arch) {
 	if err != nil {
 		log.Fatalf("can't write output: %v\n", err)
 	}
+}
+
+func chunkRules(rules []Rule) [][]Rule {
+	const chunkSize = 10
+	var chunked [][]Rule
+	// if len(rules) <= 1 {
+	// 	return chunked
+	// }
+	for chunk := 0; chunk < len(rules); chunk += chunkSize {
+		endchunk := chunk + chunkSize
+		if endchunk > len(rules) {
+			endchunk = len(rules)
+		}
+		chunked = append(chunked, rules[chunk:endchunk])
+	}
+	return chunked
 }
 
 // genMatch returns the variable whose source position should be used for the

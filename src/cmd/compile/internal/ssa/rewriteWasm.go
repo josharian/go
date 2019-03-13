@@ -290,7 +290,7 @@ func rewriteValueWasm(v *Value) bool {
 	case OpMod8u:
 		return rewriteValueWasm_OpMod8u_0(v)
 	case OpMove:
-		return rewriteValueWasm_OpMove_0(v) || rewriteValueWasm_OpMove_10(v)
+		return rewriteValueWasm_OpMove_0(v) || rewriteValueWasm_OpMove_1(v)
 	case OpMul16:
 		return rewriteValueWasm_OpMul16_0(v)
 	case OpMul32:
@@ -520,7 +520,7 @@ func rewriteValueWasm(v *Value) bool {
 	case OpXor8:
 		return rewriteValueWasm_OpXor8_0(v)
 	case OpZero:
-		return rewriteValueWasm_OpZero_0(v) || rewriteValueWasm_OpZero_10(v)
+		return rewriteValueWasm_OpZero_0(v) || rewriteValueWasm_OpZero_1(v)
 	case OpZeroExt16to32:
 		return rewriteValueWasm_OpZeroExt16to32_0(v)
 	case OpZeroExt16to64:
@@ -2975,7 +2975,7 @@ func rewriteValueWasm_OpMove_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueWasm_OpMove_10(v *Value) bool {
+func rewriteValueWasm_OpMove_1(v *Value) bool {
 	b := v.Block
 	typ := &b.Func.Config.Types
 	// match: (Move [s] dst src mem)
@@ -5769,7 +5769,7 @@ func rewriteValueWasm_OpZero_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueWasm_OpZero_10(v *Value) bool {
+func rewriteValueWasm_OpZero_1(v *Value) bool {
 	b := v.Block
 	typ := &b.Func.Config.Types
 	// match: (Zero [16] destptr mem)

@@ -352,7 +352,7 @@ func rewriteValueMIPS64(v *Value) bool {
 	case OpMIPS64MOVWload:
 		return rewriteValueMIPS64_OpMIPS64MOVWload_0(v)
 	case OpMIPS64MOVWreg:
-		return rewriteValueMIPS64_OpMIPS64MOVWreg_0(v) || rewriteValueMIPS64_OpMIPS64MOVWreg_10(v)
+		return rewriteValueMIPS64_OpMIPS64MOVWreg_0(v) || rewriteValueMIPS64_OpMIPS64MOVWreg_1(v)
 	case OpMIPS64MOVWstore:
 		return rewriteValueMIPS64_OpMIPS64MOVWstore_0(v)
 	case OpMIPS64MOVWstorezero:
@@ -374,7 +374,7 @@ func rewriteValueMIPS64(v *Value) bool {
 	case OpMIPS64SGTUconst:
 		return rewriteValueMIPS64_OpMIPS64SGTUconst_0(v)
 	case OpMIPS64SGTconst:
-		return rewriteValueMIPS64_OpMIPS64SGTconst_0(v) || rewriteValueMIPS64_OpMIPS64SGTconst_10(v)
+		return rewriteValueMIPS64_OpMIPS64SGTconst_0(v) || rewriteValueMIPS64_OpMIPS64SGTconst_1(v)
 	case OpMIPS64SLLV:
 		return rewriteValueMIPS64_OpMIPS64SLLV_0(v)
 	case OpMIPS64SLLVconst:
@@ -412,7 +412,7 @@ func rewriteValueMIPS64(v *Value) bool {
 	case OpMod8u:
 		return rewriteValueMIPS64_OpMod8u_0(v)
 	case OpMove:
-		return rewriteValueMIPS64_OpMove_0(v) || rewriteValueMIPS64_OpMove_10(v)
+		return rewriteValueMIPS64_OpMove_0(v) || rewriteValueMIPS64_OpMove_1(v)
 	case OpMul16:
 		return rewriteValueMIPS64_OpMul16_0(v)
 	case OpMul32:
@@ -540,7 +540,7 @@ func rewriteValueMIPS64(v *Value) bool {
 	case OpSelect0:
 		return rewriteValueMIPS64_OpSelect0_0(v)
 	case OpSelect1:
-		return rewriteValueMIPS64_OpSelect1_0(v) || rewriteValueMIPS64_OpSelect1_10(v) || rewriteValueMIPS64_OpSelect1_20(v)
+		return rewriteValueMIPS64_OpSelect1_0(v) || rewriteValueMIPS64_OpSelect1_1(v) || rewriteValueMIPS64_OpSelect1_2(v)
 	case OpSignExt16to32:
 		return rewriteValueMIPS64_OpSignExt16to32_0(v)
 	case OpSignExt16to64:
@@ -598,7 +598,7 @@ func rewriteValueMIPS64(v *Value) bool {
 	case OpXor8:
 		return rewriteValueMIPS64_OpXor8_0(v)
 	case OpZero:
-		return rewriteValueMIPS64_OpZero_0(v) || rewriteValueMIPS64_OpZero_10(v)
+		return rewriteValueMIPS64_OpZero_0(v) || rewriteValueMIPS64_OpZero_1(v)
 	case OpZeroExt16to32:
 		return rewriteValueMIPS64_OpZeroExt16to32_0(v)
 	case OpZeroExt16to64:
@@ -5177,7 +5177,7 @@ func rewriteValueMIPS64_OpMIPS64MOVWreg_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS64_OpMIPS64MOVWreg_10(v *Value) bool {
+func rewriteValueMIPS64_OpMIPS64MOVWreg_1(v *Value) bool {
 	// match: (MOVWreg (MOVVconst [c]))
 	// cond:
 	// result: (MOVVconst [int64(int32(c))])
@@ -5857,7 +5857,7 @@ func rewriteValueMIPS64_OpMIPS64SGTconst_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS64_OpMIPS64SGTconst_10(v *Value) bool {
+func rewriteValueMIPS64_OpMIPS64SGTconst_1(v *Value) bool {
 	// match: (SGTconst [c] (MOVWUreg _))
 	// cond: c < 0
 	// result: (MOVVconst [0])
@@ -6757,7 +6757,7 @@ func rewriteValueMIPS64_OpMove_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS64_OpMove_10(v *Value) bool {
+func rewriteValueMIPS64_OpMove_1(v *Value) bool {
 	b := v.Block
 	config := b.Func.Config
 	typ := &b.Func.Config.Types
@@ -8717,7 +8717,7 @@ func rewriteValueMIPS64_OpSelect1_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS64_OpSelect1_10(v *Value) bool {
+func rewriteValueMIPS64_OpSelect1_1(v *Value) bool {
 	// match: (Select1 (MULVU (MOVVconst [0]) _))
 	// cond:
 	// result: (MOVVconst [0])
@@ -8939,7 +8939,7 @@ func rewriteValueMIPS64_OpSelect1_10(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS64_OpSelect1_20(v *Value) bool {
+func rewriteValueMIPS64_OpSelect1_2(v *Value) bool {
 	// match: (Select1 (DIVV (MOVVconst [c]) (MOVVconst [d])))
 	// cond:
 	// result: (MOVVconst [c/d])
@@ -9696,7 +9696,7 @@ func rewriteValueMIPS64_OpZero_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValueMIPS64_OpZero_10(v *Value) bool {
+func rewriteValueMIPS64_OpZero_1(v *Value) bool {
 	b := v.Block
 	config := b.Func.Config
 	typ := &b.Func.Config.Types

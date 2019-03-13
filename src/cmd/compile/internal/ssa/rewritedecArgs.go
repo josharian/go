@@ -18,7 +18,7 @@ var _ = types.TypeMem // in case not otherwise used
 func rewriteValuedecArgs(v *Value) bool {
 	switch v.Op {
 	case OpArg:
-		return rewriteValuedecArgs_OpArg_0(v) || rewriteValuedecArgs_OpArg_10(v)
+		return rewriteValuedecArgs_OpArg_0(v) || rewriteValuedecArgs_OpArg_1(v)
 	}
 	return false
 }
@@ -236,7 +236,7 @@ func rewriteValuedecArgs_OpArg_0(v *Value) bool {
 	}
 	return false
 }
-func rewriteValuedecArgs_OpArg_10(v *Value) bool {
+func rewriteValuedecArgs_OpArg_1(v *Value) bool {
 	b := v.Block
 	fe := b.Func.fe
 	// match: (Arg <t>)
