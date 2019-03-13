@@ -354,19 +354,19 @@ func (enc *Encoding) decodeQuantum(dst, src []byte, si int) (nsi, n int, err err
 	d2, d1, d0 := byte(val>>0), byte(val>>8), byte(val>>16)
 	switch dlen {
 	case 4:
+		_ = dst[2]
+		dst[0] = d0
+		dst[1] = d1
 		dst[2] = d2
-		d2 = 0
-		fallthrough
 	case 3:
 		dst[1] = d1
 		if enc.strict && d2 != 0 {
 			return si, 0, CorruptInputError(si - 1)
 		}
-		d1 = 0
-		fallthrough
+		dst[0] = d0
 	case 2:
 		dst[0] = d0
-		if enc.strict && (d1 != 0 || d2 != 0) {
+		if enc.strict && d1|d2 != 0 {
 			return si, 0, CorruptInputError(si - 2)
 		}
 	}
