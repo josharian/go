@@ -477,7 +477,7 @@ func (enc *Encoding) Decode(dst, src []byte) (n int, err error) {
 
 	si := 0
 	for strconv.IntSize >= 64 && len(src)-si >= 8 && len(dst)-n >= 8 {
-		_ = dst[n:]
+		d := dst[n:]
 		s := src[si : si+8]
 		if dn, ok := assemble64(
 			enc.decodeMap[s[0]],
@@ -489,21 +489,21 @@ func (enc *Encoding) Decode(dst, src []byte) (n int, err error) {
 			enc.decodeMap[s[6]],
 			enc.decodeMap[s[7]],
 		); ok {
-			binary.BigEndian.PutUint64(dst[n:], dn)
+			binary.BigEndian.PutUint64(d, dn)
 			n += 6
 			si += 8
-		} else {
-			var ninc int
-			si, ninc, err = enc.decodeQuantum(dst[n:], src, si)
-			n += ninc
-			if err != nil {
-				return n, err
-			}
+			continue
+		}
+		var ninc int
+		si, ninc, err = enc.decodeQuantum(d, src, si)
+		n += ninc
+		if err != nil {
+			return n, err
 		}
 	}
 
 	for len(src)-si >= 4 && len(dst)-n >= 4 {
-		_ = dst[n : n+4]
+		d := dst[n:]
 		s := src[si : si+4]
 		if dn, ok := assemble32(
 			enc.decodeMap[s[0]],
@@ -511,16 +511,16 @@ func (enc *Encoding) Decode(dst, src []byte) (n int, err error) {
 			enc.decodeMap[s[2]],
 			enc.decodeMap[s[3]],
 		); ok {
-			binary.BigEndian.PutUint32(dst[n:], dn)
+			binary.BigEndian.PutUint32(d, dn)
 			n += 3
 			si += 4
-		} else {
-			var ninc int
-			si, ninc, err = enc.decodeQuantum(dst[n:], src, si)
-			n += ninc
-			if err != nil {
-				return n, err
-			}
+			continue
+		}
+		var ninc int
+		si, ninc, err = enc.decodeQuantum(d, src, si)
+		n += ninc
+		if err != nil {
+			return n, err
 		}
 	}
 
