@@ -84,7 +84,8 @@ func addVV_g(z, x, y []Word) (c Word) {
 func addVV_g_unrolled(z, x, y []Word) (c Word) {
 	// The comment near the top of this file discusses this for loop condition.
 	var i int
-	for i < len(z)-4 {
+	lz := len(z)
+	for lz-4 > 0 {
 		if i < 0 || i >= len(x) || i >= len(y) || i >= len(z) {
 			unsafeUnreachable()
 		}
@@ -116,9 +117,10 @@ func addVV_g_unrolled(z, x, y []Word) (c Word) {
 		z[i] = Word(zi)
 		c = Word(cc)
 		i++
+		lz -= 4
 	}
 
-	for i < len(z) {
+	for lz > 0 {
 		if i < 0 || i >= len(x) || i >= len(y) || i >= len(z) {
 			unsafeUnreachable()
 		}
@@ -126,6 +128,7 @@ func addVV_g_unrolled(z, x, y []Word) (c Word) {
 		z[i] = Word(zi)
 		c = Word(cc)
 		i++
+		lz--
 	}
 	return
 }

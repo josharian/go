@@ -128,6 +128,30 @@ func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
 	}
 }
 
+func applyRewriteDeadcodeCSE(f *Func, rb blockRewriter, rv valueRewriter) {
+	// repeat rewrites+deadcode+cse until we stabilize
+	for {
+		applyRewrite(f, rb, rv)
+		// See whether deadcode removes any values or blocks.
+		// That may enable more rewrite rules to trigger.
+		nv, nb := f.countValues(), len(f.Blocks)
+		deadcode(f)
+		change := len(f.Blocks) != nb || f.countValues() != nv
+		if !change {
+			// deadcode made no changes.
+			// Give cse+deadcode a change to combine values.
+			// That may enable more rewrite rules to trigger.
+			nv, nb := f.countValues(), len(f.Blocks)
+			cse(f)
+			deadcode(f)
+			change = len(f.Blocks) != nb || f.countValues() != nv
+		}
+		if !change {
+			return
+		}
+	}
+}
+
 // Common functions called from rewriting rules
 
 func is64BitFloat(t *types.Type) bool {
@@ -332,6 +356,81 @@ func canMergeLoad(target, load *Value) bool {
 	}
 
 	return true
+}
+
+// (GT t:(TESTQ a:(ADDQconst _) a2)) && a == a2 && otherwiseEmptyBlock(t) && convertParentBlock(a, t) -> (GT (TESTQ a a))
+func magicTestRewrite(b *Block, p *Value) bool {
+	debug := b.Func.Name == "addVV_g_unrolled"
+	if !debug {
+		return false
+	}
+	if p.Block != b {
+		if debug {
+			fmt.Println("b")
+		}
+		// impossible?
+		return false
+	}
+	var t *Value
+	for _, v := range b.Values {
+		if v.Op == OpPhi {
+			continue
+		}
+		if v.Uses == 0 {
+			continue
+		}
+		if t != nil {
+			if debug {
+				fmt.Println("two", t.LongString(), t.Uses, v.LongString(), v.Uses)
+			}
+			// two non-phi values in block
+			return false
+		}
+		t = v
+	}
+	if t.Op != OpAMD64TESTQ {
+		// limit scope for now
+		if debug {
+			fmt.Println("test")
+		}
+		return false
+	}
+	if b.Control != t {
+		// impossible?
+		if debug {
+			fmt.Println("ctl")
+		}
+		return false
+	}
+	for _, p := range p.Args {
+		// consider each pred in turn
+		if p.Block.Kind != BlockPlain {
+			continue
+		}
+		if p.Op != OpAMD64ADDQconst {
+			// limit scope for now
+			if debug {
+				fmt.Println("add")
+			}
+			return false
+		}
+		// gotcha!
+		p.Block.Kind = b.Kind
+		v := t.copyInto(p.Block)
+		p.Block.SetControl(v)
+		// TODO: copy phis too.
+		// and adjust their args.
+		// and set p.Block's successor blocks.
+		// and adjust their edges.
+		// and their preds' edges as well.
+		// sigh. i am tired of this.
+		return true
+	}
+	// didn't find anything
+	if debug {
+		fmt.Println("nada")
+	}
+	return false
 }
 
 // isSameSym reports whether sym is the same as the given named symbol

@@ -2548,3 +2548,5 @@
 (MOVWload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVLconst [int64(read16(sym, off, config.BigEndian))])
 (MOVLload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVQconst [int64(read32(sym, off, config.BigEndian))])
 (MOVQload [off] {sym} (SB) _) && symIsRO(sym) -> (MOVQconst [int64(read64(sym, off, config.BigEndian))])
+
+(GT (TESTQ p p2)) && p.Op == OpPhi && p == p2 && magicTestRewrite(b, p) && noteRule("OPT") -> (GT (TESTQ p p2))

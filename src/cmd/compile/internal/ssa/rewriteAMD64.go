@@ -67406,6 +67406,28 @@ func rewriteBlockAMD64(b *Block) bool {
 			b.Aux = nil
 			return true
 		}
+		// match: (GT (TESTQ p p2))
+		// cond: p.Op == OpPhi && p == p2 && magicTestRewrite(b, p) && noteRule("OPT")
+		// result: (GT (TESTQ p p2))
+		for {
+			v := b.Control
+			if v.Op != OpAMD64TESTQ {
+				break
+			}
+			_ = v.Args[1]
+			p := v.Args[0]
+			p2 := v.Args[1]
+			if !(p.Op == OpPhi && p == p2 && magicTestRewrite(b, p) && noteRule("OPT")) {
+				break
+			}
+			b.Kind = BlockAMD64GT
+			v0 := b.NewValue0(v.Pos, OpAMD64TESTQ, types.TypeFlags)
+			v0.AddArg(p)
+			v0.AddArg(p2)
+			b.SetControl(v0)
+			b.Aux = nil
+			return true
+		}
 	case BlockIf:
 		// match: (If (SETL cmp) yes no)
 		// cond:
