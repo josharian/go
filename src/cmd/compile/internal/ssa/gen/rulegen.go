@@ -197,64 +197,8 @@ func genRules(arch arch) {
 		chunks := chunkRules(oprules[op])
 		for c, chunk := range chunks {
 			lastchunk := c == len(chunks)-1
-			buf := new(bytes.Buffer)
-			var canFail bool
-			for _, rule := range chunk {
-				match, cond, result := rule.parse()
-				fmt.Fprintf(buf, "// match: %s\n", match)
-				fmt.Fprintf(buf, "// cond: %s\n", cond)
-				fmt.Fprintf(buf, "// result: %s\n", result)
-
-				canFail = false
-				fmt.Fprintf(buf, "for {\n")
-				pos, matchCanFail := genMatch(buf, arch, match, rule.loc)
-				if pos == "" {
-					pos = "v.Pos"
-				}
-				if matchCanFail {
-					canFail = true
-				}
-
-				if cond != "" {
-					fmt.Fprintf(buf, "if !(%s) {\nbreak\n}\n", cond)
-					canFail = true
-				}
-				if !canFail && !lastchunk {
-					log.Fatalf("unconditional rule %s is followed by other rules", match)
-				}
-
-				genResult(buf, arch, result, rule.loc, pos)
-				if *genLog {
-					fmt.Fprintf(buf, "logRule(\"%s\")\n", rule.loc)
-				}
-				fmt.Fprintf(buf, "return true\n")
-
-				fmt.Fprintf(buf, "}\n")
-			}
-			if canFail {
-				fmt.Fprintf(buf, "return false\n")
-			}
-
-			body := buf.String()
-			// Figure out whether we need b, config, fe, and/or types; provide them if so.
-			hasb := strings.Contains(body, " b.")
-			hasconfig := strings.Contains(body, "config.") || strings.Contains(body, "config)")
-			hasfe := strings.Contains(body, "fe.")
-			hastyps := strings.Contains(body, "typ.")
 			fmt.Fprintf(w, "func rewriteValue%s_%s_%d(v *Value) bool {\n", arch.name, op, c)
-			if hasb || hasconfig || hasfe || hastyps {
-				fmt.Fprintln(w, "b := v.Block")
-			}
-			if hasconfig {
-				fmt.Fprintln(w, "config := b.Func.Config")
-			}
-			if hasfe {
-				fmt.Fprintln(w, "fe := b.Func.fe")
-			}
-			if hastyps {
-				fmt.Fprintln(w, "typ := &b.Func.Config.Types")
-			}
-			fmt.Fprint(w, body)
+			genValueRewriteBody(w, arch, chunk, lastchunk)
 			fmt.Fprintf(w, "}\n")
 		}
 	}
@@ -384,6 +328,66 @@ func genRules(arch arch) {
 	if err != nil {
 		log.Fatalf("can't write output: %v\n", err)
 	}
+}
+
+func genValueRewriteBody(w io.Writer, arch arch, rules []Rule, lastchunk bool) {
+	buf := new(bytes.Buffer)
+	var canFail bool
+	for _, rule := range rules {
+		match, cond, result := rule.parse()
+		fmt.Fprintf(buf, "// match: %s\n", match)
+		fmt.Fprintf(buf, "// cond: %s\n", cond)
+		fmt.Fprintf(buf, "// result: %s\n", result)
+
+		canFail = false
+		fmt.Fprintf(buf, "for {\n")
+		pos, matchCanFail := genMatch(buf, arch, match, rule.loc)
+		if pos == "" {
+			pos = "v.Pos"
+		}
+		if matchCanFail {
+			canFail = true
+		}
+
+		if cond != "" {
+			fmt.Fprintf(buf, "if !(%s) {\nbreak\n}\n", cond)
+			canFail = true
+		}
+		if !canFail && !lastchunk {
+			log.Fatalf("unconditional rule %s is followed by other rules", match)
+		}
+
+		genResult(buf, arch, result, rule.loc, pos)
+		if *genLog {
+			fmt.Fprintf(buf, "logRule(\"%s\")\n", rule.loc)
+		}
+		fmt.Fprintf(buf, "return true\n")
+
+		fmt.Fprintf(buf, "}\n")
+	}
+	if canFail {
+		fmt.Fprintf(buf, "return false\n")
+	}
+
+	body := buf.String()
+	// Figure out whether we need b, config, fe, and/or types; provide them if so.
+	hasb := strings.Contains(body, " b.")
+	hasconfig := strings.Contains(body, "config.") || strings.Contains(body, "config)")
+	hasfe := strings.Contains(body, "fe.")
+	hastyps := strings.Contains(body, "typ.")
+	if hasb || hasconfig || hasfe || hastyps {
+		fmt.Fprintln(w, "b := v.Block")
+	}
+	if hasconfig {
+		fmt.Fprintln(w, "config := b.Func.Config")
+	}
+	if hasfe {
+		fmt.Fprintln(w, "fe := b.Func.fe")
+	}
+	if hastyps {
+		fmt.Fprintln(w, "typ := &b.Func.Config.Types")
+	}
+	fmt.Fprint(w, body)
 }
 
 func chunkRules(rules []Rule) [][]Rule {
