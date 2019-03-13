@@ -359,16 +359,17 @@ func (enc *Encoding) decodeQuantum(dst, src []byte, si int) (nsi, n int, err err
 		dst[1] = d1
 		dst[2] = d2
 	case 3:
-		dst[1] = d1
 		if enc.strict && d2 != 0 {
 			return si, 0, CorruptInputError(si - 1)
 		}
+		_ = dst[1]
 		dst[0] = d0
+		dst[1] = d1
 	case 2:
-		dst[0] = d0
 		if enc.strict && d1|d2 != 0 {
 			return si, 0, CorruptInputError(si - 2)
 		}
+		dst[0] = d0
 	}
 
 	return si, dlen - 1, err
