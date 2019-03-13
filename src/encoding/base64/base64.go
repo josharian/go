@@ -281,13 +281,13 @@ func (e CorruptInputError) Error() string {
 // to dst, and an error, if any.
 func (enc *Encoding) decodeQuantum(dst, src []byte, si int) (nsi, n int, err error) {
 	// Decode quantum using the base64 alphabet
-	var dbuf [4]byte
+	var val uint32 // we accumulate 6bit source bytes into the bottom 3 bytes of val
 	dlen := 4
 
 	// Lift the nil check outside of the loop.
 	_ = enc.decodeMap
 
-	for j := 0; j < len(dbuf); j++ {
+	for j, off := 0, 18; j < 4; j, off = j+1, off-6 {
 		if len(src) == si {
 			switch {
 			case j == 0:
@@ -301,14 +301,14 @@ func (enc *Encoding) decodeQuantum(dst, src []byte, si int) (nsi, n int, err err
 		in := src[si]
 		si++
 
-		out := enc.decodeMap[in]
-		if out != 0xff {
-			dbuf[j] = out
+		if in == '\n' || in == '\r' {
+			j--
+			off += 6
 			continue
 		}
 
-		if in == '\n' || in == '\r' {
-			j--
+		if out := enc.decodeMap[in]; out != 0xff {
+			val |= uint32(out) << (off & 31)
 			continue
 		}
 
@@ -351,24 +351,22 @@ func (enc *Encoding) decodeQuantum(dst, src []byte, si int) (nsi, n int, err err
 		break
 	}
 
-	// Convert 4x 6bit source bytes into 3 bytes
-	val := uint(dbuf[0])<<18 | uint(dbuf[1])<<12 | uint(dbuf[2])<<6 | uint(dbuf[3])
-	dbuf[2], dbuf[1], dbuf[0] = byte(val>>0), byte(val>>8), byte(val>>16)
+	d2, d1, d0 := byte(val>>0), byte(val>>8), byte(val>>16)
 	switch dlen {
 	case 4:
-		dst[2] = dbuf[2]
-		dbuf[2] = 0
+		dst[2] = d2
+		d2 = 0
 		fallthrough
 	case 3:
-		dst[1] = dbuf[1]
-		if enc.strict && dbuf[2] != 0 {
+		dst[1] = d1
+		if enc.strict && d2 != 0 {
 			return si, 0, CorruptInputError(si - 1)
 		}
-		dbuf[1] = 0
+		d1 = 0
 		fallthrough
 	case 2:
-		dst[0] = dbuf[0]
-		if enc.strict && (dbuf[1] != 0 || dbuf[2] != 0) {
+		dst[0] = d0
+		if enc.strict && (d1 != 0 || d2 != 0) {
 			return si, 0, CorruptInputError(si - 2)
 		}
 	}
