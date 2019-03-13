@@ -338,7 +338,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpMod8u:
 		return rewriteValuePPC64_OpMod8u_0(v)
 	case OpMove:
-		return rewriteValuePPC64_OpMove_0(v) || rewriteValuePPC64_OpMove_1(v)
+		return rewriteValuePPC64_OpMove_0(v)
 	case OpMul16:
 		return rewriteValuePPC64_OpMul16_0(v)
 	case OpMul32:
@@ -402,9 +402,9 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpPPC64ADDconst:
 		return rewriteValuePPC64_OpPPC64ADDconst_0(v)
 	case OpPPC64AND:
-		return rewriteValuePPC64_OpPPC64AND_0(v) || rewriteValuePPC64_OpPPC64AND_1(v)
+		return rewriteValuePPC64_OpPPC64AND_0(v)
 	case OpPPC64ANDconst:
-		return rewriteValuePPC64_OpPPC64ANDconst_0(v) || rewriteValuePPC64_OpPPC64ANDconst_1(v)
+		return rewriteValuePPC64_OpPPC64ANDconst_0(v)
 	case OpPPC64CMP:
 		return rewriteValuePPC64_OpPPC64CMP_0(v)
 	case OpPPC64CMPU:
@@ -466,13 +466,13 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpPPC64MOVBZloadidx:
 		return rewriteValuePPC64_OpPPC64MOVBZloadidx_0(v)
 	case OpPPC64MOVBZreg:
-		return rewriteValuePPC64_OpPPC64MOVBZreg_0(v) || rewriteValuePPC64_OpPPC64MOVBZreg_1(v)
+		return rewriteValuePPC64_OpPPC64MOVBZreg_0(v)
 	case OpPPC64MOVBreg:
-		return rewriteValuePPC64_OpPPC64MOVBreg_0(v) || rewriteValuePPC64_OpPPC64MOVBreg_1(v)
+		return rewriteValuePPC64_OpPPC64MOVBreg_0(v)
 	case OpPPC64MOVBstore:
-		return rewriteValuePPC64_OpPPC64MOVBstore_0(v) || rewriteValuePPC64_OpPPC64MOVBstore_1(v) || rewriteValuePPC64_OpPPC64MOVBstore_2(v)
+		return rewriteValuePPC64_OpPPC64MOVBstore_0(v) || rewriteValuePPC64_OpPPC64MOVBstore_1(v)
 	case OpPPC64MOVBstoreidx:
-		return rewriteValuePPC64_OpPPC64MOVBstoreidx_0(v) || rewriteValuePPC64_OpPPC64MOVBstoreidx_1(v)
+		return rewriteValuePPC64_OpPPC64MOVBstoreidx_0(v)
 	case OpPPC64MOVBstorezero:
 		return rewriteValuePPC64_OpPPC64MOVBstorezero_0(v)
 	case OpPPC64MOVDload:
@@ -498,7 +498,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpPPC64MOVHloadidx:
 		return rewriteValuePPC64_OpPPC64MOVHloadidx_0(v)
 	case OpPPC64MOVHreg:
-		return rewriteValuePPC64_OpPPC64MOVHreg_0(v) || rewriteValuePPC64_OpPPC64MOVHreg_1(v)
+		return rewriteValuePPC64_OpPPC64MOVHreg_0(v)
 	case OpPPC64MOVHstore:
 		return rewriteValuePPC64_OpPPC64MOVHstore_0(v)
 	case OpPPC64MOVHstoreidx:
@@ -512,7 +512,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpPPC64MOVWZloadidx:
 		return rewriteValuePPC64_OpPPC64MOVWZloadidx_0(v)
 	case OpPPC64MOVWZreg:
-		return rewriteValuePPC64_OpPPC64MOVWZreg_0(v) || rewriteValuePPC64_OpPPC64MOVWZreg_1(v) || rewriteValuePPC64_OpPPC64MOVWZreg_2(v)
+		return rewriteValuePPC64_OpPPC64MOVWZreg_0(v) || rewriteValuePPC64_OpPPC64MOVWZreg_1(v)
 	case OpPPC64MOVWload:
 		return rewriteValuePPC64_OpPPC64MOVWload_0(v)
 	case OpPPC64MOVWloadidx:
@@ -540,7 +540,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpPPC64SUB:
 		return rewriteValuePPC64_OpPPC64SUB_0(v)
 	case OpPPC64XOR:
-		return rewriteValuePPC64_OpPPC64XOR_0(v) || rewriteValuePPC64_OpPPC64XOR_1(v)
+		return rewriteValuePPC64_OpPPC64XOR_0(v)
 	case OpPPC64XORconst:
 		return rewriteValuePPC64_OpPPC64XORconst_0(v)
 	case OpPopCount16:
@@ -578,7 +578,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpRsh32Ux32:
 		return rewriteValuePPC64_OpRsh32Ux32_0(v)
 	case OpRsh32Ux64:
-		return rewriteValuePPC64_OpRsh32Ux64_0(v) || rewriteValuePPC64_OpRsh32Ux64_1(v)
+		return rewriteValuePPC64_OpRsh32Ux64_0(v)
 	case OpRsh32Ux8:
 		return rewriteValuePPC64_OpRsh32Ux8_0(v)
 	case OpRsh32x16:
@@ -586,7 +586,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpRsh32x32:
 		return rewriteValuePPC64_OpRsh32x32_0(v)
 	case OpRsh32x64:
-		return rewriteValuePPC64_OpRsh32x64_0(v) || rewriteValuePPC64_OpRsh32x64_1(v)
+		return rewriteValuePPC64_OpRsh32x64_0(v)
 	case OpRsh32x8:
 		return rewriteValuePPC64_OpRsh32x8_0(v)
 	case OpRsh64Ux16:
@@ -594,7 +594,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpRsh64Ux32:
 		return rewriteValuePPC64_OpRsh64Ux32_0(v)
 	case OpRsh64Ux64:
-		return rewriteValuePPC64_OpRsh64Ux64_0(v) || rewriteValuePPC64_OpRsh64Ux64_1(v)
+		return rewriteValuePPC64_OpRsh64Ux64_0(v)
 	case OpRsh64Ux8:
 		return rewriteValuePPC64_OpRsh64Ux8_0(v)
 	case OpRsh64x16:
@@ -602,7 +602,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpRsh64x32:
 		return rewriteValuePPC64_OpRsh64x32_0(v)
 	case OpRsh64x64:
-		return rewriteValuePPC64_OpRsh64x64_0(v) || rewriteValuePPC64_OpRsh64x64_1(v)
+		return rewriteValuePPC64_OpRsh64x64_0(v)
 	case OpRsh64x8:
 		return rewriteValuePPC64_OpRsh64x8_0(v)
 	case OpRsh8Ux16:
@@ -680,7 +680,7 @@ func rewriteValuePPC64(v *Value) bool {
 	case OpXor8:
 		return rewriteValuePPC64_OpXor8_0(v)
 	case OpZero:
-		return rewriteValuePPC64_OpZero_0(v) || rewriteValuePPC64_OpZero_1(v)
+		return rewriteValuePPC64_OpZero_0(v)
 	case OpZeroExt16to32:
 		return rewriteValuePPC64_OpZeroExt16to32_0(v)
 	case OpZeroExt16to64:
@@ -4534,9 +4534,6 @@ func rewriteValuePPC64_OpMove_0(v *Value) bool {
 		v.AddArg(v1)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpMove_1(v *Value) bool {
 	// match: (Move [s] dst src mem)
 	// cond: s > 8
 	// result: (LoweredMove [s] dst src mem)
@@ -5650,9 +5647,6 @@ func rewriteValuePPC64_OpPPC64AND_0(v *Value) bool {
 		v.AddArg(x)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64AND_1(v *Value) bool {
 	// match: (AND (MOVDconst [c]) x:(MOVBZload _ _))
 	// cond:
 	// result: (ANDconst [c&0xFF] x)
@@ -5887,9 +5881,6 @@ func rewriteValuePPC64_OpPPC64ANDconst_0(v *Value) bool {
 		v.AddArg(x)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64ANDconst_1(v *Value) bool {
 	// match: (ANDconst [c] (MOVHZreg x))
 	// cond:
 	// result: (ANDconst [c&0xFFFF] x)
@@ -7442,9 +7433,6 @@ func rewriteValuePPC64_OpPPC64MOVBZreg_0(v *Value) bool {
 		v.AddArg(x)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64MOVBZreg_1(v *Value) bool {
 	// match: (MOVBZreg (MOVDconst [c]))
 	// cond:
 	// result: (MOVDconst [int64(uint8(c))])
@@ -7634,9 +7622,6 @@ func rewriteValuePPC64_OpPPC64MOVBreg_0(v *Value) bool {
 		v.AddArg(x)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64MOVBreg_1(v *Value) bool {
 	// match: (MOVBreg (MOVDconst [c]))
 	// cond:
 	// result: (MOVDconst [int64(int8(c))])
@@ -8330,12 +8315,6 @@ func rewriteValuePPC64_OpPPC64MOVBstore_1(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64MOVBstore_2(v *Value) bool {
-	b := v.Block
-	config := b.Func.Config
-	typ := &b.Func.Config.Types
 	// match: (MOVBstore [i7] {s} p (SRDconst w [56]) x0:(MOVBstore [i6] {s} p (SRDconst w [48]) x1:(MOVBstore [i5] {s} p (SRDconst w [40]) x2:(MOVBstore [i4] {s} p (SRDconst w [32]) x3:(MOVWstore [i0] {s} p w mem)))))
 	// cond: !config.BigEndian && i0%4 == 0 && x0.Uses == 1 && x1.Uses == 1 && x2.Uses == 1 && x3.Uses == 1 && i4 == i0+4 && i5 == i0+5 && i6 == i0+6 && i7 == i0+7 && clobber(x0) && clobber(x1) && clobber(x2) && clobber(x3)
 	// result: (MOVDstore [i0] {s} p w mem)
@@ -8875,11 +8854,6 @@ func rewriteValuePPC64_OpPPC64MOVBstoreidx_0(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64MOVBstoreidx_1(v *Value) bool {
-	b := v.Block
-	typ := &b.Func.Config.Types
 	// match: (MOVBstoreidx [off] {sym} ptr idx (SRWconst (MOVWreg x) [c]) mem)
 	// cond: c <= 24
 	// result: (MOVBstoreidx [off] {sym} ptr idx (SRWconst <typ.UInt32> x [c]) mem)
@@ -10113,9 +10087,6 @@ func rewriteValuePPC64_OpPPC64MOVHreg_0(v *Value) bool {
 		v.AddArg(y)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64MOVHreg_1(v *Value) bool {
 	// match: (MOVHreg y:(MOVHZreg x))
 	// cond:
 	// result: (MOVHreg x)
@@ -11136,9 +11107,6 @@ func rewriteValuePPC64_OpPPC64MOVWZreg_1(v *Value) bool {
 		v.AddArg(x)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64MOVWZreg_2(v *Value) bool {
 	// match: (MOVWZreg x:(Arg <t>))
 	// cond: (is8BitInt(t) || is16BitInt(t) || is32BitInt(t)) && !isSigned(t)
 	// result: x
@@ -25956,9 +25924,6 @@ func rewriteValuePPC64_OpPPC64XOR_0(v *Value) bool {
 		v.AuxInt = c ^ d
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpPPC64XOR_1(v *Value) bool {
 	// match: (XOR x (MOVDconst [c]))
 	// cond: isU32Bit(c)
 	// result: (XORconst [c] x)
@@ -27075,11 +27040,6 @@ func rewriteValuePPC64_OpRsh32Ux64_0(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpRsh32Ux64_1(v *Value) bool {
-	b := v.Block
-	typ := &b.Func.Config.Types
 	// match: (Rsh32Ux64 x y)
 	// cond:
 	// result: (SRW x (ORN y <typ.Int64> (MaskIfNotCarry (ADDconstForCarry [-32] y))))
@@ -27551,11 +27511,6 @@ func rewriteValuePPC64_OpRsh32x64_0(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpRsh32x64_1(v *Value) bool {
-	b := v.Block
-	typ := &b.Func.Config.Types
 	// match: (Rsh32x64 x y)
 	// cond:
 	// result: (SRAW x (ORN y <typ.Int64> (MaskIfNotCarry (ADDconstForCarry [-32] y))))
@@ -28025,11 +27980,6 @@ func rewriteValuePPC64_OpRsh64Ux64_0(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpRsh64Ux64_1(v *Value) bool {
-	b := v.Block
-	typ := &b.Func.Config.Types
 	// match: (Rsh64Ux64 x y)
 	// cond:
 	// result: (SRD x (ORN y <typ.Int64> (MaskIfNotCarry (ADDconstForCarry [-64] y))))
@@ -28501,11 +28451,6 @@ func rewriteValuePPC64_OpRsh64x64_0(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpRsh64x64_1(v *Value) bool {
-	b := v.Block
-	typ := &b.Func.Config.Types
 	// match: (Rsh64x64 x y)
 	// cond:
 	// result: (SRAD x (ORN y <typ.Int64> (MaskIfNotCarry (ADDconstForCarry [-64] y))))
@@ -29826,10 +29771,6 @@ func rewriteValuePPC64_OpZero_0(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
-	return false
-}
-func rewriteValuePPC64_OpZero_1(v *Value) bool {
-	b := v.Block
 	// match: (Zero [12] {t} destptr mem)
 	// cond: t.(*types.Type).Alignment()%4 == 0
 	// result: (MOVWstorezero [8] destptr (MOVDstorezero [0] destptr mem))

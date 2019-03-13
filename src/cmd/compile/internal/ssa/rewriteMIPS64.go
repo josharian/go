@@ -352,7 +352,7 @@ func rewriteValueMIPS64(v *Value) bool {
 	case OpMIPS64MOVWload:
 		return rewriteValueMIPS64_OpMIPS64MOVWload_0(v)
 	case OpMIPS64MOVWreg:
-		return rewriteValueMIPS64_OpMIPS64MOVWreg_0(v) || rewriteValueMIPS64_OpMIPS64MOVWreg_1(v)
+		return rewriteValueMIPS64_OpMIPS64MOVWreg_0(v)
 	case OpMIPS64MOVWstore:
 		return rewriteValueMIPS64_OpMIPS64MOVWstore_0(v)
 	case OpMIPS64MOVWstorezero:
@@ -374,7 +374,7 @@ func rewriteValueMIPS64(v *Value) bool {
 	case OpMIPS64SGTUconst:
 		return rewriteValueMIPS64_OpMIPS64SGTUconst_0(v)
 	case OpMIPS64SGTconst:
-		return rewriteValueMIPS64_OpMIPS64SGTconst_0(v) || rewriteValueMIPS64_OpMIPS64SGTconst_1(v)
+		return rewriteValueMIPS64_OpMIPS64SGTconst_0(v)
 	case OpMIPS64SLLV:
 		return rewriteValueMIPS64_OpMIPS64SLLV_0(v)
 	case OpMIPS64SLLVconst:
@@ -540,7 +540,7 @@ func rewriteValueMIPS64(v *Value) bool {
 	case OpSelect0:
 		return rewriteValueMIPS64_OpSelect0_0(v)
 	case OpSelect1:
-		return rewriteValueMIPS64_OpSelect1_0(v) || rewriteValueMIPS64_OpSelect1_1(v) || rewriteValueMIPS64_OpSelect1_2(v)
+		return rewriteValueMIPS64_OpSelect1_0(v) || rewriteValueMIPS64_OpSelect1_1(v)
 	case OpSignExt16to32:
 		return rewriteValueMIPS64_OpSignExt16to32_0(v)
 	case OpSignExt16to64:
@@ -5175,9 +5175,6 @@ func rewriteValueMIPS64_OpMIPS64MOVWreg_0(v *Value) bool {
 		v.AddArg(x)
 		return true
 	}
-	return false
-}
-func rewriteValueMIPS64_OpMIPS64MOVWreg_1(v *Value) bool {
 	// match: (MOVWreg (MOVVconst [c]))
 	// cond:
 	// result: (MOVVconst [int64(int32(c))])
@@ -5855,9 +5852,6 @@ func rewriteValueMIPS64_OpMIPS64SGTconst_0(v *Value) bool {
 		v.AuxInt = 0
 		return true
 	}
-	return false
-}
-func rewriteValueMIPS64_OpMIPS64SGTconst_1(v *Value) bool {
 	// match: (SGTconst [c] (MOVWUreg _))
 	// cond: c < 0
 	// result: (MOVVconst [0])
@@ -8937,9 +8931,6 @@ func rewriteValueMIPS64_OpSelect1_1(v *Value) bool {
 		v.AuxInt = c * d
 		return true
 	}
-	return false
-}
-func rewriteValueMIPS64_OpSelect1_2(v *Value) bool {
 	// match: (Select1 (DIVV (MOVVconst [c]) (MOVVconst [d])))
 	// cond:
 	// result: (MOVVconst [c/d])

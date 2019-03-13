@@ -40,7 +40,7 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMADDF:
 		return rewriteValueARM_OpARMADDF_0(v)
 	case OpARMADDS:
-		return rewriteValueARM_OpARMADDS_0(v) || rewriteValueARM_OpARMADDS_1(v)
+		return rewriteValueARM_OpARMADDS_0(v)
 	case OpARMADDSshiftLL:
 		return rewriteValueARM_OpARMADDSshiftLL_0(v)
 	case OpARMADDSshiftLLreg:
@@ -68,7 +68,7 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMADDshiftRLreg:
 		return rewriteValueARM_OpARMADDshiftRLreg_0(v)
 	case OpARMAND:
-		return rewriteValueARM_OpARMAND_0(v) || rewriteValueARM_OpARMAND_1(v) || rewriteValueARM_OpARMAND_2(v)
+		return rewriteValueARM_OpARMAND_0(v) || rewriteValueARM_OpARMAND_1(v)
 	case OpARMANDconst:
 		return rewriteValueARM_OpARMANDconst_0(v)
 	case OpARMANDshiftLL:
@@ -124,7 +124,7 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMCMOVWLSconst:
 		return rewriteValueARM_OpARMCMOVWLSconst_0(v)
 	case OpARMCMP:
-		return rewriteValueARM_OpARMCMP_0(v) || rewriteValueARM_OpARMCMP_1(v)
+		return rewriteValueARM_OpARMCMP_0(v)
 	case OpARMCMPD:
 		return rewriteValueARM_OpARMCMPD_0(v)
 	case OpARMCMPF:
@@ -224,15 +224,15 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMMOVWstoreshiftRL:
 		return rewriteValueARM_OpARMMOVWstoreshiftRL_0(v)
 	case OpARMMUL:
-		return rewriteValueARM_OpARMMUL_0(v) || rewriteValueARM_OpARMMUL_1(v) || rewriteValueARM_OpARMMUL_2(v)
+		return rewriteValueARM_OpARMMUL_0(v) || rewriteValueARM_OpARMMUL_1(v)
 	case OpARMMULA:
-		return rewriteValueARM_OpARMMULA_0(v) || rewriteValueARM_OpARMMULA_1(v) || rewriteValueARM_OpARMMULA_2(v)
+		return rewriteValueARM_OpARMMULA_0(v) || rewriteValueARM_OpARMMULA_1(v)
 	case OpARMMULD:
 		return rewriteValueARM_OpARMMULD_0(v)
 	case OpARMMULF:
 		return rewriteValueARM_OpARMMULF_0(v)
 	case OpARMMULS:
-		return rewriteValueARM_OpARMMULS_0(v) || rewriteValueARM_OpARMMULS_1(v) || rewriteValueARM_OpARMMULS_2(v)
+		return rewriteValueARM_OpARMMULS_0(v) || rewriteValueARM_OpARMMULS_1(v)
 	case OpARMMVN:
 		return rewriteValueARM_OpARMMVN_0(v)
 	case OpARMMVNshiftLL:
@@ -258,7 +258,7 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMNotEqual:
 		return rewriteValueARM_OpARMNotEqual_0(v)
 	case OpARMOR:
-		return rewriteValueARM_OpARMOR_0(v) || rewriteValueARM_OpARMOR_1(v)
+		return rewriteValueARM_OpARMOR_0(v)
 	case OpARMORconst:
 		return rewriteValueARM_OpARMORconst_0(v)
 	case OpARMORshiftLL:
@@ -316,7 +316,7 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMRSCshiftRLreg:
 		return rewriteValueARM_OpARMRSCshiftRLreg_0(v)
 	case OpARMSBC:
-		return rewriteValueARM_OpARMSBC_0(v) || rewriteValueARM_OpARMSBC_1(v)
+		return rewriteValueARM_OpARMSBC_0(v)
 	case OpARMSBCconst:
 		return rewriteValueARM_OpARMSBCconst_0(v)
 	case OpARMSBCshiftLL:
@@ -352,7 +352,7 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMSUBF:
 		return rewriteValueARM_OpARMSUBF_0(v)
 	case OpARMSUBS:
-		return rewriteValueARM_OpARMSUBS_0(v) || rewriteValueARM_OpARMSUBS_1(v)
+		return rewriteValueARM_OpARMSUBS_0(v)
 	case OpARMSUBSshiftLL:
 		return rewriteValueARM_OpARMSUBSshiftLL_0(v)
 	case OpARMSUBSshiftLLreg:
@@ -380,7 +380,7 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMSUBshiftRLreg:
 		return rewriteValueARM_OpARMSUBshiftRLreg_0(v)
 	case OpARMTEQ:
-		return rewriteValueARM_OpARMTEQ_0(v) || rewriteValueARM_OpARMTEQ_1(v)
+		return rewriteValueARM_OpARMTEQ_0(v)
 	case OpARMTEQconst:
 		return rewriteValueARM_OpARMTEQconst_0(v)
 	case OpARMTEQshiftLL:
@@ -396,7 +396,7 @@ func rewriteValueARM(v *Value) bool {
 	case OpARMTEQshiftRLreg:
 		return rewriteValueARM_OpARMTEQshiftRLreg_0(v)
 	case OpARMTST:
-		return rewriteValueARM_OpARMTST_0(v) || rewriteValueARM_OpARMTST_1(v)
+		return rewriteValueARM_OpARMTST_0(v)
 	case OpARMTSTconst:
 		return rewriteValueARM_OpARMTSTconst_0(v)
 	case OpARMTSTshiftLL:
@@ -2373,9 +2373,6 @@ func rewriteValueARM_OpARMADDS_0(v *Value) bool {
 		v.AddArg(z)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMADDS_1(v *Value) bool {
 	// match: (ADDS x (SRL y z))
 	// cond:
 	// result: (ADDSshiftRLreg x y z)
@@ -3509,9 +3506,6 @@ func rewriteValueARM_OpARMAND_1(v *Value) bool {
 		v.AddArg(y)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMAND_2(v *Value) bool {
 	// match: (AND (MVNshiftRL y [c]) x)
 	// cond:
 	// result: (BICshiftRL x y [c])
@@ -5391,10 +5385,6 @@ func rewriteValueARM_OpARMCMP_0(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMCMP_1(v *Value) bool {
-	b := v.Block
 	// match: (CMP x (SRL y z))
 	// cond:
 	// result: (CMPshiftRLreg x y z)
@@ -9794,9 +9784,6 @@ func rewriteValueARM_OpARMMUL_1(v *Value) bool {
 		v.AddArg(v0)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMMUL_2(v *Value) bool {
 	// match: (MUL (MOVWconst [c]) (MOVWconst [d]))
 	// cond:
 	// result: (MOVWconst [int64(int32(c*d))])
@@ -10295,9 +10282,6 @@ func rewriteValueARM_OpARMMULA_1(v *Value) bool {
 		v.AddArg(a)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMMULA_2(v *Value) bool {
 	// match: (MULA (MOVWconst [c]) (MOVWconst [d]) a)
 	// cond:
 	// result: (ADDconst [int64(int32(c*d))] a)
@@ -10858,9 +10842,6 @@ func rewriteValueARM_OpARMMULS_1(v *Value) bool {
 		v.AddArg(a)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMMULS_2(v *Value) bool {
 	// match: (MULS (MOVWconst [c]) (MOVWconst [d]) a)
 	// cond:
 	// result: (SUBconst [int64(int32(c*d))] a)
@@ -11455,9 +11436,6 @@ func rewriteValueARM_OpARMOR_0(v *Value) bool {
 		v.AddArg(z)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMOR_1(v *Value) bool {
 	// match: (OR x (SRL y z))
 	// cond:
 	// result: (ORshiftRLreg x y z)
@@ -13405,9 +13383,6 @@ func rewriteValueARM_OpARMSBC_0(v *Value) bool {
 		v.AddArg(flags)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMSBC_1(v *Value) bool {
 	// match: (SBC x (SRL y z) flags)
 	// cond:
 	// result: (SBCshiftRLreg x y z flags)
@@ -14557,9 +14532,6 @@ func rewriteValueARM_OpARMSUBS_0(v *Value) bool {
 		v.AddArg(z)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMSUBS_1(v *Value) bool {
 	// match: (SUBS (SRL y z) x)
 	// cond:
 	// result: (RSBSshiftRLreg x y z)
@@ -15462,9 +15434,6 @@ func rewriteValueARM_OpARMTEQ_0(v *Value) bool {
 		v.AddArg(z)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMTEQ_1(v *Value) bool {
 	// match: (TEQ x (SRL y z))
 	// cond:
 	// result: (TEQshiftRLreg x y z)
@@ -16003,9 +15972,6 @@ func rewriteValueARM_OpARMTST_0(v *Value) bool {
 		v.AddArg(z)
 		return true
 	}
-	return false
-}
-func rewriteValueARM_OpARMTST_1(v *Value) bool {
 	// match: (TST x (SRL y z))
 	// cond:
 	// result: (TSTshiftRLreg x y z)
