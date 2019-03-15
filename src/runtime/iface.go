@@ -342,8 +342,16 @@ func convT64(val uint64) (x unsafe.Pointer) {
 	if val == 0 {
 		x = unsafe.Pointer(&zeroVal[0])
 	} else {
-		x = mallocgc(8, uint64Type, false)
-		*(*uint64)(x) = val
+		ptr := getg().m.p.ptr().uint64p
+		if ptr != nil && *ptr == val {
+			println("HIT")
+			x = unsafe.Pointer(ptr)
+		} else {
+			println("MISS")
+			x = mallocgc(8, uint64Type, false)
+			*(*uint64)(x) = val
+			getg().m.p.ptr().uint64p = (*uint64)(x)
+		}
 	}
 	return
 }
