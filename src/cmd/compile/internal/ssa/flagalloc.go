@@ -28,6 +28,11 @@ var opCmpLoadMap = map[Op]typeCmdLoadMap{
 	Op386CMPBconstload:   {Op386MOVBload, Op386CMPBconst},
 }
 
+// Idea: don't just note the flag register, also not what op/block
+// is using it, and determine which flag they care about.
+// If all (say) CX, use the CX-saving trick that math/big/arith_amd64.s uses.
+// There are ways to save other flags too.
+
 // flagalloc allocates the flag register among all the flag-generating
 // instructions. Flag values are recomputed if they need to be
 // spilled/restored.
