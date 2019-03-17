@@ -296,6 +296,7 @@ var (
 	msanread,
 	msanwrite,
 	newobject,
+	newobjectNoClr,
 	newproc,
 	panicdivide,
 	panicshift,

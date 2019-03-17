@@ -37,7 +37,7 @@ func G() {
 
 func H() {
 	var v int                                 // ERROR "moved to heap"
-	F2(0, 1, uintptr(unsafe.Pointer(&v)), 2)  // ERROR "live at call to newobject: .?autotmp" "live at call to F2: .?autotmp" "escapes to heap" "stack object .autotmp_[0-9]+ unsafe.Pointer$"
+	F2(0, 1, uintptr(unsafe.Pointer(&v)), 2)  // ERROR "live at call to newobjectNoClr: .?autotmp" "live at call to F2: .?autotmp" "escapes to heap" "stack object .autotmp_[0-9]+ unsafe.Pointer$"
 	var v2 int                                // ERROR "moved to heap"
-	F4(0, 1, uintptr(unsafe.Pointer(&v2)), 2) // ERROR "live at call to newobject: .?autotmp" "live at call to F4: .?autotmp" "escapes to heap"
+	F4(0, 1, uintptr(unsafe.Pointer(&v2)), 2) // ERROR "live at call to newobjectNoClr: .?autotmp" "live at call to F4: .?autotmp" "escapes to heap"
 }

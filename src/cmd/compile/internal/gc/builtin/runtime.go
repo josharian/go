@@ -15,6 +15,7 @@ package runtime
 import "unsafe"
 
 func newobject(typ *byte) *any
+func newobjectNoClr(typ *byte) *any
 func panicdivide()
 func panicshift()
 func panicmakeslicelen()

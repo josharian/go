@@ -10,6 +10,7 @@ var runtimeDecls = [...]struct {
 	typ  int
 }{
 	{"newobject", funcTag, 4},
+	{"newobjectNoClr", funcTag, 4},
 	{"panicdivide", funcTag, 5},
 	{"panicshift", funcTag, 5},
 	{"panicmakeslicelen", funcTag, 5},

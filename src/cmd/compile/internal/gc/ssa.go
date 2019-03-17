@@ -77,6 +77,7 @@ func initssaconfig() {
 	msanread = sysfunc("msanread")
 	msanwrite = sysfunc("msanwrite")
 	newobject = sysfunc("newobject")
+	newobjectNoClr = sysfunc("newobjectNoClr")
 	newproc = sysfunc("newproc")
 	panicdivide = sysfunc("panicdivide")
 	panicdottypeE = sysfunc("panicdottypeE")
@@ -2457,12 +2458,22 @@ func (s *state) expr(n *Node) *ssa.Value {
 		return s.zeroVal(n.Type)
 
 	case ONEWOBJ:
-		if n.Type.Elem().Size() == 0 {
+		t := n.Type.Elem()
+		if t.Size() == 0 {
 			return s.newValue1A(ssa.OpAddr, n.Type, zerobaseSym, s.sb)
 		}
 		typ := s.expr(n.Left)
-		vv := s.rtcall(newobject, true, []*types.Type{n.Type}, typ)
-		return vv[0]
+		zero := !t.HasHeapPointer() && t.NumComponents(types.IgnoreBlankFields) <= 4 // canssatype?
+		fn := newobject
+		if zero {
+			fn = newobjectNoClr
+		}
+		vv := s.rtcall(fn, true, []*types.Type{n.Type}, typ)
+		v := vv[0]
+		if zero {
+			s.zero(t, v)
+		}
+		return v
 
 	default:
 		s.Fatalf("unhandled expr %v", n.Op)

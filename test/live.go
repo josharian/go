@@ -623,14 +623,14 @@ func f39a() (x []int) {
 
 func f39b() (x [10]*int) {
 	x = [10]*int{}
-	x[0] = new(int) // ERROR "live at call to newobject: x$"
+	x[0] = new(int) // ERROR "live at call to newobjectNoClr: x$"
 	printnl()       // ERROR "live at call to printnl: x$"
 	return x
 }
 
 func f39c() (x [10]*int) {
 	x = [10]*int{}
-	x[0] = new(int) // ERROR "live at call to newobject: x$"
+	x[0] = new(int) // ERROR "live at call to newobjectNoClr: x$"
 	printnl()       // ERROR "live at call to printnl: x$"
 	return
 }
