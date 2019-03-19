@@ -75,7 +75,11 @@ func flagalloc(f *Func) {
 					continue
 				}
 				// a will need to be restored here.
-				spill[a.ID] = true
+				if a.Op == OpSelect0 || a.Op == OpSelect1 {
+					spill[a.Args[0].ID] = true
+				} else {
+					spill[a.ID] = true
+				}
 				flag = a
 			}
 			if v.clobbersFlags() {
@@ -118,10 +122,8 @@ func flagalloc(f *Func) {
 
 			// If v will be spilled, and v uses memory, then we must split it
 			// into a load + a flag generator.
-			if spill[v.ID] && v.MemoryArg() != nil {
-				if !f.Config.splitLoad(v) {
-					f.Fatalf("can't split flag generator: %s", v.LongString())
-				}
+			if spill[v.ID] {
+				spillFlagValue(v)
 			}
 
 			// Make sure any flag arg of v is in the flags register.
@@ -184,6 +186,27 @@ func (v *Value) clobbersFlags() bool {
 		return true
 	}
 	return false
+}
+
+// spillFlagValue spills v, if necessary.
+// Also spill v's args, if necessary, recursively.
+// Values have already been scheduled, so we must take care to ensure
+// that any new args required are generated before the value that uses them.
+func spillFlagValue(v *Value) {
+	if v.Op == OpSelect0 || v.Op == OpSelect1 {
+		v = v.Args[0]
+	}
+	if v.MemoryArg() == nil {
+		return
+	}
+	for _, w := range v.Args {
+		if w.Type.IsFlags() || w.Type.IsTuple() {
+			spillFlagValue(w)
+		}
+	}
+	if f := v.Block.Func; !f.Config.splitLoad(v) {
+		f.Fatalf("can't split flag generator: %s", v.LongString())
+	}
 }
 
 // copyFlags copies v (flag generator) into b, returns the copy.
