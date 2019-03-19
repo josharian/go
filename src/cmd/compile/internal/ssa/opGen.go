@@ -757,6 +757,7 @@ const (
 	OpAMD64SETNAN
 	OpAMD64SETGF
 	OpAMD64SETGEF
+	OpAMD64ArgBQZX
 	OpAMD64MOVBQSX
 	OpAMD64MOVBQZX
 	OpAMD64MOVWQSX
@@ -9886,6 +9887,15 @@ var opcodeTable = [...]opInfo{
 				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
 			},
 		},
+	},
+	{
+		name:      "ArgBQZX",
+		auxType:   auxSymOff,
+		argLen:    0,
+		zeroWidth: true,
+		symEffect: SymRead,
+		asm:       x86.AMOVBQZX,
+		reg:       regInfo{},
 	},
 	{
 		name:   "MOVBQSX",

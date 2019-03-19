@@ -124,7 +124,7 @@ func schedule(f *Func) {
 			case v.Op == OpVarDef:
 				// We want all the vardefs next.
 				score[v.ID] = ScoreVarDef
-			case v.Op == OpArg:
+			case v.Op == OpArg || v.Op == OpAMD64ArgBQZX:
 				// We want all the args as early as possible, for better debugging.
 				score[v.ID] = ScoreArg
 			case v.Type.IsMemory():
@@ -195,7 +195,7 @@ func schedule(f *Func) {
 			}
 		}
 
-		if b.Control != nil && b.Control.Op != OpPhi && b.Control.Op != OpArg {
+		if b.Control != nil && b.Control.Op != OpPhi && b.Control.Op != OpArg && b.Control.Op != OpAMD64ArgBQZX {
 			// Force the control value to be scheduled at the end,
 			// unless it is a phi value (which must be first).
 			// OpArg also goes first -- if it is stack it register allocates

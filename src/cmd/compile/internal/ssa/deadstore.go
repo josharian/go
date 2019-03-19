@@ -193,7 +193,7 @@ func elimDeadAutosGeneric(f *Func) {
 		// The code below assumes that we have handled all the ops
 		// with sym effects already. Sanity check that here.
 		// Ignore Args since they can't be autos.
-		if v.Op.SymEffect() != SymNone && v.Op != OpArg {
+		if v.Op.SymEffect() != SymNone && v.Op != OpArg && v.Op != OpAMD64ArgBQZX {
 			panic("unhandled op with sym effect")
 		}
 

@@ -12093,6 +12093,28 @@ func rewriteValueAMD64_OpAMD64MOVBQZX_0(v *Value) bool {
 		v0.AddArg(mem)
 		return true
 	}
+	// match: (MOVBQZX <t> x:(Arg {sym} [off]))
+	// cond: x.Uses == 1 && clobber(x) && noteRule("OPT")
+	// result: @x.Block (ArgBQZX <t> {sym} [off])
+	for {
+		t := v.Type
+		x := v.Args[0]
+		if x.Op != OpArg {
+			break
+		}
+		off := x.AuxInt
+		sym := x.Aux
+		if !(x.Uses == 1 && clobber(x) && noteRule("OPT")) {
+			break
+		}
+		b = x.Block
+		v0 := b.NewValue0(v.Pos, OpAMD64ArgBQZX, t)
+		v.reset(OpCopy)
+		v.AddArg(v0)
+		v0.AuxInt = off
+		v0.Aux = sym
+		return true
+	}
 	// match: (MOVBQZX x)
 	// cond: zeroUpper56Bits(x,3)
 	// result: x
@@ -61719,10 +61741,9 @@ func rewriteValueAMD64_OpPanicBounds_0(v *Value) bool {
 	// result: (LoweredPanicBoundsA [kind] x y mem)
 	for {
 		kind := v.AuxInt
-		_ = v.Args[2]
+		mem := v.Args[2]
 		x := v.Args[0]
 		y := v.Args[1]
-		mem := v.Args[2]
 		if !(boundsABI(kind) == 0) {
 			break
 		}
@@ -61738,10 +61759,9 @@ func rewriteValueAMD64_OpPanicBounds_0(v *Value) bool {
 	// result: (LoweredPanicBoundsB [kind] x y mem)
 	for {
 		kind := v.AuxInt
-		_ = v.Args[2]
+		mem := v.Args[2]
 		x := v.Args[0]
 		y := v.Args[1]
-		mem := v.Args[2]
 		if !(boundsABI(kind) == 1) {
 			break
 		}
@@ -61757,10 +61777,9 @@ func rewriteValueAMD64_OpPanicBounds_0(v *Value) bool {
 	// result: (LoweredPanicBoundsC [kind] x y mem)
 	for {
 		kind := v.AuxInt
-		_ = v.Args[2]
+		mem := v.Args[2]
 		x := v.Args[0]
 		y := v.Args[1]
-		mem := v.Args[2]
 		if !(boundsABI(kind) == 2) {
 			break
 		}
@@ -61779,11 +61798,10 @@ func rewriteValueAMD64_OpPanicExtend_0(v *Value) bool {
 	// result: (LoweredPanicExtendA [kind] hi lo y mem)
 	for {
 		kind := v.AuxInt
-		_ = v.Args[3]
+		mem := v.Args[3]
 		hi := v.Args[0]
 		lo := v.Args[1]
 		y := v.Args[2]
-		mem := v.Args[3]
 		if !(boundsABI(kind) == 0) {
 			break
 		}
@@ -61800,11 +61818,10 @@ func rewriteValueAMD64_OpPanicExtend_0(v *Value) bool {
 	// result: (LoweredPanicExtendB [kind] hi lo y mem)
 	for {
 		kind := v.AuxInt
-		_ = v.Args[3]
+		mem := v.Args[3]
 		hi := v.Args[0]
 		lo := v.Args[1]
 		y := v.Args[2]
-		mem := v.Args[3]
 		if !(boundsABI(kind) == 1) {
 			break
 		}
@@ -61821,11 +61838,10 @@ func rewriteValueAMD64_OpPanicExtend_0(v *Value) bool {
 	// result: (LoweredPanicExtendC [kind] hi lo y mem)
 	for {
 		kind := v.AuxInt
-		_ = v.Args[3]
+		mem := v.Args[3]
 		hi := v.Args[0]
 		lo := v.Args[1]
 		y := v.Args[2]
-		mem := v.Args[3]
 		if !(boundsABI(kind) == 2) {
 			break
 		}

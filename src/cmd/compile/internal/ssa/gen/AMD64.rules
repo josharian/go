@@ -1049,6 +1049,9 @@
 (MOVLQZX x:(MOVLload [off] {sym} ptr mem)) && x.Uses == 1 && clobber(x) -> @x.Block (MOVLload <v.Type> [off] {sym} ptr mem)
 (MOVLQZX x:(MOVQload [off] {sym} ptr mem)) && x.Uses == 1 && clobber(x) -> @x.Block (MOVLload <v.Type> [off] {sym} ptr mem)
 
+// TODO: require entry block? clobber or no clobber?
+(MOVBQZX <t> x:(Arg {sym} [off])) && x.Uses == 1 && clobber(x) -> @x.Block (ArgBQZX <t> {sym} [off])
+
 (MOVLQZX x) && zeroUpper32Bits(x,3) -> x
 (MOVWQZX x) && zeroUpper48Bits(x,3) -> x
 (MOVBQZX x) && zeroUpper56Bits(x,3) -> x

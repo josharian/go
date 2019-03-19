@@ -861,12 +861,20 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		if x != y {
 			opregreg(s, moveByType(v.Type), y, x)
 		}
+	case ssa.OpAMD64ArgBQZX:
+		// no-op
 	case ssa.OpLoadReg:
 		if v.Type.IsFlags() {
 			v.Fatalf("load flags not implemented: %v", v.LongString())
 			return
 		}
-		p := s.Prog(loadByType(v.Type))
+		var asm obj.As
+		if v.Args[0].Op == ssa.OpAMD64ArgBQZX {
+			asm = v.Args[0].Op.Asm()
+		} else {
+			asm = loadByType(v.Type)
+		}
+		p := s.Prog(asm)
 		gc.AddrAuto(&p.From, v.Args[0])
 		p.To.Type = obj.TYPE_REG
 		p.To.Reg = v.Reg()

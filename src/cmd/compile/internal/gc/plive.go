@@ -794,7 +794,7 @@ func (lv *Liveness) issafepoint(v *ssa.Value) bool {
 		return v.Op.IsCall()
 	}
 	switch v.Op {
-	case ssa.OpInitMem, ssa.OpArg, ssa.OpSP, ssa.OpSB,
+	case ssa.OpInitMem, ssa.OpArg, ssa.OpAMD64ArgBQZX, ssa.OpSP, ssa.OpSB,
 		ssa.OpSelect0, ssa.OpSelect1, ssa.OpGetG,
 		ssa.OpVarDef, ssa.OpVarLive, ssa.OpKeepAlive,
 		ssa.OpPhi:
