@@ -1050,7 +1050,12 @@
 (MOVLQZX x:(MOVQload [off] {sym} ptr mem)) && x.Uses == 1 && clobber(x) -> @x.Block (MOVLload <v.Type> [off] {sym} ptr mem)
 
 // TODO: require entry block? clobber or no clobber?
-(MOVBQZX <t> x:(Arg {sym} [off])) && x.Uses == 1 && clobber(x) -> @x.Block (ArgBQZX <t> {sym} [off])
+(MOVBQZX <t> x:(Arg {sym} [off])) && x.Uses == 1 && noteRule("MOVBQZX") && clobber(x) -> @x.Block (ArgBQZX <t> {sym} [off])
+(MOVBQSX <t> x:(Arg {sym} [off])) && x.Uses == 1 && noteRule("MOVBQSX") && false -> (ArgBQZX <t> {sym} [off])
+(MOVWQSX <t> x:(Arg {sym} [off])) && x.Uses == 1 && noteRule("MOVWQSX") && false -> (ArgBQZX <t> {sym} [off])
+(MOVWQZX <t> x:(Arg {sym} [off])) && x.Uses == 1 && noteRule("MOVWQZX") && false -> (ArgBQZX <t> {sym} [off])
+(MOVLQZX <t> x:(Arg {sym} [off])) && x.Uses == 1 && noteRule("MOVLQZX") && false -> (ArgBQZX <t> {sym} [off])
+(MOVLQSX <t> x:(Arg {sym} [off])) && x.Uses == 1 && noteRule("MOVLQSX") && false -> (ArgBQZX <t> {sym} [off])
 
 (MOVLQZX x) && zeroUpper32Bits(x,3) -> x
 (MOVWQZX x) && zeroUpper48Bits(x,3) -> x
