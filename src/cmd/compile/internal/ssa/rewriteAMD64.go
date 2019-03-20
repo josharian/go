@@ -11907,26 +11907,6 @@ func rewriteValueAMD64_OpAMD64MOVBQSX_0(v *Value) bool {
 		v0.AddArg(mem)
 		return true
 	}
-	// match: (MOVBQSX <t> x:(Arg {sym} [off]))
-	// cond: x.Uses == 1 && noteRule("MOVBQSX") && false
-	// result: (ArgBQZX <t> {sym} [off])
-	for {
-		t := v.Type
-		x := v.Args[0]
-		if x.Op != OpArg {
-			break
-		}
-		off := x.AuxInt
-		sym := x.Aux
-		if !(x.Uses == 1 && noteRule("MOVBQSX") && false) {
-			break
-		}
-		v.reset(OpAMD64ArgBQZX)
-		v.Type = t
-		v.AuxInt = off
-		v.Aux = sym
-		return true
-	}
 	// match: (MOVBQSX (ANDLconst [c] x))
 	// cond: c & 0x80 == 0
 	// result: (ANDLconst [c & 0x7f] x)
@@ -12111,28 +12091,6 @@ func rewriteValueAMD64_OpAMD64MOVBQZX_0(v *Value) bool {
 		v0.Aux = sym
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
-		return true
-	}
-	// match: (MOVBQZX <t> x:(Arg {sym} [off]))
-	// cond: x.Uses == 1 && noteRule("MOVBQZX") && clobber(x)
-	// result: @x.Block (ArgBQZX <t> {sym} [off])
-	for {
-		t := v.Type
-		x := v.Args[0]
-		if x.Op != OpArg {
-			break
-		}
-		off := x.AuxInt
-		sym := x.Aux
-		if !(x.Uses == 1 && noteRule("MOVBQZX") && clobber(x)) {
-			break
-		}
-		b = x.Block
-		v0 := b.NewValue0(v.Pos, OpAMD64ArgBQZX, t)
-		v.reset(OpCopy)
-		v.AddArg(v0)
-		v0.AuxInt = off
-		v0.Aux = sym
 		return true
 	}
 	// match: (MOVBQZX x)
@@ -14857,8 +14815,8 @@ func rewriteValueAMD64_OpAMD64MOVLQSX_0(v *Value) bool {
 		return true
 	}
 	// match: (MOVLQSX <t> x:(Arg {sym} [off]))
-	// cond: x.Uses == 1 && noteRule("MOVLQSX") && false
-	// result: (ArgBQZX <t> {sym} [off])
+	// cond: x.Uses == 1 && clobber(x)
+	// result: @x.Block (ArgBQZX <t> {sym} [off])
 	for {
 		t := v.Type
 		x := v.Args[0]
@@ -14867,13 +14825,15 @@ func rewriteValueAMD64_OpAMD64MOVLQSX_0(v *Value) bool {
 		}
 		off := x.AuxInt
 		sym := x.Aux
-		if !(x.Uses == 1 && noteRule("MOVLQSX") && false) {
+		if !(x.Uses == 1 && clobber(x)) {
 			break
 		}
-		v.reset(OpAMD64ArgBQZX)
-		v.Type = t
-		v.AuxInt = off
-		v.Aux = sym
+		b = x.Block
+		v0 := b.NewValue0(v.Pos, OpAMD64ArgBQZX, t)
+		v.reset(OpCopy)
+		v.AddArg(v0)
+		v0.AuxInt = off
+		v0.Aux = sym
 		return true
 	}
 	// match: (MOVLQSX (ANDLconst [c] x))
@@ -15036,26 +14996,6 @@ func rewriteValueAMD64_OpAMD64MOVLQZX_0(v *Value) bool {
 		v0.Aux = sym
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
-		return true
-	}
-	// match: (MOVLQZX <t> x:(Arg {sym} [off]))
-	// cond: x.Uses == 1 && noteRule("MOVLQZX") && false
-	// result: (ArgBQZX <t> {sym} [off])
-	for {
-		t := v.Type
-		x := v.Args[0]
-		if x.Op != OpArg {
-			break
-		}
-		off := x.AuxInt
-		sym := x.Aux
-		if !(x.Uses == 1 && noteRule("MOVLQZX") && false) {
-			break
-		}
-		v.reset(OpAMD64ArgBQZX)
-		v.Type = t
-		v.AuxInt = off
-		v.Aux = sym
 		return true
 	}
 	// match: (MOVLQZX x)
@@ -22151,26 +22091,6 @@ func rewriteValueAMD64_OpAMD64MOVWQSX_0(v *Value) bool {
 		v0.AddArg(mem)
 		return true
 	}
-	// match: (MOVWQSX <t> x:(Arg {sym} [off]))
-	// cond: x.Uses == 1 && noteRule("MOVWQSX") && false
-	// result: (ArgBQZX <t> {sym} [off])
-	for {
-		t := v.Type
-		x := v.Args[0]
-		if x.Op != OpArg {
-			break
-		}
-		off := x.AuxInt
-		sym := x.Aux
-		if !(x.Uses == 1 && noteRule("MOVWQSX") && false) {
-			break
-		}
-		v.reset(OpAMD64ArgBQZX)
-		v.Type = t
-		v.AuxInt = off
-		v.Aux = sym
-		return true
-	}
 	// match: (MOVWQSX (ANDLconst [c] x))
 	// cond: c & 0x8000 == 0
 	// result: (ANDLconst [c & 0x7fff] x)
@@ -22343,26 +22263,6 @@ func rewriteValueAMD64_OpAMD64MOVWQZX_0(v *Value) bool {
 		v0.Aux = sym
 		v0.AddArg(ptr)
 		v0.AddArg(mem)
-		return true
-	}
-	// match: (MOVWQZX <t> x:(Arg {sym} [off]))
-	// cond: x.Uses == 1 && noteRule("MOVWQZX") && false
-	// result: (ArgBQZX <t> {sym} [off])
-	for {
-		t := v.Type
-		x := v.Args[0]
-		if x.Op != OpArg {
-			break
-		}
-		off := x.AuxInt
-		sym := x.Aux
-		if !(x.Uses == 1 && noteRule("MOVWQZX") && false) {
-			break
-		}
-		v.reset(OpAMD64ArgBQZX)
-		v.Type = t
-		v.AuxInt = off
-		v.Aux = sym
 		return true
 	}
 	// match: (MOVWQZX x)

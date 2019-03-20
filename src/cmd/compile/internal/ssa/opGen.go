@@ -9894,7 +9894,7 @@ var opcodeTable = [...]opInfo{
 		argLen:    0,
 		zeroWidth: true,
 		symEffect: SymRead,
-		asm:       x86.AMOVBQZX,
+		asm:       x86.AMOVLQSX,
 		reg:       regInfo{},
 	},
 	{
