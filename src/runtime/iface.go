@@ -338,12 +338,39 @@ func convT32(val uint32) (x unsafe.Pointer) {
 	return
 }
 
+/*
+8:
+ 66.75% 52250 MISS
+ 32.71% 25607 HIT
+
+16:
+ 62.05% 48575 MISS
+ 37.44% 29306 HIT
+
+32:
+ 57.97% 45381 MISS
+ 41.51% 32491 HIT
+*/
+
 func convT64(val uint64) (x unsafe.Pointer) {
 	if val == 0 {
 		x = unsafe.Pointer(&zeroVal[0])
 	} else {
+		curp := getg().m.p.ptr()
+		p := &curp.uint64s[val&uint64(len(curp.uint64s)-1)]
+		if *p != nil && **p == val {
+			// println("HIT", val)
+			return unsafe.Pointer(*p)
+		}
+		// println("MISS")
+		// if *p == nil {
+		// 	println("MISS nil")
+		// } else {
+		// 	println("MISS", int64(**p), "!=", int64(val))
+		// }
 		x = mallocgc(8, uint64Type, false)
 		*(*uint64)(x) = val
+		*p = (*uint64)(x)
 	}
 	return
 }
