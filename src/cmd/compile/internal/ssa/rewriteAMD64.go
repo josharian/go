@@ -62,7 +62,7 @@ func rewriteValueAMD64(v *Value) bool {
 	case OpAMD64ANDLmodify:
 		return rewriteValueAMD64_OpAMD64ANDLmodify_0(v)
 	case OpAMD64ANDQ:
-		return rewriteValueAMD64_OpAMD64ANDQ_0(v)
+		return rewriteValueAMD64_OpAMD64ANDQ_0(v) || rewriteValueAMD64_OpAMD64ANDQ_10(v)
 	case OpAMD64ANDQconst:
 		return rewriteValueAMD64_OpAMD64ANDQconst_0(v)
 	case OpAMD64ANDQconstmodify:
@@ -4011,6 +4011,84 @@ func rewriteValueAMD64_OpAMD64ANDLmodify_0(v *Value) bool {
 func rewriteValueAMD64_OpAMD64ANDQ_0(v *Value) bool {
 	b := v.Block
 	config := b.Func.Config
+	typ := &b.Func.Config.Types
+	// match: (ANDQ x <t> (SARQconst (NEGQ (SUBQ k i)) [63]))
+	// cond: v.Block.Func.Name=="ffff" && noteRule("OPT")
+	// result: (MULQ x (SETNE <t> (Select1 <types.TypeFlags> (SUBQborrow k i))))
+	for {
+		t := v.Type
+		_ = v.Args[1]
+		x := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SARQconst {
+			break
+		}
+		if v_1.AuxInt != 63 {
+			break
+		}
+		v_1_0 := v_1.Args[0]
+		if v_1_0.Op != OpAMD64NEGQ {
+			break
+		}
+		v_1_0_0 := v_1_0.Args[0]
+		if v_1_0_0.Op != OpAMD64SUBQ {
+			break
+		}
+		i := v_1_0_0.Args[1]
+		k := v_1_0_0.Args[0]
+		if !(v.Block.Func.Name == "ffff" && noteRule("OPT")) {
+			break
+		}
+		v.reset(OpAMD64MULQ)
+		v.AddArg(x)
+		v0 := b.NewValue0(v.Pos, OpAMD64SETNE, t)
+		v1 := b.NewValue0(v.Pos, OpSelect1, types.TypeFlags)
+		v2 := b.NewValue0(v.Pos, OpAMD64SUBQborrow, types.NewTuple(typ.UInt64, types.TypeFlags))
+		v2.AddArg(k)
+		v2.AddArg(i)
+		v1.AddArg(v2)
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (ANDQ (SARQconst (NEGQ (SUBQ k i)) [63]) <t> x)
+	// cond: v.Block.Func.Name=="ffff" && noteRule("OPT")
+	// result: (MULQ x (SETNE <t> (Select1 <types.TypeFlags> (SUBQborrow k i))))
+	for {
+		t := v.Type
+		x := v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SARQconst {
+			break
+		}
+		if v_0.AuxInt != 63 {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAMD64NEGQ {
+			break
+		}
+		v_0_0_0 := v_0_0.Args[0]
+		if v_0_0_0.Op != OpAMD64SUBQ {
+			break
+		}
+		i := v_0_0_0.Args[1]
+		k := v_0_0_0.Args[0]
+		if !(v.Block.Func.Name == "ffff" && noteRule("OPT")) {
+			break
+		}
+		v.reset(OpAMD64MULQ)
+		v.AddArg(x)
+		v0 := b.NewValue0(v.Pos, OpAMD64SETNE, t)
+		v1 := b.NewValue0(v.Pos, OpSelect1, types.TypeFlags)
+		v2 := b.NewValue0(v.Pos, OpAMD64SUBQborrow, types.NewTuple(typ.UInt64, types.TypeFlags))
+		v2.AddArg(k)
+		v2.AddArg(i)
+		v1.AddArg(v2)
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
 	// match: (ANDQ (NOTQ (SHLQ (MOVQconst [1]) y)) x)
 	// cond: !config.nacl
 	// result: (BTRQ x y)
@@ -4182,6 +4260,9 @@ func rewriteValueAMD64_OpAMD64ANDQ_0(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	return false
+}
+func rewriteValueAMD64_OpAMD64ANDQ_10(v *Value) bool {
 	// match: (ANDQ l:(MOVQload [off] {sym} ptr mem) x)
 	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
 	// result: (ANDQload x [off] {sym} ptr mem)
@@ -46637,76 +46718,6 @@ func rewriteValueAMD64_OpAMD64SARQ_0(v *Value) bool {
 	return false
 }
 func rewriteValueAMD64_OpAMD64SARQconst_0(v *Value) bool {
-	b := v.Block
-	typ := &b.Func.Config.Types
-	// match: (SARQconst (NEGQ <t> (SUBQ k i)) [63])
-	// cond: v.Block.Func.Name=="ffff"&&noteRule("OPT")
-	// result: (NEGL (SETNE <t> (Select1 <types.TypeFlags> (SUBQborrow k i))))
-	for {
-		if v.AuxInt != 63 {
-			break
-		}
-		v_0 := v.Args[0]
-		if v_0.Op != OpAMD64NEGQ {
-			break
-		}
-		t := v_0.Type
-		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpAMD64SUBQ {
-			break
-		}
-		i := v_0_0.Args[1]
-		k := v_0_0.Args[0]
-		if !(v.Block.Func.Name == "ffff" && noteRule("OPT")) {
-			break
-		}
-		v.reset(OpAMD64NEGL)
-		v0 := b.NewValue0(v.Pos, OpAMD64SETNE, t)
-		v1 := b.NewValue0(v.Pos, OpSelect1, types.TypeFlags)
-		v2 := b.NewValue0(v.Pos, OpAMD64SUBQborrow, types.NewTuple(typ.UInt64, types.TypeFlags))
-		v2.AddArg(k)
-		v2.AddArg(i)
-		v1.AddArg(v2)
-		v0.AddArg(v1)
-		v.AddArg(v0)
-		return true
-	}
-	// match: (SARQconst (NEGQ <t> (Select0 (SUBQborrow k i))) [63])
-	// cond: v.Block.Func.Name=="ffff"&&noteRule("OPT2")
-	// result: (NEGL (SETNE <t> (Select1 <types.TypeFlags> (SUBQborrow k i))))
-	for {
-		if v.AuxInt != 63 {
-			break
-		}
-		v_0 := v.Args[0]
-		if v_0.Op != OpAMD64NEGQ {
-			break
-		}
-		t := v_0.Type
-		v_0_0 := v_0.Args[0]
-		if v_0_0.Op != OpSelect0 {
-			break
-		}
-		v_0_0_0 := v_0_0.Args[0]
-		if v_0_0_0.Op != OpAMD64SUBQborrow {
-			break
-		}
-		i := v_0_0_0.Args[1]
-		k := v_0_0_0.Args[0]
-		if !(v.Block.Func.Name == "ffff" && noteRule("OPT2")) {
-			break
-		}
-		v.reset(OpAMD64NEGL)
-		v0 := b.NewValue0(v.Pos, OpAMD64SETNE, t)
-		v1 := b.NewValue0(v.Pos, OpSelect1, types.TypeFlags)
-		v2 := b.NewValue0(v.Pos, OpAMD64SUBQborrow, types.NewTuple(typ.UInt64, types.TypeFlags))
-		v2.AddArg(k)
-		v2.AddArg(i)
-		v1.AddArg(v2)
-		v0.AddArg(v1)
-		v.AddArg(v0)
-		return true
-	}
 	// match: (SARQconst x [0])
 	// cond:
 	// result: x
@@ -54159,23 +54170,6 @@ func rewriteValueAMD64_OpAMD64SUBLmodify_0(v *Value) bool {
 }
 func rewriteValueAMD64_OpAMD64SUBQ_0(v *Value) bool {
 	b := v.Block
-	typ := &b.Func.Config.Types
-	// match: (SUBQ k i)
-	// cond: v.Block.Func.Name=="ffff" && k.AuxInt==16
-	// result: (Select0 (SUBQborrow k i))
-	for {
-		i := v.Args[1]
-		k := v.Args[0]
-		if !(v.Block.Func.Name == "ffff" && k.AuxInt == 16) {
-			break
-		}
-		v.reset(OpSelect0)
-		v0 := b.NewValue0(v.Pos, OpAMD64SUBQborrow, types.NewTuple(typ.UInt64, types.TypeFlags))
-		v0.AddArg(k)
-		v0.AddArg(i)
-		v.AddArg(v0)
-		return true
-	}
 	// match: (SUBQ x (MOVQconst [c]))
 	// cond: is32Bit(c)
 	// result: (SUBQconst x [c])
