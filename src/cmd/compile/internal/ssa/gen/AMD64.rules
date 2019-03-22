@@ -134,6 +134,7 @@
 (ZeroExt16to64 x) -> (MOVWQZX x)
 (ZeroExt32to64 x) -> (MOVLQZX x)
 
+(ANDQ x (SARQconst (NEGQ y) [63])) -> (Select0 (SBBQconst [0] x (CMPQconst [1] y)))
 (Slicemask <t> x) -> (SARQconst (NEGQ <t> x) [63])
 
 // Lowering truncation

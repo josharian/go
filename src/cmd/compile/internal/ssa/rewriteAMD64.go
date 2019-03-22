@@ -62,7 +62,7 @@ func rewriteValueAMD64(v *Value) bool {
 	case OpAMD64ANDLmodify:
 		return rewriteValueAMD64_OpAMD64ANDLmodify_0(v)
 	case OpAMD64ANDQ:
-		return rewriteValueAMD64_OpAMD64ANDQ_0(v)
+		return rewriteValueAMD64_OpAMD64ANDQ_0(v) || rewriteValueAMD64_OpAMD64ANDQ_10(v)
 	case OpAMD64ANDQconst:
 		return rewriteValueAMD64_OpAMD64ANDQconst_0(v)
 	case OpAMD64ANDQconstmodify:
@@ -4011,6 +4011,64 @@ func rewriteValueAMD64_OpAMD64ANDLmodify_0(v *Value) bool {
 func rewriteValueAMD64_OpAMD64ANDQ_0(v *Value) bool {
 	b := v.Block
 	config := b.Func.Config
+	typ := &b.Func.Config.Types
+	// match: (ANDQ x (SARQconst (NEGQ y) [63]))
+	// cond:
+	// result: (Select0 (SBBQconst [0] x (CMPQconst [1] y)))
+	for {
+		_ = v.Args[1]
+		x := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpAMD64SARQconst {
+			break
+		}
+		if v_1.AuxInt != 63 {
+			break
+		}
+		v_1_0 := v_1.Args[0]
+		if v_1_0.Op != OpAMD64NEGQ {
+			break
+		}
+		y := v_1_0.Args[0]
+		v.reset(OpSelect0)
+		v0 := b.NewValue0(v.Pos, OpAMD64SBBQconst, types.NewTuple(typ.UInt64, types.TypeFlags))
+		v0.AuxInt = 0
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpAMD64CMPQconst, types.TypeFlags)
+		v1.AuxInt = 1
+		v1.AddArg(y)
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
+	// match: (ANDQ (SARQconst (NEGQ y) [63]) x)
+	// cond:
+	// result: (Select0 (SBBQconst [0] x (CMPQconst [1] y)))
+	for {
+		x := v.Args[1]
+		v_0 := v.Args[0]
+		if v_0.Op != OpAMD64SARQconst {
+			break
+		}
+		if v_0.AuxInt != 63 {
+			break
+		}
+		v_0_0 := v_0.Args[0]
+		if v_0_0.Op != OpAMD64NEGQ {
+			break
+		}
+		y := v_0_0.Args[0]
+		v.reset(OpSelect0)
+		v0 := b.NewValue0(v.Pos, OpAMD64SBBQconst, types.NewTuple(typ.UInt64, types.TypeFlags))
+		v0.AuxInt = 0
+		v0.AddArg(x)
+		v1 := b.NewValue0(v.Pos, OpAMD64CMPQconst, types.TypeFlags)
+		v1.AuxInt = 1
+		v1.AddArg(y)
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		return true
+	}
 	// match: (ANDQ (NOTQ (SHLQ (MOVQconst [1]) y)) x)
 	// cond: !config.nacl
 	// result: (BTRQ x y)
@@ -4182,6 +4240,9 @@ func rewriteValueAMD64_OpAMD64ANDQ_0(v *Value) bool {
 		v.AddArg(mem)
 		return true
 	}
+	return false
+}
+func rewriteValueAMD64_OpAMD64ANDQ_10(v *Value) bool {
 	// match: (ANDQ l:(MOVQload [off] {sym} ptr mem) x)
 	// cond: canMergeLoadClobber(v, l, x) && clobber(l)
 	// result: (ANDQload x [off] {sym} ptr mem)

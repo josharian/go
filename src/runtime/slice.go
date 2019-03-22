@@ -179,7 +179,10 @@ func growslice(et *_type, old slice, cap int) slice {
 	} else {
 		// Note: can't use rawmem (which avoids zeroing of memory), because then GC can scan uninitialized memory.
 		p = mallocgc(capmem, et, true)
-		if writeBarrier.enabled {
+		// Require lenmem > 0 for two reasons:
+		// It is cheaper to skip the call entirely,
+		// and because we can end up with unaligned pointers in empty arrays due to slicing quirks.
+		if writeBarrier.enabled && lenmem > 0 {
 			// Only shade the pointers in old.array since we know the destination slice p
 			// only contains nil pointers because it has been cleared during alloc.
 			bulkBarrierPreWriteSrcOnly(uintptr(p), uintptr(old.array), lenmem)
