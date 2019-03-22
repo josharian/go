@@ -538,6 +538,7 @@ const (
 	OpAMD64DIVLU
 	OpAMD64DIVWU
 	OpAMD64NEGLflags
+	OpAMD64STC
 	OpAMD64ADDQcarry
 	OpAMD64ADCQ
 	OpAMD64ADDQconstcarry
@@ -6715,6 +6716,12 @@ var opcodeTable = [...]opInfo{
 				{0, 65519}, // AX CX DX BX BP SI DI R8 R9 R10 R11 R12 R13 R14 R15
 			},
 		},
+	},
+	{
+		name:   "STC",
+		argLen: 0,
+		asm:    x86.ASTC,
+		reg:    regInfo{},
 	},
 	{
 		name:         "ADDQcarry",

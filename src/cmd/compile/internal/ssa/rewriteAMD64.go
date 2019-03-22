@@ -1163,6 +1163,7 @@ func rewriteValueAMD64(v *Value) bool {
 	return false
 }
 func rewriteValueAMD64_OpAMD64ADCQ_0(v *Value) bool {
+	b := v.Block
 	// match: (ADCQ x (MOVQconst [c]) carry)
 	// cond: is32Bit(c)
 	// result: (ADCQconst x [c] carry)
@@ -1219,9 +1220,42 @@ func rewriteValueAMD64_OpAMD64ADCQ_0(v *Value) bool {
 		v.AddArg(y)
 		return true
 	}
+	// match: (ADCQ x y (Select1 <types.TypeFlags> (NEGLflags (MOVQconst [1]))))
+	// cond:
+	// result: (ADCQ x y (STC))
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		y := v.Args[1]
+		v_2 := v.Args[2]
+		if v_2.Op != OpSelect1 {
+			break
+		}
+		if v_2.Type != types.TypeFlags {
+			break
+		}
+		v_2_0 := v_2.Args[0]
+		if v_2_0.Op != OpAMD64NEGLflags {
+			break
+		}
+		v_2_0_0 := v_2_0.Args[0]
+		if v_2_0_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		if v_2_0_0.AuxInt != 1 {
+			break
+		}
+		v.reset(OpAMD64ADCQ)
+		v.AddArg(x)
+		v.AddArg(y)
+		v0 := b.NewValue0(v.Pos, OpAMD64STC, types.TypeFlags)
+		v.AddArg(v0)
+		return true
+	}
 	return false
 }
 func rewriteValueAMD64_OpAMD64ADCQconst_0(v *Value) bool {
+	b := v.Block
 	// match: (ADCQconst x [c] (FlagEQ))
 	// cond:
 	// result: (ADDQconstcarry x [c])
@@ -1236,6 +1270,38 @@ func rewriteValueAMD64_OpAMD64ADCQconst_0(v *Value) bool {
 		v.reset(OpAMD64ADDQconstcarry)
 		v.AuxInt = c
 		v.AddArg(x)
+		return true
+	}
+	// match: (ADCQconst x [c] (Select1 <types.TypeFlags> (NEGLflags (MOVQconst [1]))))
+	// cond:
+	// result: (ADCQconst x [c] (STC))
+	for {
+		c := v.AuxInt
+		_ = v.Args[1]
+		x := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpSelect1 {
+			break
+		}
+		if v_1.Type != types.TypeFlags {
+			break
+		}
+		v_1_0 := v_1.Args[0]
+		if v_1_0.Op != OpAMD64NEGLflags {
+			break
+		}
+		v_1_0_0 := v_1_0.Args[0]
+		if v_1_0_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		if v_1_0_0.AuxInt != 1 {
+			break
+		}
+		v.reset(OpAMD64ADCQconst)
+		v.AuxInt = c
+		v.AddArg(x)
+		v0 := b.NewValue0(v.Pos, OpAMD64STC, types.TypeFlags)
+		v.AddArg(v0)
 		return true
 	}
 	return false
@@ -46729,6 +46795,7 @@ func rewriteValueAMD64_OpAMD64SBBLcarrymask_0(v *Value) bool {
 	return false
 }
 func rewriteValueAMD64_OpAMD64SBBQ_0(v *Value) bool {
+	b := v.Block
 	// match: (SBBQ x (MOVQconst [c]) borrow)
 	// cond: is32Bit(c)
 	// result: (SBBQconst x [c] borrow)
@@ -46763,6 +46830,38 @@ func rewriteValueAMD64_OpAMD64SBBQ_0(v *Value) bool {
 		v.reset(OpAMD64SUBQborrow)
 		v.AddArg(x)
 		v.AddArg(y)
+		return true
+	}
+	// match: (SBBQ x y (Select1 <types.TypeFlags> (NEGLflags (MOVQconst [1]))))
+	// cond:
+	// result: (SBBQ x y (STC))
+	for {
+		_ = v.Args[2]
+		x := v.Args[0]
+		y := v.Args[1]
+		v_2 := v.Args[2]
+		if v_2.Op != OpSelect1 {
+			break
+		}
+		if v_2.Type != types.TypeFlags {
+			break
+		}
+		v_2_0 := v_2.Args[0]
+		if v_2_0.Op != OpAMD64NEGLflags {
+			break
+		}
+		v_2_0_0 := v_2_0.Args[0]
+		if v_2_0_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		if v_2_0_0.AuxInt != 1 {
+			break
+		}
+		v.reset(OpAMD64SBBQ)
+		v.AddArg(x)
+		v.AddArg(y)
+		v0 := b.NewValue0(v.Pos, OpAMD64STC, types.TypeFlags)
+		v.AddArg(v0)
 		return true
 	}
 	return false
@@ -46831,6 +46930,7 @@ func rewriteValueAMD64_OpAMD64SBBQcarrymask_0(v *Value) bool {
 	return false
 }
 func rewriteValueAMD64_OpAMD64SBBQconst_0(v *Value) bool {
+	b := v.Block
 	// match: (SBBQconst x [c] (FlagEQ))
 	// cond:
 	// result: (SUBQconstborrow x [c])
@@ -46845,6 +46945,38 @@ func rewriteValueAMD64_OpAMD64SBBQconst_0(v *Value) bool {
 		v.reset(OpAMD64SUBQconstborrow)
 		v.AuxInt = c
 		v.AddArg(x)
+		return true
+	}
+	// match: (SBBQconst x [c] (Select1 <types.TypeFlags> (NEGLflags (MOVQconst [1]))))
+	// cond:
+	// result: (SBBQconst x [c] (STC))
+	for {
+		c := v.AuxInt
+		_ = v.Args[1]
+		x := v.Args[0]
+		v_1 := v.Args[1]
+		if v_1.Op != OpSelect1 {
+			break
+		}
+		if v_1.Type != types.TypeFlags {
+			break
+		}
+		v_1_0 := v_1.Args[0]
+		if v_1_0.Op != OpAMD64NEGLflags {
+			break
+		}
+		v_1_0_0 := v_1_0.Args[0]
+		if v_1_0_0.Op != OpAMD64MOVQconst {
+			break
+		}
+		if v_1_0_0.AuxInt != 1 {
+			break
+		}
+		v.reset(OpAMD64SBBQconst)
+		v.AuxInt = c
+		v.AddArg(x)
+		v0 := b.NewValue0(v.Pos, OpAMD64STC, types.TypeFlags)
+		v.AddArg(v0)
 		return true
 	}
 	return false

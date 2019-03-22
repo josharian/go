@@ -41,11 +41,15 @@
 // Optimize ADCQ and friends
 (ADCQ x (MOVQconst [c]) carry) && is32Bit(c) -> (ADCQconst x [c] carry)
 (ADCQ x y (FlagEQ)) -> (ADDQcarry x y)
+(ADCQ x y (Select1 <types.TypeFlags> (NEGLflags (MOVQconst [1])))) -> (ADCQ x y (STC))
 (ADCQconst x [c] (FlagEQ)) -> (ADDQconstcarry x [c])
+(ADCQconst x [c] (Select1 <types.TypeFlags> (NEGLflags (MOVQconst [1])))) -> (ADCQconst x [c] (STC))
 (ADDQcarry x (MOVQconst [c])) && is32Bit(c) -> (ADDQconstcarry x [c])
 (SBBQ x (MOVQconst [c]) borrow) && is32Bit(c) -> (SBBQconst x [c] borrow)
 (SBBQ x y (FlagEQ)) -> (SUBQborrow x y)
+(SBBQ x y (Select1 <types.TypeFlags> (NEGLflags (MOVQconst [1])))) -> (SBBQ x y (STC))
 (SBBQconst x [c] (FlagEQ)) -> (SUBQconstborrow x [c])
+(SBBQconst x [c] (Select1 <types.TypeFlags> (NEGLflags (MOVQconst [1])))) -> (SBBQconst x [c] (STC))
 (SUBQborrow x (MOVQconst [c])) && is32Bit(c) -> (SUBQconstborrow x [c])
 (Select1 (NEGLflags (MOVQconst [0]))) -> (FlagEQ)
 (Select1 (NEGLflags (NEGQ (SBBQcarrymask x)))) -> x
