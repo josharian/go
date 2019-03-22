@@ -408,7 +408,7 @@ func (r BenchmarkResult) String() string {
 
 	if ns := r.NsPerOp(); ns != 0 {
 		buf.WriteByte('\t')
-		prettyPrint(buf, float64(ns), "ns/op")
+		prettyPrint(buf, float64(r.T.Nanoseconds())/float64(r.N), "ns/op")
 	}
 
 	if mbs := r.mbPerSec(); mbs != 0 {
