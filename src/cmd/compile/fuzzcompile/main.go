@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 var archInits = map[string]func(*gc.Arch){
@@ -63,6 +64,8 @@ func Fuzz(data []byte) (rc int) {
 		if ok && s == "controlled exit" {
 			rc = 0
 		}
+		os.Remove(f.Name())
+		os.Remove(filepath.Base(f.Name()) + ".o")
 	}()
 	gc.Main(archInit)
 	return 1
