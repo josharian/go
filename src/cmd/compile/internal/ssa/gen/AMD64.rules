@@ -134,7 +134,10 @@
 (ZeroExt16to64 x) -> (MOVWQZX x)
 (ZeroExt32to64 x) -> (MOVLQZX x)
 
-(ANDQ x (SARQconst (NEGQ y) [63])) -> (Select0 (SBBQconst [0] x (CMPQconst [1] y)))
+//(ANDQ x (SARQconst (NEGQ y) [63])) -> (Select0 (SBBQconst [0] x (CMPQconst [1] y)))
+(SARQconst (NEGQ <t> (SUBQ k i)) [63]) && v.Block.Func.Name=="ffff"&&noteRule("OPT") -> (NEGL (SETNE <t> (Select1 <types.TypeFlags> (SUBQborrow k i))))
+(SUBQ k i) && v.Block.Func.Name=="ffff" && k.AuxInt==16 -> (Select0 (SUBQborrow k i))
+(SARQconst (NEGQ <t> (Select0 (SUBQborrow k i))) [63]) && v.Block.Func.Name=="ffff"&&noteRule("OPT2") -> (NEGL (SETNE <t> (Select1 <types.TypeFlags> (SUBQborrow k i))))
 (Slicemask <t> x) -> (SARQconst (NEGQ <t> x) [63])
 
 // Lowering truncation
