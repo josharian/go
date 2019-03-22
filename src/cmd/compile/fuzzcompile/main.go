@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// +build gofuzz
+
 package fuzzcompile
 
 import (
@@ -16,7 +18,7 @@ import (
 	"cmd/compile/internal/x86"
 	"cmd/internal/objabi"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"os"
 )
 
@@ -35,10 +37,17 @@ var archInits = map[string]func(*gc.Arch){
 	"s390x":    s390x.Init,
 }
 
-func Main(path string) {
-	// disable timestamps for reproducible output
-	log.SetFlags(0)
-	log.SetPrefix("compile: ")
+func Fuzz(data []byte) (rc int) {
+	f, err := ioutil.TempFile("", "compile")
+	if err != nil {
+		panic(err)
+	}
+	if _, err := f.Write(data); err != nil {
+		panic(err)
+	}
+	if err := f.Close(); err != nil {
+		panic(err)
+	}
 
 	archInit, ok := archInits[objabi.GOARCH]
 	if !ok {
@@ -46,6 +55,15 @@ func Main(path string) {
 		os.Exit(2)
 	}
 
-	gc.InputFilename = path
+	gc.InputFilename = f.Name()
+
+	defer func() {
+		err := recover()
+		s, ok := err.(string)
+		if ok && s == "controlled exit" {
+			rc = 0
+		}
+	}()
 	gc.Main(archInit)
+	return 1
 }
