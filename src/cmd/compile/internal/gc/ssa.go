@@ -12,6 +12,7 @@ import (
 	"html"
 	"os"
 	"sort"
+	"strings"
 
 	"cmd/compile/internal/ssa"
 	"cmd/compile/internal/types"
@@ -2946,6 +2947,7 @@ type intrinsicKey struct {
 }
 
 func init() {
+	fmt.Println("INIT")
 	intrinsics = map[intrinsicKey]intrinsicBuilder{}
 
 	var all []*sys.Arch
@@ -3644,6 +3646,18 @@ func init() {
 			return s.newValue3(ssa.OpDiv128u, types.NewTuple(types.Types[TUINT64], types.Types[TUINT64]), args[0], args[1], args[2])
 		},
 		sys.ArchAMD64)
+
+	fmt.Println("WAT", Debug['N'])
+	if Debug['N'] != 0 {
+		// Optimizations disabled.
+		// Remove all intrinsics except those in runtime packages.
+		for x := range intrinsics {
+			if strings.HasPrefix(x.pkg, "runtime") {
+				fmt.Println("DEL", x)
+				delete(intrinsics, x)
+			}
+		}
+	}
 }
 
 // findIntrinsic returns a function which builds the SSA equivalent of the
