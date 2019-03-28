@@ -691,6 +691,8 @@ var mapBucketTests = [...]struct {
 }
 
 func TestMapBuckets(t *testing.T) {
+	t.Skip("needs rethinking in light of multiple map implementations")
+
 	// Test that maps of different sizes have the right number of buckets.
 	// Non-escaping maps with small buckets (like map[int]int) never
 	// have a nil bucket pointer due to starting with preallocated buckets

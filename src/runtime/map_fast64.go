@@ -9,17 +9,33 @@ import (
 	"unsafe"
 )
 
-func mapaccess1_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
-	if raceenabled && h != nil {
-		callerpc := getcallerpc()
-		racereadpc(unsafe.Pointer(h), callerpc, funcPC(mapaccess1_fast64))
+func (s *smallmap) mapaccess1_fast64(t *maptype, key uint64) unsafe.Pointer {
+	for i := 0; i < s.count; i++ {
+		if key == s.key(t, i) {
+			return s.elemptr(t, i)
+		}
 	}
-	if h == nil || h.count == 0 {
+	return unsafe.Pointer(&zeroVal[0])
+}
+
+func mapaccess1_fast64(t *maptype, c *mapcore, key uint64) unsafe.Pointer {
+	if raceenabled && c != nil {
+		callerpc := getcallerpc()
+		racereadpc(unsafe.Pointer(c), callerpc, funcPC(mapaccess1_fast64))
+	}
+	if c == nil || c.count == 0 {
 		return unsafe.Pointer(&zeroVal[0])
 	}
-	if h.flags&hashWriting != 0 {
+	if c.flags&hashWriting != 0 {
 		throw("concurrent map read and map write")
 	}
+
+	if c.impl() == mapImplSmall {
+		s := (*smallmap)(unsafe.Pointer(c))
+		return s.mapaccess1_fast64(t, key)
+	}
+
+	h := (*hmap)(unsafe.Pointer(c))
 	var b *bmap
 	if h.B == 0 {
 		// One-bucket table. No need to hash.
@@ -49,17 +65,33 @@ func mapaccess1_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
 	return unsafe.Pointer(&zeroVal[0])
 }
 
-func mapaccess2_fast64(t *maptype, h *hmap, key uint64) (unsafe.Pointer, bool) {
-	if raceenabled && h != nil {
-		callerpc := getcallerpc()
-		racereadpc(unsafe.Pointer(h), callerpc, funcPC(mapaccess2_fast64))
+func (s *smallmap) mapaccess2_fast64(t *maptype, key uint64) (unsafe.Pointer, bool) {
+	for i := 0; i < s.count; i++ {
+		if key == s.key(t, i) {
+			return s.elemptr(t, i), true
+		}
 	}
-	if h == nil || h.count == 0 {
+	return unsafe.Pointer(&zeroVal[0]), false
+}
+
+func mapaccess2_fast64(t *maptype, c *mapcore, key uint64) (unsafe.Pointer, bool) {
+	if raceenabled && c != nil {
+		callerpc := getcallerpc()
+		racereadpc(unsafe.Pointer(c), callerpc, funcPC(mapaccess2_fast64))
+	}
+	if c == nil || c.count == 0 {
 		return unsafe.Pointer(&zeroVal[0]), false
 	}
-	if h.flags&hashWriting != 0 {
+	if c.flags&hashWriting != 0 {
 		throw("concurrent map read and map write")
 	}
+
+	if c.impl() == mapImplSmall {
+		s := (*smallmap)(unsafe.Pointer(c))
+		return s.mapaccess2_fast64(t, key)
+	}
+
+	h := (*hmap)(unsafe.Pointer(c))
 	var b *bmap
 	if h.B == 0 {
 		// One-bucket table. No need to hash.
@@ -89,17 +121,77 @@ func mapaccess2_fast64(t *maptype, h *hmap, key uint64) (unsafe.Pointer, bool) {
 	return unsafe.Pointer(&zeroVal[0]), false
 }
 
-func mapassign_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {
-	if h == nil {
+func (s *smallmap) promote64(t *maptype) {
+	// make a shallow copy of s to work with
+	s2 := *s
+	// make a new map and (shallow) copy it over top of s
+	*(*hmap)(unsafe.Pointer(s)) = *(makemap(t, s2.count, nil))
+	// populate the new map with s2's contents
+	for i := 0; i < s2.count; i++ {
+		k := s2.key(t, i)
+		e := s2.elemptr(t, i)
+		// TODO: find some way to call directly into hmap mapassign
+		// rather than having to go through the top-level dispatch mapassign_fast64?
+		p := mapassign_fast64(t, (*mapcore)(unsafe.Pointer(s)), k)
+		typedmemmove(t.elem, p, e)
+	}
+}
+
+func (s *smallmap) mapassign_fast64(t *maptype, key uint64) unsafe.Pointer {
+	if s.keys != nil && s.count == int(s.sz) {
+		// full! promote.
+		// (we could try to find out whether this assignment will overwrite
+		// or insert, and not promote in the former case, but this is just a prototype.)
+		s.promote64(t)
+		// try again
+		return mapassign_fast64(t, (*mapcore)(unsafe.Pointer(s)), key)
+	}
+
+	// there is room to add a new item if we need to
+	s.flags ^= hashWriting
+	var elem unsafe.Pointer
+	if s.keys == nil {
+		s.sz = 8
+		s.keys = mallocgc(uintptr(s.sz)*uintptr(t.keysize), t.key, t.key.ptrdata != 0)
+		s.elems = mallocgc(uintptr(s.sz)*uintptr(t.valuesize), t.elem, t.elem.ptrdata != 0)
+	} else {
+		for i := 0; i < s.count; i++ {
+			if key == s.key(t, i) {
+				elem = s.elemptr(t, i)
+				break
+			}
+		}
+	}
+	if elem == nil {
+		s.setkey(t, s.count, key)
+		elem = s.elemptr(t, s.count)
+		s.count++
+	}
+	if s.flags&hashWriting == 0 {
+		throw("concurrent map writes")
+	}
+	s.flags &^= hashWriting
+	return elem
+}
+
+func mapassign_fast64(t *maptype, c *mapcore, key uint64) unsafe.Pointer {
+	if c == nil {
 		panic(plainError("assignment to entry in nil map"))
 	}
 	if raceenabled {
 		callerpc := getcallerpc()
-		racewritepc(unsafe.Pointer(h), callerpc, funcPC(mapassign_fast64))
+		racewritepc(unsafe.Pointer(c), callerpc, funcPC(mapassign_fast64))
 	}
-	if h.flags&hashWriting != 0 {
+	if c.flags&hashWriting != 0 {
 		throw("concurrent map writes")
 	}
+
+	if c.impl() == mapImplSmall {
+		s := (*smallmap)(unsafe.Pointer(c))
+		return s.mapassign_fast64(t, key)
+	}
+
+	h := (*hmap)(unsafe.Pointer(c))
 	hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 
 	// Set hashWriting after calling alg.hash for consistency with mapassign.
@@ -269,17 +361,50 @@ done:
 	return val
 }
 
-func mapdelete_fast64(t *maptype, h *hmap, key uint64) {
-	if raceenabled && h != nil {
-		callerpc := getcallerpc()
-		racewritepc(unsafe.Pointer(h), callerpc, funcPC(mapdelete_fast64))
+func (s *smallmap) mapdelete_fast64(t *maptype, key uint64) {
+	s.flags ^= hashWriting
+	for i := 0; i < s.count; i++ {
+		if key == s.key(t, i) {
+			endelem := s.elemptr(t, s.count-1)
+			if i != s.count-1 {
+				// copy final key/elem to this slot
+				s.setkey(t, i, s.key(t, s.count-1))
+				typedmemmove(t.elem, s.elemptr(t, i), endelem)
+			}
+			// no need to clear key
+			// no need to clear value unless it has pointers
+			if t.elem.ptrdata != 0 {
+				memclrHasPointers(endelem, t.elem.size)
+			}
+			s.count--
+			break
+		}
 	}
-	if h == nil || h.count == 0 {
-		return
-	}
-	if h.flags&hashWriting != 0 {
+	if s.flags&hashWriting == 0 {
 		throw("concurrent map writes")
 	}
+	s.flags &^= hashWriting
+}
+
+func mapdelete_fast64(t *maptype, c *mapcore, key uint64) {
+	if raceenabled && c != nil {
+		callerpc := getcallerpc()
+		racewritepc(unsafe.Pointer(c), callerpc, funcPC(mapdelete_fast64))
+	}
+	if c == nil || c.count == 0 {
+		return
+	}
+	if c.flags&hashWriting != 0 {
+		throw("concurrent map writes")
+	}
+
+	if c.impl() == mapImplSmall {
+		s := (*smallmap)(unsafe.Pointer(c))
+		s.mapdelete_fast64(t, key)
+		return
+	}
+
+	h := (*hmap)(unsafe.Pointer(c))
 
 	hash := t.key.alg.hash(noescape(unsafe.Pointer(&key)), uintptr(h.hash0))
 

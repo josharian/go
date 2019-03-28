@@ -96,12 +96,6 @@ const (
 	evacuatedEmpty = 4 // cell is empty, bucket is evacuated.
 	minTopHash     = 5 // minimum tophash for a normal filled cell.
 
-	// flags
-	iterator     = 1 // there may be an iterator using buckets
-	oldIterator  = 2 // there may be an iterator using oldbuckets
-	hashWriting  = 4 // a goroutine is writing to the map
-	sameSizeGrow = 8 // the current map growth is to a new map of the same size
-
 	// sentinel bucket ID for iterator checks
 	noCheck = 1<<(8*sys.PtrSize) - 1
 )
@@ -111,12 +105,92 @@ func isEmpty(x uint8) bool {
 	return x <= emptyOne
 }
 
-// A header for a Go map.
+const (
+	nCoreFlags    uint8 = 4
+	coreFlagsMask uint8 = 1<<nCoreFlags - 1 // bottom bits are reserved for mapcore
+
+	// top bits are used to store flags by hmap and smallmap
+	iterator     uint8 = 1 << nCoreFlags // there may be an iterator using buckets
+	oldIterator  uint8 = 2 << nCoreFlags // there may be an iterator using oldbuckets
+	hashWriting  uint8 = 4 << nCoreFlags // a goroutine is writing to the map
+	sameSizeGrow uint8 = 8 << nCoreFlags // the current map growth is to a new map of the same size
+)
+
+const (
+	mapImplHmap  uint8 = 0
+	mapImplSmall uint8 = 1
+)
+
+// mapcore has fields that are shared by all map implementations.
+// All map implementations must share the same basic memory layout
+// (struct size and offset of pointers).
+type mapcore struct {
+	// count holds the number of elements in the map.
+	// The compiler knows the offset and type of count.
+	// It is used by the len builtin.
+	count int
+	// flags stores which map implementation is in use (bottom bits)
+	// and implementation-specific flags (top bits).
+	flags uint8 // TODO: switch to a named type (mapflags?) for extra type safety
+	_     uint8
+	_     uint16
+	_     uint32
+	_, _  unsafe.Pointer
+	_     uintptr
+	_     unsafe.Pointer
+}
+
+func (m *mapcore) setImpl(b uint8) { m.flags |= b & coreFlagsMask }
+func (m *mapcore) impl() uint8     { return m.flags & coreFlagsMask }
+
+// smallmap is a header for a Go map containing a small number of fields.
+// Its structure must match that of mapcore.
+// This is an experimental, toy implementation.
+// It uses two arrays, [8]key and [8]elem, to store keys and elems, in no particular order.
+// It uses exhaustive search to find matching keys.
+// Iteration works by making a complete copy of keys and elems.
+// It is implemented assuming uint64-equivalent keys,
+// for no real reason other than convenience.
+// (Less code to write, don't have to worry about hash/equality functions that may panic, and so on.)
+type smallmap struct {
+	count int   // number of elems in map; see mapcore.count
+	flags uint8 // bottom bits are 0001; top bits are flags; see mapcore.flags
+	sz    uint8 // size of keys and vals arrays (always 0 or 8)
+	_     uint16
+	_     uint32
+
+	keys  unsafe.Pointer // *[sz]keytype, may be nil
+	elems unsafe.Pointer // *[sz]elemtype, may be nil
+	_     uintptr
+	_     unsafe.Pointer
+}
+
+func (s *smallmap) setImpl(b uint8) { s.flags |= b & coreFlagsMask }
+func (s *smallmap) impl() uint8     { return s.flags & coreFlagsMask }
+
+func (s *smallmap) keyptr(t *maptype, i int) unsafe.Pointer {
+	return add(s.keys, uintptr(i)*uintptr(t.keysize))
+}
+
+func (s *smallmap) key(t *maptype, i int) uint64 {
+	return *(*uint64)(s.keyptr(t, i))
+}
+
+func (s *smallmap) setkey(t *maptype, i int, x uint64) {
+	*(*uint64)(s.keyptr(t, i)) = x
+}
+
+func (s *smallmap) elemptr(t *maptype, i int) unsafe.Pointer {
+	return add(s.elems, uintptr(i)*uintptr(t.valuesize))
+}
+
+// hmap is a header for a standard Go map.
+// Its structure must match that of mapcore.
 type hmap struct {
-	// Note: the format of the hmap is also encoded in cmd/compile/internal/gc/reflect.go.
-	// Make sure this stays in sync with the compiler's definition.
-	count     int // # live cells == size of map.  Must be first (used by len() builtin)
-	flags     uint8
+	// Note: the format of hmap is also encoded in cmd/compile/internal/gc/reflect.go.
+	// Make sure it stays in sync with the compiler's definition.
+	count     int    // number of elements in map; see mapcore.count
+	flags     uint8  // bottom bits are 0; top bits are flags; see mapcore.flags
 	B         uint8  // log_2 of # of buckets (can hold up to loadFactor * 2^B items)
 	noverflow uint16 // approximate number of overflow buckets; see incrnoverflow for details
 	hash0     uint32 // hash seed
@@ -158,14 +232,45 @@ type bmap struct {
 	// Followed by an overflow pointer.
 }
 
-// A hash iteration structure.
-// If you modify hiter, also change cmd/compile/internal/gc/reflect.go to indicate
+// mapitercore has fields that are shared by all map iterator implementations.
+// Like mapcore, all map implementations must share the same basic iterator
+// memory layout (struct size and offset of pointers).
+// This is because the compiler sometimes places an iterator on the stack,
+// and it is not possible in general to know what map implementation will
+// be in use at that point.
+// (It would be possible to have minimalist versions of iterators for use
+// by reflection; in that case, we allocate the iterator dynamically on the heap.)
+// If you modify mapitercore, also change cmd/compile/internal/gc/reflect.go to indicate
 // the layout of this structure.
+type mapitercore struct {
+	// key is the current key pointed to by the iterator.
+	// Its position is known to the compiler.
+	// Write nil to indicate iteration end.
+	// See cmd/internal/gc/range.go.
+	key unsafe.Pointer
+	// value is the current elem pointed to by the iterator.
+	// Its position is known to the compiler.
+	// See cmd/internal/gc/range.go.
+	value unsafe.Pointer
+	// t is the maptype of the map being iterated over.
+	t *maptype
+	// m is the map being iterated over.
+	m          *mapcore
+	_, _, _, _ unsafe.Pointer
+	_          uintptr
+	_          uint8
+	_          bool
+	_, _       uint8
+	_, _       uintptr
+}
+
+// hiter is an iterator over an hmap.
+// Its structure must match mapitercore.
 type hiter struct {
-	key         unsafe.Pointer // Must be in first position.  Write nil to indicate iteration end (see cmd/internal/gc/range.go).
-	value       unsafe.Pointer // Must be in second position (see cmd/internal/gc/range.go).
-	t           *maptype
-	h           *hmap
+	key         unsafe.Pointer // see mapitercore.key
+	value       unsafe.Pointer // see mapitercore.value
+	t           *maptype       // see mapitercore.t
+	h           *hmap          // see mapitercore.m
 	buckets     unsafe.Pointer // bucket ptr at hash_iter initialization time
 	bptr        *bmap          // current bucket
 	overflow    *[]*bmap       // keeps overflow buckets of hmap.buckets alive
@@ -177,6 +282,22 @@ type hiter struct {
 	i           uint8
 	bucket      uintptr
 	checkBucket uintptr
+}
+
+// smallmapiter is an iterator over a smallmap.
+// Its structure must match mapitercore.
+type smallmapiter struct {
+	key        unsafe.Pointer // see mapitercore.key
+	value      unsafe.Pointer // see mapitercore.value
+	t          *maptype       // see mapitercore.t
+	s          *smallmap      // see mapitercore.m
+	_, _, _, _ unsafe.Pointer
+	start      uintptr // offset where iteration began
+	_          uint8
+	wrapped    bool // whether iteration offset has wrapped around end of bucket array
+	_, _       uint8
+	cur        uintptr // current iteration offset
+	_          uintptr
 }
 
 // bucketShift returns 1<<b, optimized for code generation.
@@ -293,6 +414,16 @@ func makemap_small() *hmap {
 	h := new(hmap)
 	h.hash0 = fastrand()
 	return h
+}
+
+// makemap_small64 implements Go map creation for make(map[k]v) and
+// make(map[k]v, hint) when hint is known to be at most bucketCnt
+// at compile time and the map needs to be allocated on the heap,
+// and k is appropriate for map64fast routines.
+func makemap_small64() *smallmap {
+	s := new(smallmap)
+	s.setImpl(mapImplSmall)
+	return s
 }
 
 // makemap implements Go map creation for make(map[k]v, hint).
@@ -795,23 +926,45 @@ search:
 	h.flags &^= hashWriting
 }
 
-// mapiterinit initializes the hiter struct used for ranging over maps.
-// The hiter struct pointed to by 'it' is allocated on the stack
-// by the compilers order pass or on the heap by reflect_mapiterinit.
-// Both need to have zeroed hiter since the struct contains pointers.
-func mapiterinit(t *maptype, h *hmap, it *hiter) {
-	if raceenabled && h != nil {
+// mapiterinit initializes the mapitercore struct used for ranging over maps.
+// The struct pointed to by 'itc' is allocated on the stack
+// by the compiler's order pass or on the heap by reflect_mapiterinit.
+// Both need to have zeroed the struct since it contains pointers.
+func mapiterinit(t *maptype, c *mapcore, itc *mapitercore) {
+	if raceenabled && c != nil {
 		callerpc := getcallerpc()
-		racereadpc(unsafe.Pointer(h), callerpc, funcPC(mapiterinit))
+		racereadpc(unsafe.Pointer(c), callerpc, funcPC(mapiterinit))
 	}
-
-	if h == nil || h.count == 0 {
+	if c == nil || c.count == 0 {
 		return
 	}
-
+	if c.impl() == mapImplSmall {
+		s := (*smallmap)(unsafe.Pointer(c))
+		sit := (*smallmapiter)(unsafe.Pointer(itc))
+		sit.t = t
+		// Make a shallow copy of s for the iterator to use.
+		// This is so that if s gets promoted to an hmap during iteration,
+		// the iterator dispatch code still takes the mapImplSmall branch,
+		// and so that the iterator has a snapshot of correct data to work with.
+		sit.s = new(smallmap)
+		*sit.s = *s
+		sit.s.keys = mallocgc(uintptr(s.count)*uintptr(t.keysize), t.key, t.key.ptrdata != 0)
+		sit.s.elems = mallocgc(uintptr(s.count)*uintptr(t.valuesize), t.elem, t.elem.ptrdata != 0)
+		// TODO: optimize this
+		for i := 0; i < s.count; i++ {
+			typedmemmove(t.key, sit.s.keyptr(t, i), s.keyptr(t, i))
+			typedmemmove(t.elem, sit.s.elemptr(t, i), s.elemptr(t, i))
+		}
+		sit.start = uintptr(fastrandn(uint32(s.count)))
+		sit.cur = sit.start
+		mapiternext(itc)
+		return
+	}
+	h := (*hmap)(unsafe.Pointer(c))
 	if unsafe.Sizeof(hiter{})/sys.PtrSize != 12 {
 		throw("hash_iter size incorrect") // see cmd/compile/internal/gc/reflect.go
 	}
+	it := (*hiter)(unsafe.Pointer(itc))
 	it.t = t
 	it.h = h
 
@@ -845,18 +998,36 @@ func mapiterinit(t *maptype, h *hmap, it *hiter) {
 		atomic.Or8(&h.flags, iterator|oldIterator)
 	}
 
-	mapiternext(it)
+	mapiternext(itc)
 }
 
-func mapiternext(it *hiter) {
-	h := it.h
+func mapiternext(itc *mapitercore) {
 	if raceenabled {
 		callerpc := getcallerpc()
-		racereadpc(unsafe.Pointer(h), callerpc, funcPC(mapiternext))
+		racereadpc(unsafe.Pointer(itc.m), callerpc, funcPC(mapiternext))
 	}
-	if h.flags&hashWriting != 0 {
+	if itc.m.flags&hashWriting != 0 {
 		throw("concurrent map iteration and map write")
 	}
+	if itc.m.impl() == mapImplSmall {
+		sit := (*smallmapiter)(unsafe.Pointer(itc))
+		if sit.s.count == 0 || (sit.cur == sit.start && sit.wrapped) {
+			// end of iteration
+			sit.key = nil
+			sit.value = nil
+			return
+		}
+		sit.key = sit.s.keyptr(sit.t, int(sit.cur))
+		sit.value = sit.s.elemptr(sit.t, int(sit.cur))
+		sit.cur++
+		if int(sit.cur) >= sit.s.count {
+			sit.cur = 0
+			sit.wrapped = true
+		}
+		return
+	}
+	it := (*hiter)(unsafe.Pointer(itc))
+	h := it.h
 	t := it.t
 	bucket := it.bucket
 	b := it.bptr
@@ -976,23 +1147,35 @@ next:
 }
 
 // mapclear deletes all keys from a map.
-func mapclear(t *maptype, h *hmap) {
-	if raceenabled && h != nil {
+func mapclear(t *maptype, c *mapcore) {
+	if raceenabled && c != nil {
 		callerpc := getcallerpc()
 		pc := funcPC(mapclear)
-		racewritepc(unsafe.Pointer(h), callerpc, pc)
+		racewritepc(unsafe.Pointer(c), callerpc, pc)
 	}
 
-	if h == nil || h.count == 0 {
+	if c == nil || c.count == 0 {
+		return
+	}
+	if c.flags&hashWriting != 0 {
+		throw("concurrent map writes")
+	}
+	c.flags ^= hashWriting
+	if c.impl() == mapImplSmall {
+		s := (*smallmap)(unsafe.Pointer(c))
+		s.count = 0
+		s.sz = 0
+		// TODO: consider re-using s.keys, s.elems
+		s.keys = nil
+		s.elems = nil
+		if s.flags&hashWriting == 0 {
+			throw("concurrent map writes")
+		}
+		s.flags &^= hashWriting
 		return
 	}
 
-	if h.flags&hashWriting != 0 {
-		throw("concurrent map writes")
-	}
-
-	h.flags ^= hashWriting
-
+	h := (*hmap)(unsafe.Pointer(c))
 	h.flags &^= sameSizeGrow
 	h.oldbuckets = nil
 	h.nevacuate = 0
@@ -1315,8 +1498,16 @@ func reflect_makemap(t *maptype, cap int) *hmap {
 }
 
 //go:linkname reflect_mapaccess reflect.mapaccess
-func reflect_mapaccess(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
-	val, ok := mapaccess2(t, h, key)
+func reflect_mapaccess(t *maptype, p unsafe.Pointer, key unsafe.Pointer) unsafe.Pointer {
+	var val unsafe.Pointer
+	var ok bool
+	if c := (*mapcore)(p); c != nil && c.impl() == mapImplSmall {
+		s := (*smallmap)(p)
+		val, ok = s.mapaccess2_fast64(t, *(*uint64)(key))
+	} else {
+		h := (*hmap)(p)
+		val, ok = mapaccess2(t, h, key)
+	}
 	if !ok {
 		// reflect wants nil for a missing element
 		val = nil
@@ -1325,40 +1516,53 @@ func reflect_mapaccess(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 }
 
 //go:linkname reflect_mapassign reflect.mapassign
-func reflect_mapassign(t *maptype, h *hmap, key unsafe.Pointer, val unsafe.Pointer) {
-	p := mapassign(t, h, key)
-	typedmemmove(t.elem, p, val)
+func reflect_mapassign(t *maptype, p unsafe.Pointer, key unsafe.Pointer, val unsafe.Pointer) {
+	var dst unsafe.Pointer
+	if c := (*mapcore)(p); c != nil && c.impl() == mapImplSmall {
+		s := (*smallmap)(p)
+		dst = s.mapassign_fast64(t, *(*uint64)(key))
+	} else {
+		h := (*hmap)(p)
+		dst = mapassign(t, h, key)
+	}
+	typedmemmove(t.elem, dst, val)
 }
 
 //go:linkname reflect_mapdelete reflect.mapdelete
-func reflect_mapdelete(t *maptype, h *hmap, key unsafe.Pointer) {
+func reflect_mapdelete(t *maptype, c *mapcore, key unsafe.Pointer) {
+	if c != nil && c.impl() == mapImplSmall {
+		s := (*smallmap)(unsafe.Pointer(c))
+		s.mapdelete_fast64(t, *(*uint64)(key))
+		return
+	}
+	h := (*hmap)(unsafe.Pointer(c))
 	mapdelete(t, h, key)
 }
 
 //go:linkname reflect_mapiterinit reflect.mapiterinit
-func reflect_mapiterinit(t *maptype, h *hmap) *hiter {
-	it := new(hiter)
-	mapiterinit(t, h, it)
-	return it
+func reflect_mapiterinit(t *maptype, c *mapcore) unsafe.Pointer {
+	itc := new(mapitercore)
+	mapiterinit(t, c, itc)
+	return unsafe.Pointer(itc)
 }
 
 //go:linkname reflect_mapiternext reflect.mapiternext
-func reflect_mapiternext(it *hiter) {
+func reflect_mapiternext(it *mapitercore) {
 	mapiternext(it)
 }
 
 //go:linkname reflect_mapiterkey reflect.mapiterkey
-func reflect_mapiterkey(it *hiter) unsafe.Pointer {
+func reflect_mapiterkey(it *mapitercore) unsafe.Pointer {
 	return it.key
 }
 
 //go:linkname reflect_mapitervalue reflect.mapitervalue
-func reflect_mapitervalue(it *hiter) unsafe.Pointer {
+func reflect_mapitervalue(it *mapitercore) unsafe.Pointer {
 	return it.value
 }
 
 //go:linkname reflect_maplen reflect.maplen
-func reflect_maplen(h *hmap) int {
+func reflect_maplen(h *mapcore) int {
 	if h == nil {
 		return 0
 	}
@@ -1370,7 +1574,7 @@ func reflect_maplen(h *hmap) int {
 }
 
 //go:linkname reflectlite_maplen internal/reflectlite.maplen
-func reflectlite_maplen(h *hmap) int {
+func reflectlite_maplen(h *mapcore) int {
 	if h == nil {
 		return 0
 	}

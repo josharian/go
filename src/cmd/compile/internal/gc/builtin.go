@@ -88,6 +88,7 @@ var runtimeDecls = [...]struct {
 	{"makemap64", funcTag, 67},
 	{"makemap", funcTag, 68},
 	{"makemap_small", funcTag, 69},
+	{"makemap_small64", funcTag, 69},
 	{"mapaccess1", funcTag, 70},
 	{"mapaccess1_fast32", funcTag, 71},
 	{"mapaccess1_fast64", funcTag, 71},

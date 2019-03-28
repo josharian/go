@@ -1254,7 +1254,11 @@ opswitch:
 			} else {
 				// Call runtime.makehmap to allocate an
 				// hmap on the heap and initialize hmap's hash0 field.
-				fn := syslook("makemap_small")
+				fnname := "makemap_small"
+				if mapfast(t) == mapfast64 {
+					fnname = "makemap_small64"
+				}
+				fn := syslook(fnname)
 				fn = substArgTypes(fn, t.Key(), t.Elem())
 				n = mkcall1(fn, n.Type, init)
 			}

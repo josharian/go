@@ -118,6 +118,7 @@ func fastrand() uint32
 func makemap64(mapType *byte, hint int64, mapbuf *any) (hmap map[any]any)
 func makemap(mapType *byte, hint int, mapbuf *any) (hmap map[any]any)
 func makemap_small() (hmap map[any]any)
+func makemap_small64() (hmap map[any]any)
 func mapaccess1(mapType *byte, hmap map[any]any, key *any) (val *any)
 func mapaccess1_fast32(mapType *byte, hmap map[any]any, key any) (val *any)
 func mapaccess1_fast64(mapType *byte, hmap map[any]any, key any) (val *any)

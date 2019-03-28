@@ -209,6 +209,8 @@ func bmap(t *types.Type) *types.Type {
 
 // hmap builds a type representing a Hmap structure for the given map type.
 // Make sure this stays in sync with runtime/map.go.
+// TODO: document relationship with mapcore, possibly add separate
+// mapcore type generator when we only need mapcore fields.
 func hmap(t *types.Type) *types.Type {
 	if t.MapType().Hmap != nil {
 		return t.MapType().Hmap
@@ -259,6 +261,7 @@ func hmap(t *types.Type) *types.Type {
 
 // hiter builds a type representing an Hiter structure for the given map type.
 // Make sure this stays in sync with runtime/map.go.
+// TODO: rename to mapiter, change fields to match mapitercore.
 func hiter(t *types.Type) *types.Type {
 	if t.MapType().Hiter != nil {
 		return t.MapType().Hiter
