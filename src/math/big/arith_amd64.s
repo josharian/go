@@ -301,14 +301,18 @@ cploop:	SUBQ $1, BX		// i--
 
 // func shrVU(z, x []Word, s uint) (c Word)
 TEXT ·shrVU(SB),NOSPLIT,$0
+	MOVQ z+0(FP), R10
 	MOVQ z_len+8(FP), R11
+	MOVQ x+24(FP), R8
+	MOVQ s+48(FP), CX
+
+	TESTQ CX, CX
+	JZ copy			// if s == 0, shlVU is a memcopy
+
 	SUBQ $1, R11		// n--
 	JL X9b			// n < 0	(n <= 0)
 
 	// n > 0
-	MOVQ z+0(FP), R10
-	MOVQ x+24(FP), R8
-	MOVQ s+48(FP), CX
 	MOVQ (R8), AX		// w1 = x[0]
 	MOVQ $0, DX
 	SHRQ CX, DX:AX		// w1<<ŝ
@@ -334,6 +338,16 @@ X9a:	SHRQ CX, AX		// w1>>s
 
 X9b:	MOVQ $0, c+56(FP)
 	RET
+
+copy:	CMPQ R8, R10
+	JEQ X9b			// if z.ptr == x.ptr, shlVU is a no-op
+	MOVQ $0, BX		// i = 0
+cploop:	CMPQ BX, R11
+	JGE X9b
+	MOVQ (R8)(BX*8), AX
+	MOVQ AX, (R10)(BX*8)
+	INCQ BX
+	JMP cploop
 
 
 // func mulAddVWW(z, x []Word, y, r Word) (c Word)
