@@ -254,14 +254,18 @@ large:
 
 // func shlVU(z, x []Word, s uint) (c Word)
 TEXT ·shlVU(SB),NOSPLIT,$0
+	MOVQ z+0(FP), R10
 	MOVQ z_len+8(FP), BX	// i = z
+	MOVQ x+24(FP), R8
+	MOVQ s+48(FP), CX
+
+	TESTQ CX, CX
+	JZ copy			// if s == 0, shlVU is a memcopy
+
 	SUBQ $1, BX		// i--
 	JL X8b			// i < 0	(n <= 0)
 
 	// n > 0
-	MOVQ z+0(FP), R10
-	MOVQ x+24(FP), R8
-	MOVQ s+48(FP), CX
 	MOVQ (R8)(BX*8), AX	// w1 = x[n-1]
 	MOVQ $0, DX
 	SHLQ CX, DX:AX		// w1>>ŝ
@@ -285,6 +289,14 @@ X8a:	SHLQ CX, AX		// w1<<s
 
 X8b:	MOVQ $0, c+56(FP)
 	RET
+
+copy:	CMPQ R8, R10
+	JEQ X8b			// if z.ptr == x.ptr, shlVU is a no-op
+cploop:	SUBQ $1, BX		// i--
+	JL X8b			// i < 0
+	MOVQ (R8)(BX*8), AX
+	MOVQ AX, (R10)(BX*8)
+	JMP cploop
 
 
 // func shrVU(z, x []Word, s uint) (c Word)
