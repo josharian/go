@@ -306,31 +306,44 @@ func makemap(t *maptype, hint int, h *hmap) *hmap {
 		hint = 0
 	}
 
-	// initialize Hmap
-	if h == nil {
-		h = new(hmap)
-	}
-	h.hash0 = fastrand()
-
 	// Find the size parameter B which will hold the requested # of elements.
 	// For hint < 0 overLoadFactor returns false since hint < bucketCnt.
 	B := uint8(0)
 	for overLoadFactor(hint, B) {
 		B++
 	}
-	h.B = B
 
 	// allocate initial hash table
 	// if B == 0, the buckets field is allocated lazily later (in mapassign)
 	// If hint is large zeroing this memory could take a while.
-	if h.B != 0 {
-		var nextOverflow *bmap
-		h.buckets, nextOverflow = makeBucketArray(t, h.B, nil)
+	if B != 0 {
+		buckets, nextOverflow := makeBucketArray(t, B, nil)
 		if nextOverflow != nil {
-			h.extra = new(mapextra)
+			if h == nil {
+				he := new(struct {
+					h hmap
+					e mapextra
+				})
+				h = &he.h
+				h.extra = &he.e
+			} else {
+				h.extra = new(mapextra)
+			}
 			h.extra.nextOverflow = nextOverflow
+		} else {
+			if h == nil {
+				h = new(hmap)
+			}
 		}
+		h.buckets = buckets
 	}
+
+	// initialize Hmap
+	if h == nil {
+		h = new(hmap)
+	}
+	h.hash0 = fastrand()
+	h.B = B
 
 	return h
 }
