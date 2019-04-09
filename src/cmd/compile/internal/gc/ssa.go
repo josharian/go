@@ -226,7 +226,6 @@ func buildssa(fn *Node, worker int) *ssa.Func {
 	s.labeledNodes = map[*Node]*ssaLabel{}
 	s.fwdVars = map[*Node]*ssa.Value{}
 	s.startmem = s.entryNewValue0(ssa.OpInitMem, types.TypeMem)
-	s.sp = s.entryNewValue0(ssa.OpSP, types.Types[TUINTPTR]) // TODO: use generic pointer type (unsafe.Pointer?) instead
 	s.sb = s.entryNewValue0(ssa.OpSB, types.Types[TUINTPTR])
 
 	s.startBlock(s.f.Entry)
@@ -237,7 +236,7 @@ func buildssa(fn *Node, worker int) *ssa.Func {
 	for _, n := range fn.Func.Dcl {
 		switch n.Class() {
 		case PPARAM, PPARAMOUT:
-			s.decladdrs[n] = s.entryNewValue2A(ssa.OpLocalAddr, types.NewPtr(n.Type), n, s.sp, s.startmem)
+			s.decladdrs[n] = s.entryNewValue2A(ssa.OpLocalAddr, types.NewPtr(n.Type), n, s.f.SP(), s.startmem)
 			if n.Class() == PPARAMOUT && s.canSSA(n) {
 				// Save ssa-able PPARAMOUT variables so we can
 				// store them back to the stack at the end of
@@ -711,7 +710,7 @@ func (s *state) constInt(t *types.Type, c int64) *ssa.Value {
 	return s.constInt32(t, int32(c))
 }
 func (s *state) constOffPtrSP(t *types.Type, c int64) *ssa.Value {
-	return s.f.ConstOffPtrSP(t, c, s.sp)
+	return s.f.ConstOffPtrSP(t, c)
 }
 
 // newValueOrSfCall* are wrappers around newValue*, which may create a call to a
@@ -3913,17 +3912,17 @@ func (s *state) addr(n *Node, bounded bool) *ssa.Value {
 			}
 			if n == nodfp {
 				// Special arg that points to the frame pointer (Used by ORECOVER).
-				return s.entryNewValue2A(ssa.OpLocalAddr, t, n, s.sp, s.startmem)
+				return s.entryNewValue2A(ssa.OpLocalAddr, t, n, s.f.SP(), s.startmem)
 			}
 			s.Fatalf("addr of undeclared ONAME %v. declared: %v", n, s.decladdrs)
 			return nil
 		case PAUTO:
-			return s.newValue2Apos(ssa.OpLocalAddr, t, n, s.sp, s.mem(), !n.IsAutoTmp())
+			return s.newValue2Apos(ssa.OpLocalAddr, t, n, s.f.SP(), s.mem(), !n.IsAutoTmp())
 
 		case PPARAMOUT: // Same as PAUTO -- cannot generate LEA early.
 			// ensure that we reuse symbols for out parameters so
 			// that cse works on their addresses
-			return s.newValue2Apos(ssa.OpLocalAddr, t, n, s.sp, s.mem(), true)
+			return s.newValue2Apos(ssa.OpLocalAddr, t, n, s.f.SP(), s.mem(), true)
 		default:
 			s.Fatalf("variable address class %v not implemented", n.Class())
 			return nil

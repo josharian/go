@@ -24198,10 +24198,9 @@ func rewriteValuegeneric_OpPtrIndex_0(v *Value) bool {
 }
 func rewriteValuegeneric_OpResult_0(v *Value) bool {
 	b := v.Block
-	typ := &b.Func.Config.Types
 	// match: (Result <t> [off] mem)
 	// cond:
-	// result: (Load <t> (OffPtr <t.PtrTo()> [off] (SP)) mem)
+	// result: (Load <t> (OffPtr <t.PtrTo()> [off] b.Func.SP()) mem)
 	for {
 		t := v.Type
 		off := v.AuxInt
@@ -24210,8 +24209,7 @@ func rewriteValuegeneric_OpResult_0(v *Value) bool {
 		v.Type = t
 		v0 := b.NewValue0(v.Pos, OpOffPtr, t.PtrTo())
 		v0.AuxInt = off
-		v1 := b.NewValue0(v.Pos, OpSP, typ.Uintptr)
-		v0.AddArg(v1)
+		v0.AddArg(b.Func.SP())
 		v.AddArg(v0)
 		v.AddArg(mem)
 		return true
@@ -24219,18 +24217,16 @@ func rewriteValuegeneric_OpResult_0(v *Value) bool {
 }
 func rewriteValuegeneric_OpResultAddr_0(v *Value) bool {
 	b := v.Block
-	typ := &b.Func.Config.Types
 	// match: (ResultAddr <t> [off])
 	// cond:
-	// result: (OffPtr <t.PtrTo()> [off] (SP))
+	// result: (OffPtr <t.PtrTo()> [off] b.Func.SP())
 	for {
 		t := v.Type
 		off := v.AuxInt
 		v.reset(OpOffPtr)
 		v.Type = t.PtrTo()
 		v.AuxInt = off
-		v0 := b.NewValue0(v.Pos, OpSP, typ.Uintptr)
-		v.AddArg(v0)
+		v.AddArg(b.Func.SP())
 		return true
 	}
 }

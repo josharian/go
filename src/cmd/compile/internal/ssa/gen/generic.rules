@@ -37,8 +37,8 @@
 // succ* fields must be variables
 // For now, the generated successors must be a permutation of the matched successors.
 
-(Result <t> [off] mem) -> (Load <t> (OffPtr <t.PtrTo()> [off] (SP)) mem)
-(ResultAddr <t> [off]) -> (OffPtr <t.PtrTo()> [off] (SP))
+(Result <t> [off] mem) -> (Load <t> (OffPtr <t.PtrTo()> [off] b.Func.SP()) mem)
+(ResultAddr <t> [off]) -> (OffPtr <t.PtrTo()> [off] b.Func.SP())
 
 // constant folding
 (Trunc16to8  (Const16  [c])) -> (Const8   [int64(int8(c))])

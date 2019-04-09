@@ -32,6 +32,7 @@ type Func struct {
 	Type   *types.Type // type signature of the function.
 	Blocks []*Block    // unordered set of all basic blocks (note: not indexable by ID)
 	Entry  *Block      // the entry basic block
+	sp     *Value      // the SP value, if any
 	bid    idAlloc     // block ID allocator
 	vid    idAlloc     // value ID allocator
 
@@ -548,6 +549,13 @@ func (f *Func) constVal(op Op, t *types.Type, c int64, setAuxInt bool) *Value {
 	return v
 }
 
+func (f *Func) SP() *Value {
+	if f.sp == nil {
+		f.sp = f.Entry.NewValue0(src.NoXPos, OpSP, types.Types[types.TUINTPTR]) // TODO: use generic pointer type (unsafe.Pointer?) instead
+	}
+	return f.sp
+}
+
 // These magic auxint values let us easily cache non-numeric constants
 // using the same constants map while making collisions unlikely.
 // These values are unlikely to occur in regular code and
@@ -600,10 +608,10 @@ func (f *Func) ConstEmptyString(t *types.Type) *Value {
 	v.Aux = ""
 	return v
 }
-func (f *Func) ConstOffPtrSP(t *types.Type, c int64, sp *Value) *Value {
+func (f *Func) ConstOffPtrSP(t *types.Type, c int64) *Value {
 	v := f.constVal(OpOffPtr, t, c, true)
 	if len(v.Args) == 0 {
-		v.AddArg(sp)
+		v.AddArg(f.SP())
 	}
 	return v
 
