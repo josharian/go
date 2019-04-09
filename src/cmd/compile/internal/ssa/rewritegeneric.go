@@ -321,6 +321,10 @@ func rewriteValuegeneric(v *Value) bool {
 		return rewriteValuegeneric_OpPhi_0(v)
 	case OpPtrIndex:
 		return rewriteValuegeneric_OpPtrIndex_0(v)
+	case OpResult:
+		return rewriteValuegeneric_OpResult_0(v)
+	case OpResultAddr:
+		return rewriteValuegeneric_OpResultAddr_0(v)
 	case OpRound32F:
 		return rewriteValuegeneric_OpRound32F_0(v)
 	case OpRound64F:
@@ -24191,6 +24195,44 @@ func rewriteValuegeneric_OpPtrIndex_0(v *Value) bool {
 		return true
 	}
 	return false
+}
+func rewriteValuegeneric_OpResult_0(v *Value) bool {
+	b := v.Block
+	typ := &b.Func.Config.Types
+	// match: (Result <t> [off] mem)
+	// cond:
+	// result: (Load <t> (OffPtr <t.PtrTo()> [off] (SP)) mem)
+	for {
+		t := v.Type
+		off := v.AuxInt
+		mem := v.Args[0]
+		v.reset(OpLoad)
+		v.Type = t
+		v0 := b.NewValue0(v.Pos, OpOffPtr, t.PtrTo())
+		v0.AuxInt = off
+		v1 := b.NewValue0(v.Pos, OpSP, typ.Uintptr)
+		v0.AddArg(v1)
+		v.AddArg(v0)
+		v.AddArg(mem)
+		return true
+	}
+}
+func rewriteValuegeneric_OpResultAddr_0(v *Value) bool {
+	b := v.Block
+	typ := &b.Func.Config.Types
+	// match: (ResultAddr <t> [off])
+	// cond:
+	// result: (OffPtr <t.PtrTo()> [off] (SP))
+	for {
+		t := v.Type
+		off := v.AuxInt
+		v.reset(OpOffPtr)
+		v.Type = t.PtrTo()
+		v.AuxInt = off
+		v0 := b.NewValue0(v.Pos, OpSP, typ.Uintptr)
+		v.AddArg(v0)
+		return true
+	}
 }
 func rewriteValuegeneric_OpRound32F_0(v *Value) bool {
 	// match: (Round32F x:(Const32F))

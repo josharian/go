@@ -327,7 +327,7 @@ var genericOps = []opData{
 	// Note: ConstX are sign-extended even when the type of the value is unsigned.
 	// For instance, uint8(0xaa) is stored as auxint=0xffffffffffffffaa.
 	{name: "Const64", aux: "Int64"},    // value is auxint
-	{name: "Const32F", aux: "Float32"}, // value is math.Float64frombits(uint64(auxint)) and is exactly prepresentable as float 32
+	{name: "Const32F", aux: "Float32"}, // value is math.Float64frombits(uint64(auxint)) and is exactly representable as float 32
 	{name: "Const64F", aux: "Float64"}, // value is math.Float64frombits(uint64(auxint))
 	{name: "ConstInterface"},           // nil interface
 	{name: "ConstSlice"},               // nil slice
@@ -335,6 +335,10 @@ var genericOps = []opData{
 	// Constant-like things
 	{name: "InitMem", zeroWidth: true},                               // memory input to the function.
 	{name: "Arg", aux: "SymOff", symEffect: "Read", zeroWidth: true}, // argument to the function.  aux=GCNode of arg, off = offset in that arg.
+
+	// Function calls
+	{name: "Result", aux: "Int64", argLength: 1}, // result of a function call, loaded from SP+auxint, arg1=memory
+	{name: "ResultAddr", aux: "Int64"},           // address of result of a function call, at SP+auxint
 
 	// The address of a variable.  arg0 is the base pointer.
 	// If the variable is a global, the base pointer will be SB and
@@ -344,9 +348,9 @@ var genericOps = []opData{
 	{name: "Addr", argLength: 1, aux: "Sym", symEffect: "Addr"},      // Address of a variable.  Arg0=SB.  Aux identifies the variable.
 	{name: "LocalAddr", argLength: 2, aux: "Sym", symEffect: "Addr"}, // Address of a variable.  Arg0=SP. Arg1=mem. Aux identifies the variable.
 
-	{name: "SP", zeroWidth: true},                 // stack pointer
+	{name: "SP", typ: "Uintptr", zeroWidth: true}, // stack pointer (TODO: change to unsafe.Pointer; see gc/ssa.go)
 	{name: "SB", typ: "Uintptr", zeroWidth: true}, // static base pointer (a.k.a. globals pointer)
-	{name: "Invalid"},                             // unused value
+	{name: "Invalid"}, // unused value
 
 	// Memory operations
 	{name: "Load", argLength: 2},                          // Load from arg0.  arg1=memory
