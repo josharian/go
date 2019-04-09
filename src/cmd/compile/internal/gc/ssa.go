@@ -2277,8 +2277,7 @@ func (s *state) expr(n *Node) *ssa.Value {
 		return s.addr(n.Left, n.Bounded())
 
 	case ORESULT:
-		addr := s.constOffPtrSP(types.NewPtr(n.Type), n.Xoffset)
-		return s.load(n.Type, addr)
+		return s.newValue1I(ssa.OpResult, n.Type, n.Xoffset, s.mem())
 
 	case ODEREF:
 		p := s.exprPtr(n.Left, false, n.Pos)
@@ -3930,8 +3929,7 @@ func (s *state) addr(n *Node, bounded bool) *ssa.Value {
 			return nil
 		}
 	case ORESULT:
-		// load return from callee
-		return s.constOffPtrSP(t, n.Xoffset)
+		return s.newValue1I(ssa.OpResultAddr, t, n.Xoffset, s.mem())
 	case OINDEX:
 		if n.Left.Type.IsSlice() {
 			a := s.expr(n.Left)
