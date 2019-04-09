@@ -2384,6 +2384,7 @@ const (
 	OpConstSlice
 	OpInitMem
 	OpArg
+	OpParamAddr
 	OpResult
 	OpResultAddr
 	OpAddr
@@ -30197,6 +30198,12 @@ var opcodeTable = [...]opInfo{
 		zeroWidth: true,
 		symEffect: SymRead,
 		generic:   true,
+	},
+	{
+		name:    "ParamAddr",
+		auxType: auxInt64,
+		argLen:  0,
+		generic: true,
 	},
 	{
 		name:    "Result",

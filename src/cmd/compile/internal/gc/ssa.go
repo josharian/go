@@ -4342,16 +4342,17 @@ func (s *state) storeTypePtrs(t *types.Type, left, right *ssa.Value) {
 
 func (s *state) storeArg(n *Node, t *types.Type, off int64) {
 	pt := types.NewPtr(t)
-	sp := s.constOffPtrSP(pt, off)
+	p := s.newValue0I(ssa.OpParamAddr, pt, off)
 
 	if !canSSAType(t) {
 		a := s.addr(n, false)
-		s.move(t, sp, a)
+		s.move(t, p, a)
 		return
 	}
 
 	a := s.expr(n)
-	s.storeType(t, sp, a, 0, false)
+	// sp := s.constOffPtrSP(pt, off)
+	s.storeType(t, p, a, 0, false)
 }
 
 // slice computes the slice v[i:j:k] and returns ptr, len, and cap of result.

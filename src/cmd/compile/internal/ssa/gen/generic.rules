@@ -39,6 +39,7 @@
 
 (Result <t> [off] mem) -> (Load <t> (OffPtr <t.PtrTo()> [off] (SP)) mem)
 (ResultAddr <t> [off]) -> (OffPtr <t.PtrTo()> [off] (SP))
+(ParamAddr <t> [off]) -> (OffPtr <t.PtrTo()> [off] (SP))
 
 // constant folding
 (Trunc16to8  (Const16  [c])) -> (Const8   [int64(int8(c))])

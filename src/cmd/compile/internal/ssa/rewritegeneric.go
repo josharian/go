@@ -317,6 +317,8 @@ func rewriteValuegeneric(v *Value) bool {
 		return rewriteValuegeneric_OpOr64_0(v) || rewriteValuegeneric_OpOr64_10(v) || rewriteValuegeneric_OpOr64_20(v)
 	case OpOr8:
 		return rewriteValuegeneric_OpOr8_0(v) || rewriteValuegeneric_OpOr8_10(v) || rewriteValuegeneric_OpOr8_20(v)
+	case OpParamAddr:
+		return rewriteValuegeneric_OpParamAddr_0(v)
 	case OpPhi:
 		return rewriteValuegeneric_OpPhi_0(v)
 	case OpPtrIndex:
@@ -24050,6 +24052,23 @@ func rewriteValuegeneric_OpOr8_20(v *Value) bool {
 		return true
 	}
 	return false
+}
+func rewriteValuegeneric_OpParamAddr_0(v *Value) bool {
+	b := v.Block
+	typ := &b.Func.Config.Types
+	// match: (ParamAddr <t> [off])
+	// cond:
+	// result: (OffPtr <t.PtrTo()> [off] (SP))
+	for {
+		t := v.Type
+		off := v.AuxInt
+		v.reset(OpOffPtr)
+		v.Type = t.PtrTo()
+		v.AuxInt = off
+		v0 := b.NewValue0(v.Pos, OpSP, typ.Uintptr)
+		v.AddArg(v0)
+		return true
+	}
 }
 func rewriteValuegeneric_OpPhi_0(v *Value) bool {
 	// match: (Phi (Const8 [c]) (Const8 [c]))

@@ -337,6 +337,7 @@ var genericOps = []opData{
 	{name: "Arg", aux: "SymOff", symEffect: "Read", zeroWidth: true}, // argument to the function.  aux=GCNode of arg, off = offset in that arg.
 
 	// Function calls
+	{name: "ParamAddr", aux: "Int64"},
 	{name: "Result", aux: "Int64", argLength: 1}, // result of a function call, loaded from SP+auxint, arg1=memory
 	{name: "ResultAddr", aux: "Int64"},           // address of result of a function call, at SP+auxint
 
