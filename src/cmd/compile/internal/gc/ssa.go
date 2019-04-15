@@ -7,6 +7,7 @@ package gc
 import (
 	"bufio"
 	"bytes"
+	"crypto/md5"
 	"encoding/binary"
 	"fmt"
 	"html"
@@ -5157,7 +5158,9 @@ func emitStackObjects(e *ssafn, pp *Progs) {
 
 	// Populate the stack object data.
 	// Format must match runtime/stack.go:stackObjectRecord.
+	// Give this LSym a content-addressable name, so that it can be de-duplicated.
 	x := e.curfn.Func.lsym.Func.StackObjects
+	h := md5.New()
 	off := 0
 	off = duintptr(x, off, uint64(len(vars)))
 	for _, v := range vars {
@@ -5168,15 +5171,24 @@ func emitStackObjects(e *ssafn, pp *Progs) {
 		if !typesym(v.Type).Siggen() {
 			Fatalf("stack object's type symbol not generated for type %s", v.Type)
 		}
-		off = dsymptr(x, off, dtypesym(v.Type), 0)
+		ts := dtypesym(v.Type)
+		off = dsymptr(x, off, ts, 0)
+		h.Write([]byte(ts.Name)) // include ts.Name in the hash to handle the relocation
 	}
+	h.Write(x.P) // hash everything else
+
+	stkobj := Ctxt.LookupInit(fmt.Sprintf("stkobj·%x", h.Sum(nil)), func(lsym *obj.LSym) {
+		lsym.P = x.P
+		lsym.R = x.R
+	})
+	e.curfn.Func.lsym.Func.StackObjects = stkobj
 
 	// Emit a funcdata pointing at the stack object data.
 	p := pp.Prog(obj.AFUNCDATA)
 	Addrconst(&p.From, objabi.FUNCDATA_StackObjects)
 	p.To.Type = obj.TYPE_MEM
 	p.To.Name = obj.NAME_EXTERN
-	p.To.Sym = x
+	p.To.Sym = stkobj
 
 	if debuglive != 0 {
 		for _, v := range vars {
