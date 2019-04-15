@@ -281,13 +281,10 @@ func addGCLocals() {
 		if s.Func == nil {
 			continue
 		}
-		for _, gcsym := range []*obj.LSym{s.Func.GCArgs, s.Func.GCLocals, s.Func.GCRegs} {
+		for _, gcsym := range []*obj.LSym{s.Func.GCArgs, s.Func.GCLocals, s.Func.GCRegs, s.Func.StackObjects} {
 			if gcsym != nil && !gcsym.OnList() {
 				ggloblsym(gcsym, int32(len(gcsym.P)), obj.RODATA|obj.DUPOK)
 			}
-		}
-		if x := s.Func.StackObjects; x != nil {
-			ggloblsym(x, int32(len(x.P)), obj.RODATA|obj.DUPOK)
 		}
 	}
 }

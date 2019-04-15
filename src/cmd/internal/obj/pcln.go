@@ -377,8 +377,6 @@ func linkpcln(ctxt *Link, cursym *LSym) {
 			i := int(p.From.Offset)
 			pcln.Funcdataoff[i] = p.To.Offset
 			if p.To.Type != TYPE_CONST {
-				// TODO: Dedup.
-				//funcdata_bytes += p->to.sym->size;
 				pcln.Funcdata[i] = p.To.Sym
 			}
 		}

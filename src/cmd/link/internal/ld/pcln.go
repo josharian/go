@@ -410,7 +410,6 @@ func (ctxt *Link) pclntab() {
 					ftab.SetUint(ctxt.Arch, dataoff, uint64(pcln.Funcdataoff[i]))
 					continue
 				}
-				// TODO: Dedup.
 				funcdataBytes += pcln.Funcdata[i].Size
 				ftab.SetAddrPlus(ctxt.Arch, dataoff, pcln.Funcdata[i], pcln.Funcdataoff[i])
 			}
