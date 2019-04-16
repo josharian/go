@@ -183,7 +183,7 @@ func algtype1(t *types.Type) (AlgKind, *types.Type) {
 	return 0, nil
 }
 
-// Generate a helper function to compute the hash of a value of type t.
+// genhash generates a helper function to compute the hash of a value of type t.
 func genhash(sym *types.Sym, t *types.Type) {
 	if Debug['r'] != 0 {
 		fmt.Printf("genhash %v %v\n", sym, t)
@@ -287,21 +287,7 @@ func genhash(sym *types.Sym, t *types.Type) {
 		dumplist("genhash body", fn.Nbody)
 	}
 
-	funcbody()
-
-	fn.Func.SetDupok(true)
-	fn = typecheck(fn, ctxStmt)
-
-	Curfn = fn
-	typecheckslice(fn.Nbody.Slice(), ctxStmt)
-	Curfn = nil
-
-	if debug_dclstack != 0 {
-		testdclstack()
-	}
-
-	fn.Func.SetNilCheckDisabled(true)
-	funccompile(fn)
+	finishalg(fn)
 }
 
 func hashfor(t *types.Type) *Node {
@@ -340,8 +326,7 @@ func hashfor(t *types.Type) *Node {
 	return n
 }
 
-// geneq generates a helper function to
-// check equality of two values of type t.
+// geneq generates a helper function to check equality of two values of type t.
 func geneq(sym *types.Sym, t *types.Type) {
 	if Debug['r'] != 0 {
 		fmt.Printf("geneq %v %v\n", sym, t)
@@ -369,7 +354,7 @@ func geneq(sym *types.Sym, t *types.Type) {
 	default:
 		Fatalf("geneq %v", t)
 
-	case TARRAY:
+	case types.TARRAY:
 		// An array of pure memory would be handled by the
 		// standard memequal, so the element type must not be
 		// pure memory. Even if we unrolled the range loop,
@@ -386,7 +371,6 @@ func geneq(sym *types.Sym, t *types.Type) {
 
 		// if p[i] != q[i] { return false }
 		nx := nod(OINDEX, np, ni)
-
 		nx.SetBounded(true)
 		ny := nod(OINDEX, nq, ni)
 		ny.SetBounded(true)
@@ -404,7 +388,7 @@ func geneq(sym *types.Sym, t *types.Type) {
 		ret.List.Append(nodbool(true))
 		fn.Nbody.Append(ret)
 
-	case TSTRUCT:
+	case types.TSTRUCT:
 		var cond *Node
 		and := func(n *Node) {
 			if cond == nil {
@@ -462,6 +446,10 @@ func geneq(sym *types.Sym, t *types.Type) {
 		dumplist("geneq body", fn.Nbody)
 	}
 
+	finishalg(fn)
+}
+
+func finishalg(fn *Node) {
 	funcbody()
 
 	fn.Func.SetDupok(true)
