@@ -5,6 +5,7 @@
 package gc
 
 import (
+	"bytes"
 	"cmd/compile/internal/types"
 	"fmt"
 )
@@ -183,6 +184,87 @@ func algtype1(t *types.Type) (AlgKind, *types.Type) {
 	return 0, nil
 }
 
+func algname(t *types.Type) []byte {
+	buf := new(bytes.Buffer)
+	writeAlgname(buf, t)
+	return buf.Bytes()
+}
+
+func writeAlgname(buf *bytes.Buffer, t *types.Type) {
+	dowidth(t)
+	// We should only see valid types here.
+	if t.Broke() || t.Noalg() {
+		Fatalf("writeAlgname bad type %v: %v, %v", t, t.Broke(), t.Noalg())
+		return
+	}
+	a, bad := algtype1(t)
+
+	switch a {
+	case ANOEQ:
+		Fatalf("writeAlgname type without algs: %v (%v)", t, bad)
+	case AMEM:
+		if !types.Haspointers(t) {
+			fmt.Fprintf(buf, "mem%v", t.Width)
+			return
+		}
+	case ASTRING:
+		buf.WriteString("str")
+		return
+	case AINTER:
+		buf.WriteString("iface")
+		return
+	case ANILINTER:
+		buf.WriteString("eface")
+		return
+	case AFLOAT32:
+		buf.WriteString("float32")
+		return
+	case AFLOAT64:
+		buf.WriteString("float64")
+		return
+	case ACPLX64:
+		buf.WriteString("cmplx64")
+		return
+	case ACPLX128:
+		buf.WriteString("cmplx128")
+		return
+	}
+
+	// t has pointers or needs special comparison/hashing functions.
+	switch t.Etype {
+	case TPTR, TCHAN, TUNSAFEPTR:
+		buf.WriteString("ptr")
+		return
+	case TARRAY:
+		if t.NumElem() != 1 {
+			fmt.Fprintf(buf, "[%d]", t.NumElem())
+		}
+		writeAlgname(buf, t.Elem())
+		return
+	case TSTRUCT:
+		buf.WriteString("{")
+		for _, f := range t.FieldSlice() {
+			// TODO: coalesce runs of memory / ptrs
+			fmt.Fprintf(buf, "%d:", f.Offset)
+			if f.Sym.IsBlank() {
+				buf.WriteString("_")
+			} else {
+				writeAlgname(buf, f.Type)
+			}
+			buf.WriteString(",")
+		}
+		buf.WriteString("}")
+		return
+	}
+
+	// TODOs:
+	// {0:{0:str,16:str,},32:{0:str,16:str,},} could be [4]str
+	// coalesce runs of memory / ptrs
+
+	Fatalf("writeAlgname unexpected type %v", t)
+	return
+}
+
 // genhash generates a helper function to compute the hash of a value of type t.
 func genhash(sym *types.Sym, t *types.Type) {
 	if Debug['r'] != 0 {
@@ -328,6 +410,7 @@ func hashfor(t *types.Type) *Node {
 
 // geneq generates a helper function to check equality of two values of type t.
 func geneq(sym *types.Sym, t *types.Type) {
+	fmt.Printf("%s\n", algname(t))
 	if Debug['r'] != 0 {
 		fmt.Printf("geneq %v %v\n", sym, t)
 	}
