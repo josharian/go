@@ -25,6 +25,7 @@ const (
 	ASTRING
 	AINTER
 	ANILINTER
+	ANILINTER2
 	AFLOAT32
 	AFLOAT64
 	ACPLX64
@@ -149,6 +150,11 @@ func algtype1(t *types.Type) (AlgKind, *types.Type) {
 		case 1:
 			// Single-element array is same as its lone element.
 			return a, nil
+		case 2:
+			// We have designated [2]eface routines.
+			if t.Elem().IsEmptyInterface() {
+				return ANILINTER2, nil
+			}
 		}
 
 		return ASPECIAL, nil

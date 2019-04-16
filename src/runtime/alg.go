@@ -27,6 +27,7 @@ const (
 	alg_STRING
 	alg_INTER
 	alg_NILINTER
+	alg_NILINTER2
 	alg_FLOAT32
 	alg_FLOAT64
 	alg_CPLX64
@@ -69,20 +70,21 @@ func memhash_varlen(p unsafe.Pointer, h uintptr) uintptr {
 }
 
 var algarray = [alg_max]typeAlg{
-	alg_NOEQ:     {nil, nil},
-	alg_MEM0:     {memhash0, memequal0},
-	alg_MEM8:     {memhash8, memequal8},
-	alg_MEM16:    {memhash16, memequal16},
-	alg_MEM32:    {memhash32, memequal32},
-	alg_MEM64:    {memhash64, memequal64},
-	alg_MEM128:   {memhash128, memequal128},
-	alg_STRING:   {strhash, strequal},
-	alg_INTER:    {interhash, interequal},
-	alg_NILINTER: {nilinterhash, nilinterequal},
-	alg_FLOAT32:  {f32hash, f32equal},
-	alg_FLOAT64:  {f64hash, f64equal},
-	alg_CPLX64:   {c64hash, c64equal},
-	alg_CPLX128:  {c128hash, c128equal},
+	alg_NOEQ:      {nil, nil},
+	alg_MEM0:      {memhash0, memequal0},
+	alg_MEM8:      {memhash8, memequal8},
+	alg_MEM16:     {memhash16, memequal16},
+	alg_MEM32:     {memhash32, memequal32},
+	alg_MEM64:     {memhash64, memequal64},
+	alg_MEM128:    {memhash128, memequal128},
+	alg_STRING:    {strhash, strequal},
+	alg_INTER:     {interhash, interequal},
+	alg_NILINTER:  {nilinterhash, nilinterequal},
+	alg_NILINTER2: {nilinterhash2, nilinterequal2},
+	alg_FLOAT32:   {f32hash, f32equal},
+	alg_FLOAT64:   {f64hash, f64equal},
+	alg_CPLX64:    {c64hash, c64equal},
+	alg_CPLX128:   {c128hash, c128equal},
 }
 
 var useAeshash bool
@@ -172,6 +174,12 @@ func nilinterhash(p unsafe.Pointer, h uintptr) uintptr {
 	}
 }
 
+func nilinterhash2(p unsafe.Pointer, h uintptr) uintptr {
+	h = nilinterhash(p, h)
+	h = nilinterhash(add(p, unsafe.Sizeof(eface{})), h)
+	return h
+}
+
 func memequal0(p, q unsafe.Pointer) bool {
 	return true
 }
@@ -214,6 +222,13 @@ func nilinterequal(p, q unsafe.Pointer) bool {
 	x := *(*eface)(p)
 	y := *(*eface)(q)
 	return x._type == y._type && efaceeq(x._type, x.data, y.data)
+}
+func nilinterequal2(p, q unsafe.Pointer) bool {
+	x0 := *(*eface)(p)
+	y0 := *(*eface)(q)
+	x1 := *(*eface)(add(p, unsafe.Sizeof(eface{})))
+	y1 := *(*eface)(add(q, unsafe.Sizeof(eface{})))
+	return x0._type == y0._type && x1._type == y1._type && efaceeq(x0._type, x0.data, y0.data) && efaceeq(x1._type, x1.data, y1.data)
 }
 func efaceeq(t *_type, x, y unsafe.Pointer) bool {
 	if t == nil {
