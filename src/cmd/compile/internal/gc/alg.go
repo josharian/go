@@ -183,6 +183,22 @@ func algtype1(t *types.Type) (AlgKind, *types.Type) {
 	return 0, nil
 }
 
+type algsig struct {
+	runs []algrun
+}
+
+type algrun struct {
+	off int     // beginning offset of this run
+	end int     // end offset of this run
+	n   int     // number of elements of this run
+	k   AlgKind // element kind
+}
+
+// add adds n elements of kind k at offset off to s.
+func (s *algsig) add(off, end, n int, k AlgKind) {
+
+}
+
 // Generate a helper function to compute the hash of a value of type t.
 func genhash(sym *types.Sym, t *types.Type) {
 	if Debug['r'] != 0 {
