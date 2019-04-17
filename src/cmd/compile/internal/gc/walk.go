@@ -1305,6 +1305,7 @@ opswitch:
 				Fatalf("walkexpr: invalid index %v", r)
 			}
 			t = types.NewArray(t.Elem(), i) // [r]T
+			t.SetNoalg(true)
 			var_ := temp(t)
 			a := nod(OAS, var_, nil) // zero temp
 			a = typecheck(a, ctxStmt)
