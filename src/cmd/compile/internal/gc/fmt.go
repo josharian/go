@@ -836,7 +836,8 @@ func typefmt(t *types.Type, flag FmtFlag, mode fmtMode, depth int) string {
 					buf = append(buf, ';')
 				}
 				buf = append(buf, ' ')
-				buf = append(buf, fldconv(f, FmtLong, mode, depth, funarg)...)
+				// fmt.Printf("%b %b\n", flag, FmtLong)
+				buf = append(buf, fldconv(f, FmtLong|FmtShort, mode, depth, funarg)...)
 			}
 			if t.NumFields() != 0 {
 				buf = append(buf, ' ')
