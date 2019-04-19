@@ -10,6 +10,7 @@ import (
 	"cmd/internal/obj"
 	"cmd/internal/objabi"
 	"cmd/internal/src"
+	"crypto/sha1"
 	"fmt"
 	"os"
 	"sort"
@@ -951,7 +952,11 @@ func tracksym(t *types.Type, f *types.Field) *types.Sym {
 }
 
 func typesymprefix(prefix string, t *types.Type) *types.Sym {
-	p := prefix + "." + t.ShortString()
+	suff := t.ShortString()
+	if len(suff) > 100 {
+		suff = fmt.Sprintf("%x", sha1.Sum([]byte(suff)))
+	}
+	p := prefix + "." + suff
 	s := typeLookup(p)
 
 	// This function is for looking up type-related generated functions
