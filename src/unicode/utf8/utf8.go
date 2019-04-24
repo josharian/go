@@ -111,12 +111,7 @@ func FullRune(p []byte) bool {
 	}
 	// Must be short or invalid.
 	accept := acceptRanges[x>>4]
-	if n > 1 && (p[1] < accept.lo || accept.hi < p[1]) {
-		return true
-	} else if n > 2 && (p[2] < locb || hicb < p[2]) {
-		return true
-	}
-	return false
+	return (n > 1 && (p[1] < accept.lo || accept.hi < p[1])) || (n > 2 && (p[2] < locb || hicb < p[2]))
 }
 
 // FullRuneInString is like FullRune but its input is a string.
