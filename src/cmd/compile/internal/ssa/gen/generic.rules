@@ -259,6 +259,16 @@
 (Sub16 x (Const16 <t> [c])) && x.Op != OpConst16 -> (Add16 (Const16 <t> [int64(int16(-c))]) x)
 (Sub8  x (Const8  <t> [c])) && x.Op != OpConst8  -> (Add8  (Const8  <t> [int64(int8(-c))]) x)
 
+// Convert a-b==0 to a==b.
+(Eq8   (Sub8  x y) (Const8  [0])) && v.Uses == 1 -> (Eq8   x y)
+(Eq16  (Sub16 x y) (Const16 [0])) && v.Uses == 1 -> (Eq16  x y)
+(Eq32  (Sub32 x y) (Const32 [0])) && v.Uses == 1 -> (Eq32  x y)
+(Eq64  (Sub64 x y) (Const64 [0])) && v.Uses == 1 -> (Eq64  x y)
+(Neq8  (Sub8  x y) (Const8  [0])) && v.Uses == 1 -> (Neq8  x y)
+(Neq16 (Sub16 x y) (Const16 [0])) && v.Uses == 1 -> (Neq16 x y)
+(Neq32 (Sub32 x y) (Const32 [0])) && v.Uses == 1 -> (Neq32 x y)
+(Neq64 (Sub64 x y) (Const64 [0])) && v.Uses == 1 -> (Neq64 x y)
+
 // fold negation into comparison operators
 (Not (Eq(64|32|16|8|B) x y)) -> (Neq(64|32|16|8|B) x y)
 (Not (Neq(64|32|16|8|B) x y)) -> (Eq(64|32|16|8|B) x y)
