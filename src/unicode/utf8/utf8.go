@@ -82,20 +82,23 @@ var first = [256]uint8{
 	s5, s6, s6, s6, s7, xx, xx, xx, xx, xx, xx, xx, xx, xx, xx, xx, // 0xF0-0xFF
 }
 
-// acceptRange gives the range of valid values for the second byte in a UTF-8
-// sequence.
+// acceptRange gives the range of valid values for the second byte in a UTF-8 sequence.
+// The range is optimized for checking whether it contains a particular byte
+// using a subtraction and a comparison, rather than two comparisons.
+// To test whether a byte b is out of range, use:
+//   b-accept.sub > accept.max
 type acceptRange struct {
-	lo uint8 // lowest value for second byte.
-	hi uint8 // highest value for second byte.
+	sub uint8 // lowest value for second byte
+	max uint8 // highest value for second byte minus lowest value for second byte
 }
 
 // acceptRanges has size 16 to avoid bounds checks in the code that uses it.
 var acceptRanges = [16]acceptRange{
-	0: {locb, hicb},
-	1: {0xA0, hicb},
-	2: {locb, 0x9F},
-	3: {0x90, hicb},
-	4: {locb, 0x8F},
+	0: {locb, hicb - locb},
+	1: {0xA0, hicb - 0xA0},
+	2: {locb, 0x9F - locb},
+	3: {0x90, hicb - 0x90},
+	4: {locb, 0x8F - locb},
 }
 
 // FullRune reports whether the bytes in p begin with a full UTF-8 encoding of a rune.
@@ -111,7 +114,7 @@ func FullRune(p []byte) bool {
 	}
 	// Must be short or invalid.
 	accept := acceptRanges[x>>4]
-	if n > 1 && (p[1] < accept.lo || accept.hi < p[1]) {
+	if n > 1 && p[1]-accept.sub > accept.max {
 		return true
 	} else if n > 2 && (p[2] < locb || hicb < p[2]) {
 		return true
@@ -131,7 +134,7 @@ func FullRuneInString(s string) bool {
 	}
 	// Must be short or invalid.
 	accept := acceptRanges[x>>4]
-	if n > 1 && (s[1] < accept.lo || accept.hi < s[1]) {
+	if n > 1 && s[1]-accept.sub > accept.max {
 		return true
 	} else if n > 2 && (s[2] < locb || hicb < s[2]) {
 		return true
@@ -167,7 +170,7 @@ func DecodeRune(p []byte) (r rune, size int) {
 		return RuneError, 1
 	}
 	b1 := p[1]
-	if b1 < accept.lo || accept.hi < b1 {
+	if b1-accept.sub > accept.max {
 		return RuneError, 1
 	}
 	if sz <= 2 { // <= instead of == to help the compiler eliminate some bounds checks
@@ -215,7 +218,7 @@ func DecodeRuneInString(s string) (r rune, size int) {
 		return RuneError, 1
 	}
 	s1 := s[1]
-	if s1 < accept.lo || accept.hi < s1 {
+	if s1-accept.sub > accept.max {
 		return RuneError, 1
 	}
 	if sz <= 2 { // <= instead of == to help the compiler eliminate some bounds checks
@@ -391,7 +394,7 @@ func RuneCount(p []byte) int {
 			continue
 		}
 		accept := acceptRanges[x>>4]
-		if c := p[i+1]; c < accept.lo || accept.hi < c {
+		if c := p[i+1]; c-accept.sub > accept.max {
 			size = 1
 		} else if size == 2 {
 		} else if c := p[i+2]; c < locb || hicb < c {
@@ -426,7 +429,7 @@ func RuneCountInString(s string) (n int) {
 			continue
 		}
 		accept := acceptRanges[x>>4]
-		if c := s[i+1]; c < accept.lo || accept.hi < c {
+		if c := s[i+1]; c-accept.sub > accept.max {
 			size = 1
 		} else if size == 2 {
 		} else if c := s[i+2]; c < locb || hicb < c {
@@ -463,7 +466,7 @@ func Valid(p []byte) bool {
 			return false // Short or invalid.
 		}
 		accept := acceptRanges[x>>4]
-		if c := p[i+1]; c < accept.lo || accept.hi < c {
+		if c := p[i+1]; c-accept.sub > accept.max {
 			return false
 		} else if size == 2 {
 		} else if c := p[i+2]; c < locb || hicb < c {
@@ -495,7 +498,7 @@ func ValidString(s string) bool {
 			return false // Short or invalid.
 		}
 		accept := acceptRanges[x>>4]
-		if c := s[i+1]; c < accept.lo || accept.hi < c {
+		if c := s[i+1]; c-accept.sub > accept.max {
 			return false
 		} else if size == 2 {
 		} else if c := s[i+2]; c < locb || hicb < c {
