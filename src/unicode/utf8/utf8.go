@@ -451,7 +451,7 @@ func RuneStart(b byte) bool { return b&0xC0 != 0x80 }
 // Valid reports whether p consists entirely of valid UTF-8-encoded runes.
 func Valid(p []byte) bool {
 	n := len(p)
-	for i := 0; i < n; {
+	for i := 0; 0 <= i && i < n; {
 		pi := p[i]
 		if pi < RuneSelf {
 			i++
@@ -466,12 +466,13 @@ func Valid(p []byte) bool {
 			return false // Short or invalid.
 		}
 		accept := acceptRanges[x>>4]
-		if c := p[i+1]; c-accept.sub > accept.max {
+		if i+1 < 0 || i+1 >= len(p) {
+		} else if c := p[i+1]; c-accept.sub > accept.max {
 			return false
-		} else if size == 2 {
+		} else if size == 2 || i+2 < 0 || i+2 >= len(p) {
 		} else if c := p[i+2]; c < locb || hicb < c {
 			return false
-		} else if size == 3 {
+		} else if size == 3 || i+3 < 0 || i+3 >= len(p) {
 		} else if c := p[i+3]; c < locb || hicb < c {
 			return false
 		}
