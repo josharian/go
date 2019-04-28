@@ -597,16 +597,18 @@ func BenchmarkDecodeJapaneseRune(b *testing.B) {
 	}
 }
 
+var asciiBytes = []byte{'a'}
+
 func BenchmarkFullASCIIRune(b *testing.B) {
-	a := []byte{'a'}
 	for i := 0; i < b.N; i++ {
-		FullRune(a)
+		FullRune(asciiBytes)
 	}
 }
 
+var nihonBytes = []byte("本")
+
 func BenchmarkFullJapaneseRune(b *testing.B) {
-	nihon := []byte("本")
 	for i := 0; i < b.N; i++ {
-		FullRune(nihon)
+		FullRune(nihonBytes)
 	}
 }
