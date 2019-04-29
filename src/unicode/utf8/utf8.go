@@ -449,6 +449,14 @@ func RuneStart(b byte) bool { return b&0xC0 != 0x80 }
 func Valid(p []byte) bool {
 	n := len(p)
 	for i := 0; i < n; {
+		if i+4 < n {
+			x := uint32(p[i]) | uint32(p[i+1])<<8 | uint32(p[i+2])<<16 | uint32(p[i+3])<<24
+			y := uint32(RuneSelf<<24 | RuneSelf<<16 | RuneSelf<<8 | RuneSelf)
+			if x&y == 0 {
+				i += 4
+				continue
+			}
+		}
 		pi := p[i]
 		if pi < RuneSelf {
 			i++
