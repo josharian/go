@@ -34,15 +34,26 @@ const (
 
 func lock(l *mutex) {
 	gp := getg()
+
+	// Fast path: speculative grab for lock.
+	if gp.m.locks >= 0 {
+		gp.m.locks++
+		if atomic.Casuintptr(&l.key, 0, locked) {
+			return
+		}
+	}
+
+	// Outlined slow path to allow inlining the fast path
+	lockSlow(l)
+}
+
+//go:noinline
+func lockSlow(l *mutex) {
+	gp := getg()
 	if gp.m.locks < 0 {
 		throw("runtime·lock: lock count")
 	}
-	gp.m.locks++
 
-	// Speculative grab for lock.
-	if atomic.Casuintptr(&l.key, 0, locked) {
-		return
-	}
 	semacreate(gp.m)
 
 	// On uniprocessor's, no point spinning.
@@ -92,6 +103,19 @@ Loop:
 //go:nowritebarrier
 // We might not be holding a p in this code.
 func unlock(l *mutex) {
+	gp := getg()
+	if gp.m.locks > 0 && !gp.preempt && atomic.Casuintptr(&l.key, locked, 0) {
+		gp.m.locks--
+		return
+	}
+
+	unlockSlow(l)
+}
+
+//go:noinline
+//go:nowritebarrier
+// We might not be holding a p in this code.
+func unlockSlow(l *mutex) {
 	gp := getg()
 	var mp *m
 	for {

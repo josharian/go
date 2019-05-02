@@ -303,6 +303,11 @@ func (v *hairyVisitor) visit(n *Node) bool {
 				v.budget -= inlineExtraThrowCost
 				break
 			}
+			if fn == "lockSlow" || fn == "unlockSlow" {
+				// Special case: explicitly allow mid-stack inlining of
+				// runtime.lock, and runtime.unlock, even though they call these slow-path variants.
+				break
+			}
 		}
 
 		if isIntrinsicCall(n) {

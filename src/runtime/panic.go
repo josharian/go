@@ -701,6 +701,7 @@ func sync_throw(s string) {
 }
 
 //go:nosplit
+//go:noinline
 func throw(s string) {
 	// Everything throw does should be recursively nosplit so it
 	// can be called even when it's unsafe to grow the stack.

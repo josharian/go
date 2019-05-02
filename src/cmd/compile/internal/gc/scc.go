@@ -54,6 +54,7 @@ func visitBottomUp(list []*Node, analyze func(list []*Node, recursive bool), fil
 	var v bottomUpVisitor
 	v.analyze = analyze
 	v.nodeID = make(map[*Node]uint32)
+	v.filter = filter
 	for _, n := range list {
 		if n.Op == ODCLFUNC && !n.Func.IsHiddenClosure() {
 			v.visit(n)
