@@ -36,21 +36,17 @@ func lock(l *mutex) {
 	gp := getg()
 
 	// Fast path: speculative grab for lock.
-	if gp.m.locks >= 0 {
-		gp.m.locks++
-		if atomic.Casuintptr(&l.key, 0, locked) {
-			return
-		}
+	gp.m.locks++
+	if !atomic.Casuintptr(&l.key, 0, locked) {
+		// Outlined slow path to allow inlining the fast path
+		lockSlow(l)
 	}
-
-	// Outlined slow path to allow inlining the fast path
-	lockSlow(l)
 }
 
 //go:noinline
 func lockSlow(l *mutex) {
 	gp := getg()
-	if gp.m.locks < 0 {
+	if gp.m.locks <= 0 {
 		throw("runtime·lock: lock count")
 	}
 
