@@ -16,517 +16,616 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValueMIPS(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValueMIPS_shards[shard](v)
+}
+
+var rewriteValueMIPS_shards = [...]func(v *Value) bool{
+	0:  rewriteValueMIPS_shard_0000,
+	1:  rewriteValueMIPS_shard_0001,
+	2:  rewriteValueMIPS_shard_0010,
+	3:  rewriteValueMIPS_shard_0011,
+	4:  rewriteValueMIPS_shard_0100,
+	5:  rewriteValueMIPS_shard_0101,
+	6:  rewriteValueMIPS_shard_0110,
+	7:  rewriteValueMIPS_shard_0111,
+	8:  rewriteValueMIPS_shard_1000,
+	9:  rewriteValueMIPS_shard_1001,
+	10: rewriteValueMIPS_shard_1010,
+	11: rewriteValueMIPS_shard_1011,
+	12: rewriteValueMIPS_shard_1100,
+	13: rewriteValueMIPS_shard_1101,
+	14: rewriteValueMIPS_shard_1110,
+	15: rewriteValueMIPS_shard_1111,
+}
+
+func rewriteValueMIPS_shard_0000(v *Value) bool {
 	switch v.Op {
-	case OpAdd16:
-		return rewriteValueMIPS_OpAdd16_0(v)
-	case OpAdd32:
-		return rewriteValueMIPS_OpAdd32_0(v)
-	case OpAdd32F:
-		return rewriteValueMIPS_OpAdd32F_0(v)
-	case OpAdd32withcarry:
-		return rewriteValueMIPS_OpAdd32withcarry_0(v)
-	case OpAdd64F:
-		return rewriteValueMIPS_OpAdd64F_0(v)
-	case OpAdd8:
-		return rewriteValueMIPS_OpAdd8_0(v)
-	case OpAddPtr:
-		return rewriteValueMIPS_OpAddPtr_0(v)
-	case OpAddr:
-		return rewriteValueMIPS_OpAddr_0(v)
-	case OpAnd16:
-		return rewriteValueMIPS_OpAnd16_0(v)
-	case OpAnd32:
-		return rewriteValueMIPS_OpAnd32_0(v)
-	case OpAnd8:
-		return rewriteValueMIPS_OpAnd8_0(v)
-	case OpAndB:
-		return rewriteValueMIPS_OpAndB_0(v)
-	case OpAtomicAdd32:
-		return rewriteValueMIPS_OpAtomicAdd32_0(v)
-	case OpAtomicAnd8:
-		return rewriteValueMIPS_OpAtomicAnd8_0(v)
-	case OpAtomicCompareAndSwap32:
-		return rewriteValueMIPS_OpAtomicCompareAndSwap32_0(v)
-	case OpAtomicExchange32:
-		return rewriteValueMIPS_OpAtomicExchange32_0(v)
-	case OpAtomicLoad32:
-		return rewriteValueMIPS_OpAtomicLoad32_0(v)
 	case OpAtomicLoadPtr:
 		return rewriteValueMIPS_OpAtomicLoadPtr_0(v)
-	case OpAtomicOr8:
-		return rewriteValueMIPS_OpAtomicOr8_0(v)
-	case OpAtomicStore32:
-		return rewriteValueMIPS_OpAtomicStore32_0(v)
-	case OpAtomicStorePtrNoWB:
-		return rewriteValueMIPS_OpAtomicStorePtrNoWB_0(v)
-	case OpAvg32u:
-		return rewriteValueMIPS_OpAvg32u_0(v)
-	case OpBitLen32:
-		return rewriteValueMIPS_OpBitLen32_0(v)
-	case OpClosureCall:
-		return rewriteValueMIPS_OpClosureCall_0(v)
-	case OpCom16:
-		return rewriteValueMIPS_OpCom16_0(v)
-	case OpCom32:
-		return rewriteValueMIPS_OpCom32_0(v)
-	case OpCom8:
-		return rewriteValueMIPS_OpCom8_0(v)
-	case OpConst16:
-		return rewriteValueMIPS_OpConst16_0(v)
-	case OpConst32:
-		return rewriteValueMIPS_OpConst32_0(v)
-	case OpConst32F:
-		return rewriteValueMIPS_OpConst32F_0(v)
-	case OpConst64F:
-		return rewriteValueMIPS_OpConst64F_0(v)
-	case OpConst8:
-		return rewriteValueMIPS_OpConst8_0(v)
-	case OpConstBool:
-		return rewriteValueMIPS_OpConstBool_0(v)
-	case OpConstNil:
-		return rewriteValueMIPS_OpConstNil_0(v)
-	case OpCtz32:
-		return rewriteValueMIPS_OpCtz32_0(v)
-	case OpCtz32NonZero:
-		return rewriteValueMIPS_OpCtz32NonZero_0(v)
-	case OpCvt32Fto32:
-		return rewriteValueMIPS_OpCvt32Fto32_0(v)
-	case OpCvt32Fto64F:
-		return rewriteValueMIPS_OpCvt32Fto64F_0(v)
-	case OpCvt32to32F:
-		return rewriteValueMIPS_OpCvt32to32F_0(v)
-	case OpCvt32to64F:
-		return rewriteValueMIPS_OpCvt32to64F_0(v)
-	case OpCvt64Fto32:
-		return rewriteValueMIPS_OpCvt64Fto32_0(v)
-	case OpCvt64Fto32F:
-		return rewriteValueMIPS_OpCvt64Fto32F_0(v)
-	case OpDiv16:
-		return rewriteValueMIPS_OpDiv16_0(v)
-	case OpDiv16u:
-		return rewriteValueMIPS_OpDiv16u_0(v)
-	case OpDiv32:
-		return rewriteValueMIPS_OpDiv32_0(v)
-	case OpDiv32F:
-		return rewriteValueMIPS_OpDiv32F_0(v)
-	case OpDiv32u:
-		return rewriteValueMIPS_OpDiv32u_0(v)
-	case OpDiv64F:
-		return rewriteValueMIPS_OpDiv64F_0(v)
-	case OpDiv8:
-		return rewriteValueMIPS_OpDiv8_0(v)
-	case OpDiv8u:
-		return rewriteValueMIPS_OpDiv8u_0(v)
-	case OpEq16:
-		return rewriteValueMIPS_OpEq16_0(v)
-	case OpEq32:
-		return rewriteValueMIPS_OpEq32_0(v)
-	case OpEq32F:
-		return rewriteValueMIPS_OpEq32F_0(v)
-	case OpEq64F:
-		return rewriteValueMIPS_OpEq64F_0(v)
-	case OpEq8:
-		return rewriteValueMIPS_OpEq8_0(v)
-	case OpEqB:
-		return rewriteValueMIPS_OpEqB_0(v)
-	case OpEqPtr:
-		return rewriteValueMIPS_OpEqPtr_0(v)
-	case OpGeq16:
-		return rewriteValueMIPS_OpGeq16_0(v)
-	case OpGeq16U:
-		return rewriteValueMIPS_OpGeq16U_0(v)
-	case OpGeq32:
-		return rewriteValueMIPS_OpGeq32_0(v)
-	case OpGeq32F:
-		return rewriteValueMIPS_OpGeq32F_0(v)
-	case OpGeq32U:
-		return rewriteValueMIPS_OpGeq32U_0(v)
-	case OpGeq64F:
-		return rewriteValueMIPS_OpGeq64F_0(v)
-	case OpGeq8:
-		return rewriteValueMIPS_OpGeq8_0(v)
-	case OpGeq8U:
-		return rewriteValueMIPS_OpGeq8U_0(v)
-	case OpGetCallerPC:
-		return rewriteValueMIPS_OpGetCallerPC_0(v)
-	case OpGetCallerSP:
-		return rewriteValueMIPS_OpGetCallerSP_0(v)
-	case OpGetClosurePtr:
-		return rewriteValueMIPS_OpGetClosurePtr_0(v)
-	case OpGreater16:
-		return rewriteValueMIPS_OpGreater16_0(v)
-	case OpGreater16U:
-		return rewriteValueMIPS_OpGreater16U_0(v)
-	case OpGreater32:
-		return rewriteValueMIPS_OpGreater32_0(v)
 	case OpGreater32F:
 		return rewriteValueMIPS_OpGreater32F_0(v)
-	case OpGreater32U:
-		return rewriteValueMIPS_OpGreater32U_0(v)
-	case OpGreater64F:
-		return rewriteValueMIPS_OpGreater64F_0(v)
-	case OpGreater8:
-		return rewriteValueMIPS_OpGreater8_0(v)
-	case OpGreater8U:
-		return rewriteValueMIPS_OpGreater8U_0(v)
-	case OpHmul32:
-		return rewriteValueMIPS_OpHmul32_0(v)
-	case OpHmul32u:
-		return rewriteValueMIPS_OpHmul32u_0(v)
-	case OpInterCall:
-		return rewriteValueMIPS_OpInterCall_0(v)
-	case OpIsInBounds:
-		return rewriteValueMIPS_OpIsInBounds_0(v)
-	case OpIsNonNil:
-		return rewriteValueMIPS_OpIsNonNil_0(v)
 	case OpIsSliceInBounds:
 		return rewriteValueMIPS_OpIsSliceInBounds_0(v)
 	case OpLeq16:
 		return rewriteValueMIPS_OpLeq16_0(v)
-	case OpLeq16U:
-		return rewriteValueMIPS_OpLeq16U_0(v)
-	case OpLeq32:
-		return rewriteValueMIPS_OpLeq32_0(v)
-	case OpLeq32F:
-		return rewriteValueMIPS_OpLeq32F_0(v)
-	case OpLeq32U:
-		return rewriteValueMIPS_OpLeq32U_0(v)
-	case OpLeq64F:
-		return rewriteValueMIPS_OpLeq64F_0(v)
-	case OpLeq8:
-		return rewriteValueMIPS_OpLeq8_0(v)
-	case OpLeq8U:
-		return rewriteValueMIPS_OpLeq8U_0(v)
-	case OpLess16:
-		return rewriteValueMIPS_OpLess16_0(v)
-	case OpLess16U:
-		return rewriteValueMIPS_OpLess16U_0(v)
-	case OpLess32:
-		return rewriteValueMIPS_OpLess32_0(v)
-	case OpLess32F:
-		return rewriteValueMIPS_OpLess32F_0(v)
-	case OpLess32U:
-		return rewriteValueMIPS_OpLess32U_0(v)
-	case OpLess64F:
-		return rewriteValueMIPS_OpLess64F_0(v)
-	case OpLess8:
-		return rewriteValueMIPS_OpLess8_0(v)
-	case OpLess8U:
-		return rewriteValueMIPS_OpLess8U_0(v)
-	case OpLoad:
-		return rewriteValueMIPS_OpLoad_0(v)
-	case OpLocalAddr:
-		return rewriteValueMIPS_OpLocalAddr_0(v)
-	case OpLsh16x16:
-		return rewriteValueMIPS_OpLsh16x16_0(v)
-	case OpLsh16x32:
-		return rewriteValueMIPS_OpLsh16x32_0(v)
-	case OpLsh16x64:
-		return rewriteValueMIPS_OpLsh16x64_0(v)
-	case OpLsh16x8:
-		return rewriteValueMIPS_OpLsh16x8_0(v)
-	case OpLsh32x16:
-		return rewriteValueMIPS_OpLsh32x16_0(v)
-	case OpLsh32x32:
-		return rewriteValueMIPS_OpLsh32x32_0(v)
-	case OpLsh32x64:
-		return rewriteValueMIPS_OpLsh32x64_0(v)
-	case OpLsh32x8:
-		return rewriteValueMIPS_OpLsh32x8_0(v)
-	case OpLsh8x16:
-		return rewriteValueMIPS_OpLsh8x16_0(v)
-	case OpLsh8x32:
-		return rewriteValueMIPS_OpLsh8x32_0(v)
-	case OpLsh8x64:
-		return rewriteValueMIPS_OpLsh8x64_0(v)
-	case OpLsh8x8:
-		return rewriteValueMIPS_OpLsh8x8_0(v)
-	case OpMIPSADD:
-		return rewriteValueMIPS_OpMIPSADD_0(v)
-	case OpMIPSADDconst:
-		return rewriteValueMIPS_OpMIPSADDconst_0(v)
-	case OpMIPSAND:
-		return rewriteValueMIPS_OpMIPSAND_0(v)
 	case OpMIPSANDconst:
 		return rewriteValueMIPS_OpMIPSANDconst_0(v)
-	case OpMIPSCMOVZ:
-		return rewriteValueMIPS_OpMIPSCMOVZ_0(v)
-	case OpMIPSCMOVZzero:
-		return rewriteValueMIPS_OpMIPSCMOVZzero_0(v)
-	case OpMIPSLoweredAtomicAdd:
-		return rewriteValueMIPS_OpMIPSLoweredAtomicAdd_0(v)
-	case OpMIPSLoweredAtomicStore:
-		return rewriteValueMIPS_OpMIPSLoweredAtomicStore_0(v)
-	case OpMIPSMOVBUload:
-		return rewriteValueMIPS_OpMIPSMOVBUload_0(v)
-	case OpMIPSMOVBUreg:
-		return rewriteValueMIPS_OpMIPSMOVBUreg_0(v)
-	case OpMIPSMOVBload:
-		return rewriteValueMIPS_OpMIPSMOVBload_0(v)
-	case OpMIPSMOVBreg:
-		return rewriteValueMIPS_OpMIPSMOVBreg_0(v)
-	case OpMIPSMOVBstore:
-		return rewriteValueMIPS_OpMIPSMOVBstore_0(v)
-	case OpMIPSMOVBstorezero:
-		return rewriteValueMIPS_OpMIPSMOVBstorezero_0(v)
-	case OpMIPSMOVDload:
-		return rewriteValueMIPS_OpMIPSMOVDload_0(v)
-	case OpMIPSMOVDstore:
-		return rewriteValueMIPS_OpMIPSMOVDstore_0(v)
-	case OpMIPSMOVFload:
-		return rewriteValueMIPS_OpMIPSMOVFload_0(v)
-	case OpMIPSMOVFstore:
-		return rewriteValueMIPS_OpMIPSMOVFstore_0(v)
-	case OpMIPSMOVHUload:
-		return rewriteValueMIPS_OpMIPSMOVHUload_0(v)
-	case OpMIPSMOVHUreg:
-		return rewriteValueMIPS_OpMIPSMOVHUreg_0(v)
-	case OpMIPSMOVHload:
-		return rewriteValueMIPS_OpMIPSMOVHload_0(v)
-	case OpMIPSMOVHreg:
-		return rewriteValueMIPS_OpMIPSMOVHreg_0(v)
-	case OpMIPSMOVHstore:
-		return rewriteValueMIPS_OpMIPSMOVHstore_0(v)
-	case OpMIPSMOVHstorezero:
-		return rewriteValueMIPS_OpMIPSMOVHstorezero_0(v)
-	case OpMIPSMOVWload:
-		return rewriteValueMIPS_OpMIPSMOVWload_0(v)
-	case OpMIPSMOVWreg:
-		return rewriteValueMIPS_OpMIPSMOVWreg_0(v)
-	case OpMIPSMOVWstore:
-		return rewriteValueMIPS_OpMIPSMOVWstore_0(v)
 	case OpMIPSMOVWstorezero:
 		return rewriteValueMIPS_OpMIPSMOVWstorezero_0(v)
-	case OpMIPSMUL:
-		return rewriteValueMIPS_OpMIPSMUL_0(v)
-	case OpMIPSNEG:
-		return rewriteValueMIPS_OpMIPSNEG_0(v)
-	case OpMIPSNOR:
-		return rewriteValueMIPS_OpMIPSNOR_0(v)
-	case OpMIPSNORconst:
-		return rewriteValueMIPS_OpMIPSNORconst_0(v)
-	case OpMIPSOR:
-		return rewriteValueMIPS_OpMIPSOR_0(v)
-	case OpMIPSORconst:
-		return rewriteValueMIPS_OpMIPSORconst_0(v)
-	case OpMIPSSGT:
-		return rewriteValueMIPS_OpMIPSSGT_0(v)
-	case OpMIPSSGTU:
-		return rewriteValueMIPS_OpMIPSSGTU_0(v)
-	case OpMIPSSGTUconst:
-		return rewriteValueMIPS_OpMIPSSGTUconst_0(v)
-	case OpMIPSSGTUzero:
-		return rewriteValueMIPS_OpMIPSSGTUzero_0(v)
-	case OpMIPSSGTconst:
-		return rewriteValueMIPS_OpMIPSSGTconst_0(v) || rewriteValueMIPS_OpMIPSSGTconst_10(v)
-	case OpMIPSSGTzero:
-		return rewriteValueMIPS_OpMIPSSGTzero_0(v)
-	case OpMIPSSLL:
-		return rewriteValueMIPS_OpMIPSSLL_0(v)
-	case OpMIPSSLLconst:
-		return rewriteValueMIPS_OpMIPSSLLconst_0(v)
-	case OpMIPSSRA:
-		return rewriteValueMIPS_OpMIPSSRA_0(v)
 	case OpMIPSSRAconst:
 		return rewriteValueMIPS_OpMIPSSRAconst_0(v)
-	case OpMIPSSRL:
-		return rewriteValueMIPS_OpMIPSSRL_0(v)
-	case OpMIPSSRLconst:
-		return rewriteValueMIPS_OpMIPSSRLconst_0(v)
 	case OpMIPSSUB:
 		return rewriteValueMIPS_OpMIPSSUB_0(v)
-	case OpMIPSSUBconst:
-		return rewriteValueMIPS_OpMIPSSUBconst_0(v)
-	case OpMIPSXOR:
-		return rewriteValueMIPS_OpMIPSXOR_0(v)
-	case OpMIPSXORconst:
-		return rewriteValueMIPS_OpMIPSXORconst_0(v)
 	case OpMod16:
 		return rewriteValueMIPS_OpMod16_0(v)
-	case OpMod16u:
-		return rewriteValueMIPS_OpMod16u_0(v)
-	case OpMod32:
-		return rewriteValueMIPS_OpMod32_0(v)
-	case OpMod32u:
-		return rewriteValueMIPS_OpMod32u_0(v)
-	case OpMod8:
-		return rewriteValueMIPS_OpMod8_0(v)
-	case OpMod8u:
-		return rewriteValueMIPS_OpMod8u_0(v)
-	case OpMove:
-		return rewriteValueMIPS_OpMove_0(v) || rewriteValueMIPS_OpMove_10(v)
-	case OpMul16:
-		return rewriteValueMIPS_OpMul16_0(v)
-	case OpMul32:
-		return rewriteValueMIPS_OpMul32_0(v)
-	case OpMul32F:
-		return rewriteValueMIPS_OpMul32F_0(v)
-	case OpMul32uhilo:
-		return rewriteValueMIPS_OpMul32uhilo_0(v)
-	case OpMul64F:
-		return rewriteValueMIPS_OpMul64F_0(v)
-	case OpMul8:
-		return rewriteValueMIPS_OpMul8_0(v)
-	case OpNeg16:
-		return rewriteValueMIPS_OpNeg16_0(v)
-	case OpNeg32:
-		return rewriteValueMIPS_OpNeg32_0(v)
-	case OpNeg32F:
-		return rewriteValueMIPS_OpNeg32F_0(v)
-	case OpNeg64F:
-		return rewriteValueMIPS_OpNeg64F_0(v)
-	case OpNeg8:
-		return rewriteValueMIPS_OpNeg8_0(v)
-	case OpNeq16:
-		return rewriteValueMIPS_OpNeq16_0(v)
-	case OpNeq32:
-		return rewriteValueMIPS_OpNeq32_0(v)
-	case OpNeq32F:
-		return rewriteValueMIPS_OpNeq32F_0(v)
-	case OpNeq64F:
-		return rewriteValueMIPS_OpNeq64F_0(v)
-	case OpNeq8:
-		return rewriteValueMIPS_OpNeq8_0(v)
 	case OpNeqB:
 		return rewriteValueMIPS_OpNeqB_0(v)
-	case OpNeqPtr:
-		return rewriteValueMIPS_OpNeqPtr_0(v)
+	case OpSignExt8to16:
+		return rewriteValueMIPS_OpSignExt8to16_0(v)
+	case OpSignmask:
+		return rewriteValueMIPS_OpSignmask_0(v)
+	case OpSubPtr:
+		return rewriteValueMIPS_OpSubPtr_0(v)
+	case OpXor32:
+		return rewriteValueMIPS_OpXor32_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_0001(v *Value) bool {
+	switch v.Op {
+	case OpConstBool:
+		return rewriteValueMIPS_OpConstBool_0(v)
+	case OpGreater64F:
+		return rewriteValueMIPS_OpGreater64F_0(v)
+	case OpLeq16U:
+		return rewriteValueMIPS_OpLeq16U_0(v)
+	case OpMIPSMOVBreg:
+		return rewriteValueMIPS_OpMIPSMOVBreg_0(v)
+	case OpMIPSOR:
+		return rewriteValueMIPS_OpMIPSOR_0(v)
+	case OpMIPSSUBconst:
+		return rewriteValueMIPS_OpMIPSSUBconst_0(v)
+	case OpMod16u:
+		return rewriteValueMIPS_OpMod16u_0(v)
 	case OpNilCheck:
 		return rewriteValueMIPS_OpNilCheck_0(v)
 	case OpNot:
 		return rewriteValueMIPS_OpNot_0(v)
-	case OpOffPtr:
-		return rewriteValueMIPS_OpOffPtr_0(v)
-	case OpOr16:
-		return rewriteValueMIPS_OpOr16_0(v)
-	case OpOr32:
-		return rewriteValueMIPS_OpOr32_0(v)
-	case OpOr8:
-		return rewriteValueMIPS_OpOr8_0(v)
-	case OpOrB:
-		return rewriteValueMIPS_OpOrB_0(v)
-	case OpPanicBounds:
-		return rewriteValueMIPS_OpPanicBounds_0(v)
-	case OpPanicExtend:
-		return rewriteValueMIPS_OpPanicExtend_0(v)
-	case OpRotateLeft16:
-		return rewriteValueMIPS_OpRotateLeft16_0(v)
-	case OpRotateLeft32:
-		return rewriteValueMIPS_OpRotateLeft32_0(v)
-	case OpRotateLeft64:
-		return rewriteValueMIPS_OpRotateLeft64_0(v)
-	case OpRotateLeft8:
-		return rewriteValueMIPS_OpRotateLeft8_0(v)
-	case OpRound32F:
-		return rewriteValueMIPS_OpRound32F_0(v)
-	case OpRound64F:
-		return rewriteValueMIPS_OpRound64F_0(v)
-	case OpRsh16Ux16:
-		return rewriteValueMIPS_OpRsh16Ux16_0(v)
-	case OpRsh16Ux32:
-		return rewriteValueMIPS_OpRsh16Ux32_0(v)
-	case OpRsh16Ux64:
-		return rewriteValueMIPS_OpRsh16Ux64_0(v)
-	case OpRsh16Ux8:
-		return rewriteValueMIPS_OpRsh16Ux8_0(v)
-	case OpRsh16x16:
-		return rewriteValueMIPS_OpRsh16x16_0(v)
-	case OpRsh16x32:
-		return rewriteValueMIPS_OpRsh16x32_0(v)
-	case OpRsh16x64:
-		return rewriteValueMIPS_OpRsh16x64_0(v)
-	case OpRsh16x8:
-		return rewriteValueMIPS_OpRsh16x8_0(v)
-	case OpRsh32Ux16:
-		return rewriteValueMIPS_OpRsh32Ux16_0(v)
-	case OpRsh32Ux32:
-		return rewriteValueMIPS_OpRsh32Ux32_0(v)
-	case OpRsh32Ux64:
-		return rewriteValueMIPS_OpRsh32Ux64_0(v)
-	case OpRsh32Ux8:
-		return rewriteValueMIPS_OpRsh32Ux8_0(v)
-	case OpRsh32x16:
-		return rewriteValueMIPS_OpRsh32x16_0(v)
-	case OpRsh32x32:
-		return rewriteValueMIPS_OpRsh32x32_0(v)
-	case OpRsh32x64:
-		return rewriteValueMIPS_OpRsh32x64_0(v)
-	case OpRsh32x8:
-		return rewriteValueMIPS_OpRsh32x8_0(v)
-	case OpRsh8Ux16:
-		return rewriteValueMIPS_OpRsh8Ux16_0(v)
-	case OpRsh8Ux32:
-		return rewriteValueMIPS_OpRsh8Ux32_0(v)
-	case OpRsh8Ux64:
-		return rewriteValueMIPS_OpRsh8Ux64_0(v)
-	case OpRsh8Ux8:
-		return rewriteValueMIPS_OpRsh8Ux8_0(v)
-	case OpRsh8x16:
-		return rewriteValueMIPS_OpRsh8x16_0(v)
-	case OpRsh8x32:
-		return rewriteValueMIPS_OpRsh8x32_0(v)
-	case OpRsh8x64:
-		return rewriteValueMIPS_OpRsh8x64_0(v)
-	case OpRsh8x8:
-		return rewriteValueMIPS_OpRsh8x8_0(v)
-	case OpSelect0:
-		return rewriteValueMIPS_OpSelect0_0(v) || rewriteValueMIPS_OpSelect0_10(v)
-	case OpSelect1:
-		return rewriteValueMIPS_OpSelect1_0(v) || rewriteValueMIPS_OpSelect1_10(v)
-	case OpSignExt16to32:
-		return rewriteValueMIPS_OpSignExt16to32_0(v)
-	case OpSignExt8to16:
-		return rewriteValueMIPS_OpSignExt8to16_0(v)
 	case OpSignExt8to32:
 		return rewriteValueMIPS_OpSignExt8to32_0(v)
-	case OpSignmask:
-		return rewriteValueMIPS_OpSignmask_0(v)
-	case OpSlicemask:
-		return rewriteValueMIPS_OpSlicemask_0(v)
-	case OpSqrt:
-		return rewriteValueMIPS_OpSqrt_0(v)
-	case OpStaticCall:
-		return rewriteValueMIPS_OpStaticCall_0(v)
-	case OpStore:
-		return rewriteValueMIPS_OpStore_0(v)
-	case OpSub16:
-		return rewriteValueMIPS_OpSub16_0(v)
-	case OpSub32:
-		return rewriteValueMIPS_OpSub32_0(v)
 	case OpSub32F:
 		return rewriteValueMIPS_OpSub32F_0(v)
-	case OpSub32withcarry:
-		return rewriteValueMIPS_OpSub32withcarry_0(v)
-	case OpSub64F:
-		return rewriteValueMIPS_OpSub64F_0(v)
-	case OpSub8:
-		return rewriteValueMIPS_OpSub8_0(v)
-	case OpSubPtr:
-		return rewriteValueMIPS_OpSubPtr_0(v)
-	case OpTrunc16to8:
-		return rewriteValueMIPS_OpTrunc16to8_0(v)
-	case OpTrunc32to16:
-		return rewriteValueMIPS_OpTrunc32to16_0(v)
-	case OpTrunc32to8:
-		return rewriteValueMIPS_OpTrunc32to8_0(v)
-	case OpWB:
-		return rewriteValueMIPS_OpWB_0(v)
-	case OpXor16:
-		return rewriteValueMIPS_OpXor16_0(v)
-	case OpXor32:
-		return rewriteValueMIPS_OpXor32_0(v)
-	case OpXor8:
-		return rewriteValueMIPS_OpXor8_0(v)
-	case OpZero:
-		return rewriteValueMIPS_OpZero_0(v) || rewriteValueMIPS_OpZero_10(v)
-	case OpZeroExt16to32:
-		return rewriteValueMIPS_OpZeroExt16to32_0(v)
-	case OpZeroExt8to16:
-		return rewriteValueMIPS_OpZeroExt8to16_0(v)
-	case OpZeroExt8to32:
-		return rewriteValueMIPS_OpZeroExt8to32_0(v)
 	case OpZeromask:
 		return rewriteValueMIPS_OpZeromask_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_0010(v *Value) bool {
+	switch v.Op {
+	case OpAtomicStore32:
+		return rewriteValueMIPS_OpAtomicStore32_0(v)
+	case OpCtz32NonZero:
+		return rewriteValueMIPS_OpCtz32NonZero_0(v)
+	case OpCvt32to32F:
+		return rewriteValueMIPS_OpCvt32to32F_0(v)
+	case OpEq8:
+		return rewriteValueMIPS_OpEq8_0(v)
+	case OpGeq8:
+		return rewriteValueMIPS_OpGeq8_0(v)
+	case OpLeq32:
+		return rewriteValueMIPS_OpLeq32_0(v)
+	case OpLsh8x8:
+		return rewriteValueMIPS_OpLsh8x8_0(v)
+	case OpMIPSMOVBUreg:
+		return rewriteValueMIPS_OpMIPSMOVBUreg_0(v)
+	case OpMIPSMOVBload:
+		return rewriteValueMIPS_OpMIPSMOVBload_0(v)
+	case OpMIPSMUL:
+		return rewriteValueMIPS_OpMIPSMUL_0(v)
+	case OpMIPSORconst:
+		return rewriteValueMIPS_OpMIPSORconst_0(v)
+	case OpMIPSSGT:
+		return rewriteValueMIPS_OpMIPSSGT_0(v)
+	case OpMod32:
+		return rewriteValueMIPS_OpMod32_0(v)
+	case OpNeg8:
+		return rewriteValueMIPS_OpNeg8_0(v)
+	case OpNeq32F:
+		return rewriteValueMIPS_OpNeq32F_0(v)
+	case OpRotateLeft8:
+		return rewriteValueMIPS_OpRotateLeft8_0(v)
+	case OpRsh8Ux8:
+		return rewriteValueMIPS_OpRsh8Ux8_0(v)
+	case OpRsh8x8:
+		return rewriteValueMIPS_OpRsh8x8_0(v)
+	case OpSlicemask:
+		return rewriteValueMIPS_OpSlicemask_0(v)
+	case OpSub64F:
+		return rewriteValueMIPS_OpSub64F_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_0011(v *Value) bool {
+	switch v.Op {
+	case OpAvg32u:
+		return rewriteValueMIPS_OpAvg32u_0(v)
+	case OpConstNil:
+		return rewriteValueMIPS_OpConstNil_0(v)
+	case OpCvt32to64F:
+		return rewriteValueMIPS_OpCvt32to64F_0(v)
+	case OpEq16:
+		return rewriteValueMIPS_OpEq16_0(v)
+	case OpGeq8U:
+		return rewriteValueMIPS_OpGeq8U_0(v)
+	case OpGetClosurePtr:
+		return rewriteValueMIPS_OpGetClosurePtr_0(v)
+	case OpLeq32U:
+		return rewriteValueMIPS_OpLeq32U_0(v)
+	case OpLoad:
+		return rewriteValueMIPS_OpLoad_0(v)
+	case OpLsh8x16:
+		return rewriteValueMIPS_OpLsh8x16_0(v)
+	case OpMIPSLoweredAtomicStore:
+		return rewriteValueMIPS_OpMIPSLoweredAtomicStore_0(v)
+	case OpMIPSMOVBUload:
+		return rewriteValueMIPS_OpMIPSMOVBUload_0(v)
+	case OpMIPSMOVHreg:
+		return rewriteValueMIPS_OpMIPSMOVHreg_0(v)
+	case OpMIPSSGTconst:
+		return rewriteValueMIPS_OpMIPSSGTconst_0(v) || rewriteValueMIPS_OpMIPSSGTconst_10(v)
+	case OpMIPSXOR:
+		return rewriteValueMIPS_OpMIPSXOR_0(v)
+	case OpMod32u:
+		return rewriteValueMIPS_OpMod32u_0(v)
+	case OpMul8:
+		return rewriteValueMIPS_OpMul8_0(v)
+	case OpNeg16:
+		return rewriteValueMIPS_OpNeg16_0(v)
+	case OpNeq64F:
+		return rewriteValueMIPS_OpNeq64F_0(v)
+	case OpRotateLeft16:
+		return rewriteValueMIPS_OpRotateLeft16_0(v)
+	case OpRsh8Ux16:
+		return rewriteValueMIPS_OpRsh8Ux16_0(v)
+	case OpRsh8x16:
+		return rewriteValueMIPS_OpRsh8x16_0(v)
+	case OpSignExt16to32:
+		return rewriteValueMIPS_OpSignExt16to32_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_0100(v *Value) bool {
+	switch v.Op {
+	case OpAtomicStorePtrNoWB:
+		return rewriteValueMIPS_OpAtomicStorePtrNoWB_0(v)
+	case OpConst8:
+		return rewriteValueMIPS_OpConst8_0(v)
+	case OpEq32:
+		return rewriteValueMIPS_OpEq32_0(v)
+	case OpGeq16:
+		return rewriteValueMIPS_OpGeq16_0(v)
+	case OpGetCallerPC:
+		return rewriteValueMIPS_OpGetCallerPC_0(v)
+	case OpLess8:
+		return rewriteValueMIPS_OpLess8_0(v)
+	case OpLsh8x32:
+		return rewriteValueMIPS_OpLsh8x32_0(v)
+	case OpMIPSMOVHUreg:
+		return rewriteValueMIPS_OpMIPSMOVHUreg_0(v)
+	case OpMIPSMOVHload:
+		return rewriteValueMIPS_OpMIPSMOVHload_0(v)
+	case OpMIPSSGTzero:
+		return rewriteValueMIPS_OpMIPSSGTzero_0(v)
+	case OpMIPSXORconst:
+		return rewriteValueMIPS_OpMIPSXORconst_0(v)
+	case OpMul16:
+		return rewriteValueMIPS_OpMul16_0(v)
+	case OpNeg32:
+		return rewriteValueMIPS_OpNeg32_0(v)
+	case OpRotateLeft32:
+		return rewriteValueMIPS_OpRotateLeft32_0(v)
+	case OpRsh8Ux32:
+		return rewriteValueMIPS_OpRsh8Ux32_0(v)
+	case OpRsh8x32:
+		return rewriteValueMIPS_OpRsh8x32_0(v)
+	case OpStore:
+		return rewriteValueMIPS_OpStore_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_0101(v *Value) bool {
+	switch v.Op {
+	case OpAdd8:
+		return rewriteValueMIPS_OpAdd8_0(v)
+	case OpConst16:
+		return rewriteValueMIPS_OpConst16_0(v)
+	case OpDiv8:
+		return rewriteValueMIPS_OpDiv8_0(v)
+	case OpGeq16U:
+		return rewriteValueMIPS_OpGeq16U_0(v)
+	case OpGetCallerSP:
+		return rewriteValueMIPS_OpGetCallerSP_0(v)
+	case OpLess8U:
+		return rewriteValueMIPS_OpLess8U_0(v)
+	case OpLsh8x64:
+		return rewriteValueMIPS_OpLsh8x64_0(v)
+	case OpMIPSMOVHUload:
+		return rewriteValueMIPS_OpMIPSMOVHUload_0(v)
+	case OpMIPSMOVWreg:
+		return rewriteValueMIPS_OpMIPSMOVWreg_0(v)
+	case OpMIPSNOR:
+		return rewriteValueMIPS_OpMIPSNOR_0(v)
+	case OpMIPSSGTU:
+		return rewriteValueMIPS_OpMIPSSGTU_0(v)
+	case OpMove:
+		return rewriteValueMIPS_OpMove_0(v) || rewriteValueMIPS_OpMove_10(v)
+	case OpMul32:
+		return rewriteValueMIPS_OpMul32_0(v)
+	case OpRotateLeft64:
+		return rewriteValueMIPS_OpRotateLeft64_0(v)
+	case OpRsh8Ux64:
+		return rewriteValueMIPS_OpRsh8Ux64_0(v)
+	case OpRsh8x64:
+		return rewriteValueMIPS_OpRsh8x64_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_0110(v *Value) bool {
+	switch v.Op {
+	case OpAdd16:
+		return rewriteValueMIPS_OpAdd16_0(v)
+	case OpAnd8:
+		return rewriteValueMIPS_OpAnd8_0(v)
+	case OpAtomicExchange32:
+		return rewriteValueMIPS_OpAtomicExchange32_0(v)
+	case OpBitLen32:
+		return rewriteValueMIPS_OpBitLen32_0(v)
+	case OpConst32:
+		return rewriteValueMIPS_OpConst32_0(v)
+	case OpCvt32Fto32:
+		return rewriteValueMIPS_OpCvt32Fto32_0(v)
+	case OpDiv8u:
+		return rewriteValueMIPS_OpDiv8u_0(v)
+	case OpEqPtr:
+		return rewriteValueMIPS_OpEqPtr_0(v)
+	case OpGeq32:
+		return rewriteValueMIPS_OpGeq32_0(v)
+	case OpLeq32F:
+		return rewriteValueMIPS_OpLeq32F_0(v)
+	case OpLess16:
+		return rewriteValueMIPS_OpLess16_0(v)
+	case OpLsh16x8:
+		return rewriteValueMIPS_OpLsh16x8_0(v)
+	case OpMIPSLoweredAtomicAdd:
+		return rewriteValueMIPS_OpMIPSLoweredAtomicAdd_0(v)
+	case OpMIPSMOVWload:
+		return rewriteValueMIPS_OpMIPSMOVWload_0(v)
+	case OpMIPSNORconst:
+		return rewriteValueMIPS_OpMIPSNORconst_0(v)
+	case OpMIPSSGTUconst:
+		return rewriteValueMIPS_OpMIPSSGTUconst_0(v)
+	case OpNeg32F:
+		return rewriteValueMIPS_OpNeg32F_0(v)
+	case OpRsh16Ux8:
+		return rewriteValueMIPS_OpRsh16Ux8_0(v)
+	case OpRsh16x8:
+		return rewriteValueMIPS_OpRsh16x8_0(v)
+	case OpSqrt:
+		return rewriteValueMIPS_OpSqrt_0(v)
+	case OpZero:
+		return rewriteValueMIPS_OpZero_0(v) || rewriteValueMIPS_OpZero_10(v)
+	case OpZeroExt8to16:
+		return rewriteValueMIPS_OpZeroExt8to16_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_0111(v *Value) bool {
+	switch v.Op {
+	case OpAdd32:
+		return rewriteValueMIPS_OpAdd32_0(v)
+	case OpAnd16:
+		return rewriteValueMIPS_OpAnd16_0(v)
+	case OpDiv16:
+		return rewriteValueMIPS_OpDiv16_0(v)
+	case OpGeq32U:
+		return rewriteValueMIPS_OpGeq32U_0(v)
+	case OpLeq64F:
+		return rewriteValueMIPS_OpLeq64F_0(v)
+	case OpLess16U:
+		return rewriteValueMIPS_OpLess16U_0(v)
+	case OpLsh16x16:
+		return rewriteValueMIPS_OpLsh16x16_0(v)
+	case OpMIPSCMOVZ:
+		return rewriteValueMIPS_OpMIPSCMOVZ_0(v)
+	case OpMIPSMOVFload:
+		return rewriteValueMIPS_OpMIPSMOVFload_0(v)
+	case OpMIPSNEG:
+		return rewriteValueMIPS_OpMIPSNEG_0(v)
+	case OpMIPSSGTUzero:
+		return rewriteValueMIPS_OpMIPSSGTUzero_0(v)
+	case OpMul32F:
+		return rewriteValueMIPS_OpMul32F_0(v)
+	case OpNeg64F:
+		return rewriteValueMIPS_OpNeg64F_0(v)
+	case OpOffPtr:
+		return rewriteValueMIPS_OpOffPtr_0(v)
+	case OpRsh16Ux16:
+		return rewriteValueMIPS_OpRsh16Ux16_0(v)
+	case OpRsh16x16:
+		return rewriteValueMIPS_OpRsh16x16_0(v)
+	case OpZeroExt8to32:
+		return rewriteValueMIPS_OpZeroExt8to32_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_1000(v *Value) bool {
+	switch v.Op {
+	case OpAnd32:
+		return rewriteValueMIPS_OpAnd32_0(v)
+	case OpAtomicAdd32:
+		return rewriteValueMIPS_OpAtomicAdd32_0(v)
+	case OpCom8:
+		return rewriteValueMIPS_OpCom8_0(v)
+	case OpConst32F:
+		return rewriteValueMIPS_OpConst32F_0(v)
+	case OpCvt64Fto32:
+		return rewriteValueMIPS_OpCvt64Fto32_0(v)
+	case OpDiv16u:
+		return rewriteValueMIPS_OpDiv16u_0(v)
+	case OpGreater8:
+		return rewriteValueMIPS_OpGreater8_0(v)
+	case OpLess32:
+		return rewriteValueMIPS_OpLess32_0(v)
+	case OpLsh16x32:
+		return rewriteValueMIPS_OpLsh16x32_0(v)
+	case OpMIPSCMOVZzero:
+		return rewriteValueMIPS_OpMIPSCMOVZzero_0(v)
+	case OpMIPSMOVDload:
+		return rewriteValueMIPS_OpMIPSMOVDload_0(v)
+	case OpMul64F:
+		return rewriteValueMIPS_OpMul64F_0(v)
+	case OpRsh16Ux32:
+		return rewriteValueMIPS_OpRsh16Ux32_0(v)
+	case OpRsh16x32:
+		return rewriteValueMIPS_OpRsh16x32_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_1001(v *Value) bool {
+	switch v.Op {
+	case OpAddPtr:
+		return rewriteValueMIPS_OpAddPtr_0(v)
+	case OpCom16:
+		return rewriteValueMIPS_OpCom16_0(v)
+	case OpConst64F:
+		return rewriteValueMIPS_OpConst64F_0(v)
+	case OpDiv32:
+		return rewriteValueMIPS_OpDiv32_0(v)
+	case OpDiv32F:
+		return rewriteValueMIPS_OpDiv32F_0(v)
+	case OpEq32F:
+		return rewriteValueMIPS_OpEq32F_0(v)
+	case OpGreater8U:
+		return rewriteValueMIPS_OpGreater8U_0(v)
+	case OpLess32U:
+		return rewriteValueMIPS_OpLess32U_0(v)
+	case OpLsh16x64:
+		return rewriteValueMIPS_OpLsh16x64_0(v)
+	case OpMIPSMOVBstore:
+		return rewriteValueMIPS_OpMIPSMOVBstore_0(v)
+	case OpRsh16Ux64:
+		return rewriteValueMIPS_OpRsh16Ux64_0(v)
+	case OpRsh16x64:
+		return rewriteValueMIPS_OpRsh16x64_0(v)
+	case OpZeroExt16to32:
+		return rewriteValueMIPS_OpZeroExt16to32_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_1010(v *Value) bool {
+	switch v.Op {
+	case OpAdd32F:
+		return rewriteValueMIPS_OpAdd32F_0(v)
+	case OpAtomicCompareAndSwap32:
+		return rewriteValueMIPS_OpAtomicCompareAndSwap32_0(v)
+	case OpCom32:
+		return rewriteValueMIPS_OpCom32_0(v)
+	case OpCvt32Fto64F:
+		return rewriteValueMIPS_OpCvt32Fto64F_0(v)
+	case OpDiv32u:
+		return rewriteValueMIPS_OpDiv32u_0(v)
+	case OpDiv64F:
+		return rewriteValueMIPS_OpDiv64F_0(v)
+	case OpEq64F:
+		return rewriteValueMIPS_OpEq64F_0(v)
+	case OpGeq32F:
+		return rewriteValueMIPS_OpGeq32F_0(v)
+	case OpGreater16:
+		return rewriteValueMIPS_OpGreater16_0(v)
+	case OpLsh32x8:
+		return rewriteValueMIPS_OpLsh32x8_0(v)
+	case OpMIPSMOVHstore:
+		return rewriteValueMIPS_OpMIPSMOVHstore_0(v)
+	case OpOr8:
+		return rewriteValueMIPS_OpOr8_0(v)
+	case OpRsh32Ux8:
+		return rewriteValueMIPS_OpRsh32Ux8_0(v)
+	case OpRsh32x8:
+		return rewriteValueMIPS_OpRsh32x8_0(v)
+	case OpWB:
+		return rewriteValueMIPS_OpWB_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_1011(v *Value) bool {
+	switch v.Op {
+	case OpAdd32withcarry:
+		return rewriteValueMIPS_OpAdd32withcarry_0(v)
+	case OpAdd64F:
+		return rewriteValueMIPS_OpAdd64F_0(v)
+	case OpCvt64Fto32F:
+		return rewriteValueMIPS_OpCvt64Fto32F_0(v)
+	case OpGeq64F:
+		return rewriteValueMIPS_OpGeq64F_0(v)
+	case OpGreater16U:
+		return rewriteValueMIPS_OpGreater16U_0(v)
+	case OpHmul32:
+		return rewriteValueMIPS_OpHmul32_0(v)
+	case OpLsh32x16:
+		return rewriteValueMIPS_OpLsh32x16_0(v)
+	case OpMIPSMOVWstore:
+		return rewriteValueMIPS_OpMIPSMOVWstore_0(v)
+	case OpMIPSSLL:
+		return rewriteValueMIPS_OpMIPSSLL_0(v)
+	case OpNeq8:
+		return rewriteValueMIPS_OpNeq8_0(v)
+	case OpOr16:
+		return rewriteValueMIPS_OpOr16_0(v)
+	case OpPanicBounds:
+		return rewriteValueMIPS_OpPanicBounds_0(v)
+	case OpRsh32Ux16:
+		return rewriteValueMIPS_OpRsh32Ux16_0(v)
+	case OpRsh32x16:
+		return rewriteValueMIPS_OpRsh32x16_0(v)
+	case OpSelect0:
+		return rewriteValueMIPS_OpSelect0_0(v) || rewriteValueMIPS_OpSelect0_10(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_1100(v *Value) bool {
+	switch v.Op {
+	case OpGreater32:
+		return rewriteValueMIPS_OpGreater32_0(v)
+	case OpHmul32u:
+		return rewriteValueMIPS_OpHmul32u_0(v)
+	case OpLess32F:
+		return rewriteValueMIPS_OpLess32F_0(v)
+	case OpLsh32x32:
+		return rewriteValueMIPS_OpLsh32x32_0(v)
+	case OpMIPSMOVFstore:
+		return rewriteValueMIPS_OpMIPSMOVFstore_0(v)
+	case OpMIPSSLLconst:
+		return rewriteValueMIPS_OpMIPSSLLconst_0(v)
+	case OpNeq16:
+		return rewriteValueMIPS_OpNeq16_0(v)
+	case OpOr32:
+		return rewriteValueMIPS_OpOr32_0(v)
+	case OpPanicExtend:
+		return rewriteValueMIPS_OpPanicExtend_0(v)
+	case OpRound32F:
+		return rewriteValueMIPS_OpRound32F_0(v)
+	case OpRsh32Ux32:
+		return rewriteValueMIPS_OpRsh32Ux32_0(v)
+	case OpRsh32x32:
+		return rewriteValueMIPS_OpRsh32x32_0(v)
+	case OpSelect1:
+		return rewriteValueMIPS_OpSelect1_0(v) || rewriteValueMIPS_OpSelect1_10(v)
+	case OpSub8:
+		return rewriteValueMIPS_OpSub8_0(v)
+	case OpTrunc16to8:
+		return rewriteValueMIPS_OpTrunc16to8_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_1101(v *Value) bool {
+	switch v.Op {
+	case OpAndB:
+		return rewriteValueMIPS_OpAndB_0(v)
+	case OpAtomicAnd8:
+		return rewriteValueMIPS_OpAtomicAnd8_0(v)
+	case OpClosureCall:
+		return rewriteValueMIPS_OpClosureCall_0(v)
+	case OpGreater32U:
+		return rewriteValueMIPS_OpGreater32U_0(v)
+	case OpLess64F:
+		return rewriteValueMIPS_OpLess64F_0(v)
+	case OpLsh32x64:
+		return rewriteValueMIPS_OpLsh32x64_0(v)
+	case OpMIPSMOVDstore:
+		return rewriteValueMIPS_OpMIPSMOVDstore_0(v)
+	case OpMIPSSRL:
+		return rewriteValueMIPS_OpMIPSSRL_0(v)
+	case OpNeq32:
+		return rewriteValueMIPS_OpNeq32_0(v)
+	case OpRound64F:
+		return rewriteValueMIPS_OpRound64F_0(v)
+	case OpRsh32Ux64:
+		return rewriteValueMIPS_OpRsh32Ux64_0(v)
+	case OpRsh32x64:
+		return rewriteValueMIPS_OpRsh32x64_0(v)
+	case OpSub16:
+		return rewriteValueMIPS_OpSub16_0(v)
+	case OpSub32withcarry:
+		return rewriteValueMIPS_OpSub32withcarry_0(v)
+	case OpTrunc32to8:
+		return rewriteValueMIPS_OpTrunc32to8_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_1110(v *Value) bool {
+	switch v.Op {
+	case OpAddr:
+		return rewriteValueMIPS_OpAddr_0(v)
+	case OpAtomicLoad32:
+		return rewriteValueMIPS_OpAtomicLoad32_0(v)
+	case OpAtomicOr8:
+		return rewriteValueMIPS_OpAtomicOr8_0(v)
+	case OpCtz32:
+		return rewriteValueMIPS_OpCtz32_0(v)
+	case OpIsNonNil:
+		return rewriteValueMIPS_OpIsNonNil_0(v)
+	case OpLeq8:
+		return rewriteValueMIPS_OpLeq8_0(v)
+	case OpMIPSADD:
+		return rewriteValueMIPS_OpMIPSADD_0(v)
+	case OpMIPSMOVBstorezero:
+		return rewriteValueMIPS_OpMIPSMOVBstorezero_0(v)
+	case OpMIPSSRLconst:
+		return rewriteValueMIPS_OpMIPSSRLconst_0(v)
+	case OpMod8:
+		return rewriteValueMIPS_OpMod8_0(v)
+	case OpOrB:
+		return rewriteValueMIPS_OpOrB_0(v)
+	case OpStaticCall:
+		return rewriteValueMIPS_OpStaticCall_0(v)
+	case OpSub32:
+		return rewriteValueMIPS_OpSub32_0(v)
+	case OpTrunc32to16:
+		return rewriteValueMIPS_OpTrunc32to16_0(v)
+	case OpXor8:
+		return rewriteValueMIPS_OpXor8_0(v)
+	}
+	return false
+}
+func rewriteValueMIPS_shard_1111(v *Value) bool {
+	switch v.Op {
+	case OpEqB:
+		return rewriteValueMIPS_OpEqB_0(v)
+	case OpInterCall:
+		return rewriteValueMIPS_OpInterCall_0(v)
+	case OpIsInBounds:
+		return rewriteValueMIPS_OpIsInBounds_0(v)
+	case OpLeq8U:
+		return rewriteValueMIPS_OpLeq8U_0(v)
+	case OpLocalAddr:
+		return rewriteValueMIPS_OpLocalAddr_0(v)
+	case OpMIPSADDconst:
+		return rewriteValueMIPS_OpMIPSADDconst_0(v)
+	case OpMIPSAND:
+		return rewriteValueMIPS_OpMIPSAND_0(v)
+	case OpMIPSMOVHstorezero:
+		return rewriteValueMIPS_OpMIPSMOVHstorezero_0(v)
+	case OpMIPSSRA:
+		return rewriteValueMIPS_OpMIPSSRA_0(v)
+	case OpMod8u:
+		return rewriteValueMIPS_OpMod8u_0(v)
+	case OpMul32uhilo:
+		return rewriteValueMIPS_OpMul32uhilo_0(v)
+	case OpNeqPtr:
+		return rewriteValueMIPS_OpNeqPtr_0(v)
+	case OpXor16:
+		return rewriteValueMIPS_OpXor16_0(v)
 	}
 	return false
 }

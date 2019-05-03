@@ -59,6 +59,8 @@ type opData struct {
 	scale             uint8  // amd64/386 indexed load scale
 }
 
+var op2int = map[string]int{} // map from OpXYZ to its concrete integer value
+
 type blockData struct {
 	name string
 }
@@ -141,13 +143,17 @@ func genOp() {
 	// generate Op* declarations
 	fmt.Fprintln(w, "const (")
 	fmt.Fprintln(w, "OpInvalid Op = iota") // make sure OpInvalid is 0.
+	var c int
 	for _, a := range archs {
 		fmt.Fprintln(w)
 		for _, v := range a.ops {
+			c++
 			if v.name == "Invalid" {
 				continue
 			}
-			fmt.Fprintf(w, "Op%s%s\n", a.Name(), v.name)
+			opname := "Op" + a.Name() + v.name
+			op2int[opname] = c
+			fmt.Fprintln(w, opname)
 		}
 	}
 	fmt.Fprintln(w, ")")

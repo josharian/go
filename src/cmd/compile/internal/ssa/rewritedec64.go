@@ -16,123 +16,222 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValuedec64(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValuedec64_shards[shard](v)
+}
+
+var rewriteValuedec64_shards = [...]func(v *Value) bool{
+	0:  rewriteValuedec64_shard_0000,
+	1:  rewriteValuedec64_shard_0001,
+	2:  rewriteValuedec64_shard_0010,
+	3:  rewriteValuedec64_shard_0011,
+	4:  rewriteValuedec64_shard_0100,
+	5:  rewriteValuedec64_shard_0101,
+	6:  rewriteValuedec64_shard_0110,
+	7:  rewriteValuedec64_shard_0111,
+	8:  rewriteValuedec64_shard_1000,
+	9:  rewriteValuedec64_shard_1001,
+	10: rewriteValuedec64_shard_1010,
+	11: rewriteValuedec64_shard_1011,
+	12: rewriteValuedec64_shard_1100,
+	13: rewriteValuedec64_shard_1101,
+	14: rewriteValuedec64_shard_1110,
+	15: rewriteValuedec64_shard_1111,
+}
+
+func rewriteValuedec64_shard_0000(v *Value) bool {
 	switch v.Op {
-	case OpAdd64:
-		return rewriteValuedec64_OpAdd64_0(v)
-	case OpAnd64:
-		return rewriteValuedec64_OpAnd64_0(v)
-	case OpArg:
-		return rewriteValuedec64_OpArg_0(v)
-	case OpBitLen64:
-		return rewriteValuedec64_OpBitLen64_0(v)
-	case OpBswap64:
-		return rewriteValuedec64_OpBswap64_0(v)
-	case OpCom64:
-		return rewriteValuedec64_OpCom64_0(v)
-	case OpConst64:
-		return rewriteValuedec64_OpConst64_0(v)
-	case OpCtz64:
-		return rewriteValuedec64_OpCtz64_0(v)
-	case OpCtz64NonZero:
-		return rewriteValuedec64_OpCtz64NonZero_0(v)
-	case OpEq64:
-		return rewriteValuedec64_OpEq64_0(v)
-	case OpGeq64:
-		return rewriteValuedec64_OpGeq64_0(v)
-	case OpGeq64U:
-		return rewriteValuedec64_OpGeq64U_0(v)
-	case OpGreater64:
-		return rewriteValuedec64_OpGreater64_0(v)
-	case OpGreater64U:
-		return rewriteValuedec64_OpGreater64U_0(v)
-	case OpInt64Hi:
-		return rewriteValuedec64_OpInt64Hi_0(v)
-	case OpInt64Lo:
-		return rewriteValuedec64_OpInt64Lo_0(v)
-	case OpLeq64:
-		return rewriteValuedec64_OpLeq64_0(v)
-	case OpLeq64U:
-		return rewriteValuedec64_OpLeq64U_0(v)
-	case OpLess64:
-		return rewriteValuedec64_OpLess64_0(v)
-	case OpLess64U:
-		return rewriteValuedec64_OpLess64U_0(v)
-	case OpLoad:
-		return rewriteValuedec64_OpLoad_0(v)
-	case OpLsh16x64:
-		return rewriteValuedec64_OpLsh16x64_0(v)
-	case OpLsh32x64:
-		return rewriteValuedec64_OpLsh32x64_0(v)
-	case OpLsh64x16:
-		return rewriteValuedec64_OpLsh64x16_0(v)
 	case OpLsh64x32:
 		return rewriteValuedec64_OpLsh64x32_0(v)
-	case OpLsh64x64:
-		return rewriteValuedec64_OpLsh64x64_0(v)
-	case OpLsh64x8:
-		return rewriteValuedec64_OpLsh64x8_0(v)
-	case OpLsh8x64:
-		return rewriteValuedec64_OpLsh8x64_0(v)
-	case OpMul64:
-		return rewriteValuedec64_OpMul64_0(v)
-	case OpNeg64:
-		return rewriteValuedec64_OpNeg64_0(v)
-	case OpNeq64:
-		return rewriteValuedec64_OpNeq64_0(v)
-	case OpOr64:
-		return rewriteValuedec64_OpOr64_0(v)
-	case OpRsh16Ux64:
-		return rewriteValuedec64_OpRsh16Ux64_0(v)
-	case OpRsh16x64:
-		return rewriteValuedec64_OpRsh16x64_0(v)
-	case OpRsh32Ux64:
-		return rewriteValuedec64_OpRsh32Ux64_0(v)
-	case OpRsh32x64:
-		return rewriteValuedec64_OpRsh32x64_0(v)
-	case OpRsh64Ux16:
-		return rewriteValuedec64_OpRsh64Ux16_0(v)
 	case OpRsh64Ux32:
 		return rewriteValuedec64_OpRsh64Ux32_0(v)
-	case OpRsh64Ux64:
-		return rewriteValuedec64_OpRsh64Ux64_0(v)
-	case OpRsh64Ux8:
-		return rewriteValuedec64_OpRsh64Ux8_0(v)
-	case OpRsh64x16:
-		return rewriteValuedec64_OpRsh64x16_0(v)
 	case OpRsh64x32:
 		return rewriteValuedec64_OpRsh64x32_0(v)
+	case OpTrunc64to16:
+		return rewriteValuedec64_OpTrunc64to16_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_0001(v *Value) bool {
+	switch v.Op {
+	case OpLsh64x64:
+		return rewriteValuedec64_OpLsh64x64_0(v)
+	case OpRsh64Ux64:
+		return rewriteValuedec64_OpRsh64Ux64_0(v)
 	case OpRsh64x64:
 		return rewriteValuedec64_OpRsh64x64_0(v)
-	case OpRsh64x8:
-		return rewriteValuedec64_OpRsh64x8_0(v)
+	case OpTrunc64to32:
+		return rewriteValuedec64_OpTrunc64to32_0(v)
+	case OpXor64:
+		return rewriteValuedec64_OpXor64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_0010(v *Value) bool {
+	switch v.Op {
+	case OpSignExt8to64:
+		return rewriteValuedec64_OpSignExt8to64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_0011(v *Value) bool {
+	switch v.Op {
+	case OpCtz64NonZero:
+		return rewriteValuedec64_OpCtz64NonZero_0(v)
+	case OpLoad:
+		return rewriteValuedec64_OpLoad_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_0100(v *Value) bool {
+	switch v.Op {
+	case OpLeq64:
+		return rewriteValuedec64_OpLeq64_0(v)
+	case OpSignExt16to64:
+		return rewriteValuedec64_OpSignExt16to64_0(v)
+	case OpStore:
+		return rewriteValuedec64_OpStore_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_0101(v *Value) bool {
+	switch v.Op {
+	case OpEq64:
+		return rewriteValuedec64_OpEq64_0(v)
+	case OpLeq64U:
+		return rewriteValuedec64_OpLeq64U_0(v)
+	case OpLsh8x64:
+		return rewriteValuedec64_OpLsh8x64_0(v)
+	case OpNeg64:
+		return rewriteValuedec64_OpNeg64_0(v)
 	case OpRsh8Ux64:
 		return rewriteValuedec64_OpRsh8Ux64_0(v)
 	case OpRsh8x64:
 		return rewriteValuedec64_OpRsh8x64_0(v)
-	case OpSignExt16to64:
-		return rewriteValuedec64_OpSignExt16to64_0(v)
 	case OpSignExt32to64:
 		return rewriteValuedec64_OpSignExt32to64_0(v)
-	case OpSignExt8to64:
-		return rewriteValuedec64_OpSignExt8to64_0(v)
-	case OpStore:
-		return rewriteValuedec64_OpStore_0(v)
-	case OpSub64:
-		return rewriteValuedec64_OpSub64_0(v)
-	case OpTrunc64to16:
-		return rewriteValuedec64_OpTrunc64to16_0(v)
-	case OpTrunc64to32:
-		return rewriteValuedec64_OpTrunc64to32_0(v)
-	case OpTrunc64to8:
-		return rewriteValuedec64_OpTrunc64to8_0(v)
-	case OpXor64:
-		return rewriteValuedec64_OpXor64_0(v)
-	case OpZeroExt16to64:
-		return rewriteValuedec64_OpZeroExt16to64_0(v)
-	case OpZeroExt32to64:
-		return rewriteValuedec64_OpZeroExt32to64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_0110(v *Value) bool {
+	switch v.Op {
+	case OpMul64:
+		return rewriteValuedec64_OpMul64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_0111(v *Value) bool {
+	switch v.Op {
+	case OpBitLen64:
+		return rewriteValuedec64_OpBitLen64_0(v)
+	case OpConst64:
+		return rewriteValuedec64_OpConst64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_1000(v *Value) bool {
+	switch v.Op {
+	case OpAdd64:
+		return rewriteValuedec64_OpAdd64_0(v)
+	case OpGeq64:
+		return rewriteValuedec64_OpGeq64_0(v)
+	case OpInt64Hi:
+		return rewriteValuedec64_OpInt64Hi_0(v)
 	case OpZeroExt8to64:
 		return rewriteValuedec64_OpZeroExt8to64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_1001(v *Value) bool {
+	switch v.Op {
+	case OpAnd64:
+		return rewriteValuedec64_OpAnd64_0(v)
+	case OpBswap64:
+		return rewriteValuedec64_OpBswap64_0(v)
+	case OpGeq64U:
+		return rewriteValuedec64_OpGeq64U_0(v)
+	case OpInt64Lo:
+		return rewriteValuedec64_OpInt64Lo_0(v)
+	case OpLsh16x64:
+		return rewriteValuedec64_OpLsh16x64_0(v)
+	case OpRsh16Ux64:
+		return rewriteValuedec64_OpRsh16Ux64_0(v)
+	case OpRsh16x64:
+		return rewriteValuedec64_OpRsh16x64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_1010(v *Value) bool {
+	switch v.Op {
+	case OpLess64:
+		return rewriteValuedec64_OpLess64_0(v)
+	case OpZeroExt16to64:
+		return rewriteValuedec64_OpZeroExt16to64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_1011(v *Value) bool {
+	switch v.Op {
+	case OpCom64:
+		return rewriteValuedec64_OpCom64_0(v)
+	case OpLess64U:
+		return rewriteValuedec64_OpLess64U_0(v)
+	case OpZeroExt32to64:
+		return rewriteValuedec64_OpZeroExt32to64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_1100(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedec64_shard_1101(v *Value) bool {
+	switch v.Op {
+	case OpArg:
+		return rewriteValuedec64_OpArg_0(v)
+	case OpLsh32x64:
+		return rewriteValuedec64_OpLsh32x64_0(v)
+	case OpOr64:
+		return rewriteValuedec64_OpOr64_0(v)
+	case OpRsh32Ux64:
+		return rewriteValuedec64_OpRsh32Ux64_0(v)
+	case OpRsh32x64:
+		return rewriteValuedec64_OpRsh32x64_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_1110(v *Value) bool {
+	switch v.Op {
+	case OpGreater64:
+		return rewriteValuedec64_OpGreater64_0(v)
+	case OpLsh64x8:
+		return rewriteValuedec64_OpLsh64x8_0(v)
+	case OpNeq64:
+		return rewriteValuedec64_OpNeq64_0(v)
+	case OpRsh64Ux8:
+		return rewriteValuedec64_OpRsh64Ux8_0(v)
+	case OpRsh64x8:
+		return rewriteValuedec64_OpRsh64x8_0(v)
+	}
+	return false
+}
+func rewriteValuedec64_shard_1111(v *Value) bool {
+	switch v.Op {
+	case OpCtz64:
+		return rewriteValuedec64_OpCtz64_0(v)
+	case OpGreater64U:
+		return rewriteValuedec64_OpGreater64U_0(v)
+	case OpLsh64x16:
+		return rewriteValuedec64_OpLsh64x16_0(v)
+	case OpRsh64Ux16:
+		return rewriteValuedec64_OpRsh64Ux16_0(v)
+	case OpRsh64x16:
+		return rewriteValuedec64_OpRsh64x16_0(v)
+	case OpSub64:
+		return rewriteValuedec64_OpSub64_0(v)
+	case OpTrunc64to8:
+		return rewriteValuedec64_OpTrunc64to8_0(v)
 	}
 	return false
 }

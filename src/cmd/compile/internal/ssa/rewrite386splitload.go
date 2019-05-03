@@ -16,19 +16,118 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValue386splitload(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValue386splitload_shards[shard](v)
+}
+
+var rewriteValue386splitload_shards = [...]func(v *Value) bool{
+	0:  rewriteValue386splitload_shard_0000,
+	1:  rewriteValue386splitload_shard_0001,
+	2:  rewriteValue386splitload_shard_0010,
+	3:  rewriteValue386splitload_shard_0011,
+	4:  rewriteValue386splitload_shard_0100,
+	5:  rewriteValue386splitload_shard_0101,
+	6:  rewriteValue386splitload_shard_0110,
+	7:  rewriteValue386splitload_shard_0111,
+	8:  rewriteValue386splitload_shard_1000,
+	9:  rewriteValue386splitload_shard_1001,
+	10: rewriteValue386splitload_shard_1010,
+	11: rewriteValue386splitload_shard_1011,
+	12: rewriteValue386splitload_shard_1100,
+	13: rewriteValue386splitload_shard_1101,
+	14: rewriteValue386splitload_shard_1110,
+	15: rewriteValue386splitload_shard_1111,
+}
+
+func rewriteValue386splitload_shard_0000(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_0001(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_0010(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_0011(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_0100(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_0101(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_0110(v *Value) bool {
+	switch v.Op {
+	case Op386CMPLload:
+		return rewriteValue386splitload_Op386CMPLload_0(v)
+	}
+	return false
+}
+func rewriteValue386splitload_shard_0111(v *Value) bool {
+	switch v.Op {
+	case Op386CMPWload:
+		return rewriteValue386splitload_Op386CMPWload_0(v)
+	}
+	return false
+}
+func rewriteValue386splitload_shard_1000(v *Value) bool {
+	switch v.Op {
+	case Op386CMPBload:
+		return rewriteValue386splitload_Op386CMPBload_0(v)
+	}
+	return false
+}
+func rewriteValue386splitload_shard_1001(v *Value) bool {
+	switch v.Op {
+	case Op386CMPLconstload:
+		return rewriteValue386splitload_Op386CMPLconstload_0(v)
+	}
+	return false
+}
+func rewriteValue386splitload_shard_1010(v *Value) bool {
+	switch v.Op {
+	case Op386CMPWconstload:
+		return rewriteValue386splitload_Op386CMPWconstload_0(v)
+	}
+	return false
+}
+func rewriteValue386splitload_shard_1011(v *Value) bool {
 	switch v.Op {
 	case Op386CMPBconstload:
 		return rewriteValue386splitload_Op386CMPBconstload_0(v)
-	case Op386CMPBload:
-		return rewriteValue386splitload_Op386CMPBload_0(v)
-	case Op386CMPLconstload:
-		return rewriteValue386splitload_Op386CMPLconstload_0(v)
-	case Op386CMPLload:
-		return rewriteValue386splitload_Op386CMPLload_0(v)
-	case Op386CMPWconstload:
-		return rewriteValue386splitload_Op386CMPWconstload_0(v)
-	case Op386CMPWload:
-		return rewriteValue386splitload_Op386CMPWload_0(v)
+	}
+	return false
+}
+func rewriteValue386splitload_shard_1100(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_1101(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_1110(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValue386splitload_shard_1111(v *Value) bool {
+	switch v.Op {
 	}
 	return false
 }

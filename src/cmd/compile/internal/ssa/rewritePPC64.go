@@ -16,701 +16,800 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValuePPC64(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValuePPC64_shards[shard](v)
+}
+
+var rewriteValuePPC64_shards = [...]func(v *Value) bool{
+	0:  rewriteValuePPC64_shard_0000,
+	1:  rewriteValuePPC64_shard_0001,
+	2:  rewriteValuePPC64_shard_0010,
+	3:  rewriteValuePPC64_shard_0011,
+	4:  rewriteValuePPC64_shard_0100,
+	5:  rewriteValuePPC64_shard_0101,
+	6:  rewriteValuePPC64_shard_0110,
+	7:  rewriteValuePPC64_shard_0111,
+	8:  rewriteValuePPC64_shard_1000,
+	9:  rewriteValuePPC64_shard_1001,
+	10: rewriteValuePPC64_shard_1010,
+	11: rewriteValuePPC64_shard_1011,
+	12: rewriteValuePPC64_shard_1100,
+	13: rewriteValuePPC64_shard_1101,
+	14: rewriteValuePPC64_shard_1110,
+	15: rewriteValuePPC64_shard_1111,
+}
+
+func rewriteValuePPC64_shard_0000(v *Value) bool {
 	switch v.Op {
-	case OpAbs:
-		return rewriteValuePPC64_OpAbs_0(v)
-	case OpAdd16:
-		return rewriteValuePPC64_OpAdd16_0(v)
-	case OpAdd32:
-		return rewriteValuePPC64_OpAdd32_0(v)
-	case OpAdd32F:
-		return rewriteValuePPC64_OpAdd32F_0(v)
-	case OpAdd64:
-		return rewriteValuePPC64_OpAdd64_0(v)
-	case OpAdd64F:
-		return rewriteValuePPC64_OpAdd64F_0(v)
-	case OpAdd64carry:
-		return rewriteValuePPC64_OpAdd64carry_0(v)
-	case OpAdd8:
-		return rewriteValuePPC64_OpAdd8_0(v)
-	case OpAddPtr:
-		return rewriteValuePPC64_OpAddPtr_0(v)
-	case OpAddr:
-		return rewriteValuePPC64_OpAddr_0(v)
-	case OpAnd16:
-		return rewriteValuePPC64_OpAnd16_0(v)
-	case OpAnd32:
-		return rewriteValuePPC64_OpAnd32_0(v)
-	case OpAnd64:
-		return rewriteValuePPC64_OpAnd64_0(v)
-	case OpAnd8:
-		return rewriteValuePPC64_OpAnd8_0(v)
-	case OpAndB:
-		return rewriteValuePPC64_OpAndB_0(v)
-	case OpAtomicAdd32:
-		return rewriteValuePPC64_OpAtomicAdd32_0(v)
-	case OpAtomicAdd64:
-		return rewriteValuePPC64_OpAtomicAdd64_0(v)
-	case OpAtomicAnd8:
-		return rewriteValuePPC64_OpAtomicAnd8_0(v)
-	case OpAtomicCompareAndSwap32:
-		return rewriteValuePPC64_OpAtomicCompareAndSwap32_0(v)
-	case OpAtomicCompareAndSwap64:
-		return rewriteValuePPC64_OpAtomicCompareAndSwap64_0(v)
-	case OpAtomicCompareAndSwapRel32:
-		return rewriteValuePPC64_OpAtomicCompareAndSwapRel32_0(v)
-	case OpAtomicExchange32:
-		return rewriteValuePPC64_OpAtomicExchange32_0(v)
-	case OpAtomicExchange64:
-		return rewriteValuePPC64_OpAtomicExchange64_0(v)
-	case OpAtomicLoad32:
-		return rewriteValuePPC64_OpAtomicLoad32_0(v)
-	case OpAtomicLoad64:
-		return rewriteValuePPC64_OpAtomicLoad64_0(v)
-	case OpAtomicLoad8:
-		return rewriteValuePPC64_OpAtomicLoad8_0(v)
-	case OpAtomicLoadAcq32:
-		return rewriteValuePPC64_OpAtomicLoadAcq32_0(v)
 	case OpAtomicLoadPtr:
 		return rewriteValuePPC64_OpAtomicLoadPtr_0(v)
-	case OpAtomicOr8:
-		return rewriteValuePPC64_OpAtomicOr8_0(v)
-	case OpAtomicStore32:
-		return rewriteValuePPC64_OpAtomicStore32_0(v)
-	case OpAtomicStore64:
-		return rewriteValuePPC64_OpAtomicStore64_0(v)
-	case OpAtomicStoreRel32:
-		return rewriteValuePPC64_OpAtomicStoreRel32_0(v)
-	case OpAvg64u:
-		return rewriteValuePPC64_OpAvg64u_0(v)
-	case OpBitLen32:
-		return rewriteValuePPC64_OpBitLen32_0(v)
-	case OpBitLen64:
-		return rewriteValuePPC64_OpBitLen64_0(v)
-	case OpCeil:
-		return rewriteValuePPC64_OpCeil_0(v)
-	case OpClosureCall:
-		return rewriteValuePPC64_OpClosureCall_0(v)
-	case OpCom16:
-		return rewriteValuePPC64_OpCom16_0(v)
-	case OpCom32:
-		return rewriteValuePPC64_OpCom32_0(v)
-	case OpCom64:
-		return rewriteValuePPC64_OpCom64_0(v)
-	case OpCom8:
-		return rewriteValuePPC64_OpCom8_0(v)
-	case OpConst16:
-		return rewriteValuePPC64_OpConst16_0(v)
-	case OpConst32:
-		return rewriteValuePPC64_OpConst32_0(v)
-	case OpConst32F:
-		return rewriteValuePPC64_OpConst32F_0(v)
-	case OpConst64:
-		return rewriteValuePPC64_OpConst64_0(v)
-	case OpConst64F:
-		return rewriteValuePPC64_OpConst64F_0(v)
-	case OpConst8:
-		return rewriteValuePPC64_OpConst8_0(v)
-	case OpConstBool:
-		return rewriteValuePPC64_OpConstBool_0(v)
-	case OpConstNil:
-		return rewriteValuePPC64_OpConstNil_0(v)
-	case OpCopysign:
-		return rewriteValuePPC64_OpCopysign_0(v)
-	case OpCtz16:
-		return rewriteValuePPC64_OpCtz16_0(v)
-	case OpCtz32:
-		return rewriteValuePPC64_OpCtz32_0(v)
-	case OpCtz32NonZero:
-		return rewriteValuePPC64_OpCtz32NonZero_0(v)
-	case OpCtz64:
-		return rewriteValuePPC64_OpCtz64_0(v)
-	case OpCtz64NonZero:
-		return rewriteValuePPC64_OpCtz64NonZero_0(v)
-	case OpCtz8:
-		return rewriteValuePPC64_OpCtz8_0(v)
-	case OpCvt32Fto32:
-		return rewriteValuePPC64_OpCvt32Fto32_0(v)
-	case OpCvt32Fto64:
-		return rewriteValuePPC64_OpCvt32Fto64_0(v)
-	case OpCvt32Fto64F:
-		return rewriteValuePPC64_OpCvt32Fto64F_0(v)
-	case OpCvt32to32F:
-		return rewriteValuePPC64_OpCvt32to32F_0(v)
-	case OpCvt32to64F:
-		return rewriteValuePPC64_OpCvt32to64F_0(v)
-	case OpCvt64Fto32:
-		return rewriteValuePPC64_OpCvt64Fto32_0(v)
-	case OpCvt64Fto32F:
-		return rewriteValuePPC64_OpCvt64Fto32F_0(v)
-	case OpCvt64Fto64:
-		return rewriteValuePPC64_OpCvt64Fto64_0(v)
-	case OpCvt64to32F:
-		return rewriteValuePPC64_OpCvt64to32F_0(v)
-	case OpCvt64to64F:
-		return rewriteValuePPC64_OpCvt64to64F_0(v)
-	case OpDiv16:
-		return rewriteValuePPC64_OpDiv16_0(v)
-	case OpDiv16u:
-		return rewriteValuePPC64_OpDiv16u_0(v)
-	case OpDiv32:
-		return rewriteValuePPC64_OpDiv32_0(v)
-	case OpDiv32F:
-		return rewriteValuePPC64_OpDiv32F_0(v)
-	case OpDiv32u:
-		return rewriteValuePPC64_OpDiv32u_0(v)
-	case OpDiv64:
-		return rewriteValuePPC64_OpDiv64_0(v)
-	case OpDiv64F:
-		return rewriteValuePPC64_OpDiv64F_0(v)
-	case OpDiv64u:
-		return rewriteValuePPC64_OpDiv64u_0(v)
-	case OpDiv8:
-		return rewriteValuePPC64_OpDiv8_0(v)
-	case OpDiv8u:
-		return rewriteValuePPC64_OpDiv8u_0(v)
-	case OpEq16:
-		return rewriteValuePPC64_OpEq16_0(v)
-	case OpEq32:
-		return rewriteValuePPC64_OpEq32_0(v)
-	case OpEq32F:
-		return rewriteValuePPC64_OpEq32F_0(v)
-	case OpEq64:
-		return rewriteValuePPC64_OpEq64_0(v)
-	case OpEq64F:
-		return rewriteValuePPC64_OpEq64F_0(v)
-	case OpEq8:
-		return rewriteValuePPC64_OpEq8_0(v)
-	case OpEqB:
-		return rewriteValuePPC64_OpEqB_0(v)
-	case OpEqPtr:
-		return rewriteValuePPC64_OpEqPtr_0(v)
-	case OpFloor:
-		return rewriteValuePPC64_OpFloor_0(v)
-	case OpGeq16:
-		return rewriteValuePPC64_OpGeq16_0(v)
-	case OpGeq16U:
-		return rewriteValuePPC64_OpGeq16U_0(v)
-	case OpGeq32:
-		return rewriteValuePPC64_OpGeq32_0(v)
-	case OpGeq32F:
-		return rewriteValuePPC64_OpGeq32F_0(v)
-	case OpGeq32U:
-		return rewriteValuePPC64_OpGeq32U_0(v)
-	case OpGeq64:
-		return rewriteValuePPC64_OpGeq64_0(v)
-	case OpGeq64F:
-		return rewriteValuePPC64_OpGeq64F_0(v)
-	case OpGeq64U:
-		return rewriteValuePPC64_OpGeq64U_0(v)
-	case OpGeq8:
-		return rewriteValuePPC64_OpGeq8_0(v)
-	case OpGeq8U:
-		return rewriteValuePPC64_OpGeq8U_0(v)
-	case OpGetCallerPC:
-		return rewriteValuePPC64_OpGetCallerPC_0(v)
-	case OpGetCallerSP:
-		return rewriteValuePPC64_OpGetCallerSP_0(v)
-	case OpGetClosurePtr:
-		return rewriteValuePPC64_OpGetClosurePtr_0(v)
-	case OpGreater16:
-		return rewriteValuePPC64_OpGreater16_0(v)
-	case OpGreater16U:
-		return rewriteValuePPC64_OpGreater16U_0(v)
-	case OpGreater32:
-		return rewriteValuePPC64_OpGreater32_0(v)
 	case OpGreater32F:
 		return rewriteValuePPC64_OpGreater32F_0(v)
-	case OpGreater32U:
-		return rewriteValuePPC64_OpGreater32U_0(v)
-	case OpGreater64:
-		return rewriteValuePPC64_OpGreater64_0(v)
-	case OpGreater64F:
-		return rewriteValuePPC64_OpGreater64F_0(v)
-	case OpGreater64U:
-		return rewriteValuePPC64_OpGreater64U_0(v)
-	case OpGreater8:
-		return rewriteValuePPC64_OpGreater8_0(v)
-	case OpGreater8U:
-		return rewriteValuePPC64_OpGreater8U_0(v)
-	case OpHmul32:
-		return rewriteValuePPC64_OpHmul32_0(v)
-	case OpHmul32u:
-		return rewriteValuePPC64_OpHmul32u_0(v)
-	case OpHmul64:
-		return rewriteValuePPC64_OpHmul64_0(v)
-	case OpHmul64u:
-		return rewriteValuePPC64_OpHmul64u_0(v)
-	case OpInterCall:
-		return rewriteValuePPC64_OpInterCall_0(v)
-	case OpIsInBounds:
-		return rewriteValuePPC64_OpIsInBounds_0(v)
-	case OpIsNonNil:
-		return rewriteValuePPC64_OpIsNonNil_0(v)
 	case OpIsSliceInBounds:
 		return rewriteValuePPC64_OpIsSliceInBounds_0(v)
 	case OpLeq16:
 		return rewriteValuePPC64_OpLeq16_0(v)
-	case OpLeq16U:
-		return rewriteValuePPC64_OpLeq16U_0(v)
-	case OpLeq32:
-		return rewriteValuePPC64_OpLeq32_0(v)
-	case OpLeq32F:
-		return rewriteValuePPC64_OpLeq32F_0(v)
-	case OpLeq32U:
-		return rewriteValuePPC64_OpLeq32U_0(v)
-	case OpLeq64:
-		return rewriteValuePPC64_OpLeq64_0(v)
-	case OpLeq64F:
-		return rewriteValuePPC64_OpLeq64F_0(v)
-	case OpLeq64U:
-		return rewriteValuePPC64_OpLeq64U_0(v)
-	case OpLeq8:
-		return rewriteValuePPC64_OpLeq8_0(v)
-	case OpLeq8U:
-		return rewriteValuePPC64_OpLeq8U_0(v)
-	case OpLess16:
-		return rewriteValuePPC64_OpLess16_0(v)
-	case OpLess16U:
-		return rewriteValuePPC64_OpLess16U_0(v)
-	case OpLess32:
-		return rewriteValuePPC64_OpLess32_0(v)
-	case OpLess32F:
-		return rewriteValuePPC64_OpLess32F_0(v)
-	case OpLess32U:
-		return rewriteValuePPC64_OpLess32U_0(v)
-	case OpLess64:
-		return rewriteValuePPC64_OpLess64_0(v)
-	case OpLess64F:
-		return rewriteValuePPC64_OpLess64F_0(v)
-	case OpLess64U:
-		return rewriteValuePPC64_OpLess64U_0(v)
-	case OpLess8:
-		return rewriteValuePPC64_OpLess8_0(v)
-	case OpLess8U:
-		return rewriteValuePPC64_OpLess8U_0(v)
-	case OpLoad:
-		return rewriteValuePPC64_OpLoad_0(v)
-	case OpLocalAddr:
-		return rewriteValuePPC64_OpLocalAddr_0(v)
-	case OpLsh16x16:
-		return rewriteValuePPC64_OpLsh16x16_0(v)
-	case OpLsh16x32:
-		return rewriteValuePPC64_OpLsh16x32_0(v)
-	case OpLsh16x64:
-		return rewriteValuePPC64_OpLsh16x64_0(v)
-	case OpLsh16x8:
-		return rewriteValuePPC64_OpLsh16x8_0(v)
-	case OpLsh32x16:
-		return rewriteValuePPC64_OpLsh32x16_0(v)
-	case OpLsh32x32:
-		return rewriteValuePPC64_OpLsh32x32_0(v)
-	case OpLsh32x64:
-		return rewriteValuePPC64_OpLsh32x64_0(v)
-	case OpLsh32x8:
-		return rewriteValuePPC64_OpLsh32x8_0(v)
-	case OpLsh64x16:
-		return rewriteValuePPC64_OpLsh64x16_0(v)
 	case OpLsh64x32:
 		return rewriteValuePPC64_OpLsh64x32_0(v)
-	case OpLsh64x64:
-		return rewriteValuePPC64_OpLsh64x64_0(v)
-	case OpLsh64x8:
-		return rewriteValuePPC64_OpLsh64x8_0(v)
-	case OpLsh8x16:
-		return rewriteValuePPC64_OpLsh8x16_0(v)
-	case OpLsh8x32:
-		return rewriteValuePPC64_OpLsh8x32_0(v)
-	case OpLsh8x64:
-		return rewriteValuePPC64_OpLsh8x64_0(v)
-	case OpLsh8x8:
-		return rewriteValuePPC64_OpLsh8x8_0(v)
 	case OpMod16:
 		return rewriteValuePPC64_OpMod16_0(v)
-	case OpMod16u:
-		return rewriteValuePPC64_OpMod16u_0(v)
-	case OpMod32:
-		return rewriteValuePPC64_OpMod32_0(v)
-	case OpMod32u:
-		return rewriteValuePPC64_OpMod32u_0(v)
-	case OpMod64:
-		return rewriteValuePPC64_OpMod64_0(v)
-	case OpMod64u:
-		return rewriteValuePPC64_OpMod64u_0(v)
-	case OpMod8:
-		return rewriteValuePPC64_OpMod8_0(v)
-	case OpMod8u:
-		return rewriteValuePPC64_OpMod8u_0(v)
-	case OpMove:
-		return rewriteValuePPC64_OpMove_0(v) || rewriteValuePPC64_OpMove_10(v)
-	case OpMul16:
-		return rewriteValuePPC64_OpMul16_0(v)
-	case OpMul32:
-		return rewriteValuePPC64_OpMul32_0(v)
-	case OpMul32F:
-		return rewriteValuePPC64_OpMul32F_0(v)
-	case OpMul64:
-		return rewriteValuePPC64_OpMul64_0(v)
-	case OpMul64F:
-		return rewriteValuePPC64_OpMul64F_0(v)
 	case OpMul64uhilo:
 		return rewriteValuePPC64_OpMul64uhilo_0(v)
-	case OpMul8:
-		return rewriteValuePPC64_OpMul8_0(v)
-	case OpNeg16:
-		return rewriteValuePPC64_OpNeg16_0(v)
-	case OpNeg32:
-		return rewriteValuePPC64_OpNeg32_0(v)
-	case OpNeg32F:
-		return rewriteValuePPC64_OpNeg32F_0(v)
-	case OpNeg64:
-		return rewriteValuePPC64_OpNeg64_0(v)
-	case OpNeg64F:
-		return rewriteValuePPC64_OpNeg64F_0(v)
-	case OpNeg8:
-		return rewriteValuePPC64_OpNeg8_0(v)
-	case OpNeq16:
-		return rewriteValuePPC64_OpNeq16_0(v)
-	case OpNeq32:
-		return rewriteValuePPC64_OpNeq32_0(v)
-	case OpNeq32F:
-		return rewriteValuePPC64_OpNeq32F_0(v)
-	case OpNeq64:
-		return rewriteValuePPC64_OpNeq64_0(v)
-	case OpNeq64F:
-		return rewriteValuePPC64_OpNeq64F_0(v)
-	case OpNeq8:
-		return rewriteValuePPC64_OpNeq8_0(v)
 	case OpNeqB:
 		return rewriteValuePPC64_OpNeqB_0(v)
-	case OpNeqPtr:
-		return rewriteValuePPC64_OpNeqPtr_0(v)
+	case OpPPC64ANDconst:
+		return rewriteValuePPC64_OpPPC64ANDconst_0(v) || rewriteValuePPC64_OpPPC64ANDconst_10(v)
+	case OpPPC64CMPWUconst:
+		return rewriteValuePPC64_OpPPC64CMPWUconst_0(v)
+	case OpPPC64FADD:
+		return rewriteValuePPC64_OpPPC64FADD_0(v)
+	case OpPPC64FMOVSload:
+		return rewriteValuePPC64_OpPPC64FMOVSload_0(v)
+	case OpPPC64MOVBstorezero:
+		return rewriteValuePPC64_OpPPC64MOVBstorezero_0(v)
+	case OpPPC64XOR:
+		return rewriteValuePPC64_OpPPC64XOR_0(v) || rewriteValuePPC64_OpPPC64XOR_10(v)
+	case OpPopCount32:
+		return rewriteValuePPC64_OpPopCount32_0(v)
+	case OpRsh64Ux32:
+		return rewriteValuePPC64_OpRsh64Ux32_0(v)
+	case OpRsh64x32:
+		return rewriteValuePPC64_OpRsh64x32_0(v)
+	case OpSignExt8to16:
+		return rewriteValuePPC64_OpSignExt8to16_0(v)
+	case OpSubPtr:
+		return rewriteValuePPC64_OpSubPtr_0(v)
+	case OpTrunc64to16:
+		return rewriteValuePPC64_OpTrunc64to16_0(v)
+	case OpXor32:
+		return rewriteValuePPC64_OpXor32_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_0001(v *Value) bool {
+	switch v.Op {
+	case OpAtomicLoadAcq32:
+		return rewriteValuePPC64_OpAtomicLoadAcq32_0(v)
+	case OpConstBool:
+		return rewriteValuePPC64_OpConstBool_0(v)
+	case OpGreater64F:
+		return rewriteValuePPC64_OpGreater64F_0(v)
+	case OpLeq16U:
+		return rewriteValuePPC64_OpLeq16U_0(v)
+	case OpLsh64x64:
+		return rewriteValuePPC64_OpLsh64x64_0(v)
+	case OpMod16u:
+		return rewriteValuePPC64_OpMod16u_0(v)
 	case OpNilCheck:
 		return rewriteValuePPC64_OpNilCheck_0(v)
 	case OpNot:
 		return rewriteValuePPC64_OpNot_0(v)
-	case OpOffPtr:
-		return rewriteValuePPC64_OpOffPtr_0(v)
-	case OpOr16:
-		return rewriteValuePPC64_OpOr16_0(v)
-	case OpOr32:
-		return rewriteValuePPC64_OpOr32_0(v)
-	case OpOr64:
-		return rewriteValuePPC64_OpOr64_0(v)
-	case OpOr8:
-		return rewriteValuePPC64_OpOr8_0(v)
-	case OpOrB:
-		return rewriteValuePPC64_OpOrB_0(v)
-	case OpPPC64ADD:
-		return rewriteValuePPC64_OpPPC64ADD_0(v)
-	case OpPPC64ADDconst:
-		return rewriteValuePPC64_OpPPC64ADDconst_0(v)
-	case OpPPC64AND:
-		return rewriteValuePPC64_OpPPC64AND_0(v) || rewriteValuePPC64_OpPPC64AND_10(v)
-	case OpPPC64ANDconst:
-		return rewriteValuePPC64_OpPPC64ANDconst_0(v) || rewriteValuePPC64_OpPPC64ANDconst_10(v)
-	case OpPPC64CMP:
-		return rewriteValuePPC64_OpPPC64CMP_0(v)
-	case OpPPC64CMPU:
-		return rewriteValuePPC64_OpPPC64CMPU_0(v)
-	case OpPPC64CMPUconst:
-		return rewriteValuePPC64_OpPPC64CMPUconst_0(v)
-	case OpPPC64CMPW:
-		return rewriteValuePPC64_OpPPC64CMPW_0(v)
-	case OpPPC64CMPWU:
-		return rewriteValuePPC64_OpPPC64CMPWU_0(v)
-	case OpPPC64CMPWUconst:
-		return rewriteValuePPC64_OpPPC64CMPWUconst_0(v)
-	case OpPPC64CMPWconst:
-		return rewriteValuePPC64_OpPPC64CMPWconst_0(v)
-	case OpPPC64CMPconst:
-		return rewriteValuePPC64_OpPPC64CMPconst_0(v)
 	case OpPPC64Equal:
 		return rewriteValuePPC64_OpPPC64Equal_0(v)
-	case OpPPC64FABS:
-		return rewriteValuePPC64_OpPPC64FABS_0(v)
-	case OpPPC64FADD:
-		return rewriteValuePPC64_OpPPC64FADD_0(v)
 	case OpPPC64FADDS:
 		return rewriteValuePPC64_OpPPC64FADDS_0(v)
-	case OpPPC64FCEIL:
-		return rewriteValuePPC64_OpPPC64FCEIL_0(v)
-	case OpPPC64FFLOOR:
-		return rewriteValuePPC64_OpPPC64FFLOOR_0(v)
-	case OpPPC64FMOVDload:
-		return rewriteValuePPC64_OpPPC64FMOVDload_0(v)
-	case OpPPC64FMOVDstore:
-		return rewriteValuePPC64_OpPPC64FMOVDstore_0(v)
-	case OpPPC64FMOVSload:
-		return rewriteValuePPC64_OpPPC64FMOVSload_0(v)
-	case OpPPC64FMOVSstore:
-		return rewriteValuePPC64_OpPPC64FMOVSstore_0(v)
-	case OpPPC64FNEG:
-		return rewriteValuePPC64_OpPPC64FNEG_0(v)
-	case OpPPC64FSQRT:
-		return rewriteValuePPC64_OpPPC64FSQRT_0(v)
-	case OpPPC64FSUB:
-		return rewriteValuePPC64_OpPPC64FSUB_0(v)
-	case OpPPC64FSUBS:
-		return rewriteValuePPC64_OpPPC64FSUBS_0(v)
-	case OpPPC64FTRUNC:
-		return rewriteValuePPC64_OpPPC64FTRUNC_0(v)
-	case OpPPC64GreaterEqual:
-		return rewriteValuePPC64_OpPPC64GreaterEqual_0(v)
-	case OpPPC64GreaterThan:
-		return rewriteValuePPC64_OpPPC64GreaterThan_0(v)
-	case OpPPC64LessEqual:
-		return rewriteValuePPC64_OpPPC64LessEqual_0(v)
-	case OpPPC64LessThan:
-		return rewriteValuePPC64_OpPPC64LessThan_0(v)
-	case OpPPC64MFVSRD:
-		return rewriteValuePPC64_OpPPC64MFVSRD_0(v)
-	case OpPPC64MOVBZload:
-		return rewriteValuePPC64_OpPPC64MOVBZload_0(v)
 	case OpPPC64MOVBZloadidx:
 		return rewriteValuePPC64_OpPPC64MOVBZloadidx_0(v)
-	case OpPPC64MOVBZreg:
-		return rewriteValuePPC64_OpPPC64MOVBZreg_0(v) || rewriteValuePPC64_OpPPC64MOVBZreg_10(v)
-	case OpPPC64MOVBreg:
-		return rewriteValuePPC64_OpPPC64MOVBreg_0(v) || rewriteValuePPC64_OpPPC64MOVBreg_10(v)
 	case OpPPC64MOVBstore:
 		return rewriteValuePPC64_OpPPC64MOVBstore_0(v) || rewriteValuePPC64_OpPPC64MOVBstore_10(v) || rewriteValuePPC64_OpPPC64MOVBstore_20(v)
-	case OpPPC64MOVBstoreidx:
-		return rewriteValuePPC64_OpPPC64MOVBstoreidx_0(v) || rewriteValuePPC64_OpPPC64MOVBstoreidx_10(v)
-	case OpPPC64MOVBstorezero:
-		return rewriteValuePPC64_OpPPC64MOVBstorezero_0(v)
-	case OpPPC64MOVDload:
-		return rewriteValuePPC64_OpPPC64MOVDload_0(v)
-	case OpPPC64MOVDloadidx:
-		return rewriteValuePPC64_OpPPC64MOVDloadidx_0(v)
-	case OpPPC64MOVDstore:
-		return rewriteValuePPC64_OpPPC64MOVDstore_0(v)
-	case OpPPC64MOVDstoreidx:
-		return rewriteValuePPC64_OpPPC64MOVDstoreidx_0(v)
-	case OpPPC64MOVDstorezero:
-		return rewriteValuePPC64_OpPPC64MOVDstorezero_0(v)
-	case OpPPC64MOVHBRstore:
-		return rewriteValuePPC64_OpPPC64MOVHBRstore_0(v)
-	case OpPPC64MOVHZload:
-		return rewriteValuePPC64_OpPPC64MOVHZload_0(v)
-	case OpPPC64MOVHZloadidx:
-		return rewriteValuePPC64_OpPPC64MOVHZloadidx_0(v)
-	case OpPPC64MOVHZreg:
-		return rewriteValuePPC64_OpPPC64MOVHZreg_0(v) || rewriteValuePPC64_OpPPC64MOVHZreg_10(v)
-	case OpPPC64MOVHload:
-		return rewriteValuePPC64_OpPPC64MOVHload_0(v)
-	case OpPPC64MOVHloadidx:
-		return rewriteValuePPC64_OpPPC64MOVHloadidx_0(v)
-	case OpPPC64MOVHreg:
-		return rewriteValuePPC64_OpPPC64MOVHreg_0(v) || rewriteValuePPC64_OpPPC64MOVHreg_10(v)
-	case OpPPC64MOVHstore:
-		return rewriteValuePPC64_OpPPC64MOVHstore_0(v)
-	case OpPPC64MOVHstoreidx:
-		return rewriteValuePPC64_OpPPC64MOVHstoreidx_0(v)
 	case OpPPC64MOVHstorezero:
 		return rewriteValuePPC64_OpPPC64MOVHstorezero_0(v)
-	case OpPPC64MOVWBRstore:
-		return rewriteValuePPC64_OpPPC64MOVWBRstore_0(v)
-	case OpPPC64MOVWZload:
-		return rewriteValuePPC64_OpPPC64MOVWZload_0(v)
-	case OpPPC64MOVWZloadidx:
-		return rewriteValuePPC64_OpPPC64MOVWZloadidx_0(v)
-	case OpPPC64MOVWZreg:
-		return rewriteValuePPC64_OpPPC64MOVWZreg_0(v) || rewriteValuePPC64_OpPPC64MOVWZreg_10(v) || rewriteValuePPC64_OpPPC64MOVWZreg_20(v)
-	case OpPPC64MOVWload:
-		return rewriteValuePPC64_OpPPC64MOVWload_0(v)
-	case OpPPC64MOVWloadidx:
-		return rewriteValuePPC64_OpPPC64MOVWloadidx_0(v)
-	case OpPPC64MOVWreg:
-		return rewriteValuePPC64_OpPPC64MOVWreg_0(v) || rewriteValuePPC64_OpPPC64MOVWreg_10(v)
-	case OpPPC64MOVWstore:
-		return rewriteValuePPC64_OpPPC64MOVWstore_0(v)
-	case OpPPC64MOVWstoreidx:
-		return rewriteValuePPC64_OpPPC64MOVWstoreidx_0(v)
-	case OpPPC64MOVWstorezero:
-		return rewriteValuePPC64_OpPPC64MOVWstorezero_0(v)
-	case OpPPC64MTVSRD:
-		return rewriteValuePPC64_OpPPC64MTVSRD_0(v)
-	case OpPPC64MaskIfNotCarry:
-		return rewriteValuePPC64_OpPPC64MaskIfNotCarry_0(v)
-	case OpPPC64NotEqual:
-		return rewriteValuePPC64_OpPPC64NotEqual_0(v)
-	case OpPPC64OR:
-		return rewriteValuePPC64_OpPPC64OR_0(v) || rewriteValuePPC64_OpPPC64OR_10(v) || rewriteValuePPC64_OpPPC64OR_20(v) || rewriteValuePPC64_OpPPC64OR_30(v) || rewriteValuePPC64_OpPPC64OR_40(v) || rewriteValuePPC64_OpPPC64OR_50(v) || rewriteValuePPC64_OpPPC64OR_60(v) || rewriteValuePPC64_OpPPC64OR_70(v) || rewriteValuePPC64_OpPPC64OR_80(v) || rewriteValuePPC64_OpPPC64OR_90(v) || rewriteValuePPC64_OpPPC64OR_100(v) || rewriteValuePPC64_OpPPC64OR_110(v)
-	case OpPPC64ORN:
-		return rewriteValuePPC64_OpPPC64ORN_0(v)
-	case OpPPC64ORconst:
-		return rewriteValuePPC64_OpPPC64ORconst_0(v)
-	case OpPPC64ROTL:
-		return rewriteValuePPC64_OpPPC64ROTL_0(v)
-	case OpPPC64ROTLW:
-		return rewriteValuePPC64_OpPPC64ROTLW_0(v)
-	case OpPPC64SUB:
-		return rewriteValuePPC64_OpPPC64SUB_0(v)
-	case OpPPC64XOR:
-		return rewriteValuePPC64_OpPPC64XOR_0(v) || rewriteValuePPC64_OpPPC64XOR_10(v)
-	case OpPPC64XORconst:
-		return rewriteValuePPC64_OpPPC64XORconst_0(v)
-	case OpPanicBounds:
-		return rewriteValuePPC64_OpPanicBounds_0(v)
-	case OpPopCount16:
-		return rewriteValuePPC64_OpPopCount16_0(v)
-	case OpPopCount32:
-		return rewriteValuePPC64_OpPopCount32_0(v)
 	case OpPopCount64:
 		return rewriteValuePPC64_OpPopCount64_0(v)
-	case OpPopCount8:
-		return rewriteValuePPC64_OpPopCount8_0(v)
-	case OpRotateLeft16:
-		return rewriteValuePPC64_OpRotateLeft16_0(v)
-	case OpRotateLeft32:
-		return rewriteValuePPC64_OpRotateLeft32_0(v)
-	case OpRotateLeft64:
-		return rewriteValuePPC64_OpRotateLeft64_0(v)
-	case OpRotateLeft8:
-		return rewriteValuePPC64_OpRotateLeft8_0(v)
-	case OpRound:
-		return rewriteValuePPC64_OpRound_0(v)
-	case OpRound32F:
-		return rewriteValuePPC64_OpRound32F_0(v)
-	case OpRound64F:
-		return rewriteValuePPC64_OpRound64F_0(v)
-	case OpRsh16Ux16:
-		return rewriteValuePPC64_OpRsh16Ux16_0(v)
-	case OpRsh16Ux32:
-		return rewriteValuePPC64_OpRsh16Ux32_0(v)
-	case OpRsh16Ux64:
-		return rewriteValuePPC64_OpRsh16Ux64_0(v)
-	case OpRsh16Ux8:
-		return rewriteValuePPC64_OpRsh16Ux8_0(v)
-	case OpRsh16x16:
-		return rewriteValuePPC64_OpRsh16x16_0(v)
-	case OpRsh16x32:
-		return rewriteValuePPC64_OpRsh16x32_0(v)
-	case OpRsh16x64:
-		return rewriteValuePPC64_OpRsh16x64_0(v)
-	case OpRsh16x8:
-		return rewriteValuePPC64_OpRsh16x8_0(v)
-	case OpRsh32Ux16:
-		return rewriteValuePPC64_OpRsh32Ux16_0(v)
-	case OpRsh32Ux32:
-		return rewriteValuePPC64_OpRsh32Ux32_0(v)
-	case OpRsh32Ux64:
-		return rewriteValuePPC64_OpRsh32Ux64_0(v) || rewriteValuePPC64_OpRsh32Ux64_10(v)
-	case OpRsh32Ux8:
-		return rewriteValuePPC64_OpRsh32Ux8_0(v)
-	case OpRsh32x16:
-		return rewriteValuePPC64_OpRsh32x16_0(v)
-	case OpRsh32x32:
-		return rewriteValuePPC64_OpRsh32x32_0(v)
-	case OpRsh32x64:
-		return rewriteValuePPC64_OpRsh32x64_0(v) || rewriteValuePPC64_OpRsh32x64_10(v)
-	case OpRsh32x8:
-		return rewriteValuePPC64_OpRsh32x8_0(v)
-	case OpRsh64Ux16:
-		return rewriteValuePPC64_OpRsh64Ux16_0(v)
-	case OpRsh64Ux32:
-		return rewriteValuePPC64_OpRsh64Ux32_0(v)
 	case OpRsh64Ux64:
 		return rewriteValuePPC64_OpRsh64Ux64_0(v) || rewriteValuePPC64_OpRsh64Ux64_10(v)
-	case OpRsh64Ux8:
-		return rewriteValuePPC64_OpRsh64Ux8_0(v)
-	case OpRsh64x16:
-		return rewriteValuePPC64_OpRsh64x16_0(v)
-	case OpRsh64x32:
-		return rewriteValuePPC64_OpRsh64x32_0(v)
 	case OpRsh64x64:
 		return rewriteValuePPC64_OpRsh64x64_0(v) || rewriteValuePPC64_OpRsh64x64_10(v)
-	case OpRsh64x8:
-		return rewriteValuePPC64_OpRsh64x8_0(v)
-	case OpRsh8Ux16:
-		return rewriteValuePPC64_OpRsh8Ux16_0(v)
-	case OpRsh8Ux32:
-		return rewriteValuePPC64_OpRsh8Ux32_0(v)
-	case OpRsh8Ux64:
-		return rewriteValuePPC64_OpRsh8Ux64_0(v)
-	case OpRsh8Ux8:
-		return rewriteValuePPC64_OpRsh8Ux8_0(v)
-	case OpRsh8x16:
-		return rewriteValuePPC64_OpRsh8x16_0(v)
-	case OpRsh8x32:
-		return rewriteValuePPC64_OpRsh8x32_0(v)
-	case OpRsh8x64:
-		return rewriteValuePPC64_OpRsh8x64_0(v)
-	case OpRsh8x8:
-		return rewriteValuePPC64_OpRsh8x8_0(v)
-	case OpSignExt16to32:
-		return rewriteValuePPC64_OpSignExt16to32_0(v)
-	case OpSignExt16to64:
-		return rewriteValuePPC64_OpSignExt16to64_0(v)
-	case OpSignExt32to64:
-		return rewriteValuePPC64_OpSignExt32to64_0(v)
-	case OpSignExt8to16:
-		return rewriteValuePPC64_OpSignExt8to16_0(v)
 	case OpSignExt8to32:
 		return rewriteValuePPC64_OpSignExt8to32_0(v)
+	case OpSub32F:
+		return rewriteValuePPC64_OpSub32F_0(v)
+	case OpTrunc64to32:
+		return rewriteValuePPC64_OpTrunc64to32_0(v)
+	case OpXor64:
+		return rewriteValuePPC64_OpXor64_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_0010(v *Value) bool {
+	switch v.Op {
+	case OpAtomicStore32:
+		return rewriteValuePPC64_OpAtomicStore32_0(v)
+	case OpCtz32NonZero:
+		return rewriteValuePPC64_OpCtz32NonZero_0(v)
+	case OpCvt32to32F:
+		return rewriteValuePPC64_OpCvt32to32F_0(v)
+	case OpEq8:
+		return rewriteValuePPC64_OpEq8_0(v)
+	case OpGeq8:
+		return rewriteValuePPC64_OpGeq8_0(v)
+	case OpLeq32:
+		return rewriteValuePPC64_OpLeq32_0(v)
+	case OpLsh8x8:
+		return rewriteValuePPC64_OpLsh8x8_0(v)
+	case OpMod32:
+		return rewriteValuePPC64_OpMod32_0(v)
+	case OpNeg8:
+		return rewriteValuePPC64_OpNeg8_0(v)
+	case OpNeq32F:
+		return rewriteValuePPC64_OpNeq32F_0(v)
+	case OpPPC64MOVBreg:
+		return rewriteValuePPC64_OpPPC64MOVBreg_0(v) || rewriteValuePPC64_OpPPC64MOVBreg_10(v)
+	case OpPPC64MOVHloadidx:
+		return rewriteValuePPC64_OpPPC64MOVHloadidx_0(v)
+	case OpPPC64MOVHstore:
+		return rewriteValuePPC64_OpPPC64MOVHstore_0(v)
+	case OpPPC64MOVWstorezero:
+		return rewriteValuePPC64_OpPPC64MOVWstorezero_0(v)
+	case OpPPC64NotEqual:
+		return rewriteValuePPC64_OpPPC64NotEqual_0(v)
+	case OpPPC64SUB:
+		return rewriteValuePPC64_OpPPC64SUB_0(v)
+	case OpRotateLeft8:
+		return rewriteValuePPC64_OpRotateLeft8_0(v)
+	case OpRsh8Ux8:
+		return rewriteValuePPC64_OpRsh8Ux8_0(v)
+	case OpRsh8x8:
+		return rewriteValuePPC64_OpRsh8x8_0(v)
 	case OpSignExt8to64:
 		return rewriteValuePPC64_OpSignExt8to64_0(v)
 	case OpSlicemask:
 		return rewriteValuePPC64_OpSlicemask_0(v)
-	case OpSqrt:
-		return rewriteValuePPC64_OpSqrt_0(v)
-	case OpStaticCall:
-		return rewriteValuePPC64_OpStaticCall_0(v)
-	case OpStore:
-		return rewriteValuePPC64_OpStore_0(v)
-	case OpSub16:
-		return rewriteValuePPC64_OpSub16_0(v)
-	case OpSub32:
-		return rewriteValuePPC64_OpSub32_0(v)
-	case OpSub32F:
-		return rewriteValuePPC64_OpSub32F_0(v)
-	case OpSub64:
-		return rewriteValuePPC64_OpSub64_0(v)
 	case OpSub64F:
 		return rewriteValuePPC64_OpSub64F_0(v)
-	case OpSub8:
-		return rewriteValuePPC64_OpSub8_0(v)
-	case OpSubPtr:
-		return rewriteValuePPC64_OpSubPtr_0(v)
-	case OpTrunc:
-		return rewriteValuePPC64_OpTrunc_0(v)
-	case OpTrunc16to8:
-		return rewriteValuePPC64_OpTrunc16to8_0(v)
-	case OpTrunc32to16:
-		return rewriteValuePPC64_OpTrunc32to16_0(v)
-	case OpTrunc32to8:
-		return rewriteValuePPC64_OpTrunc32to8_0(v)
-	case OpTrunc64to16:
-		return rewriteValuePPC64_OpTrunc64to16_0(v)
-	case OpTrunc64to32:
-		return rewriteValuePPC64_OpTrunc64to32_0(v)
-	case OpTrunc64to8:
-		return rewriteValuePPC64_OpTrunc64to8_0(v)
-	case OpWB:
-		return rewriteValuePPC64_OpWB_0(v)
-	case OpXor16:
-		return rewriteValuePPC64_OpXor16_0(v)
-	case OpXor32:
-		return rewriteValuePPC64_OpXor32_0(v)
-	case OpXor64:
-		return rewriteValuePPC64_OpXor64_0(v)
-	case OpXor8:
-		return rewriteValuePPC64_OpXor8_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_0011(v *Value) bool {
+	switch v.Op {
+	case OpAtomicStore64:
+		return rewriteValuePPC64_OpAtomicStore64_0(v)
+	case OpConstNil:
+		return rewriteValuePPC64_OpConstNil_0(v)
+	case OpCtz64NonZero:
+		return rewriteValuePPC64_OpCtz64NonZero_0(v)
+	case OpCvt32to64F:
+		return rewriteValuePPC64_OpCvt32to64F_0(v)
+	case OpEq16:
+		return rewriteValuePPC64_OpEq16_0(v)
+	case OpGeq8U:
+		return rewriteValuePPC64_OpGeq8U_0(v)
+	case OpGetClosurePtr:
+		return rewriteValuePPC64_OpGetClosurePtr_0(v)
+	case OpLeq32U:
+		return rewriteValuePPC64_OpLeq32U_0(v)
+	case OpLoad:
+		return rewriteValuePPC64_OpLoad_0(v)
+	case OpLsh8x16:
+		return rewriteValuePPC64_OpLsh8x16_0(v)
+	case OpMod32u:
+		return rewriteValuePPC64_OpMod32u_0(v)
+	case OpMul8:
+		return rewriteValuePPC64_OpMul8_0(v)
+	case OpNeg16:
+		return rewriteValuePPC64_OpNeg16_0(v)
+	case OpNeq64F:
+		return rewriteValuePPC64_OpNeq64F_0(v)
+	case OpPPC64FSUB:
+		return rewriteValuePPC64_OpPPC64FSUB_0(v)
+	case OpPPC64LessThan:
+		return rewriteValuePPC64_OpPPC64LessThan_0(v)
+	case OpPPC64MOVBZreg:
+		return rewriteValuePPC64_OpPPC64MOVBZreg_0(v) || rewriteValuePPC64_OpPPC64MOVBZreg_10(v)
+	case OpPPC64MOVDstorezero:
+		return rewriteValuePPC64_OpPPC64MOVDstorezero_0(v)
+	case OpPPC64MOVHZloadidx:
+		return rewriteValuePPC64_OpPPC64MOVHZloadidx_0(v)
+	case OpPPC64MOVWstore:
+		return rewriteValuePPC64_OpPPC64MOVWstore_0(v)
+	case OpRotateLeft16:
+		return rewriteValuePPC64_OpRotateLeft16_0(v)
+	case OpRsh8Ux16:
+		return rewriteValuePPC64_OpRsh8Ux16_0(v)
+	case OpRsh8x16:
+		return rewriteValuePPC64_OpRsh8x16_0(v)
+	case OpSignExt16to32:
+		return rewriteValuePPC64_OpSignExt16to32_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_0100(v *Value) bool {
+	switch v.Op {
+	case OpAvg64u:
+		return rewriteValuePPC64_OpAvg64u_0(v)
+	case OpConst8:
+		return rewriteValuePPC64_OpConst8_0(v)
+	case OpCvt64to32F:
+		return rewriteValuePPC64_OpCvt64to32F_0(v)
+	case OpEq32:
+		return rewriteValuePPC64_OpEq32_0(v)
+	case OpGeq16:
+		return rewriteValuePPC64_OpGeq16_0(v)
+	case OpGetCallerPC:
+		return rewriteValuePPC64_OpGetCallerPC_0(v)
+	case OpLeq64:
+		return rewriteValuePPC64_OpLeq64_0(v)
+	case OpLess8:
+		return rewriteValuePPC64_OpLess8_0(v)
+	case OpLsh8x32:
+		return rewriteValuePPC64_OpLsh8x32_0(v)
+	case OpMod64:
+		return rewriteValuePPC64_OpMod64_0(v)
+	case OpMul16:
+		return rewriteValuePPC64_OpMul16_0(v)
+	case OpNeg32:
+		return rewriteValuePPC64_OpNeg32_0(v)
+	case OpPPC64FNEG:
+		return rewriteValuePPC64_OpPPC64FNEG_0(v)
+	case OpPPC64FSUBS:
+		return rewriteValuePPC64_OpPPC64FSUBS_0(v)
+	case OpPPC64MOVDstore:
+		return rewriteValuePPC64_OpPPC64MOVDstore_0(v)
+	case OpPPC64MOVHreg:
+		return rewriteValuePPC64_OpPPC64MOVHreg_0(v) || rewriteValuePPC64_OpPPC64MOVHreg_10(v)
+	case OpPPC64MOVWloadidx:
+		return rewriteValuePPC64_OpPPC64MOVWloadidx_0(v)
+	case OpRotateLeft32:
+		return rewriteValuePPC64_OpRotateLeft32_0(v)
+	case OpRsh8Ux32:
+		return rewriteValuePPC64_OpRsh8Ux32_0(v)
+	case OpRsh8x32:
+		return rewriteValuePPC64_OpRsh8x32_0(v)
+	case OpSignExt16to64:
+		return rewriteValuePPC64_OpSignExt16to64_0(v)
+	case OpStore:
+		return rewriteValuePPC64_OpStore_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_0101(v *Value) bool {
+	switch v.Op {
+	case OpAdd8:
+		return rewriteValuePPC64_OpAdd8_0(v)
+	case OpAtomicStoreRel32:
+		return rewriteValuePPC64_OpAtomicStoreRel32_0(v)
+	case OpConst16:
+		return rewriteValuePPC64_OpConst16_0(v)
+	case OpCvt64to64F:
+		return rewriteValuePPC64_OpCvt64to64F_0(v)
+	case OpDiv8:
+		return rewriteValuePPC64_OpDiv8_0(v)
+	case OpEq64:
+		return rewriteValuePPC64_OpEq64_0(v)
+	case OpGeq16U:
+		return rewriteValuePPC64_OpGeq16U_0(v)
+	case OpGetCallerSP:
+		return rewriteValuePPC64_OpGetCallerSP_0(v)
+	case OpLeq64U:
+		return rewriteValuePPC64_OpLeq64U_0(v)
+	case OpLess8U:
+		return rewriteValuePPC64_OpLess8U_0(v)
+	case OpLsh8x64:
+		return rewriteValuePPC64_OpLsh8x64_0(v)
+	case OpMod64u:
+		return rewriteValuePPC64_OpMod64u_0(v)
+	case OpMove:
+		return rewriteValuePPC64_OpMove_0(v) || rewriteValuePPC64_OpMove_10(v)
+	case OpMul32:
+		return rewriteValuePPC64_OpMul32_0(v)
+	case OpNeg64:
+		return rewriteValuePPC64_OpNeg64_0(v)
+	case OpPPC64FMOVDstore:
+		return rewriteValuePPC64_OpPPC64FMOVDstore_0(v)
+	case OpPPC64FSQRT:
+		return rewriteValuePPC64_OpPPC64FSQRT_0(v)
+	case OpPPC64LessEqual:
+		return rewriteValuePPC64_OpPPC64LessEqual_0(v)
+	case OpPPC64MOVHZreg:
+		return rewriteValuePPC64_OpPPC64MOVHZreg_0(v) || rewriteValuePPC64_OpPPC64MOVHZreg_10(v)
+	case OpPPC64MOVWZloadidx:
+		return rewriteValuePPC64_OpPPC64MOVWZloadidx_0(v)
+	case OpRotateLeft64:
+		return rewriteValuePPC64_OpRotateLeft64_0(v)
+	case OpRsh8Ux64:
+		return rewriteValuePPC64_OpRsh8Ux64_0(v)
+	case OpRsh8x64:
+		return rewriteValuePPC64_OpRsh8x64_0(v)
+	case OpSignExt32to64:
+		return rewriteValuePPC64_OpSignExt32to64_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_0110(v *Value) bool {
+	switch v.Op {
+	case OpAdd16:
+		return rewriteValuePPC64_OpAdd16_0(v)
+	case OpAnd8:
+		return rewriteValuePPC64_OpAnd8_0(v)
+	case OpAtomicExchange32:
+		return rewriteValuePPC64_OpAtomicExchange32_0(v)
+	case OpBitLen32:
+		return rewriteValuePPC64_OpBitLen32_0(v)
+	case OpConst32:
+		return rewriteValuePPC64_OpConst32_0(v)
+	case OpCvt32Fto32:
+		return rewriteValuePPC64_OpCvt32Fto32_0(v)
+	case OpDiv8u:
+		return rewriteValuePPC64_OpDiv8u_0(v)
+	case OpEqPtr:
+		return rewriteValuePPC64_OpEqPtr_0(v)
+	case OpGeq32:
+		return rewriteValuePPC64_OpGeq32_0(v)
+	case OpLeq32F:
+		return rewriteValuePPC64_OpLeq32F_0(v)
+	case OpLess16:
+		return rewriteValuePPC64_OpLess16_0(v)
+	case OpLsh16x8:
+		return rewriteValuePPC64_OpLsh16x8_0(v)
+	case OpMul64:
+		return rewriteValuePPC64_OpMul64_0(v)
+	case OpNeg32F:
+		return rewriteValuePPC64_OpNeg32F_0(v)
+	case OpPPC64FMOVSstore:
+		return rewriteValuePPC64_OpPPC64FMOVSstore_0(v)
+	case OpPPC64MOVDloadidx:
+		return rewriteValuePPC64_OpPPC64MOVDloadidx_0(v)
+	case OpPPC64MOVWreg:
+		return rewriteValuePPC64_OpPPC64MOVWreg_0(v) || rewriteValuePPC64_OpPPC64MOVWreg_10(v)
+	case OpRsh16Ux8:
+		return rewriteValuePPC64_OpRsh16Ux8_0(v)
+	case OpRsh16x8:
+		return rewriteValuePPC64_OpRsh16x8_0(v)
+	case OpSqrt:
+		return rewriteValuePPC64_OpSqrt_0(v)
 	case OpZero:
 		return rewriteValuePPC64_OpZero_0(v) || rewriteValuePPC64_OpZero_10(v)
-	case OpZeroExt16to32:
-		return rewriteValuePPC64_OpZeroExt16to32_0(v)
-	case OpZeroExt16to64:
-		return rewriteValuePPC64_OpZeroExt16to64_0(v)
-	case OpZeroExt32to64:
-		return rewriteValuePPC64_OpZeroExt32to64_0(v)
 	case OpZeroExt8to16:
 		return rewriteValuePPC64_OpZeroExt8to16_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_0111(v *Value) bool {
+	switch v.Op {
+	case OpAdd32:
+		return rewriteValuePPC64_OpAdd32_0(v)
+	case OpAnd16:
+		return rewriteValuePPC64_OpAnd16_0(v)
+	case OpAtomicExchange64:
+		return rewriteValuePPC64_OpAtomicExchange64_0(v)
+	case OpBitLen64:
+		return rewriteValuePPC64_OpBitLen64_0(v)
+	case OpConst64:
+		return rewriteValuePPC64_OpConst64_0(v)
+	case OpCvt32Fto64:
+		return rewriteValuePPC64_OpCvt32Fto64_0(v)
+	case OpDiv16:
+		return rewriteValuePPC64_OpDiv16_0(v)
+	case OpFloor:
+		return rewriteValuePPC64_OpFloor_0(v)
+	case OpGeq32U:
+		return rewriteValuePPC64_OpGeq32U_0(v)
+	case OpLeq64F:
+		return rewriteValuePPC64_OpLeq64F_0(v)
+	case OpLess16U:
+		return rewriteValuePPC64_OpLess16U_0(v)
+	case OpLsh16x16:
+		return rewriteValuePPC64_OpLsh16x16_0(v)
+	case OpMul32F:
+		return rewriteValuePPC64_OpMul32F_0(v)
+	case OpNeg64F:
+		return rewriteValuePPC64_OpNeg64F_0(v)
+	case OpOffPtr:
+		return rewriteValuePPC64_OpOffPtr_0(v)
+	case OpPPC64FFLOOR:
+		return rewriteValuePPC64_OpPPC64FFLOOR_0(v)
+	case OpPPC64GreaterThan:
+		return rewriteValuePPC64_OpPPC64GreaterThan_0(v)
+	case OpPPC64MFVSRD:
+		return rewriteValuePPC64_OpPPC64MFVSRD_0(v)
+	case OpPPC64MOVBstoreidx:
+		return rewriteValuePPC64_OpPPC64MOVBstoreidx_0(v) || rewriteValuePPC64_OpPPC64MOVBstoreidx_10(v)
+	case OpPPC64MOVWZreg:
+		return rewriteValuePPC64_OpPPC64MOVWZreg_0(v) || rewriteValuePPC64_OpPPC64MOVWZreg_10(v) || rewriteValuePPC64_OpPPC64MOVWZreg_20(v)
+	case OpRsh16Ux16:
+		return rewriteValuePPC64_OpRsh16Ux16_0(v)
+	case OpRsh16x16:
+		return rewriteValuePPC64_OpRsh16x16_0(v)
 	case OpZeroExt8to32:
 		return rewriteValuePPC64_OpZeroExt8to32_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_1000(v *Value) bool {
+	switch v.Op {
+	case OpAdd64:
+		return rewriteValuePPC64_OpAdd64_0(v)
+	case OpAnd32:
+		return rewriteValuePPC64_OpAnd32_0(v)
+	case OpAtomicAdd32:
+		return rewriteValuePPC64_OpAtomicAdd32_0(v)
+	case OpCeil:
+		return rewriteValuePPC64_OpCeil_0(v)
+	case OpCom8:
+		return rewriteValuePPC64_OpCom8_0(v)
+	case OpConst32F:
+		return rewriteValuePPC64_OpConst32F_0(v)
+	case OpCvt64Fto32:
+		return rewriteValuePPC64_OpCvt64Fto32_0(v)
+	case OpDiv16u:
+		return rewriteValuePPC64_OpDiv16u_0(v)
+	case OpGeq64:
+		return rewriteValuePPC64_OpGeq64_0(v)
+	case OpGreater8:
+		return rewriteValuePPC64_OpGreater8_0(v)
+	case OpLess32:
+		return rewriteValuePPC64_OpLess32_0(v)
+	case OpLsh16x32:
+		return rewriteValuePPC64_OpLsh16x32_0(v)
+	case OpMul64F:
+		return rewriteValuePPC64_OpMul64F_0(v)
+	case OpPPC64FCEIL:
+		return rewriteValuePPC64_OpPPC64FCEIL_0(v)
+	case OpPPC64MOVBZload:
+		return rewriteValuePPC64_OpPPC64MOVBZload_0(v)
+	case OpPPC64MOVHstoreidx:
+		return rewriteValuePPC64_OpPPC64MOVHstoreidx_0(v)
+	case OpPPC64MTVSRD:
+		return rewriteValuePPC64_OpPPC64MTVSRD_0(v)
+	case OpPPC64ROTL:
+		return rewriteValuePPC64_OpPPC64ROTL_0(v)
+	case OpRsh16Ux32:
+		return rewriteValuePPC64_OpRsh16Ux32_0(v)
+	case OpRsh16x32:
+		return rewriteValuePPC64_OpRsh16x32_0(v)
 	case OpZeroExt8to64:
 		return rewriteValuePPC64_OpZeroExt8to64_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_1001(v *Value) bool {
+	switch v.Op {
+	case OpAddPtr:
+		return rewriteValuePPC64_OpAddPtr_0(v)
+	case OpAnd64:
+		return rewriteValuePPC64_OpAnd64_0(v)
+	case OpAtomicAdd64:
+		return rewriteValuePPC64_OpAtomicAdd64_0(v)
+	case OpCom16:
+		return rewriteValuePPC64_OpCom16_0(v)
+	case OpConst64F:
+		return rewriteValuePPC64_OpConst64F_0(v)
+	case OpCvt64Fto64:
+		return rewriteValuePPC64_OpCvt64Fto64_0(v)
+	case OpDiv32:
+		return rewriteValuePPC64_OpDiv32_0(v)
+	case OpDiv32F:
+		return rewriteValuePPC64_OpDiv32F_0(v)
+	case OpEq32F:
+		return rewriteValuePPC64_OpEq32F_0(v)
+	case OpGeq64U:
+		return rewriteValuePPC64_OpGeq64U_0(v)
+	case OpGreater8U:
+		return rewriteValuePPC64_OpGreater8U_0(v)
+	case OpLess32U:
+		return rewriteValuePPC64_OpLess32U_0(v)
+	case OpLsh16x64:
+		return rewriteValuePPC64_OpLsh16x64_0(v)
+	case OpPPC64AND:
+		return rewriteValuePPC64_OpPPC64AND_0(v) || rewriteValuePPC64_OpPPC64AND_10(v)
+	case OpPPC64CMP:
+		return rewriteValuePPC64_OpPPC64CMP_0(v)
+	case OpPPC64FTRUNC:
+		return rewriteValuePPC64_OpPPC64FTRUNC_0(v)
+	case OpPPC64GreaterEqual:
+		return rewriteValuePPC64_OpPPC64GreaterEqual_0(v)
+	case OpPPC64MOVHload:
+		return rewriteValuePPC64_OpPPC64MOVHload_0(v)
+	case OpPPC64MOVWstoreidx:
+		return rewriteValuePPC64_OpPPC64MOVWstoreidx_0(v)
+	case OpPPC64ROTLW:
+		return rewriteValuePPC64_OpPPC64ROTLW_0(v)
+	case OpRsh16Ux64:
+		return rewriteValuePPC64_OpRsh16Ux64_0(v)
+	case OpRsh16x64:
+		return rewriteValuePPC64_OpRsh16x64_0(v)
+	case OpTrunc:
+		return rewriteValuePPC64_OpTrunc_0(v)
+	case OpZeroExt16to32:
+		return rewriteValuePPC64_OpZeroExt16to32_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_1010(v *Value) bool {
+	switch v.Op {
+	case OpAdd32F:
+		return rewriteValuePPC64_OpAdd32F_0(v)
+	case OpAtomicCompareAndSwap32:
+		return rewriteValuePPC64_OpAtomicCompareAndSwap32_0(v)
+	case OpCom32:
+		return rewriteValuePPC64_OpCom32_0(v)
+	case OpCvt32Fto64F:
+		return rewriteValuePPC64_OpCvt32Fto64F_0(v)
+	case OpDiv32u:
+		return rewriteValuePPC64_OpDiv32u_0(v)
+	case OpDiv64F:
+		return rewriteValuePPC64_OpDiv64F_0(v)
+	case OpEq64F:
+		return rewriteValuePPC64_OpEq64F_0(v)
+	case OpGeq32F:
+		return rewriteValuePPC64_OpGeq32F_0(v)
+	case OpGreater16:
+		return rewriteValuePPC64_OpGreater16_0(v)
+	case OpLess64:
+		return rewriteValuePPC64_OpLess64_0(v)
+	case OpLsh32x8:
+		return rewriteValuePPC64_OpLsh32x8_0(v)
+	case OpOr8:
+		return rewriteValuePPC64_OpOr8_0(v)
+	case OpPPC64CMPU:
+		return rewriteValuePPC64_OpPPC64CMPU_0(v)
+	case OpPPC64MOVDstoreidx:
+		return rewriteValuePPC64_OpPPC64MOVDstoreidx_0(v)
+	case OpPPC64MOVHZload:
+		return rewriteValuePPC64_OpPPC64MOVHZload_0(v)
+	case OpRound:
+		return rewriteValuePPC64_OpRound_0(v)
+	case OpRsh32Ux8:
+		return rewriteValuePPC64_OpRsh32Ux8_0(v)
+	case OpRsh32x8:
+		return rewriteValuePPC64_OpRsh32x8_0(v)
+	case OpWB:
+		return rewriteValuePPC64_OpWB_0(v)
+	case OpZeroExt16to64:
+		return rewriteValuePPC64_OpZeroExt16to64_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_1011(v *Value) bool {
+	switch v.Op {
+	case OpAdd64F:
+		return rewriteValuePPC64_OpAdd64F_0(v)
+	case OpAtomicCompareAndSwap64:
+		return rewriteValuePPC64_OpAtomicCompareAndSwap64_0(v)
+	case OpCom64:
+		return rewriteValuePPC64_OpCom64_0(v)
+	case OpCvt64Fto32F:
+		return rewriteValuePPC64_OpCvt64Fto32F_0(v)
+	case OpDiv64:
+		return rewriteValuePPC64_OpDiv64_0(v)
+	case OpGeq64F:
+		return rewriteValuePPC64_OpGeq64F_0(v)
+	case OpGreater16U:
+		return rewriteValuePPC64_OpGreater16U_0(v)
+	case OpHmul32:
+		return rewriteValuePPC64_OpHmul32_0(v)
+	case OpLess64U:
+		return rewriteValuePPC64_OpLess64U_0(v)
+	case OpLsh32x16:
+		return rewriteValuePPC64_OpLsh32x16_0(v)
+	case OpNeq8:
+		return rewriteValuePPC64_OpNeq8_0(v)
+	case OpOr16:
+		return rewriteValuePPC64_OpOr16_0(v)
+	case OpPPC64CMPW:
+		return rewriteValuePPC64_OpPPC64CMPW_0(v)
+	case OpPPC64FABS:
+		return rewriteValuePPC64_OpPPC64FABS_0(v)
+	case OpPPC64MOVWload:
+		return rewriteValuePPC64_OpPPC64MOVWload_0(v)
+	case OpPanicBounds:
+		return rewriteValuePPC64_OpPanicBounds_0(v)
+	case OpRsh32Ux16:
+		return rewriteValuePPC64_OpRsh32Ux16_0(v)
+	case OpRsh32x16:
+		return rewriteValuePPC64_OpRsh32x16_0(v)
+	case OpZeroExt32to64:
+		return rewriteValuePPC64_OpZeroExt32to64_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_1100(v *Value) bool {
+	switch v.Op {
+	case OpAbs:
+		return rewriteValuePPC64_OpAbs_0(v)
+	case OpAtomicCompareAndSwapRel32:
+		return rewriteValuePPC64_OpAtomicCompareAndSwapRel32_0(v)
+	case OpCtz8:
+		return rewriteValuePPC64_OpCtz8_0(v)
+	case OpDiv64u:
+		return rewriteValuePPC64_OpDiv64u_0(v)
+	case OpGreater32:
+		return rewriteValuePPC64_OpGreater32_0(v)
+	case OpHmul32u:
+		return rewriteValuePPC64_OpHmul32u_0(v)
+	case OpLess32F:
+		return rewriteValuePPC64_OpLess32F_0(v)
+	case OpLsh32x32:
+		return rewriteValuePPC64_OpLsh32x32_0(v)
+	case OpNeq16:
+		return rewriteValuePPC64_OpNeq16_0(v)
+	case OpOr32:
+		return rewriteValuePPC64_OpOr32_0(v)
+	case OpPPC64CMPWU:
+		return rewriteValuePPC64_OpPPC64CMPWU_0(v)
+	case OpPPC64MOVWZload:
+		return rewriteValuePPC64_OpPPC64MOVWZload_0(v)
+	case OpPPC64MaskIfNotCarry:
+		return rewriteValuePPC64_OpPPC64MaskIfNotCarry_0(v)
+	case OpPPC64OR:
+		return rewriteValuePPC64_OpPPC64OR_0(v) || rewriteValuePPC64_OpPPC64OR_10(v) || rewriteValuePPC64_OpPPC64OR_20(v) || rewriteValuePPC64_OpPPC64OR_30(v) || rewriteValuePPC64_OpPPC64OR_40(v) || rewriteValuePPC64_OpPPC64OR_50(v) || rewriteValuePPC64_OpPPC64OR_60(v) || rewriteValuePPC64_OpPPC64OR_70(v) || rewriteValuePPC64_OpPPC64OR_80(v) || rewriteValuePPC64_OpPPC64OR_90(v) || rewriteValuePPC64_OpPPC64OR_100(v) || rewriteValuePPC64_OpPPC64OR_110(v)
+	case OpRound32F:
+		return rewriteValuePPC64_OpRound32F_0(v)
+	case OpRsh32Ux32:
+		return rewriteValuePPC64_OpRsh32Ux32_0(v)
+	case OpRsh32x32:
+		return rewriteValuePPC64_OpRsh32x32_0(v)
+	case OpSub8:
+		return rewriteValuePPC64_OpSub8_0(v)
+	case OpTrunc16to8:
+		return rewriteValuePPC64_OpTrunc16to8_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_1101(v *Value) bool {
+	switch v.Op {
+	case OpAndB:
+		return rewriteValuePPC64_OpAndB_0(v)
+	case OpAtomicAnd8:
+		return rewriteValuePPC64_OpAtomicAnd8_0(v)
+	case OpAtomicLoad8:
+		return rewriteValuePPC64_OpAtomicLoad8_0(v)
+	case OpClosureCall:
+		return rewriteValuePPC64_OpClosureCall_0(v)
+	case OpCopysign:
+		return rewriteValuePPC64_OpCopysign_0(v)
+	case OpCtz16:
+		return rewriteValuePPC64_OpCtz16_0(v)
+	case OpGreater32U:
+		return rewriteValuePPC64_OpGreater32U_0(v)
+	case OpHmul64:
+		return rewriteValuePPC64_OpHmul64_0(v)
+	case OpLess64F:
+		return rewriteValuePPC64_OpLess64F_0(v)
+	case OpLsh32x64:
+		return rewriteValuePPC64_OpLsh32x64_0(v)
+	case OpNeq32:
+		return rewriteValuePPC64_OpNeq32_0(v)
+	case OpOr64:
+		return rewriteValuePPC64_OpOr64_0(v)
+	case OpPPC64CMPconst:
+		return rewriteValuePPC64_OpPPC64CMPconst_0(v)
+	case OpPPC64MOVDload:
+		return rewriteValuePPC64_OpPPC64MOVDload_0(v)
+	case OpPPC64MOVWBRstore:
+		return rewriteValuePPC64_OpPPC64MOVWBRstore_0(v)
+	case OpPPC64ORN:
+		return rewriteValuePPC64_OpPPC64ORN_0(v)
+	case OpRound64F:
+		return rewriteValuePPC64_OpRound64F_0(v)
+	case OpRsh32Ux64:
+		return rewriteValuePPC64_OpRsh32Ux64_0(v) || rewriteValuePPC64_OpRsh32Ux64_10(v)
+	case OpRsh32x64:
+		return rewriteValuePPC64_OpRsh32x64_0(v) || rewriteValuePPC64_OpRsh32x64_10(v)
+	case OpSub16:
+		return rewriteValuePPC64_OpSub16_0(v)
+	case OpTrunc32to8:
+		return rewriteValuePPC64_OpTrunc32to8_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_1110(v *Value) bool {
+	switch v.Op {
+	case OpAdd64carry:
+		return rewriteValuePPC64_OpAdd64carry_0(v)
+	case OpAddr:
+		return rewriteValuePPC64_OpAddr_0(v)
+	case OpAtomicLoad32:
+		return rewriteValuePPC64_OpAtomicLoad32_0(v)
+	case OpAtomicOr8:
+		return rewriteValuePPC64_OpAtomicOr8_0(v)
+	case OpCtz32:
+		return rewriteValuePPC64_OpCtz32_0(v)
+	case OpGreater64:
+		return rewriteValuePPC64_OpGreater64_0(v)
+	case OpHmul64u:
+		return rewriteValuePPC64_OpHmul64u_0(v)
+	case OpIsNonNil:
+		return rewriteValuePPC64_OpIsNonNil_0(v)
+	case OpLeq8:
+		return rewriteValuePPC64_OpLeq8_0(v)
+	case OpLsh64x8:
+		return rewriteValuePPC64_OpLsh64x8_0(v)
+	case OpMod8:
+		return rewriteValuePPC64_OpMod8_0(v)
+	case OpNeq64:
+		return rewriteValuePPC64_OpNeq64_0(v)
+	case OpOrB:
+		return rewriteValuePPC64_OpOrB_0(v)
+	case OpPPC64ADD:
+		return rewriteValuePPC64_OpPPC64ADD_0(v)
+	case OpPPC64CMPUconst:
+		return rewriteValuePPC64_OpPPC64CMPUconst_0(v)
+	case OpPPC64MOVHBRstore:
+		return rewriteValuePPC64_OpPPC64MOVHBRstore_0(v)
+	case OpPPC64ORconst:
+		return rewriteValuePPC64_OpPPC64ORconst_0(v)
+	case OpPopCount8:
+		return rewriteValuePPC64_OpPopCount8_0(v)
+	case OpRsh64Ux8:
+		return rewriteValuePPC64_OpRsh64Ux8_0(v)
+	case OpRsh64x8:
+		return rewriteValuePPC64_OpRsh64x8_0(v)
+	case OpStaticCall:
+		return rewriteValuePPC64_OpStaticCall_0(v)
+	case OpSub32:
+		return rewriteValuePPC64_OpSub32_0(v)
+	case OpTrunc32to16:
+		return rewriteValuePPC64_OpTrunc32to16_0(v)
+	case OpXor8:
+		return rewriteValuePPC64_OpXor8_0(v)
+	}
+	return false
+}
+func rewriteValuePPC64_shard_1111(v *Value) bool {
+	switch v.Op {
+	case OpAtomicLoad64:
+		return rewriteValuePPC64_OpAtomicLoad64_0(v)
+	case OpCtz64:
+		return rewriteValuePPC64_OpCtz64_0(v)
+	case OpEqB:
+		return rewriteValuePPC64_OpEqB_0(v)
+	case OpGreater64U:
+		return rewriteValuePPC64_OpGreater64U_0(v)
+	case OpInterCall:
+		return rewriteValuePPC64_OpInterCall_0(v)
+	case OpIsInBounds:
+		return rewriteValuePPC64_OpIsInBounds_0(v)
+	case OpLeq8U:
+		return rewriteValuePPC64_OpLeq8U_0(v)
+	case OpLocalAddr:
+		return rewriteValuePPC64_OpLocalAddr_0(v)
+	case OpLsh64x16:
+		return rewriteValuePPC64_OpLsh64x16_0(v)
+	case OpMod8u:
+		return rewriteValuePPC64_OpMod8u_0(v)
+	case OpNeqPtr:
+		return rewriteValuePPC64_OpNeqPtr_0(v)
+	case OpPPC64ADDconst:
+		return rewriteValuePPC64_OpPPC64ADDconst_0(v)
+	case OpPPC64CMPWconst:
+		return rewriteValuePPC64_OpPPC64CMPWconst_0(v)
+	case OpPPC64FMOVDload:
+		return rewriteValuePPC64_OpPPC64FMOVDload_0(v)
+	case OpPPC64XORconst:
+		return rewriteValuePPC64_OpPPC64XORconst_0(v)
+	case OpPopCount16:
+		return rewriteValuePPC64_OpPopCount16_0(v)
+	case OpRsh64Ux16:
+		return rewriteValuePPC64_OpRsh64Ux16_0(v)
+	case OpRsh64x16:
+		return rewriteValuePPC64_OpRsh64x16_0(v)
+	case OpSub64:
+		return rewriteValuePPC64_OpSub64_0(v)
+	case OpTrunc64to8:
+		return rewriteValuePPC64_OpTrunc64to8_0(v)
+	case OpXor16:
+		return rewriteValuePPC64_OpXor16_0(v)
 	}
 	return false
 }

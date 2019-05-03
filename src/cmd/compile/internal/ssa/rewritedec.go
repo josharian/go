@@ -16,29 +16,128 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValuedec(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValuedec_shards[shard](v)
+}
+
+var rewriteValuedec_shards = [...]func(v *Value) bool{
+	0:  rewriteValuedec_shard_0000,
+	1:  rewriteValuedec_shard_0001,
+	2:  rewriteValuedec_shard_0010,
+	3:  rewriteValuedec_shard_0011,
+	4:  rewriteValuedec_shard_0100,
+	5:  rewriteValuedec_shard_0101,
+	6:  rewriteValuedec_shard_0110,
+	7:  rewriteValuedec_shard_0111,
+	8:  rewriteValuedec_shard_1000,
+	9:  rewriteValuedec_shard_1001,
+	10: rewriteValuedec_shard_1010,
+	11: rewriteValuedec_shard_1011,
+	12: rewriteValuedec_shard_1100,
+	13: rewriteValuedec_shard_1101,
+	14: rewriteValuedec_shard_1110,
+	15: rewriteValuedec_shard_1111,
+}
+
+func rewriteValuedec_shard_0000(v *Value) bool {
 	switch v.Op {
-	case OpComplexImag:
-		return rewriteValuedec_OpComplexImag_0(v)
-	case OpComplexReal:
-		return rewriteValuedec_OpComplexReal_0(v)
-	case OpIData:
-		return rewriteValuedec_OpIData_0(v)
+	case OpStringPtr:
+		return rewriteValuedec_OpStringPtr_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_0001(v *Value) bool {
+	switch v.Op {
+	case OpStringLen:
+		return rewriteValuedec_OpStringLen_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_0010(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedec_shard_0011(v *Value) bool {
+	switch v.Op {
 	case OpITab:
 		return rewriteValuedec_OpITab_0(v)
 	case OpLoad:
 		return rewriteValuedec_OpLoad_0(v)
-	case OpSliceCap:
-		return rewriteValuedec_OpSliceCap_0(v)
-	case OpSliceLen:
-		return rewriteValuedec_OpSliceLen_0(v)
-	case OpSlicePtr:
-		return rewriteValuedec_OpSlicePtr_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_0100(v *Value) bool {
+	switch v.Op {
+	case OpIData:
+		return rewriteValuedec_OpIData_0(v)
 	case OpStore:
 		return rewriteValuedec_OpStore_0(v)
-	case OpStringLen:
-		return rewriteValuedec_OpStringLen_0(v)
-	case OpStringPtr:
-		return rewriteValuedec_OpStringPtr_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_0101(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedec_shard_0110(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedec_shard_0111(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedec_shard_1000(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedec_shard_1001(v *Value) bool {
+	switch v.Op {
+	case OpSlicePtr:
+		return rewriteValuedec_OpSlicePtr_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_1010(v *Value) bool {
+	switch v.Op {
+	case OpSliceLen:
+		return rewriteValuedec_OpSliceLen_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_1011(v *Value) bool {
+	switch v.Op {
+	case OpSliceCap:
+		return rewriteValuedec_OpSliceCap_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_1100(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedec_shard_1101(v *Value) bool {
+	switch v.Op {
+	case OpComplexReal:
+		return rewriteValuedec_OpComplexReal_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_1110(v *Value) bool {
+	switch v.Op {
+	case OpComplexImag:
+		return rewriteValuedec_OpComplexImag_0(v)
+	}
+	return false
+}
+func rewriteValuedec_shard_1111(v *Value) bool {
+	switch v.Op {
 	}
 	return false
 }

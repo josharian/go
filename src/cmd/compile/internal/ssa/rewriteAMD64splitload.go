@@ -16,23 +16,122 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValueAMD64splitload(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValueAMD64splitload_shards[shard](v)
+}
+
+var rewriteValueAMD64splitload_shards = [...]func(v *Value) bool{
+	0:  rewriteValueAMD64splitload_shard_0000,
+	1:  rewriteValueAMD64splitload_shard_0001,
+	2:  rewriteValueAMD64splitload_shard_0010,
+	3:  rewriteValueAMD64splitload_shard_0011,
+	4:  rewriteValueAMD64splitload_shard_0100,
+	5:  rewriteValueAMD64splitload_shard_0101,
+	6:  rewriteValueAMD64splitload_shard_0110,
+	7:  rewriteValueAMD64splitload_shard_0111,
+	8:  rewriteValueAMD64splitload_shard_1000,
+	9:  rewriteValueAMD64splitload_shard_1001,
+	10: rewriteValueAMD64splitload_shard_1010,
+	11: rewriteValueAMD64splitload_shard_1011,
+	12: rewriteValueAMD64splitload_shard_1100,
+	13: rewriteValueAMD64splitload_shard_1101,
+	14: rewriteValueAMD64splitload_shard_1110,
+	15: rewriteValueAMD64splitload_shard_1111,
+}
+
+func rewriteValueAMD64splitload_shard_0000(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_0001(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_0010(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_0011(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_0100(v *Value) bool {
+	switch v.Op {
+	case OpAMD64CMPQload:
+		return rewriteValueAMD64splitload_OpAMD64CMPQload_0(v)
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_0101(v *Value) bool {
+	switch v.Op {
+	case OpAMD64CMPLload:
+		return rewriteValueAMD64splitload_OpAMD64CMPLload_0(v)
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_0110(v *Value) bool {
+	switch v.Op {
+	case OpAMD64CMPWload:
+		return rewriteValueAMD64splitload_OpAMD64CMPWload_0(v)
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_0111(v *Value) bool {
+	switch v.Op {
+	case OpAMD64CMPBload:
+		return rewriteValueAMD64splitload_OpAMD64CMPBload_0(v)
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_1000(v *Value) bool {
+	switch v.Op {
+	case OpAMD64CMPQconstload:
+		return rewriteValueAMD64splitload_OpAMD64CMPQconstload_0(v)
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_1001(v *Value) bool {
+	switch v.Op {
+	case OpAMD64CMPLconstload:
+		return rewriteValueAMD64splitload_OpAMD64CMPLconstload_0(v)
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_1010(v *Value) bool {
+	switch v.Op {
+	case OpAMD64CMPWconstload:
+		return rewriteValueAMD64splitload_OpAMD64CMPWconstload_0(v)
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_1011(v *Value) bool {
 	switch v.Op {
 	case OpAMD64CMPBconstload:
 		return rewriteValueAMD64splitload_OpAMD64CMPBconstload_0(v)
-	case OpAMD64CMPBload:
-		return rewriteValueAMD64splitload_OpAMD64CMPBload_0(v)
-	case OpAMD64CMPLconstload:
-		return rewriteValueAMD64splitload_OpAMD64CMPLconstload_0(v)
-	case OpAMD64CMPLload:
-		return rewriteValueAMD64splitload_OpAMD64CMPLload_0(v)
-	case OpAMD64CMPQconstload:
-		return rewriteValueAMD64splitload_OpAMD64CMPQconstload_0(v)
-	case OpAMD64CMPQload:
-		return rewriteValueAMD64splitload_OpAMD64CMPQload_0(v)
-	case OpAMD64CMPWconstload:
-		return rewriteValueAMD64splitload_OpAMD64CMPWconstload_0(v)
-	case OpAMD64CMPWload:
-		return rewriteValueAMD64splitload_OpAMD64CMPWload_0(v)
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_1100(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_1101(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_1110(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValueAMD64splitload_shard_1111(v *Value) bool {
+	switch v.Op {
 	}
 	return false
 }

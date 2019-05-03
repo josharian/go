@@ -16,807 +16,906 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValueS390X(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValueS390X_shards[shard](v)
+}
+
+var rewriteValueS390X_shards = [...]func(v *Value) bool{
+	0:  rewriteValueS390X_shard_0000,
+	1:  rewriteValueS390X_shard_0001,
+	2:  rewriteValueS390X_shard_0010,
+	3:  rewriteValueS390X_shard_0011,
+	4:  rewriteValueS390X_shard_0100,
+	5:  rewriteValueS390X_shard_0101,
+	6:  rewriteValueS390X_shard_0110,
+	7:  rewriteValueS390X_shard_0111,
+	8:  rewriteValueS390X_shard_1000,
+	9:  rewriteValueS390X_shard_1001,
+	10: rewriteValueS390X_shard_1010,
+	11: rewriteValueS390X_shard_1011,
+	12: rewriteValueS390X_shard_1100,
+	13: rewriteValueS390X_shard_1101,
+	14: rewriteValueS390X_shard_1110,
+	15: rewriteValueS390X_shard_1111,
+}
+
+func rewriteValueS390X_shard_0000(v *Value) bool {
 	switch v.Op {
-	case OpAdd16:
-		return rewriteValueS390X_OpAdd16_0(v)
-	case OpAdd32:
-		return rewriteValueS390X_OpAdd32_0(v)
-	case OpAdd32F:
-		return rewriteValueS390X_OpAdd32F_0(v)
-	case OpAdd64:
-		return rewriteValueS390X_OpAdd64_0(v)
-	case OpAdd64F:
-		return rewriteValueS390X_OpAdd64F_0(v)
-	case OpAdd8:
-		return rewriteValueS390X_OpAdd8_0(v)
-	case OpAddPtr:
-		return rewriteValueS390X_OpAddPtr_0(v)
-	case OpAddr:
-		return rewriteValueS390X_OpAddr_0(v)
-	case OpAnd16:
-		return rewriteValueS390X_OpAnd16_0(v)
-	case OpAnd32:
-		return rewriteValueS390X_OpAnd32_0(v)
-	case OpAnd64:
-		return rewriteValueS390X_OpAnd64_0(v)
-	case OpAnd8:
-		return rewriteValueS390X_OpAnd8_0(v)
-	case OpAndB:
-		return rewriteValueS390X_OpAndB_0(v)
-	case OpAtomicAdd32:
-		return rewriteValueS390X_OpAtomicAdd32_0(v)
-	case OpAtomicAdd64:
-		return rewriteValueS390X_OpAtomicAdd64_0(v)
-	case OpAtomicCompareAndSwap32:
-		return rewriteValueS390X_OpAtomicCompareAndSwap32_0(v)
-	case OpAtomicCompareAndSwap64:
-		return rewriteValueS390X_OpAtomicCompareAndSwap64_0(v)
-	case OpAtomicExchange32:
-		return rewriteValueS390X_OpAtomicExchange32_0(v)
-	case OpAtomicExchange64:
-		return rewriteValueS390X_OpAtomicExchange64_0(v)
-	case OpAtomicLoad32:
-		return rewriteValueS390X_OpAtomicLoad32_0(v)
-	case OpAtomicLoad64:
-		return rewriteValueS390X_OpAtomicLoad64_0(v)
-	case OpAtomicLoad8:
-		return rewriteValueS390X_OpAtomicLoad8_0(v)
 	case OpAtomicLoadPtr:
 		return rewriteValueS390X_OpAtomicLoadPtr_0(v)
-	case OpAtomicStore32:
-		return rewriteValueS390X_OpAtomicStore32_0(v)
-	case OpAtomicStore64:
-		return rewriteValueS390X_OpAtomicStore64_0(v)
-	case OpAtomicStorePtrNoWB:
-		return rewriteValueS390X_OpAtomicStorePtrNoWB_0(v)
-	case OpAvg64u:
-		return rewriteValueS390X_OpAvg64u_0(v)
-	case OpBitLen64:
-		return rewriteValueS390X_OpBitLen64_0(v)
-	case OpBswap32:
-		return rewriteValueS390X_OpBswap32_0(v)
-	case OpBswap64:
-		return rewriteValueS390X_OpBswap64_0(v)
-	case OpCeil:
-		return rewriteValueS390X_OpCeil_0(v)
-	case OpClosureCall:
-		return rewriteValueS390X_OpClosureCall_0(v)
-	case OpCom16:
-		return rewriteValueS390X_OpCom16_0(v)
-	case OpCom32:
-		return rewriteValueS390X_OpCom32_0(v)
-	case OpCom64:
-		return rewriteValueS390X_OpCom64_0(v)
-	case OpCom8:
-		return rewriteValueS390X_OpCom8_0(v)
-	case OpConst16:
-		return rewriteValueS390X_OpConst16_0(v)
-	case OpConst32:
-		return rewriteValueS390X_OpConst32_0(v)
-	case OpConst32F:
-		return rewriteValueS390X_OpConst32F_0(v)
-	case OpConst64:
-		return rewriteValueS390X_OpConst64_0(v)
-	case OpConst64F:
-		return rewriteValueS390X_OpConst64F_0(v)
-	case OpConst8:
-		return rewriteValueS390X_OpConst8_0(v)
-	case OpConstBool:
-		return rewriteValueS390X_OpConstBool_0(v)
-	case OpConstNil:
-		return rewriteValueS390X_OpConstNil_0(v)
-	case OpCtz32:
-		return rewriteValueS390X_OpCtz32_0(v)
-	case OpCtz32NonZero:
-		return rewriteValueS390X_OpCtz32NonZero_0(v)
-	case OpCtz64:
-		return rewriteValueS390X_OpCtz64_0(v)
-	case OpCtz64NonZero:
-		return rewriteValueS390X_OpCtz64NonZero_0(v)
-	case OpCvt32Fto32:
-		return rewriteValueS390X_OpCvt32Fto32_0(v)
-	case OpCvt32Fto64:
-		return rewriteValueS390X_OpCvt32Fto64_0(v)
-	case OpCvt32Fto64F:
-		return rewriteValueS390X_OpCvt32Fto64F_0(v)
-	case OpCvt32to32F:
-		return rewriteValueS390X_OpCvt32to32F_0(v)
-	case OpCvt32to64F:
-		return rewriteValueS390X_OpCvt32to64F_0(v)
-	case OpCvt64Fto32:
-		return rewriteValueS390X_OpCvt64Fto32_0(v)
-	case OpCvt64Fto32F:
-		return rewriteValueS390X_OpCvt64Fto32F_0(v)
-	case OpCvt64Fto64:
-		return rewriteValueS390X_OpCvt64Fto64_0(v)
-	case OpCvt64to32F:
-		return rewriteValueS390X_OpCvt64to32F_0(v)
-	case OpCvt64to64F:
-		return rewriteValueS390X_OpCvt64to64F_0(v)
-	case OpDiv16:
-		return rewriteValueS390X_OpDiv16_0(v)
-	case OpDiv16u:
-		return rewriteValueS390X_OpDiv16u_0(v)
-	case OpDiv32:
-		return rewriteValueS390X_OpDiv32_0(v)
-	case OpDiv32F:
-		return rewriteValueS390X_OpDiv32F_0(v)
-	case OpDiv32u:
-		return rewriteValueS390X_OpDiv32u_0(v)
-	case OpDiv64:
-		return rewriteValueS390X_OpDiv64_0(v)
-	case OpDiv64F:
-		return rewriteValueS390X_OpDiv64F_0(v)
-	case OpDiv64u:
-		return rewriteValueS390X_OpDiv64u_0(v)
-	case OpDiv8:
-		return rewriteValueS390X_OpDiv8_0(v)
-	case OpDiv8u:
-		return rewriteValueS390X_OpDiv8u_0(v)
-	case OpEq16:
-		return rewriteValueS390X_OpEq16_0(v)
-	case OpEq32:
-		return rewriteValueS390X_OpEq32_0(v)
-	case OpEq32F:
-		return rewriteValueS390X_OpEq32F_0(v)
-	case OpEq64:
-		return rewriteValueS390X_OpEq64_0(v)
-	case OpEq64F:
-		return rewriteValueS390X_OpEq64F_0(v)
-	case OpEq8:
-		return rewriteValueS390X_OpEq8_0(v)
-	case OpEqB:
-		return rewriteValueS390X_OpEqB_0(v)
-	case OpEqPtr:
-		return rewriteValueS390X_OpEqPtr_0(v)
-	case OpFloor:
-		return rewriteValueS390X_OpFloor_0(v)
-	case OpGeq16:
-		return rewriteValueS390X_OpGeq16_0(v)
-	case OpGeq16U:
-		return rewriteValueS390X_OpGeq16U_0(v)
-	case OpGeq32:
-		return rewriteValueS390X_OpGeq32_0(v)
-	case OpGeq32F:
-		return rewriteValueS390X_OpGeq32F_0(v)
-	case OpGeq32U:
-		return rewriteValueS390X_OpGeq32U_0(v)
-	case OpGeq64:
-		return rewriteValueS390X_OpGeq64_0(v)
-	case OpGeq64F:
-		return rewriteValueS390X_OpGeq64F_0(v)
-	case OpGeq64U:
-		return rewriteValueS390X_OpGeq64U_0(v)
-	case OpGeq8:
-		return rewriteValueS390X_OpGeq8_0(v)
-	case OpGeq8U:
-		return rewriteValueS390X_OpGeq8U_0(v)
-	case OpGetCallerPC:
-		return rewriteValueS390X_OpGetCallerPC_0(v)
-	case OpGetCallerSP:
-		return rewriteValueS390X_OpGetCallerSP_0(v)
-	case OpGetClosurePtr:
-		return rewriteValueS390X_OpGetClosurePtr_0(v)
-	case OpGetG:
-		return rewriteValueS390X_OpGetG_0(v)
-	case OpGreater16:
-		return rewriteValueS390X_OpGreater16_0(v)
-	case OpGreater16U:
-		return rewriteValueS390X_OpGreater16U_0(v)
-	case OpGreater32:
-		return rewriteValueS390X_OpGreater32_0(v)
 	case OpGreater32F:
 		return rewriteValueS390X_OpGreater32F_0(v)
-	case OpGreater32U:
-		return rewriteValueS390X_OpGreater32U_0(v)
-	case OpGreater64:
-		return rewriteValueS390X_OpGreater64_0(v)
-	case OpGreater64F:
-		return rewriteValueS390X_OpGreater64F_0(v)
-	case OpGreater64U:
-		return rewriteValueS390X_OpGreater64U_0(v)
-	case OpGreater8:
-		return rewriteValueS390X_OpGreater8_0(v)
-	case OpGreater8U:
-		return rewriteValueS390X_OpGreater8U_0(v)
-	case OpHmul32:
-		return rewriteValueS390X_OpHmul32_0(v)
-	case OpHmul32u:
-		return rewriteValueS390X_OpHmul32u_0(v)
-	case OpHmul64:
-		return rewriteValueS390X_OpHmul64_0(v)
-	case OpHmul64u:
-		return rewriteValueS390X_OpHmul64u_0(v)
-	case OpITab:
-		return rewriteValueS390X_OpITab_0(v)
-	case OpInterCall:
-		return rewriteValueS390X_OpInterCall_0(v)
-	case OpIsInBounds:
-		return rewriteValueS390X_OpIsInBounds_0(v)
-	case OpIsNonNil:
-		return rewriteValueS390X_OpIsNonNil_0(v)
 	case OpIsSliceInBounds:
 		return rewriteValueS390X_OpIsSliceInBounds_0(v)
 	case OpLeq16:
 		return rewriteValueS390X_OpLeq16_0(v)
-	case OpLeq16U:
-		return rewriteValueS390X_OpLeq16U_0(v)
-	case OpLeq32:
-		return rewriteValueS390X_OpLeq32_0(v)
-	case OpLeq32F:
-		return rewriteValueS390X_OpLeq32F_0(v)
-	case OpLeq32U:
-		return rewriteValueS390X_OpLeq32U_0(v)
-	case OpLeq64:
-		return rewriteValueS390X_OpLeq64_0(v)
-	case OpLeq64F:
-		return rewriteValueS390X_OpLeq64F_0(v)
-	case OpLeq64U:
-		return rewriteValueS390X_OpLeq64U_0(v)
-	case OpLeq8:
-		return rewriteValueS390X_OpLeq8_0(v)
-	case OpLeq8U:
-		return rewriteValueS390X_OpLeq8U_0(v)
-	case OpLess16:
-		return rewriteValueS390X_OpLess16_0(v)
-	case OpLess16U:
-		return rewriteValueS390X_OpLess16U_0(v)
-	case OpLess32:
-		return rewriteValueS390X_OpLess32_0(v)
-	case OpLess32F:
-		return rewriteValueS390X_OpLess32F_0(v)
-	case OpLess32U:
-		return rewriteValueS390X_OpLess32U_0(v)
-	case OpLess64:
-		return rewriteValueS390X_OpLess64_0(v)
-	case OpLess64F:
-		return rewriteValueS390X_OpLess64F_0(v)
-	case OpLess64U:
-		return rewriteValueS390X_OpLess64U_0(v)
-	case OpLess8:
-		return rewriteValueS390X_OpLess8_0(v)
-	case OpLess8U:
-		return rewriteValueS390X_OpLess8U_0(v)
-	case OpLoad:
-		return rewriteValueS390X_OpLoad_0(v)
-	case OpLocalAddr:
-		return rewriteValueS390X_OpLocalAddr_0(v)
-	case OpLsh16x16:
-		return rewriteValueS390X_OpLsh16x16_0(v)
-	case OpLsh16x32:
-		return rewriteValueS390X_OpLsh16x32_0(v)
-	case OpLsh16x64:
-		return rewriteValueS390X_OpLsh16x64_0(v)
-	case OpLsh16x8:
-		return rewriteValueS390X_OpLsh16x8_0(v)
-	case OpLsh32x16:
-		return rewriteValueS390X_OpLsh32x16_0(v)
-	case OpLsh32x32:
-		return rewriteValueS390X_OpLsh32x32_0(v)
-	case OpLsh32x64:
-		return rewriteValueS390X_OpLsh32x64_0(v)
-	case OpLsh32x8:
-		return rewriteValueS390X_OpLsh32x8_0(v)
-	case OpLsh64x16:
-		return rewriteValueS390X_OpLsh64x16_0(v)
 	case OpLsh64x32:
 		return rewriteValueS390X_OpLsh64x32_0(v)
-	case OpLsh64x64:
-		return rewriteValueS390X_OpLsh64x64_0(v)
-	case OpLsh64x8:
-		return rewriteValueS390X_OpLsh64x8_0(v)
-	case OpLsh8x16:
-		return rewriteValueS390X_OpLsh8x16_0(v)
-	case OpLsh8x32:
-		return rewriteValueS390X_OpLsh8x32_0(v)
-	case OpLsh8x64:
-		return rewriteValueS390X_OpLsh8x64_0(v)
-	case OpLsh8x8:
-		return rewriteValueS390X_OpLsh8x8_0(v)
 	case OpMod16:
 		return rewriteValueS390X_OpMod16_0(v)
-	case OpMod16u:
-		return rewriteValueS390X_OpMod16u_0(v)
-	case OpMod32:
-		return rewriteValueS390X_OpMod32_0(v)
-	case OpMod32u:
-		return rewriteValueS390X_OpMod32u_0(v)
-	case OpMod64:
-		return rewriteValueS390X_OpMod64_0(v)
-	case OpMod64u:
-		return rewriteValueS390X_OpMod64u_0(v)
-	case OpMod8:
-		return rewriteValueS390X_OpMod8_0(v)
-	case OpMod8u:
-		return rewriteValueS390X_OpMod8u_0(v)
-	case OpMove:
-		return rewriteValueS390X_OpMove_0(v) || rewriteValueS390X_OpMove_10(v)
-	case OpMul16:
-		return rewriteValueS390X_OpMul16_0(v)
-	case OpMul32:
-		return rewriteValueS390X_OpMul32_0(v)
-	case OpMul32F:
-		return rewriteValueS390X_OpMul32F_0(v)
-	case OpMul64:
-		return rewriteValueS390X_OpMul64_0(v)
-	case OpMul64F:
-		return rewriteValueS390X_OpMul64F_0(v)
-	case OpMul8:
-		return rewriteValueS390X_OpMul8_0(v)
-	case OpNeg16:
-		return rewriteValueS390X_OpNeg16_0(v)
-	case OpNeg32:
-		return rewriteValueS390X_OpNeg32_0(v)
-	case OpNeg32F:
-		return rewriteValueS390X_OpNeg32F_0(v)
-	case OpNeg64:
-		return rewriteValueS390X_OpNeg64_0(v)
-	case OpNeg64F:
-		return rewriteValueS390X_OpNeg64F_0(v)
-	case OpNeg8:
-		return rewriteValueS390X_OpNeg8_0(v)
-	case OpNeq16:
-		return rewriteValueS390X_OpNeq16_0(v)
-	case OpNeq32:
-		return rewriteValueS390X_OpNeq32_0(v)
-	case OpNeq32F:
-		return rewriteValueS390X_OpNeq32F_0(v)
-	case OpNeq64:
-		return rewriteValueS390X_OpNeq64_0(v)
-	case OpNeq64F:
-		return rewriteValueS390X_OpNeq64F_0(v)
-	case OpNeq8:
-		return rewriteValueS390X_OpNeq8_0(v)
 	case OpNeqB:
 		return rewriteValueS390X_OpNeqB_0(v)
-	case OpNeqPtr:
-		return rewriteValueS390X_OpNeqPtr_0(v)
+	case OpPopCount32:
+		return rewriteValueS390X_OpPopCount32_0(v)
+	case OpRsh64Ux32:
+		return rewriteValueS390X_OpRsh64Ux32_0(v)
+	case OpRsh64x32:
+		return rewriteValueS390X_OpRsh64x32_0(v)
+	case OpS390XCMPWconst:
+		return rewriteValueS390X_OpS390XCMPWconst_0(v)
+	case OpS390XMOVHloadidx:
+		return rewriteValueS390X_OpS390XMOVHloadidx_0(v)
+	case OpS390XMOVWstoreconst:
+		return rewriteValueS390X_OpS390XMOVWstoreconst_0(v)
+	case OpS390XSRAWconst:
+		return rewriteValueS390X_OpS390XSRAWconst_0(v)
+	case OpS390XSUBconst:
+		return rewriteValueS390X_OpS390XSUBconst_0(v)
+	case OpS390XXOR:
+		return rewriteValueS390X_OpS390XXOR_0(v) || rewriteValueS390X_OpS390XXOR_10(v)
+	case OpSignExt8to16:
+		return rewriteValueS390X_OpSignExt8to16_0(v)
+	case OpSubPtr:
+		return rewriteValueS390X_OpSubPtr_0(v)
+	case OpTrunc64to16:
+		return rewriteValueS390X_OpTrunc64to16_0(v)
+	case OpXor32:
+		return rewriteValueS390X_OpXor32_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_0001(v *Value) bool {
+	switch v.Op {
+	case OpConstBool:
+		return rewriteValueS390X_OpConstBool_0(v)
+	case OpGreater64F:
+		return rewriteValueS390X_OpGreater64F_0(v)
+	case OpLeq16U:
+		return rewriteValueS390X_OpLeq16U_0(v)
+	case OpLsh64x64:
+		return rewriteValueS390X_OpLsh64x64_0(v)
+	case OpMod16u:
+		return rewriteValueS390X_OpMod16u_0(v)
 	case OpNilCheck:
 		return rewriteValueS390X_OpNilCheck_0(v)
 	case OpNot:
 		return rewriteValueS390X_OpNot_0(v)
-	case OpOffPtr:
-		return rewriteValueS390X_OpOffPtr_0(v)
-	case OpOr16:
-		return rewriteValueS390X_OpOr16_0(v)
-	case OpOr32:
-		return rewriteValueS390X_OpOr32_0(v)
-	case OpOr64:
-		return rewriteValueS390X_OpOr64_0(v)
-	case OpOr8:
-		return rewriteValueS390X_OpOr8_0(v)
-	case OpOrB:
-		return rewriteValueS390X_OpOrB_0(v)
-	case OpPanicBounds:
-		return rewriteValueS390X_OpPanicBounds_0(v)
-	case OpPopCount16:
-		return rewriteValueS390X_OpPopCount16_0(v)
-	case OpPopCount32:
-		return rewriteValueS390X_OpPopCount32_0(v)
 	case OpPopCount64:
 		return rewriteValueS390X_OpPopCount64_0(v)
-	case OpPopCount8:
-		return rewriteValueS390X_OpPopCount8_0(v)
-	case OpRotateLeft16:
-		return rewriteValueS390X_OpRotateLeft16_0(v)
-	case OpRotateLeft32:
-		return rewriteValueS390X_OpRotateLeft32_0(v)
-	case OpRotateLeft64:
-		return rewriteValueS390X_OpRotateLeft64_0(v)
-	case OpRotateLeft8:
-		return rewriteValueS390X_OpRotateLeft8_0(v)
-	case OpRound:
-		return rewriteValueS390X_OpRound_0(v)
-	case OpRound32F:
-		return rewriteValueS390X_OpRound32F_0(v)
-	case OpRound64F:
-		return rewriteValueS390X_OpRound64F_0(v)
-	case OpRoundToEven:
-		return rewriteValueS390X_OpRoundToEven_0(v)
-	case OpRsh16Ux16:
-		return rewriteValueS390X_OpRsh16Ux16_0(v)
-	case OpRsh16Ux32:
-		return rewriteValueS390X_OpRsh16Ux32_0(v)
-	case OpRsh16Ux64:
-		return rewriteValueS390X_OpRsh16Ux64_0(v)
-	case OpRsh16Ux8:
-		return rewriteValueS390X_OpRsh16Ux8_0(v)
-	case OpRsh16x16:
-		return rewriteValueS390X_OpRsh16x16_0(v)
-	case OpRsh16x32:
-		return rewriteValueS390X_OpRsh16x32_0(v)
-	case OpRsh16x64:
-		return rewriteValueS390X_OpRsh16x64_0(v)
-	case OpRsh16x8:
-		return rewriteValueS390X_OpRsh16x8_0(v)
-	case OpRsh32Ux16:
-		return rewriteValueS390X_OpRsh32Ux16_0(v)
-	case OpRsh32Ux32:
-		return rewriteValueS390X_OpRsh32Ux32_0(v)
-	case OpRsh32Ux64:
-		return rewriteValueS390X_OpRsh32Ux64_0(v)
-	case OpRsh32Ux8:
-		return rewriteValueS390X_OpRsh32Ux8_0(v)
-	case OpRsh32x16:
-		return rewriteValueS390X_OpRsh32x16_0(v)
-	case OpRsh32x32:
-		return rewriteValueS390X_OpRsh32x32_0(v)
-	case OpRsh32x64:
-		return rewriteValueS390X_OpRsh32x64_0(v)
-	case OpRsh32x8:
-		return rewriteValueS390X_OpRsh32x8_0(v)
-	case OpRsh64Ux16:
-		return rewriteValueS390X_OpRsh64Ux16_0(v)
-	case OpRsh64Ux32:
-		return rewriteValueS390X_OpRsh64Ux32_0(v)
 	case OpRsh64Ux64:
 		return rewriteValueS390X_OpRsh64Ux64_0(v)
-	case OpRsh64Ux8:
-		return rewriteValueS390X_OpRsh64Ux8_0(v)
-	case OpRsh64x16:
-		return rewriteValueS390X_OpRsh64x16_0(v)
-	case OpRsh64x32:
-		return rewriteValueS390X_OpRsh64x32_0(v)
 	case OpRsh64x64:
 		return rewriteValueS390X_OpRsh64x64_0(v)
-	case OpRsh64x8:
-		return rewriteValueS390X_OpRsh64x8_0(v)
-	case OpRsh8Ux16:
-		return rewriteValueS390X_OpRsh8Ux16_0(v)
-	case OpRsh8Ux32:
-		return rewriteValueS390X_OpRsh8Ux32_0(v)
-	case OpRsh8Ux64:
-		return rewriteValueS390X_OpRsh8Ux64_0(v)
-	case OpRsh8Ux8:
-		return rewriteValueS390X_OpRsh8Ux8_0(v)
-	case OpRsh8x16:
-		return rewriteValueS390X_OpRsh8x16_0(v)
-	case OpRsh8x32:
-		return rewriteValueS390X_OpRsh8x32_0(v)
-	case OpRsh8x64:
-		return rewriteValueS390X_OpRsh8x64_0(v)
-	case OpRsh8x8:
-		return rewriteValueS390X_OpRsh8x8_0(v)
-	case OpS390XADD:
-		return rewriteValueS390X_OpS390XADD_0(v) || rewriteValueS390X_OpS390XADD_10(v)
-	case OpS390XADDC:
-		return rewriteValueS390X_OpS390XADDC_0(v)
-	case OpS390XADDE:
-		return rewriteValueS390X_OpS390XADDE_0(v)
-	case OpS390XADDW:
-		return rewriteValueS390X_OpS390XADDW_0(v) || rewriteValueS390X_OpS390XADDW_10(v)
-	case OpS390XADDWconst:
-		return rewriteValueS390X_OpS390XADDWconst_0(v)
-	case OpS390XADDWload:
-		return rewriteValueS390X_OpS390XADDWload_0(v)
-	case OpS390XADDconst:
-		return rewriteValueS390X_OpS390XADDconst_0(v)
-	case OpS390XADDload:
-		return rewriteValueS390X_OpS390XADDload_0(v)
-	case OpS390XAND:
-		return rewriteValueS390X_OpS390XAND_0(v) || rewriteValueS390X_OpS390XAND_10(v)
-	case OpS390XANDW:
-		return rewriteValueS390X_OpS390XANDW_0(v) || rewriteValueS390X_OpS390XANDW_10(v)
-	case OpS390XANDWconst:
-		return rewriteValueS390X_OpS390XANDWconst_0(v)
-	case OpS390XANDWload:
-		return rewriteValueS390X_OpS390XANDWload_0(v)
-	case OpS390XANDconst:
-		return rewriteValueS390X_OpS390XANDconst_0(v)
-	case OpS390XANDload:
-		return rewriteValueS390X_OpS390XANDload_0(v)
-	case OpS390XCMP:
-		return rewriteValueS390X_OpS390XCMP_0(v)
-	case OpS390XCMPU:
-		return rewriteValueS390X_OpS390XCMPU_0(v)
 	case OpS390XCMPUconst:
 		return rewriteValueS390X_OpS390XCMPUconst_0(v) || rewriteValueS390X_OpS390XCMPUconst_10(v)
-	case OpS390XCMPW:
-		return rewriteValueS390X_OpS390XCMPW_0(v)
-	case OpS390XCMPWU:
-		return rewriteValueS390X_OpS390XCMPWU_0(v)
-	case OpS390XCMPWUconst:
-		return rewriteValueS390X_OpS390XCMPWUconst_0(v)
-	case OpS390XCMPWconst:
-		return rewriteValueS390X_OpS390XCMPWconst_0(v)
-	case OpS390XCMPconst:
-		return rewriteValueS390X_OpS390XCMPconst_0(v) || rewriteValueS390X_OpS390XCMPconst_10(v)
-	case OpS390XCPSDR:
-		return rewriteValueS390X_OpS390XCPSDR_0(v)
-	case OpS390XFADD:
-		return rewriteValueS390X_OpS390XFADD_0(v)
-	case OpS390XFADDS:
-		return rewriteValueS390X_OpS390XFADDS_0(v)
-	case OpS390XFMOVDload:
-		return rewriteValueS390X_OpS390XFMOVDload_0(v)
-	case OpS390XFMOVDloadidx:
-		return rewriteValueS390X_OpS390XFMOVDloadidx_0(v)
-	case OpS390XFMOVDstore:
-		return rewriteValueS390X_OpS390XFMOVDstore_0(v)
-	case OpS390XFMOVDstoreidx:
-		return rewriteValueS390X_OpS390XFMOVDstoreidx_0(v)
-	case OpS390XFMOVSload:
-		return rewriteValueS390X_OpS390XFMOVSload_0(v)
-	case OpS390XFMOVSloadidx:
-		return rewriteValueS390X_OpS390XFMOVSloadidx_0(v)
-	case OpS390XFMOVSstore:
-		return rewriteValueS390X_OpS390XFMOVSstore_0(v)
-	case OpS390XFMOVSstoreidx:
-		return rewriteValueS390X_OpS390XFMOVSstoreidx_0(v)
-	case OpS390XFNEG:
-		return rewriteValueS390X_OpS390XFNEG_0(v)
-	case OpS390XFNEGS:
-		return rewriteValueS390X_OpS390XFNEGS_0(v)
-	case OpS390XFSUB:
-		return rewriteValueS390X_OpS390XFSUB_0(v)
-	case OpS390XFSUBS:
-		return rewriteValueS390X_OpS390XFSUBS_0(v)
-	case OpS390XLDGR:
-		return rewriteValueS390X_OpS390XLDGR_0(v)
-	case OpS390XLEDBR:
-		return rewriteValueS390X_OpS390XLEDBR_0(v)
-	case OpS390XLGDR:
-		return rewriteValueS390X_OpS390XLGDR_0(v)
-	case OpS390XLoweredRound32F:
-		return rewriteValueS390X_OpS390XLoweredRound32F_0(v)
-	case OpS390XLoweredRound64F:
-		return rewriteValueS390X_OpS390XLoweredRound64F_0(v)
-	case OpS390XMOVBZload:
-		return rewriteValueS390X_OpS390XMOVBZload_0(v)
-	case OpS390XMOVBZloadidx:
-		return rewriteValueS390X_OpS390XMOVBZloadidx_0(v)
-	case OpS390XMOVBZreg:
-		return rewriteValueS390X_OpS390XMOVBZreg_0(v) || rewriteValueS390X_OpS390XMOVBZreg_10(v)
-	case OpS390XMOVBload:
-		return rewriteValueS390X_OpS390XMOVBload_0(v)
-	case OpS390XMOVBloadidx:
-		return rewriteValueS390X_OpS390XMOVBloadidx_0(v)
-	case OpS390XMOVBreg:
-		return rewriteValueS390X_OpS390XMOVBreg_0(v)
-	case OpS390XMOVBstore:
-		return rewriteValueS390X_OpS390XMOVBstore_0(v) || rewriteValueS390X_OpS390XMOVBstore_10(v)
-	case OpS390XMOVBstoreconst:
-		return rewriteValueS390X_OpS390XMOVBstoreconst_0(v)
-	case OpS390XMOVBstoreidx:
-		return rewriteValueS390X_OpS390XMOVBstoreidx_0(v) || rewriteValueS390X_OpS390XMOVBstoreidx_10(v) || rewriteValueS390X_OpS390XMOVBstoreidx_20(v) || rewriteValueS390X_OpS390XMOVBstoreidx_30(v)
-	case OpS390XMOVDEQ:
-		return rewriteValueS390X_OpS390XMOVDEQ_0(v)
-	case OpS390XMOVDGE:
-		return rewriteValueS390X_OpS390XMOVDGE_0(v)
-	case OpS390XMOVDGT:
-		return rewriteValueS390X_OpS390XMOVDGT_0(v)
-	case OpS390XMOVDLE:
-		return rewriteValueS390X_OpS390XMOVDLE_0(v)
-	case OpS390XMOVDLT:
-		return rewriteValueS390X_OpS390XMOVDLT_0(v)
-	case OpS390XMOVDNE:
-		return rewriteValueS390X_OpS390XMOVDNE_0(v)
-	case OpS390XMOVDaddridx:
-		return rewriteValueS390X_OpS390XMOVDaddridx_0(v)
-	case OpS390XMOVDload:
-		return rewriteValueS390X_OpS390XMOVDload_0(v)
-	case OpS390XMOVDloadidx:
-		return rewriteValueS390X_OpS390XMOVDloadidx_0(v)
-	case OpS390XMOVDnop:
-		return rewriteValueS390X_OpS390XMOVDnop_0(v) || rewriteValueS390X_OpS390XMOVDnop_10(v)
-	case OpS390XMOVDreg:
-		return rewriteValueS390X_OpS390XMOVDreg_0(v) || rewriteValueS390X_OpS390XMOVDreg_10(v)
-	case OpS390XMOVDstore:
-		return rewriteValueS390X_OpS390XMOVDstore_0(v)
 	case OpS390XMOVDstoreconst:
 		return rewriteValueS390X_OpS390XMOVDstoreconst_0(v)
-	case OpS390XMOVDstoreidx:
-		return rewriteValueS390X_OpS390XMOVDstoreidx_0(v)
-	case OpS390XMOVHBRstore:
-		return rewriteValueS390X_OpS390XMOVHBRstore_0(v)
-	case OpS390XMOVHBRstoreidx:
-		return rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v) || rewriteValueS390X_OpS390XMOVHBRstoreidx_10(v)
-	case OpS390XMOVHZload:
-		return rewriteValueS390X_OpS390XMOVHZload_0(v)
-	case OpS390XMOVHZloadidx:
-		return rewriteValueS390X_OpS390XMOVHZloadidx_0(v)
-	case OpS390XMOVHZreg:
-		return rewriteValueS390X_OpS390XMOVHZreg_0(v) || rewriteValueS390X_OpS390XMOVHZreg_10(v)
-	case OpS390XMOVHload:
-		return rewriteValueS390X_OpS390XMOVHload_0(v)
-	case OpS390XMOVHloadidx:
-		return rewriteValueS390X_OpS390XMOVHloadidx_0(v)
-	case OpS390XMOVHreg:
-		return rewriteValueS390X_OpS390XMOVHreg_0(v) || rewriteValueS390X_OpS390XMOVHreg_10(v)
-	case OpS390XMOVHstore:
-		return rewriteValueS390X_OpS390XMOVHstore_0(v) || rewriteValueS390X_OpS390XMOVHstore_10(v)
-	case OpS390XMOVHstoreconst:
-		return rewriteValueS390X_OpS390XMOVHstoreconst_0(v)
-	case OpS390XMOVHstoreidx:
-		return rewriteValueS390X_OpS390XMOVHstoreidx_0(v) || rewriteValueS390X_OpS390XMOVHstoreidx_10(v)
-	case OpS390XMOVWBRstore:
-		return rewriteValueS390X_OpS390XMOVWBRstore_0(v)
-	case OpS390XMOVWBRstoreidx:
-		return rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v)
-	case OpS390XMOVWZload:
-		return rewriteValueS390X_OpS390XMOVWZload_0(v)
 	case OpS390XMOVWZloadidx:
 		return rewriteValueS390X_OpS390XMOVWZloadidx_0(v)
-	case OpS390XMOVWZreg:
-		return rewriteValueS390X_OpS390XMOVWZreg_0(v) || rewriteValueS390X_OpS390XMOVWZreg_10(v)
-	case OpS390XMOVWload:
-		return rewriteValueS390X_OpS390XMOVWload_0(v)
-	case OpS390XMOVWloadidx:
-		return rewriteValueS390X_OpS390XMOVWloadidx_0(v)
-	case OpS390XMOVWreg:
-		return rewriteValueS390X_OpS390XMOVWreg_0(v) || rewriteValueS390X_OpS390XMOVWreg_10(v)
-	case OpS390XMOVWstore:
-		return rewriteValueS390X_OpS390XMOVWstore_0(v) || rewriteValueS390X_OpS390XMOVWstore_10(v)
-	case OpS390XMOVWstoreconst:
-		return rewriteValueS390X_OpS390XMOVWstoreconst_0(v)
-	case OpS390XMOVWstoreidx:
-		return rewriteValueS390X_OpS390XMOVWstoreidx_0(v) || rewriteValueS390X_OpS390XMOVWstoreidx_10(v)
-	case OpS390XMULLD:
-		return rewriteValueS390X_OpS390XMULLD_0(v)
-	case OpS390XMULLDconst:
-		return rewriteValueS390X_OpS390XMULLDconst_0(v)
-	case OpS390XMULLDload:
-		return rewriteValueS390X_OpS390XMULLDload_0(v)
-	case OpS390XMULLW:
-		return rewriteValueS390X_OpS390XMULLW_0(v)
-	case OpS390XMULLWconst:
-		return rewriteValueS390X_OpS390XMULLWconst_0(v)
-	case OpS390XMULLWload:
-		return rewriteValueS390X_OpS390XMULLWload_0(v)
-	case OpS390XNEG:
-		return rewriteValueS390X_OpS390XNEG_0(v)
-	case OpS390XNEGW:
-		return rewriteValueS390X_OpS390XNEGW_0(v)
-	case OpS390XNOT:
-		return rewriteValueS390X_OpS390XNOT_0(v)
-	case OpS390XNOTW:
-		return rewriteValueS390X_OpS390XNOTW_0(v)
-	case OpS390XOR:
-		return rewriteValueS390X_OpS390XOR_0(v) || rewriteValueS390X_OpS390XOR_10(v) || rewriteValueS390X_OpS390XOR_20(v) || rewriteValueS390X_OpS390XOR_30(v) || rewriteValueS390X_OpS390XOR_40(v) || rewriteValueS390X_OpS390XOR_50(v) || rewriteValueS390X_OpS390XOR_60(v) || rewriteValueS390X_OpS390XOR_70(v) || rewriteValueS390X_OpS390XOR_80(v) || rewriteValueS390X_OpS390XOR_90(v) || rewriteValueS390X_OpS390XOR_100(v) || rewriteValueS390X_OpS390XOR_110(v) || rewriteValueS390X_OpS390XOR_120(v) || rewriteValueS390X_OpS390XOR_130(v) || rewriteValueS390X_OpS390XOR_140(v) || rewriteValueS390X_OpS390XOR_150(v)
-	case OpS390XORW:
-		return rewriteValueS390X_OpS390XORW_0(v) || rewriteValueS390X_OpS390XORW_10(v) || rewriteValueS390X_OpS390XORW_20(v) || rewriteValueS390X_OpS390XORW_30(v) || rewriteValueS390X_OpS390XORW_40(v) || rewriteValueS390X_OpS390XORW_50(v) || rewriteValueS390X_OpS390XORW_60(v) || rewriteValueS390X_OpS390XORW_70(v) || rewriteValueS390X_OpS390XORW_80(v) || rewriteValueS390X_OpS390XORW_90(v)
-	case OpS390XORWconst:
-		return rewriteValueS390X_OpS390XORWconst_0(v)
-	case OpS390XORWload:
-		return rewriteValueS390X_OpS390XORWload_0(v)
-	case OpS390XORconst:
-		return rewriteValueS390X_OpS390XORconst_0(v)
-	case OpS390XORload:
-		return rewriteValueS390X_OpS390XORload_0(v)
-	case OpS390XRLL:
-		return rewriteValueS390X_OpS390XRLL_0(v)
 	case OpS390XRLLG:
 		return rewriteValueS390X_OpS390XRLLG_0(v)
-	case OpS390XSLD:
-		return rewriteValueS390X_OpS390XSLD_0(v) || rewriteValueS390X_OpS390XSLD_10(v)
-	case OpS390XSLW:
-		return rewriteValueS390X_OpS390XSLW_0(v) || rewriteValueS390X_OpS390XSLW_10(v)
-	case OpS390XSRAD:
-		return rewriteValueS390X_OpS390XSRAD_0(v) || rewriteValueS390X_OpS390XSRAD_10(v)
-	case OpS390XSRADconst:
-		return rewriteValueS390X_OpS390XSRADconst_0(v)
-	case OpS390XSRAW:
-		return rewriteValueS390X_OpS390XSRAW_0(v) || rewriteValueS390X_OpS390XSRAW_10(v)
-	case OpS390XSRAWconst:
-		return rewriteValueS390X_OpS390XSRAWconst_0(v)
-	case OpS390XSRD:
-		return rewriteValueS390X_OpS390XSRD_0(v) || rewriteValueS390X_OpS390XSRD_10(v)
-	case OpS390XSRDconst:
-		return rewriteValueS390X_OpS390XSRDconst_0(v)
-	case OpS390XSRW:
-		return rewriteValueS390X_OpS390XSRW_0(v) || rewriteValueS390X_OpS390XSRW_10(v)
-	case OpS390XSTM2:
-		return rewriteValueS390X_OpS390XSTM2_0(v)
-	case OpS390XSTMG2:
-		return rewriteValueS390X_OpS390XSTMG2_0(v)
-	case OpS390XSUB:
-		return rewriteValueS390X_OpS390XSUB_0(v)
-	case OpS390XSUBE:
-		return rewriteValueS390X_OpS390XSUBE_0(v)
-	case OpS390XSUBW:
-		return rewriteValueS390X_OpS390XSUBW_0(v)
 	case OpS390XSUBWconst:
 		return rewriteValueS390X_OpS390XSUBWconst_0(v)
-	case OpS390XSUBWload:
-		return rewriteValueS390X_OpS390XSUBWload_0(v)
-	case OpS390XSUBconst:
-		return rewriteValueS390X_OpS390XSUBconst_0(v)
-	case OpS390XSUBload:
-		return rewriteValueS390X_OpS390XSUBload_0(v)
-	case OpS390XSumBytes2:
-		return rewriteValueS390X_OpS390XSumBytes2_0(v)
-	case OpS390XSumBytes4:
-		return rewriteValueS390X_OpS390XSumBytes4_0(v)
-	case OpS390XSumBytes8:
-		return rewriteValueS390X_OpS390XSumBytes8_0(v)
-	case OpS390XXOR:
-		return rewriteValueS390X_OpS390XXOR_0(v) || rewriteValueS390X_OpS390XXOR_10(v)
 	case OpS390XXORW:
 		return rewriteValueS390X_OpS390XXORW_0(v) || rewriteValueS390X_OpS390XXORW_10(v)
-	case OpS390XXORWconst:
-		return rewriteValueS390X_OpS390XXORWconst_0(v)
-	case OpS390XXORWload:
-		return rewriteValueS390X_OpS390XXORWload_0(v)
-	case OpS390XXORconst:
-		return rewriteValueS390X_OpS390XXORconst_0(v)
-	case OpS390XXORload:
-		return rewriteValueS390X_OpS390XXORload_0(v)
-	case OpSelect0:
-		return rewriteValueS390X_OpSelect0_0(v)
-	case OpSelect1:
-		return rewriteValueS390X_OpSelect1_0(v)
-	case OpSignExt16to32:
-		return rewriteValueS390X_OpSignExt16to32_0(v)
-	case OpSignExt16to64:
-		return rewriteValueS390X_OpSignExt16to64_0(v)
-	case OpSignExt32to64:
-		return rewriteValueS390X_OpSignExt32to64_0(v)
-	case OpSignExt8to16:
-		return rewriteValueS390X_OpSignExt8to16_0(v)
 	case OpSignExt8to32:
 		return rewriteValueS390X_OpSignExt8to32_0(v)
+	case OpSub32F:
+		return rewriteValueS390X_OpSub32F_0(v)
+	case OpTrunc64to32:
+		return rewriteValueS390X_OpTrunc64to32_0(v)
+	case OpXor64:
+		return rewriteValueS390X_OpXor64_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_0010(v *Value) bool {
+	switch v.Op {
+	case OpAtomicStore32:
+		return rewriteValueS390X_OpAtomicStore32_0(v)
+	case OpCtz32NonZero:
+		return rewriteValueS390X_OpCtz32NonZero_0(v)
+	case OpCvt32to32F:
+		return rewriteValueS390X_OpCvt32to32F_0(v)
+	case OpEq8:
+		return rewriteValueS390X_OpEq8_0(v)
+	case OpGeq8:
+		return rewriteValueS390X_OpGeq8_0(v)
+	case OpGetG:
+		return rewriteValueS390X_OpGetG_0(v)
+	case OpLeq32:
+		return rewriteValueS390X_OpLeq32_0(v)
+	case OpLsh8x8:
+		return rewriteValueS390X_OpLsh8x8_0(v)
+	case OpMod32:
+		return rewriteValueS390X_OpMod32_0(v)
+	case OpNeg8:
+		return rewriteValueS390X_OpNeg8_0(v)
+	case OpNeq32F:
+		return rewriteValueS390X_OpNeq32F_0(v)
+	case OpRotateLeft8:
+		return rewriteValueS390X_OpRotateLeft8_0(v)
+	case OpRsh8Ux8:
+		return rewriteValueS390X_OpRsh8Ux8_0(v)
+	case OpRsh8x8:
+		return rewriteValueS390X_OpRsh8x8_0(v)
+	case OpS390XCMPWUconst:
+		return rewriteValueS390X_OpS390XCMPWUconst_0(v)
+	case OpS390XFMOVSloadidx:
+		return rewriteValueS390X_OpS390XFMOVSloadidx_0(v)
+	case OpS390XMOVBreg:
+		return rewriteValueS390X_OpS390XMOVBreg_0(v)
+	case OpS390XMOVWloadidx:
+		return rewriteValueS390X_OpS390XMOVWloadidx_0(v)
+	case OpS390XRLL:
+		return rewriteValueS390X_OpS390XRLL_0(v)
+	case OpS390XSUBload:
+		return rewriteValueS390X_OpS390XSUBload_0(v)
+	case OpS390XXORconst:
+		return rewriteValueS390X_OpS390XXORconst_0(v)
 	case OpSignExt8to64:
 		return rewriteValueS390X_OpSignExt8to64_0(v)
 	case OpSlicemask:
 		return rewriteValueS390X_OpSlicemask_0(v)
-	case OpSqrt:
-		return rewriteValueS390X_OpSqrt_0(v)
-	case OpStaticCall:
-		return rewriteValueS390X_OpStaticCall_0(v)
-	case OpStore:
-		return rewriteValueS390X_OpStore_0(v)
-	case OpSub16:
-		return rewriteValueS390X_OpSub16_0(v)
-	case OpSub32:
-		return rewriteValueS390X_OpSub32_0(v)
-	case OpSub32F:
-		return rewriteValueS390X_OpSub32F_0(v)
-	case OpSub64:
-		return rewriteValueS390X_OpSub64_0(v)
 	case OpSub64F:
 		return rewriteValueS390X_OpSub64F_0(v)
-	case OpSub8:
-		return rewriteValueS390X_OpSub8_0(v)
-	case OpSubPtr:
-		return rewriteValueS390X_OpSubPtr_0(v)
-	case OpTrunc:
-		return rewriteValueS390X_OpTrunc_0(v)
-	case OpTrunc16to8:
-		return rewriteValueS390X_OpTrunc16to8_0(v)
-	case OpTrunc32to16:
-		return rewriteValueS390X_OpTrunc32to16_0(v)
-	case OpTrunc32to8:
-		return rewriteValueS390X_OpTrunc32to8_0(v)
-	case OpTrunc64to16:
-		return rewriteValueS390X_OpTrunc64to16_0(v)
-	case OpTrunc64to32:
-		return rewriteValueS390X_OpTrunc64to32_0(v)
-	case OpTrunc64to8:
-		return rewriteValueS390X_OpTrunc64to8_0(v)
-	case OpWB:
-		return rewriteValueS390X_OpWB_0(v)
-	case OpXor16:
-		return rewriteValueS390X_OpXor16_0(v)
-	case OpXor32:
-		return rewriteValueS390X_OpXor32_0(v)
-	case OpXor64:
-		return rewriteValueS390X_OpXor64_0(v)
-	case OpXor8:
-		return rewriteValueS390X_OpXor8_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_0011(v *Value) bool {
+	switch v.Op {
+	case OpAtomicStore64:
+		return rewriteValueS390X_OpAtomicStore64_0(v)
+	case OpConstNil:
+		return rewriteValueS390X_OpConstNil_0(v)
+	case OpCtz64NonZero:
+		return rewriteValueS390X_OpCtz64NonZero_0(v)
+	case OpCvt32to64F:
+		return rewriteValueS390X_OpCvt32to64F_0(v)
+	case OpEq16:
+		return rewriteValueS390X_OpEq16_0(v)
+	case OpGeq8U:
+		return rewriteValueS390X_OpGeq8U_0(v)
+	case OpGetClosurePtr:
+		return rewriteValueS390X_OpGetClosurePtr_0(v)
+	case OpITab:
+		return rewriteValueS390X_OpITab_0(v)
+	case OpLeq32U:
+		return rewriteValueS390X_OpLeq32U_0(v)
+	case OpLoad:
+		return rewriteValueS390X_OpLoad_0(v)
+	case OpLsh8x16:
+		return rewriteValueS390X_OpLsh8x16_0(v)
+	case OpMod32u:
+		return rewriteValueS390X_OpMod32u_0(v)
+	case OpMul8:
+		return rewriteValueS390X_OpMul8_0(v)
+	case OpNeg16:
+		return rewriteValueS390X_OpNeg16_0(v)
+	case OpNeq64F:
+		return rewriteValueS390X_OpNeq64F_0(v)
+	case OpRotateLeft16:
+		return rewriteValueS390X_OpRotateLeft16_0(v)
+	case OpRsh8Ux16:
+		return rewriteValueS390X_OpRsh8Ux16_0(v)
+	case OpRsh8x16:
+		return rewriteValueS390X_OpRsh8x16_0(v)
+	case OpS390XFMOVDloadidx:
+		return rewriteValueS390X_OpS390XFMOVDloadidx_0(v)
+	case OpS390XMOVBZreg:
+		return rewriteValueS390X_OpS390XMOVBZreg_0(v) || rewriteValueS390X_OpS390XMOVBZreg_10(v)
+	case OpS390XMOVDloadidx:
+		return rewriteValueS390X_OpS390XMOVDloadidx_0(v)
+	case OpS390XSUBWload:
+		return rewriteValueS390X_OpS390XSUBWload_0(v)
+	case OpS390XXORWconst:
+		return rewriteValueS390X_OpS390XXORWconst_0(v)
+	case OpSignExt16to32:
+		return rewriteValueS390X_OpSignExt16to32_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_0100(v *Value) bool {
+	switch v.Op {
+	case OpAtomicStorePtrNoWB:
+		return rewriteValueS390X_OpAtomicStorePtrNoWB_0(v)
+	case OpAvg64u:
+		return rewriteValueS390X_OpAvg64u_0(v)
+	case OpConst8:
+		return rewriteValueS390X_OpConst8_0(v)
+	case OpCvt64to32F:
+		return rewriteValueS390X_OpCvt64to32F_0(v)
+	case OpEq32:
+		return rewriteValueS390X_OpEq32_0(v)
+	case OpGeq16:
+		return rewriteValueS390X_OpGeq16_0(v)
+	case OpGetCallerPC:
+		return rewriteValueS390X_OpGetCallerPC_0(v)
+	case OpLeq64:
+		return rewriteValueS390X_OpLeq64_0(v)
+	case OpLess8:
+		return rewriteValueS390X_OpLess8_0(v)
+	case OpLsh8x32:
+		return rewriteValueS390X_OpLsh8x32_0(v)
+	case OpMod64:
+		return rewriteValueS390X_OpMod64_0(v)
+	case OpMul16:
+		return rewriteValueS390X_OpMul16_0(v)
+	case OpNeg32:
+		return rewriteValueS390X_OpNeg32_0(v)
+	case OpRotateLeft32:
+		return rewriteValueS390X_OpRotateLeft32_0(v)
+	case OpRsh8Ux32:
+		return rewriteValueS390X_OpRsh8Ux32_0(v)
+	case OpRsh8x32:
+		return rewriteValueS390X_OpRsh8x32_0(v)
+	case OpS390XAND:
+		return rewriteValueS390X_OpS390XAND_0(v) || rewriteValueS390X_OpS390XAND_10(v)
+	case OpS390XFMOVSstore:
+		return rewriteValueS390X_OpS390XFMOVSstore_0(v)
+	case OpS390XFNEGS:
+		return rewriteValueS390X_OpS390XFNEGS_0(v)
+	case OpS390XMOVHreg:
+		return rewriteValueS390X_OpS390XMOVHreg_0(v) || rewriteValueS390X_OpS390XMOVHreg_10(v)
+	case OpS390XMULLD:
+		return rewriteValueS390X_OpS390XMULLD_0(v)
+	case OpS390XXORload:
+		return rewriteValueS390X_OpS390XXORload_0(v)
+	case OpSignExt16to64:
+		return rewriteValueS390X_OpSignExt16to64_0(v)
+	case OpStore:
+		return rewriteValueS390X_OpStore_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_0101(v *Value) bool {
+	switch v.Op {
+	case OpAdd8:
+		return rewriteValueS390X_OpAdd8_0(v)
+	case OpConst16:
+		return rewriteValueS390X_OpConst16_0(v)
+	case OpCvt64to64F:
+		return rewriteValueS390X_OpCvt64to64F_0(v)
+	case OpDiv8:
+		return rewriteValueS390X_OpDiv8_0(v)
+	case OpEq64:
+		return rewriteValueS390X_OpEq64_0(v)
+	case OpGeq16U:
+		return rewriteValueS390X_OpGeq16U_0(v)
+	case OpGetCallerSP:
+		return rewriteValueS390X_OpGetCallerSP_0(v)
+	case OpLeq64U:
+		return rewriteValueS390X_OpLeq64U_0(v)
+	case OpLess8U:
+		return rewriteValueS390X_OpLess8U_0(v)
+	case OpLsh8x64:
+		return rewriteValueS390X_OpLsh8x64_0(v)
+	case OpMod64u:
+		return rewriteValueS390X_OpMod64u_0(v)
+	case OpMove:
+		return rewriteValueS390X_OpMove_0(v) || rewriteValueS390X_OpMove_10(v)
+	case OpMul32:
+		return rewriteValueS390X_OpMul32_0(v)
+	case OpNeg64:
+		return rewriteValueS390X_OpNeg64_0(v)
+	case OpRotateLeft64:
+		return rewriteValueS390X_OpRotateLeft64_0(v)
+	case OpRsh8Ux64:
+		return rewriteValueS390X_OpRsh8Ux64_0(v)
+	case OpRsh8x64:
+		return rewriteValueS390X_OpRsh8x64_0(v)
+	case OpS390XANDW:
+		return rewriteValueS390X_OpS390XANDW_0(v) || rewriteValueS390X_OpS390XANDW_10(v)
+	case OpS390XFMOVDstore:
+		return rewriteValueS390X_OpS390XFMOVDstore_0(v)
+	case OpS390XFNEG:
+		return rewriteValueS390X_OpS390XFNEG_0(v)
+	case OpS390XLEDBR:
+		return rewriteValueS390X_OpS390XLEDBR_0(v)
+	case OpS390XMOVBstore:
+		return rewriteValueS390X_OpS390XMOVBstore_0(v) || rewriteValueS390X_OpS390XMOVBstore_10(v)
+	case OpS390XMOVHZreg:
+		return rewriteValueS390X_OpS390XMOVHZreg_0(v) || rewriteValueS390X_OpS390XMOVHZreg_10(v)
+	case OpS390XMULLW:
+		return rewriteValueS390X_OpS390XMULLW_0(v)
+	case OpS390XNEG:
+		return rewriteValueS390X_OpS390XNEG_0(v)
+	case OpS390XSLD:
+		return rewriteValueS390X_OpS390XSLD_0(v) || rewriteValueS390X_OpS390XSLD_10(v)
+	case OpS390XSumBytes2:
+		return rewriteValueS390X_OpS390XSumBytes2_0(v)
+	case OpS390XXORWload:
+		return rewriteValueS390X_OpS390XXORWload_0(v)
+	case OpSignExt32to64:
+		return rewriteValueS390X_OpSignExt32to64_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_0110(v *Value) bool {
+	switch v.Op {
+	case OpAdd16:
+		return rewriteValueS390X_OpAdd16_0(v)
+	case OpAnd8:
+		return rewriteValueS390X_OpAnd8_0(v)
+	case OpAtomicExchange32:
+		return rewriteValueS390X_OpAtomicExchange32_0(v)
+	case OpConst32:
+		return rewriteValueS390X_OpConst32_0(v)
+	case OpCvt32Fto32:
+		return rewriteValueS390X_OpCvt32Fto32_0(v)
+	case OpDiv8u:
+		return rewriteValueS390X_OpDiv8u_0(v)
+	case OpEqPtr:
+		return rewriteValueS390X_OpEqPtr_0(v)
+	case OpGeq32:
+		return rewriteValueS390X_OpGeq32_0(v)
+	case OpLeq32F:
+		return rewriteValueS390X_OpLeq32F_0(v)
+	case OpLess16:
+		return rewriteValueS390X_OpLess16_0(v)
+	case OpLsh16x8:
+		return rewriteValueS390X_OpLsh16x8_0(v)
+	case OpMul64:
+		return rewriteValueS390X_OpMul64_0(v)
+	case OpNeg32F:
+		return rewriteValueS390X_OpNeg32F_0(v)
+	case OpRsh16Ux8:
+		return rewriteValueS390X_OpRsh16Ux8_0(v)
+	case OpRsh16x8:
+		return rewriteValueS390X_OpRsh16x8_0(v)
+	case OpS390XADDC:
+		return rewriteValueS390X_OpS390XADDC_0(v)
+	case OpS390XANDconst:
+		return rewriteValueS390X_OpS390XANDconst_0(v)
+	case OpS390XFMOVSstoreidx:
+		return rewriteValueS390X_OpS390XFMOVSstoreidx_0(v)
+	case OpS390XMOVHstore:
+		return rewriteValueS390X_OpS390XMOVHstore_0(v) || rewriteValueS390X_OpS390XMOVHstore_10(v)
+	case OpS390XMOVWreg:
+		return rewriteValueS390X_OpS390XMOVWreg_0(v) || rewriteValueS390X_OpS390XMOVWreg_10(v)
+	case OpS390XMULLDconst:
+		return rewriteValueS390X_OpS390XMULLDconst_0(v)
+	case OpS390XNEGW:
+		return rewriteValueS390X_OpS390XNEGW_0(v)
+	case OpS390XSLW:
+		return rewriteValueS390X_OpS390XSLW_0(v) || rewriteValueS390X_OpS390XSLW_10(v)
+	case OpS390XSumBytes4:
+		return rewriteValueS390X_OpS390XSumBytes4_0(v)
+	case OpSqrt:
+		return rewriteValueS390X_OpSqrt_0(v)
 	case OpZero:
 		return rewriteValueS390X_OpZero_0(v) || rewriteValueS390X_OpZero_10(v)
-	case OpZeroExt16to32:
-		return rewriteValueS390X_OpZeroExt16to32_0(v)
-	case OpZeroExt16to64:
-		return rewriteValueS390X_OpZeroExt16to64_0(v)
-	case OpZeroExt32to64:
-		return rewriteValueS390X_OpZeroExt32to64_0(v)
 	case OpZeroExt8to16:
 		return rewriteValueS390X_OpZeroExt8to16_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_0111(v *Value) bool {
+	switch v.Op {
+	case OpAdd32:
+		return rewriteValueS390X_OpAdd32_0(v)
+	case OpAnd16:
+		return rewriteValueS390X_OpAnd16_0(v)
+	case OpAtomicExchange64:
+		return rewriteValueS390X_OpAtomicExchange64_0(v)
+	case OpBitLen64:
+		return rewriteValueS390X_OpBitLen64_0(v)
+	case OpConst64:
+		return rewriteValueS390X_OpConst64_0(v)
+	case OpCvt32Fto64:
+		return rewriteValueS390X_OpCvt32Fto64_0(v)
+	case OpDiv16:
+		return rewriteValueS390X_OpDiv16_0(v)
+	case OpFloor:
+		return rewriteValueS390X_OpFloor_0(v)
+	case OpGeq32U:
+		return rewriteValueS390X_OpGeq32U_0(v)
+	case OpLeq64F:
+		return rewriteValueS390X_OpLeq64F_0(v)
+	case OpLess16U:
+		return rewriteValueS390X_OpLess16U_0(v)
+	case OpLsh16x16:
+		return rewriteValueS390X_OpLsh16x16_0(v)
+	case OpMul32F:
+		return rewriteValueS390X_OpMul32F_0(v)
+	case OpNeg64F:
+		return rewriteValueS390X_OpNeg64F_0(v)
+	case OpOffPtr:
+		return rewriteValueS390X_OpOffPtr_0(v)
+	case OpRsh16Ux16:
+		return rewriteValueS390X_OpRsh16Ux16_0(v)
+	case OpRsh16x16:
+		return rewriteValueS390X_OpRsh16x16_0(v)
+	case OpS390XANDWconst:
+		return rewriteValueS390X_OpS390XANDWconst_0(v)
+	case OpS390XFMOVDstoreidx:
+		return rewriteValueS390X_OpS390XFMOVDstoreidx_0(v)
+	case OpS390XMOVBstoreidx:
+		return rewriteValueS390X_OpS390XMOVBstoreidx_0(v) || rewriteValueS390X_OpS390XMOVBstoreidx_10(v) || rewriteValueS390X_OpS390XMOVBstoreidx_20(v) || rewriteValueS390X_OpS390XMOVBstoreidx_30(v)
+	case OpS390XMOVWZreg:
+		return rewriteValueS390X_OpS390XMOVWZreg_0(v) || rewriteValueS390X_OpS390XMOVWZreg_10(v)
+	case OpS390XMOVWstore:
+		return rewriteValueS390X_OpS390XMOVWstore_0(v) || rewriteValueS390X_OpS390XMOVWstore_10(v)
+	case OpS390XMULLWconst:
+		return rewriteValueS390X_OpS390XMULLWconst_0(v)
+	case OpS390XNOT:
+		return rewriteValueS390X_OpS390XNOT_0(v)
+	case OpS390XSumBytes8:
+		return rewriteValueS390X_OpS390XSumBytes8_0(v)
 	case OpZeroExt8to32:
 		return rewriteValueS390X_OpZeroExt8to32_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_1000(v *Value) bool {
+	switch v.Op {
+	case OpAdd64:
+		return rewriteValueS390X_OpAdd64_0(v)
+	case OpAnd32:
+		return rewriteValueS390X_OpAnd32_0(v)
+	case OpAtomicAdd32:
+		return rewriteValueS390X_OpAtomicAdd32_0(v)
+	case OpBswap32:
+		return rewriteValueS390X_OpBswap32_0(v)
+	case OpCeil:
+		return rewriteValueS390X_OpCeil_0(v)
+	case OpCom8:
+		return rewriteValueS390X_OpCom8_0(v)
+	case OpConst32F:
+		return rewriteValueS390X_OpConst32F_0(v)
+	case OpCvt64Fto32:
+		return rewriteValueS390X_OpCvt64Fto32_0(v)
+	case OpDiv16u:
+		return rewriteValueS390X_OpDiv16u_0(v)
+	case OpGeq64:
+		return rewriteValueS390X_OpGeq64_0(v)
+	case OpGreater8:
+		return rewriteValueS390X_OpGreater8_0(v)
+	case OpLess32:
+		return rewriteValueS390X_OpLess32_0(v)
+	case OpLsh16x32:
+		return rewriteValueS390X_OpLsh16x32_0(v)
+	case OpMul64F:
+		return rewriteValueS390X_OpMul64F_0(v)
+	case OpRsh16Ux32:
+		return rewriteValueS390X_OpRsh16Ux32_0(v)
+	case OpRsh16x32:
+		return rewriteValueS390X_OpRsh16x32_0(v)
+	case OpS390XADD:
+		return rewriteValueS390X_OpS390XADD_0(v) || rewriteValueS390X_OpS390XADD_10(v)
+	case OpS390XADDE:
+		return rewriteValueS390X_OpS390XADDE_0(v)
+	case OpS390XANDload:
+		return rewriteValueS390X_OpS390XANDload_0(v)
+	case OpS390XMOVDaddridx:
+		return rewriteValueS390X_OpS390XMOVDaddridx_0(v)
+	case OpS390XMOVDreg:
+		return rewriteValueS390X_OpS390XMOVDreg_0(v) || rewriteValueS390X_OpS390XMOVDreg_10(v)
+	case OpS390XMOVDstore:
+		return rewriteValueS390X_OpS390XMOVDstore_0(v)
+	case OpS390XMOVHstoreidx:
+		return rewriteValueS390X_OpS390XMOVHstoreidx_0(v) || rewriteValueS390X_OpS390XMOVHstoreidx_10(v)
+	case OpS390XMULLDload:
+		return rewriteValueS390X_OpS390XMULLDload_0(v)
+	case OpS390XNOTW:
+		return rewriteValueS390X_OpS390XNOTW_0(v)
+	case OpS390XSTMG2:
+		return rewriteValueS390X_OpS390XSTMG2_0(v)
 	case OpZeroExt8to64:
 		return rewriteValueS390X_OpZeroExt8to64_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_1001(v *Value) bool {
+	switch v.Op {
+	case OpAddPtr:
+		return rewriteValueS390X_OpAddPtr_0(v)
+	case OpAnd64:
+		return rewriteValueS390X_OpAnd64_0(v)
+	case OpAtomicAdd64:
+		return rewriteValueS390X_OpAtomicAdd64_0(v)
+	case OpBswap64:
+		return rewriteValueS390X_OpBswap64_0(v)
+	case OpCom16:
+		return rewriteValueS390X_OpCom16_0(v)
+	case OpConst64F:
+		return rewriteValueS390X_OpConst64F_0(v)
+	case OpCvt64Fto64:
+		return rewriteValueS390X_OpCvt64Fto64_0(v)
+	case OpDiv32:
+		return rewriteValueS390X_OpDiv32_0(v)
+	case OpDiv32F:
+		return rewriteValueS390X_OpDiv32F_0(v)
+	case OpEq32F:
+		return rewriteValueS390X_OpEq32F_0(v)
+	case OpGeq64U:
+		return rewriteValueS390X_OpGeq64U_0(v)
+	case OpGreater8U:
+		return rewriteValueS390X_OpGreater8U_0(v)
+	case OpLess32U:
+		return rewriteValueS390X_OpLess32U_0(v)
+	case OpLsh16x64:
+		return rewriteValueS390X_OpLsh16x64_0(v)
+	case OpRsh16Ux64:
+		return rewriteValueS390X_OpRsh16Ux64_0(v)
+	case OpRsh16x64:
+		return rewriteValueS390X_OpRsh16x64_0(v)
+	case OpS390XADDW:
+		return rewriteValueS390X_OpS390XADDW_0(v) || rewriteValueS390X_OpS390XADDW_10(v)
+	case OpS390XANDWload:
+		return rewriteValueS390X_OpS390XANDWload_0(v)
+	case OpS390XMOVBZload:
+		return rewriteValueS390X_OpS390XMOVBZload_0(v)
+	case OpS390XMOVDnop:
+		return rewriteValueS390X_OpS390XMOVDnop_0(v) || rewriteValueS390X_OpS390XMOVDnop_10(v)
+	case OpS390XMOVHBRstore:
+		return rewriteValueS390X_OpS390XMOVHBRstore_0(v)
+	case OpS390XMOVWstoreidx:
+		return rewriteValueS390X_OpS390XMOVWstoreidx_0(v) || rewriteValueS390X_OpS390XMOVWstoreidx_10(v)
+	case OpS390XMULLWload:
+		return rewriteValueS390X_OpS390XMULLWload_0(v)
+	case OpS390XSRD:
+		return rewriteValueS390X_OpS390XSRD_0(v) || rewriteValueS390X_OpS390XSRD_10(v)
+	case OpTrunc:
+		return rewriteValueS390X_OpTrunc_0(v)
+	case OpZeroExt16to32:
+		return rewriteValueS390X_OpZeroExt16to32_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_1010(v *Value) bool {
+	switch v.Op {
+	case OpAdd32F:
+		return rewriteValueS390X_OpAdd32F_0(v)
+	case OpAtomicCompareAndSwap32:
+		return rewriteValueS390X_OpAtomicCompareAndSwap32_0(v)
+	case OpCom32:
+		return rewriteValueS390X_OpCom32_0(v)
+	case OpCvt32Fto64F:
+		return rewriteValueS390X_OpCvt32Fto64F_0(v)
+	case OpDiv32u:
+		return rewriteValueS390X_OpDiv32u_0(v)
+	case OpDiv64F:
+		return rewriteValueS390X_OpDiv64F_0(v)
+	case OpEq64F:
+		return rewriteValueS390X_OpEq64F_0(v)
+	case OpGeq32F:
+		return rewriteValueS390X_OpGeq32F_0(v)
+	case OpGreater16:
+		return rewriteValueS390X_OpGreater16_0(v)
+	case OpLess64:
+		return rewriteValueS390X_OpLess64_0(v)
+	case OpLsh32x8:
+		return rewriteValueS390X_OpLsh32x8_0(v)
+	case OpOr8:
+		return rewriteValueS390X_OpOr8_0(v)
+	case OpRound:
+		return rewriteValueS390X_OpRound_0(v)
+	case OpRsh32Ux8:
+		return rewriteValueS390X_OpRsh32Ux8_0(v)
+	case OpRsh32x8:
+		return rewriteValueS390X_OpRsh32x8_0(v)
+	case OpS390XADDconst:
+		return rewriteValueS390X_OpS390XADDconst_0(v)
+	case OpS390XMOVBload:
+		return rewriteValueS390X_OpS390XMOVBload_0(v)
+	case OpS390XMOVDEQ:
+		return rewriteValueS390X_OpS390XMOVDEQ_0(v)
+	case OpS390XMOVDstoreidx:
+		return rewriteValueS390X_OpS390XMOVDstoreidx_0(v)
+	case OpS390XMOVWBRstore:
+		return rewriteValueS390X_OpS390XMOVWBRstore_0(v)
+	case OpS390XOR:
+		return rewriteValueS390X_OpS390XOR_0(v) || rewriteValueS390X_OpS390XOR_10(v) || rewriteValueS390X_OpS390XOR_20(v) || rewriteValueS390X_OpS390XOR_30(v) || rewriteValueS390X_OpS390XOR_40(v) || rewriteValueS390X_OpS390XOR_50(v) || rewriteValueS390X_OpS390XOR_60(v) || rewriteValueS390X_OpS390XOR_70(v) || rewriteValueS390X_OpS390XOR_80(v) || rewriteValueS390X_OpS390XOR_90(v) || rewriteValueS390X_OpS390XOR_100(v) || rewriteValueS390X_OpS390XOR_110(v) || rewriteValueS390X_OpS390XOR_120(v) || rewriteValueS390X_OpS390XOR_130(v) || rewriteValueS390X_OpS390XOR_140(v) || rewriteValueS390X_OpS390XOR_150(v)
+	case OpS390XSRW:
+		return rewriteValueS390X_OpS390XSRW_0(v) || rewriteValueS390X_OpS390XSRW_10(v)
+	case OpS390XSUBE:
+		return rewriteValueS390X_OpS390XSUBE_0(v)
+	case OpWB:
+		return rewriteValueS390X_OpWB_0(v)
+	case OpZeroExt16to64:
+		return rewriteValueS390X_OpZeroExt16to64_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_1011(v *Value) bool {
+	switch v.Op {
+	case OpAdd64F:
+		return rewriteValueS390X_OpAdd64F_0(v)
+	case OpAtomicCompareAndSwap64:
+		return rewriteValueS390X_OpAtomicCompareAndSwap64_0(v)
+	case OpCom64:
+		return rewriteValueS390X_OpCom64_0(v)
+	case OpCvt64Fto32F:
+		return rewriteValueS390X_OpCvt64Fto32F_0(v)
+	case OpDiv64:
+		return rewriteValueS390X_OpDiv64_0(v)
+	case OpGeq64F:
+		return rewriteValueS390X_OpGeq64F_0(v)
+	case OpGreater16U:
+		return rewriteValueS390X_OpGreater16U_0(v)
+	case OpHmul32:
+		return rewriteValueS390X_OpHmul32_0(v)
+	case OpLess64U:
+		return rewriteValueS390X_OpLess64U_0(v)
+	case OpLsh32x16:
+		return rewriteValueS390X_OpLsh32x16_0(v)
+	case OpNeq8:
+		return rewriteValueS390X_OpNeq8_0(v)
+	case OpOr16:
+		return rewriteValueS390X_OpOr16_0(v)
+	case OpPanicBounds:
+		return rewriteValueS390X_OpPanicBounds_0(v)
+	case OpRoundToEven:
+		return rewriteValueS390X_OpRoundToEven_0(v)
+	case OpRsh32Ux16:
+		return rewriteValueS390X_OpRsh32Ux16_0(v)
+	case OpRsh32x16:
+		return rewriteValueS390X_OpRsh32x16_0(v)
+	case OpS390XADDWconst:
+		return rewriteValueS390X_OpS390XADDWconst_0(v)
+	case OpS390XCMP:
+		return rewriteValueS390X_OpS390XCMP_0(v)
+	case OpS390XLDGR:
+		return rewriteValueS390X_OpS390XLDGR_0(v)
+	case OpS390XMOVDNE:
+		return rewriteValueS390X_OpS390XMOVDNE_0(v)
+	case OpS390XMOVHBRstoreidx:
+		return rewriteValueS390X_OpS390XMOVHBRstoreidx_0(v) || rewriteValueS390X_OpS390XMOVHBRstoreidx_10(v)
+	case OpS390XMOVHZload:
+		return rewriteValueS390X_OpS390XMOVHZload_0(v)
+	case OpS390XORW:
+		return rewriteValueS390X_OpS390XORW_0(v) || rewriteValueS390X_OpS390XORW_10(v) || rewriteValueS390X_OpS390XORW_20(v) || rewriteValueS390X_OpS390XORW_30(v) || rewriteValueS390X_OpS390XORW_40(v) || rewriteValueS390X_OpS390XORW_50(v) || rewriteValueS390X_OpS390XORW_60(v) || rewriteValueS390X_OpS390XORW_70(v) || rewriteValueS390X_OpS390XORW_80(v) || rewriteValueS390X_OpS390XORW_90(v)
+	case OpS390XSRDconst:
+		return rewriteValueS390X_OpS390XSRDconst_0(v)
+	case OpS390XSTM2:
+		return rewriteValueS390X_OpS390XSTM2_0(v)
+	case OpSelect0:
+		return rewriteValueS390X_OpSelect0_0(v)
+	case OpZeroExt32to64:
+		return rewriteValueS390X_OpZeroExt32to64_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_1100(v *Value) bool {
+	switch v.Op {
+	case OpDiv64u:
+		return rewriteValueS390X_OpDiv64u_0(v)
+	case OpGreater32:
+		return rewriteValueS390X_OpGreater32_0(v)
+	case OpHmul32u:
+		return rewriteValueS390X_OpHmul32u_0(v)
+	case OpLess32F:
+		return rewriteValueS390X_OpLess32F_0(v)
+	case OpLsh32x32:
+		return rewriteValueS390X_OpLsh32x32_0(v)
+	case OpNeq16:
+		return rewriteValueS390X_OpNeq16_0(v)
+	case OpOr32:
+		return rewriteValueS390X_OpOr32_0(v)
+	case OpRound32F:
+		return rewriteValueS390X_OpRound32F_0(v)
+	case OpRsh32Ux32:
+		return rewriteValueS390X_OpRsh32Ux32_0(v)
+	case OpRsh32x32:
+		return rewriteValueS390X_OpRsh32x32_0(v)
+	case OpS390XADDload:
+		return rewriteValueS390X_OpS390XADDload_0(v)
+	case OpS390XCMPW:
+		return rewriteValueS390X_OpS390XCMPW_0(v)
+	case OpS390XCPSDR:
+		return rewriteValueS390X_OpS390XCPSDR_0(v)
+	case OpS390XFADDS:
+		return rewriteValueS390X_OpS390XFADDS_0(v)
+	case OpS390XLGDR:
+		return rewriteValueS390X_OpS390XLGDR_0(v)
+	case OpS390XLoweredRound32F:
+		return rewriteValueS390X_OpS390XLoweredRound32F_0(v)
+	case OpS390XMOVDLT:
+		return rewriteValueS390X_OpS390XMOVDLT_0(v)
+	case OpS390XMOVHload:
+		return rewriteValueS390X_OpS390XMOVHload_0(v)
+	case OpS390XMOVWBRstoreidx:
+		return rewriteValueS390X_OpS390XMOVWBRstoreidx_0(v)
+	case OpS390XORconst:
+		return rewriteValueS390X_OpS390XORconst_0(v)
+	case OpSelect1:
+		return rewriteValueS390X_OpSelect1_0(v)
+	case OpSub8:
+		return rewriteValueS390X_OpSub8_0(v)
+	case OpTrunc16to8:
+		return rewriteValueS390X_OpTrunc16to8_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_1101(v *Value) bool {
+	switch v.Op {
+	case OpAndB:
+		return rewriteValueS390X_OpAndB_0(v)
+	case OpAtomicLoad8:
+		return rewriteValueS390X_OpAtomicLoad8_0(v)
+	case OpClosureCall:
+		return rewriteValueS390X_OpClosureCall_0(v)
+	case OpGreater32U:
+		return rewriteValueS390X_OpGreater32U_0(v)
+	case OpHmul64:
+		return rewriteValueS390X_OpHmul64_0(v)
+	case OpLess64F:
+		return rewriteValueS390X_OpLess64F_0(v)
+	case OpLsh32x64:
+		return rewriteValueS390X_OpLsh32x64_0(v)
+	case OpNeq32:
+		return rewriteValueS390X_OpNeq32_0(v)
+	case OpOr64:
+		return rewriteValueS390X_OpOr64_0(v)
+	case OpRound64F:
+		return rewriteValueS390X_OpRound64F_0(v)
+	case OpRsh32Ux64:
+		return rewriteValueS390X_OpRsh32Ux64_0(v)
+	case OpRsh32x64:
+		return rewriteValueS390X_OpRsh32x64_0(v)
+	case OpS390XADDWload:
+		return rewriteValueS390X_OpS390XADDWload_0(v)
+	case OpS390XCMPU:
+		return rewriteValueS390X_OpS390XCMPU_0(v)
+	case OpS390XFADD:
+		return rewriteValueS390X_OpS390XFADD_0(v)
+	case OpS390XLoweredRound64F:
+		return rewriteValueS390X_OpS390XLoweredRound64F_0(v)
+	case OpS390XMOVBZloadidx:
+		return rewriteValueS390X_OpS390XMOVBZloadidx_0(v)
+	case OpS390XMOVDLE:
+		return rewriteValueS390X_OpS390XMOVDLE_0(v)
+	case OpS390XMOVWZload:
+		return rewriteValueS390X_OpS390XMOVWZload_0(v)
+	case OpS390XORWconst:
+		return rewriteValueS390X_OpS390XORWconst_0(v)
+	case OpS390XSRAD:
+		return rewriteValueS390X_OpS390XSRAD_0(v) || rewriteValueS390X_OpS390XSRAD_10(v)
+	case OpSub16:
+		return rewriteValueS390X_OpSub16_0(v)
+	case OpTrunc32to8:
+		return rewriteValueS390X_OpTrunc32to8_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_1110(v *Value) bool {
+	switch v.Op {
+	case OpAddr:
+		return rewriteValueS390X_OpAddr_0(v)
+	case OpAtomicLoad32:
+		return rewriteValueS390X_OpAtomicLoad32_0(v)
+	case OpCtz32:
+		return rewriteValueS390X_OpCtz32_0(v)
+	case OpGreater64:
+		return rewriteValueS390X_OpGreater64_0(v)
+	case OpHmul64u:
+		return rewriteValueS390X_OpHmul64u_0(v)
+	case OpIsNonNil:
+		return rewriteValueS390X_OpIsNonNil_0(v)
+	case OpLeq8:
+		return rewriteValueS390X_OpLeq8_0(v)
+	case OpLsh64x8:
+		return rewriteValueS390X_OpLsh64x8_0(v)
+	case OpMod8:
+		return rewriteValueS390X_OpMod8_0(v)
+	case OpNeq64:
+		return rewriteValueS390X_OpNeq64_0(v)
+	case OpOrB:
+		return rewriteValueS390X_OpOrB_0(v)
+	case OpPopCount8:
+		return rewriteValueS390X_OpPopCount8_0(v)
+	case OpRsh64Ux8:
+		return rewriteValueS390X_OpRsh64Ux8_0(v)
+	case OpRsh64x8:
+		return rewriteValueS390X_OpRsh64x8_0(v)
+	case OpS390XCMPWU:
+		return rewriteValueS390X_OpS390XCMPWU_0(v)
+	case OpS390XFMOVSload:
+		return rewriteValueS390X_OpS390XFMOVSload_0(v)
+	case OpS390XFSUBS:
+		return rewriteValueS390X_OpS390XFSUBS_0(v)
+	case OpS390XMOVBloadidx:
+		return rewriteValueS390X_OpS390XMOVBloadidx_0(v)
+	case OpS390XMOVBstoreconst:
+		return rewriteValueS390X_OpS390XMOVBstoreconst_0(v)
+	case OpS390XMOVDGT:
+		return rewriteValueS390X_OpS390XMOVDGT_0(v)
+	case OpS390XMOVWload:
+		return rewriteValueS390X_OpS390XMOVWload_0(v)
+	case OpS390XORload:
+		return rewriteValueS390X_OpS390XORload_0(v)
+	case OpS390XSRAW:
+		return rewriteValueS390X_OpS390XSRAW_0(v) || rewriteValueS390X_OpS390XSRAW_10(v)
+	case OpS390XSUB:
+		return rewriteValueS390X_OpS390XSUB_0(v)
+	case OpStaticCall:
+		return rewriteValueS390X_OpStaticCall_0(v)
+	case OpSub32:
+		return rewriteValueS390X_OpSub32_0(v)
+	case OpTrunc32to16:
+		return rewriteValueS390X_OpTrunc32to16_0(v)
+	case OpXor8:
+		return rewriteValueS390X_OpXor8_0(v)
+	}
+	return false
+}
+func rewriteValueS390X_shard_1111(v *Value) bool {
+	switch v.Op {
+	case OpAtomicLoad64:
+		return rewriteValueS390X_OpAtomicLoad64_0(v)
+	case OpCtz64:
+		return rewriteValueS390X_OpCtz64_0(v)
+	case OpEqB:
+		return rewriteValueS390X_OpEqB_0(v)
+	case OpGreater64U:
+		return rewriteValueS390X_OpGreater64U_0(v)
+	case OpInterCall:
+		return rewriteValueS390X_OpInterCall_0(v)
+	case OpIsInBounds:
+		return rewriteValueS390X_OpIsInBounds_0(v)
+	case OpLeq8U:
+		return rewriteValueS390X_OpLeq8U_0(v)
+	case OpLocalAddr:
+		return rewriteValueS390X_OpLocalAddr_0(v)
+	case OpLsh64x16:
+		return rewriteValueS390X_OpLsh64x16_0(v)
+	case OpMod8u:
+		return rewriteValueS390X_OpMod8u_0(v)
+	case OpNeqPtr:
+		return rewriteValueS390X_OpNeqPtr_0(v)
+	case OpPopCount16:
+		return rewriteValueS390X_OpPopCount16_0(v)
+	case OpRsh64Ux16:
+		return rewriteValueS390X_OpRsh64Ux16_0(v)
+	case OpRsh64x16:
+		return rewriteValueS390X_OpRsh64x16_0(v)
+	case OpS390XCMPconst:
+		return rewriteValueS390X_OpS390XCMPconst_0(v) || rewriteValueS390X_OpS390XCMPconst_10(v)
+	case OpS390XFMOVDload:
+		return rewriteValueS390X_OpS390XFMOVDload_0(v)
+	case OpS390XFSUB:
+		return rewriteValueS390X_OpS390XFSUB_0(v)
+	case OpS390XMOVDGE:
+		return rewriteValueS390X_OpS390XMOVDGE_0(v)
+	case OpS390XMOVDload:
+		return rewriteValueS390X_OpS390XMOVDload_0(v)
+	case OpS390XMOVHZloadidx:
+		return rewriteValueS390X_OpS390XMOVHZloadidx_0(v)
+	case OpS390XMOVHstoreconst:
+		return rewriteValueS390X_OpS390XMOVHstoreconst_0(v)
+	case OpS390XORWload:
+		return rewriteValueS390X_OpS390XORWload_0(v)
+	case OpS390XSRADconst:
+		return rewriteValueS390X_OpS390XSRADconst_0(v)
+	case OpS390XSUBW:
+		return rewriteValueS390X_OpS390XSUBW_0(v)
+	case OpSub64:
+		return rewriteValueS390X_OpSub64_0(v)
+	case OpTrunc64to8:
+		return rewriteValueS390X_OpTrunc64to8_0(v)
+	case OpXor16:
+		return rewriteValueS390X_OpXor16_0(v)
 	}
 	return false
 }

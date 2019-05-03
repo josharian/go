@@ -183,21 +183,38 @@ func genRulesSuffix(arch arch, suff string) {
 	const chunkSize = 10
 	// Main rewrite routine is a switch on v.Op.
 	fmt.Fprintf(w, "func rewriteValue%s%s(v *Value) bool {\n", arch.name, suff)
-	fmt.Fprintf(w, "switch v.Op {\n")
-	for _, op := range ops {
-		fmt.Fprintf(w, "case %s:\n", op)
-		fmt.Fprint(w, "return ")
-		for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
-			if chunk > 0 {
-				fmt.Fprint(w, " || ")
-			}
-			fmt.Fprintf(w, "rewriteValue%s%s_%s_%d(v)", arch.name, suff, op, chunk)
-		}
-		fmt.Fprintln(w)
+
+	fmt.Fprintf(w, "shard := uint(v.Op) & 15\n")
+	fmt.Fprintf(w, "return rewriteValue%s%s_shards[shard](v)\n", arch.name, suff)
+	fmt.Fprintf(w, "}\n")
+
+	fmt.Fprintf(w, "var rewriteValue%s%s_shards = [...]func(v *Value) bool{\n", arch.name, suff)
+	for i := 0; i < 16; i++ {
+		fmt.Fprintf(w, "%d: rewriteValue%s%s_shard_%04b,\n", i, arch.name, suff, i)
 	}
 	fmt.Fprintf(w, "}\n")
-	fmt.Fprintf(w, "return false\n")
-	fmt.Fprintf(w, "}\n")
+
+	for i := 0; i < 16; i++ {
+		fmt.Fprintf(w, "func rewriteValue%s%s_shard_%04b(v *Value) bool {\n", arch.name, suff, i)
+		fmt.Fprintf(w, "switch v.Op {\n")
+		for _, op := range ops {
+			if op2int[op]%16 != i {
+				continue
+			}
+			fmt.Fprintf(w, "case %s:\n", op)
+			fmt.Fprint(w, "return ")
+			for chunk := 0; chunk < len(oprules[op]); chunk += chunkSize {
+				if chunk > 0 {
+					fmt.Fprint(w, " || ")
+				}
+				fmt.Fprintf(w, "rewriteValue%s%s_%s_%d(v)", arch.name, suff, op, chunk)
+			}
+			fmt.Fprintln(w)
+		}
+		fmt.Fprintf(w, "}\n")
+		fmt.Fprintf(w, "return false\n")
+		fmt.Fprintf(w, "}\n")
+	}
 
 	// Generate a routine per op. Note that we don't make one giant routine
 	// because it is too big for some compilers.

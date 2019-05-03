@@ -16,571 +16,670 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValueWasm(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValueWasm_shards[shard](v)
+}
+
+var rewriteValueWasm_shards = [...]func(v *Value) bool{
+	0:  rewriteValueWasm_shard_0000,
+	1:  rewriteValueWasm_shard_0001,
+	2:  rewriteValueWasm_shard_0010,
+	3:  rewriteValueWasm_shard_0011,
+	4:  rewriteValueWasm_shard_0100,
+	5:  rewriteValueWasm_shard_0101,
+	6:  rewriteValueWasm_shard_0110,
+	7:  rewriteValueWasm_shard_0111,
+	8:  rewriteValueWasm_shard_1000,
+	9:  rewriteValueWasm_shard_1001,
+	10: rewriteValueWasm_shard_1010,
+	11: rewriteValueWasm_shard_1011,
+	12: rewriteValueWasm_shard_1100,
+	13: rewriteValueWasm_shard_1101,
+	14: rewriteValueWasm_shard_1110,
+	15: rewriteValueWasm_shard_1111,
+}
+
+func rewriteValueWasm_shard_0000(v *Value) bool {
 	switch v.Op {
-	case OpAbs:
-		return rewriteValueWasm_OpAbs_0(v)
-	case OpAdd16:
-		return rewriteValueWasm_OpAdd16_0(v)
-	case OpAdd32:
-		return rewriteValueWasm_OpAdd32_0(v)
-	case OpAdd32F:
-		return rewriteValueWasm_OpAdd32F_0(v)
-	case OpAdd64:
-		return rewriteValueWasm_OpAdd64_0(v)
-	case OpAdd64F:
-		return rewriteValueWasm_OpAdd64F_0(v)
-	case OpAdd8:
-		return rewriteValueWasm_OpAdd8_0(v)
-	case OpAddPtr:
-		return rewriteValueWasm_OpAddPtr_0(v)
-	case OpAddr:
-		return rewriteValueWasm_OpAddr_0(v)
-	case OpAnd16:
-		return rewriteValueWasm_OpAnd16_0(v)
-	case OpAnd32:
-		return rewriteValueWasm_OpAnd32_0(v)
-	case OpAnd64:
-		return rewriteValueWasm_OpAnd64_0(v)
-	case OpAnd8:
-		return rewriteValueWasm_OpAnd8_0(v)
-	case OpAndB:
-		return rewriteValueWasm_OpAndB_0(v)
-	case OpBitLen64:
-		return rewriteValueWasm_OpBitLen64_0(v)
-	case OpCeil:
-		return rewriteValueWasm_OpCeil_0(v)
-	case OpClosureCall:
-		return rewriteValueWasm_OpClosureCall_0(v)
-	case OpCom16:
-		return rewriteValueWasm_OpCom16_0(v)
-	case OpCom32:
-		return rewriteValueWasm_OpCom32_0(v)
-	case OpCom64:
-		return rewriteValueWasm_OpCom64_0(v)
-	case OpCom8:
-		return rewriteValueWasm_OpCom8_0(v)
-	case OpConst16:
-		return rewriteValueWasm_OpConst16_0(v)
-	case OpConst32:
-		return rewriteValueWasm_OpConst32_0(v)
-	case OpConst32F:
-		return rewriteValueWasm_OpConst32F_0(v)
-	case OpConst64:
-		return rewriteValueWasm_OpConst64_0(v)
-	case OpConst64F:
-		return rewriteValueWasm_OpConst64F_0(v)
-	case OpConst8:
-		return rewriteValueWasm_OpConst8_0(v)
-	case OpConstBool:
-		return rewriteValueWasm_OpConstBool_0(v)
-	case OpConstNil:
-		return rewriteValueWasm_OpConstNil_0(v)
 	case OpConvert:
 		return rewriteValueWasm_OpConvert_0(v)
-	case OpCopysign:
-		return rewriteValueWasm_OpCopysign_0(v)
-	case OpCtz16:
-		return rewriteValueWasm_OpCtz16_0(v)
-	case OpCtz16NonZero:
-		return rewriteValueWasm_OpCtz16NonZero_0(v)
-	case OpCtz32:
-		return rewriteValueWasm_OpCtz32_0(v)
-	case OpCtz32NonZero:
-		return rewriteValueWasm_OpCtz32NonZero_0(v)
-	case OpCtz64:
-		return rewriteValueWasm_OpCtz64_0(v)
-	case OpCtz64NonZero:
-		return rewriteValueWasm_OpCtz64NonZero_0(v)
-	case OpCtz8:
-		return rewriteValueWasm_OpCtz8_0(v)
 	case OpCtz8NonZero:
 		return rewriteValueWasm_OpCtz8NonZero_0(v)
-	case OpCvt32Fto32:
-		return rewriteValueWasm_OpCvt32Fto32_0(v)
-	case OpCvt32Fto32U:
-		return rewriteValueWasm_OpCvt32Fto32U_0(v)
-	case OpCvt32Fto64:
-		return rewriteValueWasm_OpCvt32Fto64_0(v)
-	case OpCvt32Fto64F:
-		return rewriteValueWasm_OpCvt32Fto64F_0(v)
-	case OpCvt32Fto64U:
-		return rewriteValueWasm_OpCvt32Fto64U_0(v)
-	case OpCvt32Uto32F:
-		return rewriteValueWasm_OpCvt32Uto32F_0(v)
-	case OpCvt32Uto64F:
-		return rewriteValueWasm_OpCvt32Uto64F_0(v)
-	case OpCvt32to32F:
-		return rewriteValueWasm_OpCvt32to32F_0(v)
-	case OpCvt32to64F:
-		return rewriteValueWasm_OpCvt32to64F_0(v)
-	case OpCvt64Fto32:
-		return rewriteValueWasm_OpCvt64Fto32_0(v)
-	case OpCvt64Fto32F:
-		return rewriteValueWasm_OpCvt64Fto32F_0(v)
-	case OpCvt64Fto32U:
-		return rewriteValueWasm_OpCvt64Fto32U_0(v)
-	case OpCvt64Fto64:
-		return rewriteValueWasm_OpCvt64Fto64_0(v)
-	case OpCvt64Fto64U:
-		return rewriteValueWasm_OpCvt64Fto64U_0(v)
-	case OpCvt64Uto32F:
-		return rewriteValueWasm_OpCvt64Uto32F_0(v)
-	case OpCvt64Uto64F:
-		return rewriteValueWasm_OpCvt64Uto64F_0(v)
-	case OpCvt64to32F:
-		return rewriteValueWasm_OpCvt64to32F_0(v)
-	case OpCvt64to64F:
-		return rewriteValueWasm_OpCvt64to64F_0(v)
-	case OpDiv16:
-		return rewriteValueWasm_OpDiv16_0(v)
-	case OpDiv16u:
-		return rewriteValueWasm_OpDiv16u_0(v)
-	case OpDiv32:
-		return rewriteValueWasm_OpDiv32_0(v)
-	case OpDiv32F:
-		return rewriteValueWasm_OpDiv32F_0(v)
-	case OpDiv32u:
-		return rewriteValueWasm_OpDiv32u_0(v)
-	case OpDiv64:
-		return rewriteValueWasm_OpDiv64_0(v)
-	case OpDiv64F:
-		return rewriteValueWasm_OpDiv64F_0(v)
-	case OpDiv64u:
-		return rewriteValueWasm_OpDiv64u_0(v)
-	case OpDiv8:
-		return rewriteValueWasm_OpDiv8_0(v)
-	case OpDiv8u:
-		return rewriteValueWasm_OpDiv8u_0(v)
-	case OpEq16:
-		return rewriteValueWasm_OpEq16_0(v)
-	case OpEq32:
-		return rewriteValueWasm_OpEq32_0(v)
-	case OpEq32F:
-		return rewriteValueWasm_OpEq32F_0(v)
-	case OpEq64:
-		return rewriteValueWasm_OpEq64_0(v)
-	case OpEq64F:
-		return rewriteValueWasm_OpEq64F_0(v)
-	case OpEq8:
-		return rewriteValueWasm_OpEq8_0(v)
-	case OpEqB:
-		return rewriteValueWasm_OpEqB_0(v)
-	case OpEqPtr:
-		return rewriteValueWasm_OpEqPtr_0(v)
-	case OpFloor:
-		return rewriteValueWasm_OpFloor_0(v)
-	case OpGeq16:
-		return rewriteValueWasm_OpGeq16_0(v)
-	case OpGeq16U:
-		return rewriteValueWasm_OpGeq16U_0(v)
-	case OpGeq32:
-		return rewriteValueWasm_OpGeq32_0(v)
-	case OpGeq32F:
-		return rewriteValueWasm_OpGeq32F_0(v)
-	case OpGeq32U:
-		return rewriteValueWasm_OpGeq32U_0(v)
-	case OpGeq64:
-		return rewriteValueWasm_OpGeq64_0(v)
-	case OpGeq64F:
-		return rewriteValueWasm_OpGeq64F_0(v)
-	case OpGeq64U:
-		return rewriteValueWasm_OpGeq64U_0(v)
-	case OpGeq8:
-		return rewriteValueWasm_OpGeq8_0(v)
-	case OpGeq8U:
-		return rewriteValueWasm_OpGeq8U_0(v)
-	case OpGetCallerPC:
-		return rewriteValueWasm_OpGetCallerPC_0(v)
-	case OpGetCallerSP:
-		return rewriteValueWasm_OpGetCallerSP_0(v)
-	case OpGetClosurePtr:
-		return rewriteValueWasm_OpGetClosurePtr_0(v)
-	case OpGreater16:
-		return rewriteValueWasm_OpGreater16_0(v)
-	case OpGreater16U:
-		return rewriteValueWasm_OpGreater16U_0(v)
-	case OpGreater32:
-		return rewriteValueWasm_OpGreater32_0(v)
 	case OpGreater32F:
 		return rewriteValueWasm_OpGreater32F_0(v)
-	case OpGreater32U:
-		return rewriteValueWasm_OpGreater32U_0(v)
-	case OpGreater64:
-		return rewriteValueWasm_OpGreater64_0(v)
-	case OpGreater64F:
-		return rewriteValueWasm_OpGreater64F_0(v)
-	case OpGreater64U:
-		return rewriteValueWasm_OpGreater64U_0(v)
-	case OpGreater8:
-		return rewriteValueWasm_OpGreater8_0(v)
-	case OpGreater8U:
-		return rewriteValueWasm_OpGreater8U_0(v)
-	case OpInterCall:
-		return rewriteValueWasm_OpInterCall_0(v)
-	case OpIsInBounds:
-		return rewriteValueWasm_OpIsInBounds_0(v)
-	case OpIsNonNil:
-		return rewriteValueWasm_OpIsNonNil_0(v)
 	case OpIsSliceInBounds:
 		return rewriteValueWasm_OpIsSliceInBounds_0(v)
 	case OpLeq16:
 		return rewriteValueWasm_OpLeq16_0(v)
-	case OpLeq16U:
-		return rewriteValueWasm_OpLeq16U_0(v)
-	case OpLeq32:
-		return rewriteValueWasm_OpLeq32_0(v)
-	case OpLeq32F:
-		return rewriteValueWasm_OpLeq32F_0(v)
-	case OpLeq32U:
-		return rewriteValueWasm_OpLeq32U_0(v)
-	case OpLeq64:
-		return rewriteValueWasm_OpLeq64_0(v)
-	case OpLeq64F:
-		return rewriteValueWasm_OpLeq64F_0(v)
-	case OpLeq64U:
-		return rewriteValueWasm_OpLeq64U_0(v)
-	case OpLeq8:
-		return rewriteValueWasm_OpLeq8_0(v)
-	case OpLeq8U:
-		return rewriteValueWasm_OpLeq8U_0(v)
-	case OpLess16:
-		return rewriteValueWasm_OpLess16_0(v)
-	case OpLess16U:
-		return rewriteValueWasm_OpLess16U_0(v)
-	case OpLess32:
-		return rewriteValueWasm_OpLess32_0(v)
-	case OpLess32F:
-		return rewriteValueWasm_OpLess32F_0(v)
-	case OpLess32U:
-		return rewriteValueWasm_OpLess32U_0(v)
-	case OpLess64:
-		return rewriteValueWasm_OpLess64_0(v)
-	case OpLess64F:
-		return rewriteValueWasm_OpLess64F_0(v)
-	case OpLess64U:
-		return rewriteValueWasm_OpLess64U_0(v)
-	case OpLess8:
-		return rewriteValueWasm_OpLess8_0(v)
-	case OpLess8U:
-		return rewriteValueWasm_OpLess8U_0(v)
-	case OpLoad:
-		return rewriteValueWasm_OpLoad_0(v)
-	case OpLocalAddr:
-		return rewriteValueWasm_OpLocalAddr_0(v)
-	case OpLsh16x16:
-		return rewriteValueWasm_OpLsh16x16_0(v)
-	case OpLsh16x32:
-		return rewriteValueWasm_OpLsh16x32_0(v)
-	case OpLsh16x64:
-		return rewriteValueWasm_OpLsh16x64_0(v)
-	case OpLsh16x8:
-		return rewriteValueWasm_OpLsh16x8_0(v)
-	case OpLsh32x16:
-		return rewriteValueWasm_OpLsh32x16_0(v)
-	case OpLsh32x32:
-		return rewriteValueWasm_OpLsh32x32_0(v)
-	case OpLsh32x64:
-		return rewriteValueWasm_OpLsh32x64_0(v)
-	case OpLsh32x8:
-		return rewriteValueWasm_OpLsh32x8_0(v)
-	case OpLsh64x16:
-		return rewriteValueWasm_OpLsh64x16_0(v)
 	case OpLsh64x32:
 		return rewriteValueWasm_OpLsh64x32_0(v)
-	case OpLsh64x64:
-		return rewriteValueWasm_OpLsh64x64_0(v)
-	case OpLsh64x8:
-		return rewriteValueWasm_OpLsh64x8_0(v)
-	case OpLsh8x16:
-		return rewriteValueWasm_OpLsh8x16_0(v)
-	case OpLsh8x32:
-		return rewriteValueWasm_OpLsh8x32_0(v)
-	case OpLsh8x64:
-		return rewriteValueWasm_OpLsh8x64_0(v)
-	case OpLsh8x8:
-		return rewriteValueWasm_OpLsh8x8_0(v)
 	case OpMod16:
 		return rewriteValueWasm_OpMod16_0(v)
-	case OpMod16u:
-		return rewriteValueWasm_OpMod16u_0(v)
-	case OpMod32:
-		return rewriteValueWasm_OpMod32_0(v)
-	case OpMod32u:
-		return rewriteValueWasm_OpMod32u_0(v)
-	case OpMod64:
-		return rewriteValueWasm_OpMod64_0(v)
-	case OpMod64u:
-		return rewriteValueWasm_OpMod64u_0(v)
-	case OpMod8:
-		return rewriteValueWasm_OpMod8_0(v)
-	case OpMod8u:
-		return rewriteValueWasm_OpMod8u_0(v)
-	case OpMove:
-		return rewriteValueWasm_OpMove_0(v) || rewriteValueWasm_OpMove_10(v)
-	case OpMul16:
-		return rewriteValueWasm_OpMul16_0(v)
-	case OpMul32:
-		return rewriteValueWasm_OpMul32_0(v)
-	case OpMul32F:
-		return rewriteValueWasm_OpMul32F_0(v)
-	case OpMul64:
-		return rewriteValueWasm_OpMul64_0(v)
-	case OpMul64F:
-		return rewriteValueWasm_OpMul64F_0(v)
-	case OpMul8:
-		return rewriteValueWasm_OpMul8_0(v)
-	case OpNeg16:
-		return rewriteValueWasm_OpNeg16_0(v)
-	case OpNeg32:
-		return rewriteValueWasm_OpNeg32_0(v)
-	case OpNeg32F:
-		return rewriteValueWasm_OpNeg32F_0(v)
-	case OpNeg64:
-		return rewriteValueWasm_OpNeg64_0(v)
-	case OpNeg64F:
-		return rewriteValueWasm_OpNeg64F_0(v)
-	case OpNeg8:
-		return rewriteValueWasm_OpNeg8_0(v)
-	case OpNeq16:
-		return rewriteValueWasm_OpNeq16_0(v)
-	case OpNeq32:
-		return rewriteValueWasm_OpNeq32_0(v)
-	case OpNeq32F:
-		return rewriteValueWasm_OpNeq32F_0(v)
-	case OpNeq64:
-		return rewriteValueWasm_OpNeq64_0(v)
-	case OpNeq64F:
-		return rewriteValueWasm_OpNeq64F_0(v)
-	case OpNeq8:
-		return rewriteValueWasm_OpNeq8_0(v)
 	case OpNeqB:
 		return rewriteValueWasm_OpNeqB_0(v)
-	case OpNeqPtr:
-		return rewriteValueWasm_OpNeqPtr_0(v)
+	case OpPopCount32:
+		return rewriteValueWasm_OpPopCount32_0(v)
+	case OpRsh64Ux32:
+		return rewriteValueWasm_OpRsh64Ux32_0(v)
+	case OpRsh64x32:
+		return rewriteValueWasm_OpRsh64x32_0(v)
+	case OpSignExt8to16:
+		return rewriteValueWasm_OpSignExt8to16_0(v)
+	case OpSubPtr:
+		return rewriteValueWasm_OpSubPtr_0(v)
+	case OpTrunc64to16:
+		return rewriteValueWasm_OpTrunc64to16_0(v)
+	case OpWasmI64Add:
+		return rewriteValueWasm_OpWasmI64Add_0(v)
+	case OpWasmI64Eq:
+		return rewriteValueWasm_OpWasmI64Eq_0(v)
+	case OpWasmI64Load16U:
+		return rewriteValueWasm_OpWasmI64Load16U_0(v)
+	case OpXor32:
+		return rewriteValueWasm_OpXor32_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_0001(v *Value) bool {
+	switch v.Op {
+	case OpConstBool:
+		return rewriteValueWasm_OpConstBool_0(v)
+	case OpCtz16NonZero:
+		return rewriteValueWasm_OpCtz16NonZero_0(v)
+	case OpGreater64F:
+		return rewriteValueWasm_OpGreater64F_0(v)
+	case OpLeq16U:
+		return rewriteValueWasm_OpLeq16U_0(v)
+	case OpLsh64x64:
+		return rewriteValueWasm_OpLsh64x64_0(v)
+	case OpMod16u:
+		return rewriteValueWasm_OpMod16u_0(v)
 	case OpNilCheck:
 		return rewriteValueWasm_OpNilCheck_0(v)
 	case OpNot:
 		return rewriteValueWasm_OpNot_0(v)
-	case OpOffPtr:
-		return rewriteValueWasm_OpOffPtr_0(v)
-	case OpOr16:
-		return rewriteValueWasm_OpOr16_0(v)
-	case OpOr32:
-		return rewriteValueWasm_OpOr32_0(v)
-	case OpOr64:
-		return rewriteValueWasm_OpOr64_0(v)
-	case OpOr8:
-		return rewriteValueWasm_OpOr8_0(v)
-	case OpOrB:
-		return rewriteValueWasm_OpOrB_0(v)
-	case OpPopCount16:
-		return rewriteValueWasm_OpPopCount16_0(v)
-	case OpPopCount32:
-		return rewriteValueWasm_OpPopCount32_0(v)
 	case OpPopCount64:
 		return rewriteValueWasm_OpPopCount64_0(v)
-	case OpPopCount8:
-		return rewriteValueWasm_OpPopCount8_0(v)
-	case OpRotateLeft16:
-		return rewriteValueWasm_OpRotateLeft16_0(v)
-	case OpRotateLeft32:
-		return rewriteValueWasm_OpRotateLeft32_0(v)
-	case OpRotateLeft64:
-		return rewriteValueWasm_OpRotateLeft64_0(v)
-	case OpRotateLeft8:
-		return rewriteValueWasm_OpRotateLeft8_0(v)
-	case OpRound32F:
-		return rewriteValueWasm_OpRound32F_0(v)
-	case OpRound64F:
-		return rewriteValueWasm_OpRound64F_0(v)
-	case OpRoundToEven:
-		return rewriteValueWasm_OpRoundToEven_0(v)
-	case OpRsh16Ux16:
-		return rewriteValueWasm_OpRsh16Ux16_0(v)
-	case OpRsh16Ux32:
-		return rewriteValueWasm_OpRsh16Ux32_0(v)
-	case OpRsh16Ux64:
-		return rewriteValueWasm_OpRsh16Ux64_0(v)
-	case OpRsh16Ux8:
-		return rewriteValueWasm_OpRsh16Ux8_0(v)
-	case OpRsh16x16:
-		return rewriteValueWasm_OpRsh16x16_0(v)
-	case OpRsh16x32:
-		return rewriteValueWasm_OpRsh16x32_0(v)
-	case OpRsh16x64:
-		return rewriteValueWasm_OpRsh16x64_0(v)
-	case OpRsh16x8:
-		return rewriteValueWasm_OpRsh16x8_0(v)
-	case OpRsh32Ux16:
-		return rewriteValueWasm_OpRsh32Ux16_0(v)
-	case OpRsh32Ux32:
-		return rewriteValueWasm_OpRsh32Ux32_0(v)
-	case OpRsh32Ux64:
-		return rewriteValueWasm_OpRsh32Ux64_0(v)
-	case OpRsh32Ux8:
-		return rewriteValueWasm_OpRsh32Ux8_0(v)
-	case OpRsh32x16:
-		return rewriteValueWasm_OpRsh32x16_0(v)
-	case OpRsh32x32:
-		return rewriteValueWasm_OpRsh32x32_0(v)
-	case OpRsh32x64:
-		return rewriteValueWasm_OpRsh32x64_0(v)
-	case OpRsh32x8:
-		return rewriteValueWasm_OpRsh32x8_0(v)
-	case OpRsh64Ux16:
-		return rewriteValueWasm_OpRsh64Ux16_0(v)
-	case OpRsh64Ux32:
-		return rewriteValueWasm_OpRsh64Ux32_0(v)
 	case OpRsh64Ux64:
 		return rewriteValueWasm_OpRsh64Ux64_0(v)
-	case OpRsh64Ux8:
-		return rewriteValueWasm_OpRsh64Ux8_0(v)
-	case OpRsh64x16:
-		return rewriteValueWasm_OpRsh64x16_0(v)
-	case OpRsh64x32:
-		return rewriteValueWasm_OpRsh64x32_0(v)
 	case OpRsh64x64:
 		return rewriteValueWasm_OpRsh64x64_0(v)
-	case OpRsh64x8:
-		return rewriteValueWasm_OpRsh64x8_0(v)
-	case OpRsh8Ux16:
-		return rewriteValueWasm_OpRsh8Ux16_0(v)
-	case OpRsh8Ux32:
-		return rewriteValueWasm_OpRsh8Ux32_0(v)
-	case OpRsh8Ux64:
-		return rewriteValueWasm_OpRsh8Ux64_0(v)
-	case OpRsh8Ux8:
-		return rewriteValueWasm_OpRsh8Ux8_0(v)
-	case OpRsh8x16:
-		return rewriteValueWasm_OpRsh8x16_0(v)
-	case OpRsh8x32:
-		return rewriteValueWasm_OpRsh8x32_0(v)
-	case OpRsh8x64:
-		return rewriteValueWasm_OpRsh8x64_0(v)
-	case OpRsh8x8:
-		return rewriteValueWasm_OpRsh8x8_0(v)
-	case OpSignExt16to32:
-		return rewriteValueWasm_OpSignExt16to32_0(v)
-	case OpSignExt16to64:
-		return rewriteValueWasm_OpSignExt16to64_0(v)
-	case OpSignExt32to64:
-		return rewriteValueWasm_OpSignExt32to64_0(v)
-	case OpSignExt8to16:
-		return rewriteValueWasm_OpSignExt8to16_0(v)
 	case OpSignExt8to32:
 		return rewriteValueWasm_OpSignExt8to32_0(v)
+	case OpSub32F:
+		return rewriteValueWasm_OpSub32F_0(v)
+	case OpTrunc64to32:
+		return rewriteValueWasm_OpTrunc64to32_0(v)
+	case OpWasmF64Mul:
+		return rewriteValueWasm_OpWasmF64Mul_0(v)
+	case OpWasmI64AddConst:
+		return rewriteValueWasm_OpWasmI64AddConst_0(v)
+	case OpWasmI64Load16S:
+		return rewriteValueWasm_OpWasmI64Load16S_0(v)
+	case OpWasmI64Ne:
+		return rewriteValueWasm_OpWasmI64Ne_0(v)
+	case OpXor64:
+		return rewriteValueWasm_OpXor64_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_0010(v *Value) bool {
+	switch v.Op {
+	case OpCtz32NonZero:
+		return rewriteValueWasm_OpCtz32NonZero_0(v)
+	case OpCvt32to32F:
+		return rewriteValueWasm_OpCvt32to32F_0(v)
+	case OpEq8:
+		return rewriteValueWasm_OpEq8_0(v)
+	case OpGeq8:
+		return rewriteValueWasm_OpGeq8_0(v)
+	case OpLeq32:
+		return rewriteValueWasm_OpLeq32_0(v)
+	case OpLsh8x8:
+		return rewriteValueWasm_OpLsh8x8_0(v)
+	case OpMod32:
+		return rewriteValueWasm_OpMod32_0(v)
+	case OpNeg8:
+		return rewriteValueWasm_OpNeg8_0(v)
+	case OpNeq32F:
+		return rewriteValueWasm_OpNeq32F_0(v)
+	case OpRotateLeft8:
+		return rewriteValueWasm_OpRotateLeft8_0(v)
+	case OpRsh8Ux8:
+		return rewriteValueWasm_OpRsh8Ux8_0(v)
+	case OpRsh8x8:
+		return rewriteValueWasm_OpRsh8x8_0(v)
 	case OpSignExt8to64:
 		return rewriteValueWasm_OpSignExt8to64_0(v)
 	case OpSlicemask:
 		return rewriteValueWasm_OpSlicemask_0(v)
-	case OpSqrt:
-		return rewriteValueWasm_OpSqrt_0(v)
-	case OpStaticCall:
-		return rewriteValueWasm_OpStaticCall_0(v)
-	case OpStore:
-		return rewriteValueWasm_OpStore_0(v)
-	case OpSub16:
-		return rewriteValueWasm_OpSub16_0(v)
-	case OpSub32:
-		return rewriteValueWasm_OpSub32_0(v)
-	case OpSub32F:
-		return rewriteValueWasm_OpSub32F_0(v)
-	case OpSub64:
-		return rewriteValueWasm_OpSub64_0(v)
 	case OpSub64F:
 		return rewriteValueWasm_OpSub64F_0(v)
-	case OpSub8:
-		return rewriteValueWasm_OpSub8_0(v)
-	case OpSubPtr:
-		return rewriteValueWasm_OpSubPtr_0(v)
-	case OpTrunc:
-		return rewriteValueWasm_OpTrunc_0(v)
-	case OpTrunc16to8:
-		return rewriteValueWasm_OpTrunc16to8_0(v)
-	case OpTrunc32to16:
-		return rewriteValueWasm_OpTrunc32to16_0(v)
-	case OpTrunc32to8:
-		return rewriteValueWasm_OpTrunc32to8_0(v)
-	case OpTrunc64to16:
-		return rewriteValueWasm_OpTrunc64to16_0(v)
-	case OpTrunc64to32:
-		return rewriteValueWasm_OpTrunc64to32_0(v)
-	case OpTrunc64to8:
-		return rewriteValueWasm_OpTrunc64to8_0(v)
-	case OpWB:
-		return rewriteValueWasm_OpWB_0(v)
-	case OpWasmF64Add:
-		return rewriteValueWasm_OpWasmF64Add_0(v)
-	case OpWasmF64Mul:
-		return rewriteValueWasm_OpWasmF64Mul_0(v)
-	case OpWasmI64Add:
-		return rewriteValueWasm_OpWasmI64Add_0(v)
-	case OpWasmI64AddConst:
-		return rewriteValueWasm_OpWasmI64AddConst_0(v)
-	case OpWasmI64And:
-		return rewriteValueWasm_OpWasmI64And_0(v)
-	case OpWasmI64Eq:
-		return rewriteValueWasm_OpWasmI64Eq_0(v)
-	case OpWasmI64Eqz:
-		return rewriteValueWasm_OpWasmI64Eqz_0(v)
-	case OpWasmI64Load:
-		return rewriteValueWasm_OpWasmI64Load_0(v)
-	case OpWasmI64Load16S:
-		return rewriteValueWasm_OpWasmI64Load16S_0(v)
-	case OpWasmI64Load16U:
-		return rewriteValueWasm_OpWasmI64Load16U_0(v)
-	case OpWasmI64Load32S:
-		return rewriteValueWasm_OpWasmI64Load32S_0(v)
 	case OpWasmI64Load32U:
 		return rewriteValueWasm_OpWasmI64Load32U_0(v)
-	case OpWasmI64Load8S:
-		return rewriteValueWasm_OpWasmI64Load8S_0(v)
-	case OpWasmI64Load8U:
-		return rewriteValueWasm_OpWasmI64Load8U_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_0011(v *Value) bool {
+	switch v.Op {
+	case OpConstNil:
+		return rewriteValueWasm_OpConstNil_0(v)
+	case OpCtz64NonZero:
+		return rewriteValueWasm_OpCtz64NonZero_0(v)
+	case OpCvt32Uto32F:
+		return rewriteValueWasm_OpCvt32Uto32F_0(v)
+	case OpCvt32to64F:
+		return rewriteValueWasm_OpCvt32to64F_0(v)
+	case OpEq16:
+		return rewriteValueWasm_OpEq16_0(v)
+	case OpGeq8U:
+		return rewriteValueWasm_OpGeq8U_0(v)
+	case OpGetClosurePtr:
+		return rewriteValueWasm_OpGetClosurePtr_0(v)
+	case OpLeq32U:
+		return rewriteValueWasm_OpLeq32U_0(v)
+	case OpLoad:
+		return rewriteValueWasm_OpLoad_0(v)
+	case OpLsh8x16:
+		return rewriteValueWasm_OpLsh8x16_0(v)
+	case OpMod32u:
+		return rewriteValueWasm_OpMod32u_0(v)
+	case OpMul8:
+		return rewriteValueWasm_OpMul8_0(v)
+	case OpNeg16:
+		return rewriteValueWasm_OpNeg16_0(v)
+	case OpNeq64F:
+		return rewriteValueWasm_OpNeq64F_0(v)
+	case OpRotateLeft16:
+		return rewriteValueWasm_OpRotateLeft16_0(v)
+	case OpRsh8Ux16:
+		return rewriteValueWasm_OpRsh8Ux16_0(v)
+	case OpRsh8x16:
+		return rewriteValueWasm_OpRsh8x16_0(v)
+	case OpSignExt16to32:
+		return rewriteValueWasm_OpSignExt16to32_0(v)
+	case OpWasmI64Load32S:
+		return rewriteValueWasm_OpWasmI64Load32S_0(v)
 	case OpWasmI64Mul:
 		return rewriteValueWasm_OpWasmI64Mul_0(v)
-	case OpWasmI64Ne:
-		return rewriteValueWasm_OpWasmI64Ne_0(v)
-	case OpWasmI64Or:
-		return rewriteValueWasm_OpWasmI64Or_0(v)
-	case OpWasmI64Shl:
-		return rewriteValueWasm_OpWasmI64Shl_0(v)
-	case OpWasmI64ShrS:
-		return rewriteValueWasm_OpWasmI64ShrS_0(v)
-	case OpWasmI64ShrU:
-		return rewriteValueWasm_OpWasmI64ShrU_0(v)
-	case OpWasmI64Store:
-		return rewriteValueWasm_OpWasmI64Store_0(v)
-	case OpWasmI64Store16:
-		return rewriteValueWasm_OpWasmI64Store16_0(v)
-	case OpWasmI64Store32:
-		return rewriteValueWasm_OpWasmI64Store32_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_0100(v *Value) bool {
+	switch v.Op {
+	case OpConst8:
+		return rewriteValueWasm_OpConst8_0(v)
+	case OpCvt32Uto64F:
+		return rewriteValueWasm_OpCvt32Uto64F_0(v)
+	case OpCvt64to32F:
+		return rewriteValueWasm_OpCvt64to32F_0(v)
+	case OpEq32:
+		return rewriteValueWasm_OpEq32_0(v)
+	case OpGeq16:
+		return rewriteValueWasm_OpGeq16_0(v)
+	case OpGetCallerPC:
+		return rewriteValueWasm_OpGetCallerPC_0(v)
+	case OpLeq64:
+		return rewriteValueWasm_OpLeq64_0(v)
+	case OpLess8:
+		return rewriteValueWasm_OpLess8_0(v)
+	case OpLsh8x32:
+		return rewriteValueWasm_OpLsh8x32_0(v)
+	case OpMod64:
+		return rewriteValueWasm_OpMod64_0(v)
+	case OpMul16:
+		return rewriteValueWasm_OpMul16_0(v)
+	case OpNeg32:
+		return rewriteValueWasm_OpNeg32_0(v)
+	case OpRotateLeft32:
+		return rewriteValueWasm_OpRotateLeft32_0(v)
+	case OpRsh8Ux32:
+		return rewriteValueWasm_OpRsh8Ux32_0(v)
+	case OpRsh8x32:
+		return rewriteValueWasm_OpRsh8x32_0(v)
+	case OpSignExt16to64:
+		return rewriteValueWasm_OpSignExt16to64_0(v)
+	case OpStore:
+		return rewriteValueWasm_OpStore_0(v)
+	case OpWasmI64Load:
+		return rewriteValueWasm_OpWasmI64Load_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_0101(v *Value) bool {
+	switch v.Op {
+	case OpAdd8:
+		return rewriteValueWasm_OpAdd8_0(v)
+	case OpConst16:
+		return rewriteValueWasm_OpConst16_0(v)
+	case OpCvt32Fto32U:
+		return rewriteValueWasm_OpCvt32Fto32U_0(v)
+	case OpCvt64to64F:
+		return rewriteValueWasm_OpCvt64to64F_0(v)
+	case OpDiv8:
+		return rewriteValueWasm_OpDiv8_0(v)
+	case OpEq64:
+		return rewriteValueWasm_OpEq64_0(v)
+	case OpGeq16U:
+		return rewriteValueWasm_OpGeq16U_0(v)
+	case OpGetCallerSP:
+		return rewriteValueWasm_OpGetCallerSP_0(v)
+	case OpLeq64U:
+		return rewriteValueWasm_OpLeq64U_0(v)
+	case OpLess8U:
+		return rewriteValueWasm_OpLess8U_0(v)
+	case OpLsh8x64:
+		return rewriteValueWasm_OpLsh8x64_0(v)
+	case OpMod64u:
+		return rewriteValueWasm_OpMod64u_0(v)
+	case OpMove:
+		return rewriteValueWasm_OpMove_0(v) || rewriteValueWasm_OpMove_10(v)
+	case OpMul32:
+		return rewriteValueWasm_OpMul32_0(v)
+	case OpNeg64:
+		return rewriteValueWasm_OpNeg64_0(v)
+	case OpRotateLeft64:
+		return rewriteValueWasm_OpRotateLeft64_0(v)
+	case OpRsh8Ux64:
+		return rewriteValueWasm_OpRsh8Ux64_0(v)
+	case OpRsh8x64:
+		return rewriteValueWasm_OpRsh8x64_0(v)
+	case OpSignExt32to64:
+		return rewriteValueWasm_OpSignExt32to64_0(v)
 	case OpWasmI64Store8:
 		return rewriteValueWasm_OpWasmI64Store8_0(v)
-	case OpWasmI64Xor:
-		return rewriteValueWasm_OpWasmI64Xor_0(v)
-	case OpXor16:
-		return rewriteValueWasm_OpXor16_0(v)
-	case OpXor32:
-		return rewriteValueWasm_OpXor32_0(v)
-	case OpXor64:
-		return rewriteValueWasm_OpXor64_0(v)
-	case OpXor8:
-		return rewriteValueWasm_OpXor8_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_0110(v *Value) bool {
+	switch v.Op {
+	case OpAdd16:
+		return rewriteValueWasm_OpAdd16_0(v)
+	case OpAnd8:
+		return rewriteValueWasm_OpAnd8_0(v)
+	case OpConst32:
+		return rewriteValueWasm_OpConst32_0(v)
+	case OpCvt32Fto32:
+		return rewriteValueWasm_OpCvt32Fto32_0(v)
+	case OpCvt64Fto32U:
+		return rewriteValueWasm_OpCvt64Fto32U_0(v)
+	case OpDiv8u:
+		return rewriteValueWasm_OpDiv8u_0(v)
+	case OpEqPtr:
+		return rewriteValueWasm_OpEqPtr_0(v)
+	case OpGeq32:
+		return rewriteValueWasm_OpGeq32_0(v)
+	case OpLeq32F:
+		return rewriteValueWasm_OpLeq32F_0(v)
+	case OpLess16:
+		return rewriteValueWasm_OpLess16_0(v)
+	case OpLsh16x8:
+		return rewriteValueWasm_OpLsh16x8_0(v)
+	case OpMul64:
+		return rewriteValueWasm_OpMul64_0(v)
+	case OpNeg32F:
+		return rewriteValueWasm_OpNeg32F_0(v)
+	case OpRsh16Ux8:
+		return rewriteValueWasm_OpRsh16Ux8_0(v)
+	case OpRsh16x8:
+		return rewriteValueWasm_OpRsh16x8_0(v)
+	case OpSqrt:
+		return rewriteValueWasm_OpSqrt_0(v)
+	case OpWasmI64Store16:
+		return rewriteValueWasm_OpWasmI64Store16_0(v)
 	case OpZero:
 		return rewriteValueWasm_OpZero_0(v) || rewriteValueWasm_OpZero_10(v)
-	case OpZeroExt16to32:
-		return rewriteValueWasm_OpZeroExt16to32_0(v)
-	case OpZeroExt16to64:
-		return rewriteValueWasm_OpZeroExt16to64_0(v)
-	case OpZeroExt32to64:
-		return rewriteValueWasm_OpZeroExt32to64_0(v)
 	case OpZeroExt8to16:
 		return rewriteValueWasm_OpZeroExt8to16_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_0111(v *Value) bool {
+	switch v.Op {
+	case OpAdd32:
+		return rewriteValueWasm_OpAdd32_0(v)
+	case OpAnd16:
+		return rewriteValueWasm_OpAnd16_0(v)
+	case OpBitLen64:
+		return rewriteValueWasm_OpBitLen64_0(v)
+	case OpConst64:
+		return rewriteValueWasm_OpConst64_0(v)
+	case OpCvt32Fto64:
+		return rewriteValueWasm_OpCvt32Fto64_0(v)
+	case OpCvt64Uto32F:
+		return rewriteValueWasm_OpCvt64Uto32F_0(v)
+	case OpDiv16:
+		return rewriteValueWasm_OpDiv16_0(v)
+	case OpFloor:
+		return rewriteValueWasm_OpFloor_0(v)
+	case OpGeq32U:
+		return rewriteValueWasm_OpGeq32U_0(v)
+	case OpLeq64F:
+		return rewriteValueWasm_OpLeq64F_0(v)
+	case OpLess16U:
+		return rewriteValueWasm_OpLess16U_0(v)
+	case OpLsh16x16:
+		return rewriteValueWasm_OpLsh16x16_0(v)
+	case OpMul32F:
+		return rewriteValueWasm_OpMul32F_0(v)
+	case OpNeg64F:
+		return rewriteValueWasm_OpNeg64F_0(v)
+	case OpOffPtr:
+		return rewriteValueWasm_OpOffPtr_0(v)
+	case OpRsh16Ux16:
+		return rewriteValueWasm_OpRsh16Ux16_0(v)
+	case OpRsh16x16:
+		return rewriteValueWasm_OpRsh16x16_0(v)
+	case OpWasmI64Store32:
+		return rewriteValueWasm_OpWasmI64Store32_0(v)
 	case OpZeroExt8to32:
 		return rewriteValueWasm_OpZeroExt8to32_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_1000(v *Value) bool {
+	switch v.Op {
+	case OpAdd64:
+		return rewriteValueWasm_OpAdd64_0(v)
+	case OpAnd32:
+		return rewriteValueWasm_OpAnd32_0(v)
+	case OpCeil:
+		return rewriteValueWasm_OpCeil_0(v)
+	case OpCom8:
+		return rewriteValueWasm_OpCom8_0(v)
+	case OpConst32F:
+		return rewriteValueWasm_OpConst32F_0(v)
+	case OpCvt64Fto32:
+		return rewriteValueWasm_OpCvt64Fto32_0(v)
+	case OpCvt64Uto64F:
+		return rewriteValueWasm_OpCvt64Uto64F_0(v)
+	case OpDiv16u:
+		return rewriteValueWasm_OpDiv16u_0(v)
+	case OpGeq64:
+		return rewriteValueWasm_OpGeq64_0(v)
+	case OpGreater8:
+		return rewriteValueWasm_OpGreater8_0(v)
+	case OpLess32:
+		return rewriteValueWasm_OpLess32_0(v)
+	case OpLsh16x32:
+		return rewriteValueWasm_OpLsh16x32_0(v)
+	case OpMul64F:
+		return rewriteValueWasm_OpMul64F_0(v)
+	case OpRsh16Ux32:
+		return rewriteValueWasm_OpRsh16Ux32_0(v)
+	case OpRsh16x32:
+		return rewriteValueWasm_OpRsh16x32_0(v)
+	case OpWasmI64And:
+		return rewriteValueWasm_OpWasmI64And_0(v)
+	case OpWasmI64Store:
+		return rewriteValueWasm_OpWasmI64Store_0(v)
 	case OpZeroExt8to64:
 		return rewriteValueWasm_OpZeroExt8to64_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_1001(v *Value) bool {
+	switch v.Op {
+	case OpAddPtr:
+		return rewriteValueWasm_OpAddPtr_0(v)
+	case OpAnd64:
+		return rewriteValueWasm_OpAnd64_0(v)
+	case OpCom16:
+		return rewriteValueWasm_OpCom16_0(v)
+	case OpConst64F:
+		return rewriteValueWasm_OpConst64F_0(v)
+	case OpCvt32Fto64U:
+		return rewriteValueWasm_OpCvt32Fto64U_0(v)
+	case OpCvt64Fto64:
+		return rewriteValueWasm_OpCvt64Fto64_0(v)
+	case OpDiv32:
+		return rewriteValueWasm_OpDiv32_0(v)
+	case OpDiv32F:
+		return rewriteValueWasm_OpDiv32F_0(v)
+	case OpEq32F:
+		return rewriteValueWasm_OpEq32F_0(v)
+	case OpGeq64U:
+		return rewriteValueWasm_OpGeq64U_0(v)
+	case OpGreater8U:
+		return rewriteValueWasm_OpGreater8U_0(v)
+	case OpLess32U:
+		return rewriteValueWasm_OpLess32U_0(v)
+	case OpLsh16x64:
+		return rewriteValueWasm_OpLsh16x64_0(v)
+	case OpRsh16Ux64:
+		return rewriteValueWasm_OpRsh16Ux64_0(v)
+	case OpRsh16x64:
+		return rewriteValueWasm_OpRsh16x64_0(v)
+	case OpTrunc:
+		return rewriteValueWasm_OpTrunc_0(v)
+	case OpWasmI64Or:
+		return rewriteValueWasm_OpWasmI64Or_0(v)
+	case OpZeroExt16to32:
+		return rewriteValueWasm_OpZeroExt16to32_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_1010(v *Value) bool {
+	switch v.Op {
+	case OpAdd32F:
+		return rewriteValueWasm_OpAdd32F_0(v)
+	case OpCom32:
+		return rewriteValueWasm_OpCom32_0(v)
+	case OpCvt32Fto64F:
+		return rewriteValueWasm_OpCvt32Fto64F_0(v)
+	case OpCvt64Fto64U:
+		return rewriteValueWasm_OpCvt64Fto64U_0(v)
+	case OpDiv32u:
+		return rewriteValueWasm_OpDiv32u_0(v)
+	case OpDiv64F:
+		return rewriteValueWasm_OpDiv64F_0(v)
+	case OpEq64F:
+		return rewriteValueWasm_OpEq64F_0(v)
+	case OpGeq32F:
+		return rewriteValueWasm_OpGeq32F_0(v)
+	case OpGreater16:
+		return rewriteValueWasm_OpGreater16_0(v)
+	case OpLess64:
+		return rewriteValueWasm_OpLess64_0(v)
+	case OpLsh32x8:
+		return rewriteValueWasm_OpLsh32x8_0(v)
+	case OpOr8:
+		return rewriteValueWasm_OpOr8_0(v)
+	case OpRsh32Ux8:
+		return rewriteValueWasm_OpRsh32Ux8_0(v)
+	case OpRsh32x8:
+		return rewriteValueWasm_OpRsh32x8_0(v)
+	case OpWB:
+		return rewriteValueWasm_OpWB_0(v)
+	case OpWasmI64Xor:
+		return rewriteValueWasm_OpWasmI64Xor_0(v)
+	case OpZeroExt16to64:
+		return rewriteValueWasm_OpZeroExt16to64_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_1011(v *Value) bool {
+	switch v.Op {
+	case OpAdd64F:
+		return rewriteValueWasm_OpAdd64F_0(v)
+	case OpCom64:
+		return rewriteValueWasm_OpCom64_0(v)
+	case OpCvt64Fto32F:
+		return rewriteValueWasm_OpCvt64Fto32F_0(v)
+	case OpDiv64:
+		return rewriteValueWasm_OpDiv64_0(v)
+	case OpGeq64F:
+		return rewriteValueWasm_OpGeq64F_0(v)
+	case OpGreater16U:
+		return rewriteValueWasm_OpGreater16U_0(v)
+	case OpLess64U:
+		return rewriteValueWasm_OpLess64U_0(v)
+	case OpLsh32x16:
+		return rewriteValueWasm_OpLsh32x16_0(v)
+	case OpNeq8:
+		return rewriteValueWasm_OpNeq8_0(v)
+	case OpOr16:
+		return rewriteValueWasm_OpOr16_0(v)
+	case OpRoundToEven:
+		return rewriteValueWasm_OpRoundToEven_0(v)
+	case OpRsh32Ux16:
+		return rewriteValueWasm_OpRsh32Ux16_0(v)
+	case OpRsh32x16:
+		return rewriteValueWasm_OpRsh32x16_0(v)
+	case OpWasmI64Shl:
+		return rewriteValueWasm_OpWasmI64Shl_0(v)
+	case OpZeroExt32to64:
+		return rewriteValueWasm_OpZeroExt32to64_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_1100(v *Value) bool {
+	switch v.Op {
+	case OpAbs:
+		return rewriteValueWasm_OpAbs_0(v)
+	case OpCtz8:
+		return rewriteValueWasm_OpCtz8_0(v)
+	case OpDiv64u:
+		return rewriteValueWasm_OpDiv64u_0(v)
+	case OpGreater32:
+		return rewriteValueWasm_OpGreater32_0(v)
+	case OpLess32F:
+		return rewriteValueWasm_OpLess32F_0(v)
+	case OpLsh32x32:
+		return rewriteValueWasm_OpLsh32x32_0(v)
+	case OpNeq16:
+		return rewriteValueWasm_OpNeq16_0(v)
+	case OpOr32:
+		return rewriteValueWasm_OpOr32_0(v)
+	case OpRound32F:
+		return rewriteValueWasm_OpRound32F_0(v)
+	case OpRsh32Ux32:
+		return rewriteValueWasm_OpRsh32Ux32_0(v)
+	case OpRsh32x32:
+		return rewriteValueWasm_OpRsh32x32_0(v)
+	case OpSub8:
+		return rewriteValueWasm_OpSub8_0(v)
+	case OpTrunc16to8:
+		return rewriteValueWasm_OpTrunc16to8_0(v)
+	case OpWasmI64ShrS:
+		return rewriteValueWasm_OpWasmI64ShrS_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_1101(v *Value) bool {
+	switch v.Op {
+	case OpAndB:
+		return rewriteValueWasm_OpAndB_0(v)
+	case OpClosureCall:
+		return rewriteValueWasm_OpClosureCall_0(v)
+	case OpCopysign:
+		return rewriteValueWasm_OpCopysign_0(v)
+	case OpCtz16:
+		return rewriteValueWasm_OpCtz16_0(v)
+	case OpGreater32U:
+		return rewriteValueWasm_OpGreater32U_0(v)
+	case OpLess64F:
+		return rewriteValueWasm_OpLess64F_0(v)
+	case OpLsh32x64:
+		return rewriteValueWasm_OpLsh32x64_0(v)
+	case OpNeq32:
+		return rewriteValueWasm_OpNeq32_0(v)
+	case OpOr64:
+		return rewriteValueWasm_OpOr64_0(v)
+	case OpRound64F:
+		return rewriteValueWasm_OpRound64F_0(v)
+	case OpRsh32Ux64:
+		return rewriteValueWasm_OpRsh32Ux64_0(v)
+	case OpRsh32x64:
+		return rewriteValueWasm_OpRsh32x64_0(v)
+	case OpSub16:
+		return rewriteValueWasm_OpSub16_0(v)
+	case OpTrunc32to8:
+		return rewriteValueWasm_OpTrunc32to8_0(v)
+	case OpWasmI64ShrU:
+		return rewriteValueWasm_OpWasmI64ShrU_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_1110(v *Value) bool {
+	switch v.Op {
+	case OpAddr:
+		return rewriteValueWasm_OpAddr_0(v)
+	case OpCtz32:
+		return rewriteValueWasm_OpCtz32_0(v)
+	case OpGreater64:
+		return rewriteValueWasm_OpGreater64_0(v)
+	case OpIsNonNil:
+		return rewriteValueWasm_OpIsNonNil_0(v)
+	case OpLeq8:
+		return rewriteValueWasm_OpLeq8_0(v)
+	case OpLsh64x8:
+		return rewriteValueWasm_OpLsh64x8_0(v)
+	case OpMod8:
+		return rewriteValueWasm_OpMod8_0(v)
+	case OpNeq64:
+		return rewriteValueWasm_OpNeq64_0(v)
+	case OpOrB:
+		return rewriteValueWasm_OpOrB_0(v)
+	case OpPopCount8:
+		return rewriteValueWasm_OpPopCount8_0(v)
+	case OpRsh64Ux8:
+		return rewriteValueWasm_OpRsh64Ux8_0(v)
+	case OpRsh64x8:
+		return rewriteValueWasm_OpRsh64x8_0(v)
+	case OpStaticCall:
+		return rewriteValueWasm_OpStaticCall_0(v)
+	case OpSub32:
+		return rewriteValueWasm_OpSub32_0(v)
+	case OpTrunc32to16:
+		return rewriteValueWasm_OpTrunc32to16_0(v)
+	case OpWasmI64Load8U:
+		return rewriteValueWasm_OpWasmI64Load8U_0(v)
+	case OpXor8:
+		return rewriteValueWasm_OpXor8_0(v)
+	}
+	return false
+}
+func rewriteValueWasm_shard_1111(v *Value) bool {
+	switch v.Op {
+	case OpCtz64:
+		return rewriteValueWasm_OpCtz64_0(v)
+	case OpEqB:
+		return rewriteValueWasm_OpEqB_0(v)
+	case OpGreater64U:
+		return rewriteValueWasm_OpGreater64U_0(v)
+	case OpInterCall:
+		return rewriteValueWasm_OpInterCall_0(v)
+	case OpIsInBounds:
+		return rewriteValueWasm_OpIsInBounds_0(v)
+	case OpLeq8U:
+		return rewriteValueWasm_OpLeq8U_0(v)
+	case OpLocalAddr:
+		return rewriteValueWasm_OpLocalAddr_0(v)
+	case OpLsh64x16:
+		return rewriteValueWasm_OpLsh64x16_0(v)
+	case OpMod8u:
+		return rewriteValueWasm_OpMod8u_0(v)
+	case OpNeqPtr:
+		return rewriteValueWasm_OpNeqPtr_0(v)
+	case OpPopCount16:
+		return rewriteValueWasm_OpPopCount16_0(v)
+	case OpRsh64Ux16:
+		return rewriteValueWasm_OpRsh64Ux16_0(v)
+	case OpRsh64x16:
+		return rewriteValueWasm_OpRsh64x16_0(v)
+	case OpSub64:
+		return rewriteValueWasm_OpSub64_0(v)
+	case OpTrunc64to8:
+		return rewriteValueWasm_OpTrunc64to8_0(v)
+	case OpWasmF64Add:
+		return rewriteValueWasm_OpWasmF64Add_0(v)
+	case OpWasmI64Eqz:
+		return rewriteValueWasm_OpWasmI64Eqz_0(v)
+	case OpWasmI64Load8S:
+		return rewriteValueWasm_OpWasmI64Load8S_0(v)
+	case OpXor16:
+		return rewriteValueWasm_OpXor16_0(v)
 	}
 	return false
 }

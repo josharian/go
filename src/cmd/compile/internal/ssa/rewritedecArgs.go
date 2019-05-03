@@ -16,9 +16,108 @@ var _ = objabi.GOROOT // in case not otherwise used
 var _ = types.TypeMem // in case not otherwise used
 
 func rewriteValuedecArgs(v *Value) bool {
+	shard := uint(v.Op) & 15
+	return rewriteValuedecArgs_shards[shard](v)
+}
+
+var rewriteValuedecArgs_shards = [...]func(v *Value) bool{
+	0:  rewriteValuedecArgs_shard_0000,
+	1:  rewriteValuedecArgs_shard_0001,
+	2:  rewriteValuedecArgs_shard_0010,
+	3:  rewriteValuedecArgs_shard_0011,
+	4:  rewriteValuedecArgs_shard_0100,
+	5:  rewriteValuedecArgs_shard_0101,
+	6:  rewriteValuedecArgs_shard_0110,
+	7:  rewriteValuedecArgs_shard_0111,
+	8:  rewriteValuedecArgs_shard_1000,
+	9:  rewriteValuedecArgs_shard_1001,
+	10: rewriteValuedecArgs_shard_1010,
+	11: rewriteValuedecArgs_shard_1011,
+	12: rewriteValuedecArgs_shard_1100,
+	13: rewriteValuedecArgs_shard_1101,
+	14: rewriteValuedecArgs_shard_1110,
+	15: rewriteValuedecArgs_shard_1111,
+}
+
+func rewriteValuedecArgs_shard_0000(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_0001(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_0010(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_0011(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_0100(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_0101(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_0110(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_0111(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_1000(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_1001(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_1010(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_1011(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_1100(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_1101(v *Value) bool {
 	switch v.Op {
 	case OpArg:
 		return rewriteValuedecArgs_OpArg_0(v) || rewriteValuedecArgs_OpArg_10(v)
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_1110(v *Value) bool {
+	switch v.Op {
+	}
+	return false
+}
+func rewriteValuedecArgs_shard_1111(v *Value) bool {
+	switch v.Op {
 	}
 	return false
 }
