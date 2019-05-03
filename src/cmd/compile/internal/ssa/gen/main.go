@@ -153,7 +153,7 @@ func genOp() {
 			}
 			opname := "Op" + a.Name() + v.name
 			op2int[opname] = c
-			fmt.Fprintln(w, opname)
+			fmt.Fprintln(w, opname, " Op = ", c)
 		}
 	}
 	fmt.Fprintln(w, ")")

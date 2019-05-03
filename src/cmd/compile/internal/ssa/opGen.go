@@ -250,2287 +250,2287 @@ func (k BlockKind) String() string { return blockString[k] }
 const (
 	OpInvalid Op = iota
 
-	Op386ADDSS
-	Op386ADDSD
-	Op386SUBSS
-	Op386SUBSD
-	Op386MULSS
-	Op386MULSD
-	Op386DIVSS
-	Op386DIVSD
-	Op386MOVSSload
-	Op386MOVSDload
-	Op386MOVSSconst
-	Op386MOVSDconst
-	Op386MOVSSloadidx1
-	Op386MOVSSloadidx4
-	Op386MOVSDloadidx1
-	Op386MOVSDloadidx8
-	Op386MOVSSstore
-	Op386MOVSDstore
-	Op386MOVSSstoreidx1
-	Op386MOVSSstoreidx4
-	Op386MOVSDstoreidx1
-	Op386MOVSDstoreidx8
-	Op386ADDSSload
-	Op386ADDSDload
-	Op386SUBSSload
-	Op386SUBSDload
-	Op386MULSSload
-	Op386MULSDload
-	Op386DIVSSload
-	Op386DIVSDload
-	Op386ADDL
-	Op386ADDLconst
-	Op386ADDLcarry
-	Op386ADDLconstcarry
-	Op386ADCL
-	Op386ADCLconst
-	Op386SUBL
-	Op386SUBLconst
-	Op386SUBLcarry
-	Op386SUBLconstcarry
-	Op386SBBL
-	Op386SBBLconst
-	Op386MULL
-	Op386MULLconst
-	Op386MULLU
-	Op386HMULL
-	Op386HMULLU
-	Op386MULLQU
-	Op386AVGLU
-	Op386DIVL
-	Op386DIVW
-	Op386DIVLU
-	Op386DIVWU
-	Op386MODL
-	Op386MODW
-	Op386MODLU
-	Op386MODWU
-	Op386ANDL
-	Op386ANDLconst
-	Op386ORL
-	Op386ORLconst
-	Op386XORL
-	Op386XORLconst
-	Op386CMPL
-	Op386CMPW
-	Op386CMPB
-	Op386CMPLconst
-	Op386CMPWconst
-	Op386CMPBconst
-	Op386CMPLload
-	Op386CMPWload
-	Op386CMPBload
-	Op386CMPLconstload
-	Op386CMPWconstload
-	Op386CMPBconstload
-	Op386UCOMISS
-	Op386UCOMISD
-	Op386TESTL
-	Op386TESTW
-	Op386TESTB
-	Op386TESTLconst
-	Op386TESTWconst
-	Op386TESTBconst
-	Op386SHLL
-	Op386SHLLconst
-	Op386SHRL
-	Op386SHRW
-	Op386SHRB
-	Op386SHRLconst
-	Op386SHRWconst
-	Op386SHRBconst
-	Op386SARL
-	Op386SARW
-	Op386SARB
-	Op386SARLconst
-	Op386SARWconst
-	Op386SARBconst
-	Op386ROLLconst
-	Op386ROLWconst
-	Op386ROLBconst
-	Op386ADDLload
-	Op386SUBLload
-	Op386MULLload
-	Op386ANDLload
-	Op386ORLload
-	Op386XORLload
-	Op386ADDLloadidx4
-	Op386SUBLloadidx4
-	Op386MULLloadidx4
-	Op386ANDLloadidx4
-	Op386ORLloadidx4
-	Op386XORLloadidx4
-	Op386NEGL
-	Op386NOTL
-	Op386BSFL
-	Op386BSFW
-	Op386BSRL
-	Op386BSRW
-	Op386BSWAPL
-	Op386SQRTSD
-	Op386SBBLcarrymask
-	Op386SETEQ
-	Op386SETNE
-	Op386SETL
-	Op386SETLE
-	Op386SETG
-	Op386SETGE
-	Op386SETB
-	Op386SETBE
-	Op386SETA
-	Op386SETAE
-	Op386SETO
-	Op386SETEQF
-	Op386SETNEF
-	Op386SETORD
-	Op386SETNAN
-	Op386SETGF
-	Op386SETGEF
-	Op386MOVBLSX
-	Op386MOVBLZX
-	Op386MOVWLSX
-	Op386MOVWLZX
-	Op386MOVLconst
-	Op386CVTTSD2SL
-	Op386CVTTSS2SL
-	Op386CVTSL2SS
-	Op386CVTSL2SD
-	Op386CVTSD2SS
-	Op386CVTSS2SD
-	Op386PXOR
-	Op386LEAL
-	Op386LEAL1
-	Op386LEAL2
-	Op386LEAL4
-	Op386LEAL8
-	Op386MOVBload
-	Op386MOVBLSXload
-	Op386MOVWload
-	Op386MOVWLSXload
-	Op386MOVLload
-	Op386MOVBstore
-	Op386MOVWstore
-	Op386MOVLstore
-	Op386ADDLmodify
-	Op386SUBLmodify
-	Op386ANDLmodify
-	Op386ORLmodify
-	Op386XORLmodify
-	Op386ADDLmodifyidx4
-	Op386SUBLmodifyidx4
-	Op386ANDLmodifyidx4
-	Op386ORLmodifyidx4
-	Op386XORLmodifyidx4
-	Op386ADDLconstmodify
-	Op386ANDLconstmodify
-	Op386ORLconstmodify
-	Op386XORLconstmodify
-	Op386ADDLconstmodifyidx4
-	Op386ANDLconstmodifyidx4
-	Op386ORLconstmodifyidx4
-	Op386XORLconstmodifyidx4
-	Op386MOVBloadidx1
-	Op386MOVWloadidx1
-	Op386MOVWloadidx2
-	Op386MOVLloadidx1
-	Op386MOVLloadidx4
-	Op386MOVBstoreidx1
-	Op386MOVWstoreidx1
-	Op386MOVWstoreidx2
-	Op386MOVLstoreidx1
-	Op386MOVLstoreidx4
-	Op386MOVBstoreconst
-	Op386MOVWstoreconst
-	Op386MOVLstoreconst
-	Op386MOVBstoreconstidx1
-	Op386MOVWstoreconstidx1
-	Op386MOVWstoreconstidx2
-	Op386MOVLstoreconstidx1
-	Op386MOVLstoreconstidx4
-	Op386DUFFZERO
-	Op386REPSTOSL
-	Op386CALLstatic
-	Op386CALLclosure
-	Op386CALLinter
-	Op386DUFFCOPY
-	Op386REPMOVSL
-	Op386InvertFlags
-	Op386LoweredGetG
-	Op386LoweredGetClosurePtr
-	Op386LoweredGetCallerPC
-	Op386LoweredGetCallerSP
-	Op386LoweredNilCheck
-	Op386LoweredWB
-	Op386LoweredPanicBoundsA
-	Op386LoweredPanicBoundsB
-	Op386LoweredPanicBoundsC
-	Op386LoweredPanicExtendA
-	Op386LoweredPanicExtendB
-	Op386LoweredPanicExtendC
-	Op386FlagEQ
-	Op386FlagLT_ULT
-	Op386FlagLT_UGT
-	Op386FlagGT_UGT
-	Op386FlagGT_ULT
-	Op386FCHS
-	Op386MOVSSconst1
-	Op386MOVSDconst1
-	Op386MOVSSconst2
-	Op386MOVSDconst2
+	Op386ADDSS                Op = 1
+	Op386ADDSD                Op = 2
+	Op386SUBSS                Op = 3
+	Op386SUBSD                Op = 4
+	Op386MULSS                Op = 5
+	Op386MULSD                Op = 6
+	Op386DIVSS                Op = 7
+	Op386DIVSD                Op = 8
+	Op386MOVSSload            Op = 9
+	Op386MOVSDload            Op = 10
+	Op386MOVSSconst           Op = 11
+	Op386MOVSDconst           Op = 12
+	Op386MOVSSloadidx1        Op = 13
+	Op386MOVSSloadidx4        Op = 14
+	Op386MOVSDloadidx1        Op = 15
+	Op386MOVSDloadidx8        Op = 16
+	Op386MOVSSstore           Op = 17
+	Op386MOVSDstore           Op = 18
+	Op386MOVSSstoreidx1       Op = 19
+	Op386MOVSSstoreidx4       Op = 20
+	Op386MOVSDstoreidx1       Op = 21
+	Op386MOVSDstoreidx8       Op = 22
+	Op386ADDSSload            Op = 23
+	Op386ADDSDload            Op = 24
+	Op386SUBSSload            Op = 25
+	Op386SUBSDload            Op = 26
+	Op386MULSSload            Op = 27
+	Op386MULSDload            Op = 28
+	Op386DIVSSload            Op = 29
+	Op386DIVSDload            Op = 30
+	Op386ADDL                 Op = 31
+	Op386ADDLconst            Op = 32
+	Op386ADDLcarry            Op = 33
+	Op386ADDLconstcarry       Op = 34
+	Op386ADCL                 Op = 35
+	Op386ADCLconst            Op = 36
+	Op386SUBL                 Op = 37
+	Op386SUBLconst            Op = 38
+	Op386SUBLcarry            Op = 39
+	Op386SUBLconstcarry       Op = 40
+	Op386SBBL                 Op = 41
+	Op386SBBLconst            Op = 42
+	Op386MULL                 Op = 43
+	Op386MULLconst            Op = 44
+	Op386MULLU                Op = 45
+	Op386HMULL                Op = 46
+	Op386HMULLU               Op = 47
+	Op386MULLQU               Op = 48
+	Op386AVGLU                Op = 49
+	Op386DIVL                 Op = 50
+	Op386DIVW                 Op = 51
+	Op386DIVLU                Op = 52
+	Op386DIVWU                Op = 53
+	Op386MODL                 Op = 54
+	Op386MODW                 Op = 55
+	Op386MODLU                Op = 56
+	Op386MODWU                Op = 57
+	Op386ANDL                 Op = 58
+	Op386ANDLconst            Op = 59
+	Op386ORL                  Op = 60
+	Op386ORLconst             Op = 61
+	Op386XORL                 Op = 62
+	Op386XORLconst            Op = 63
+	Op386CMPL                 Op = 64
+	Op386CMPW                 Op = 65
+	Op386CMPB                 Op = 66
+	Op386CMPLconst            Op = 67
+	Op386CMPWconst            Op = 68
+	Op386CMPBconst            Op = 69
+	Op386CMPLload             Op = 70
+	Op386CMPWload             Op = 71
+	Op386CMPBload             Op = 72
+	Op386CMPLconstload        Op = 73
+	Op386CMPWconstload        Op = 74
+	Op386CMPBconstload        Op = 75
+	Op386UCOMISS              Op = 76
+	Op386UCOMISD              Op = 77
+	Op386TESTL                Op = 78
+	Op386TESTW                Op = 79
+	Op386TESTB                Op = 80
+	Op386TESTLconst           Op = 81
+	Op386TESTWconst           Op = 82
+	Op386TESTBconst           Op = 83
+	Op386SHLL                 Op = 84
+	Op386SHLLconst            Op = 85
+	Op386SHRL                 Op = 86
+	Op386SHRW                 Op = 87
+	Op386SHRB                 Op = 88
+	Op386SHRLconst            Op = 89
+	Op386SHRWconst            Op = 90
+	Op386SHRBconst            Op = 91
+	Op386SARL                 Op = 92
+	Op386SARW                 Op = 93
+	Op386SARB                 Op = 94
+	Op386SARLconst            Op = 95
+	Op386SARWconst            Op = 96
+	Op386SARBconst            Op = 97
+	Op386ROLLconst            Op = 98
+	Op386ROLWconst            Op = 99
+	Op386ROLBconst            Op = 100
+	Op386ADDLload             Op = 101
+	Op386SUBLload             Op = 102
+	Op386MULLload             Op = 103
+	Op386ANDLload             Op = 104
+	Op386ORLload              Op = 105
+	Op386XORLload             Op = 106
+	Op386ADDLloadidx4         Op = 107
+	Op386SUBLloadidx4         Op = 108
+	Op386MULLloadidx4         Op = 109
+	Op386ANDLloadidx4         Op = 110
+	Op386ORLloadidx4          Op = 111
+	Op386XORLloadidx4         Op = 112
+	Op386NEGL                 Op = 113
+	Op386NOTL                 Op = 114
+	Op386BSFL                 Op = 115
+	Op386BSFW                 Op = 116
+	Op386BSRL                 Op = 117
+	Op386BSRW                 Op = 118
+	Op386BSWAPL               Op = 119
+	Op386SQRTSD               Op = 120
+	Op386SBBLcarrymask        Op = 121
+	Op386SETEQ                Op = 122
+	Op386SETNE                Op = 123
+	Op386SETL                 Op = 124
+	Op386SETLE                Op = 125
+	Op386SETG                 Op = 126
+	Op386SETGE                Op = 127
+	Op386SETB                 Op = 128
+	Op386SETBE                Op = 129
+	Op386SETA                 Op = 130
+	Op386SETAE                Op = 131
+	Op386SETO                 Op = 132
+	Op386SETEQF               Op = 133
+	Op386SETNEF               Op = 134
+	Op386SETORD               Op = 135
+	Op386SETNAN               Op = 136
+	Op386SETGF                Op = 137
+	Op386SETGEF               Op = 138
+	Op386MOVBLSX              Op = 139
+	Op386MOVBLZX              Op = 140
+	Op386MOVWLSX              Op = 141
+	Op386MOVWLZX              Op = 142
+	Op386MOVLconst            Op = 143
+	Op386CVTTSD2SL            Op = 144
+	Op386CVTTSS2SL            Op = 145
+	Op386CVTSL2SS             Op = 146
+	Op386CVTSL2SD             Op = 147
+	Op386CVTSD2SS             Op = 148
+	Op386CVTSS2SD             Op = 149
+	Op386PXOR                 Op = 150
+	Op386LEAL                 Op = 151
+	Op386LEAL1                Op = 152
+	Op386LEAL2                Op = 153
+	Op386LEAL4                Op = 154
+	Op386LEAL8                Op = 155
+	Op386MOVBload             Op = 156
+	Op386MOVBLSXload          Op = 157
+	Op386MOVWload             Op = 158
+	Op386MOVWLSXload          Op = 159
+	Op386MOVLload             Op = 160
+	Op386MOVBstore            Op = 161
+	Op386MOVWstore            Op = 162
+	Op386MOVLstore            Op = 163
+	Op386ADDLmodify           Op = 164
+	Op386SUBLmodify           Op = 165
+	Op386ANDLmodify           Op = 166
+	Op386ORLmodify            Op = 167
+	Op386XORLmodify           Op = 168
+	Op386ADDLmodifyidx4       Op = 169
+	Op386SUBLmodifyidx4       Op = 170
+	Op386ANDLmodifyidx4       Op = 171
+	Op386ORLmodifyidx4        Op = 172
+	Op386XORLmodifyidx4       Op = 173
+	Op386ADDLconstmodify      Op = 174
+	Op386ANDLconstmodify      Op = 175
+	Op386ORLconstmodify       Op = 176
+	Op386XORLconstmodify      Op = 177
+	Op386ADDLconstmodifyidx4  Op = 178
+	Op386ANDLconstmodifyidx4  Op = 179
+	Op386ORLconstmodifyidx4   Op = 180
+	Op386XORLconstmodifyidx4  Op = 181
+	Op386MOVBloadidx1         Op = 182
+	Op386MOVWloadidx1         Op = 183
+	Op386MOVWloadidx2         Op = 184
+	Op386MOVLloadidx1         Op = 185
+	Op386MOVLloadidx4         Op = 186
+	Op386MOVBstoreidx1        Op = 187
+	Op386MOVWstoreidx1        Op = 188
+	Op386MOVWstoreidx2        Op = 189
+	Op386MOVLstoreidx1        Op = 190
+	Op386MOVLstoreidx4        Op = 191
+	Op386MOVBstoreconst       Op = 192
+	Op386MOVWstoreconst       Op = 193
+	Op386MOVLstoreconst       Op = 194
+	Op386MOVBstoreconstidx1   Op = 195
+	Op386MOVWstoreconstidx1   Op = 196
+	Op386MOVWstoreconstidx2   Op = 197
+	Op386MOVLstoreconstidx1   Op = 198
+	Op386MOVLstoreconstidx4   Op = 199
+	Op386DUFFZERO             Op = 200
+	Op386REPSTOSL             Op = 201
+	Op386CALLstatic           Op = 202
+	Op386CALLclosure          Op = 203
+	Op386CALLinter            Op = 204
+	Op386DUFFCOPY             Op = 205
+	Op386REPMOVSL             Op = 206
+	Op386InvertFlags          Op = 207
+	Op386LoweredGetG          Op = 208
+	Op386LoweredGetClosurePtr Op = 209
+	Op386LoweredGetCallerPC   Op = 210
+	Op386LoweredGetCallerSP   Op = 211
+	Op386LoweredNilCheck      Op = 212
+	Op386LoweredWB            Op = 213
+	Op386LoweredPanicBoundsA  Op = 214
+	Op386LoweredPanicBoundsB  Op = 215
+	Op386LoweredPanicBoundsC  Op = 216
+	Op386LoweredPanicExtendA  Op = 217
+	Op386LoweredPanicExtendB  Op = 218
+	Op386LoweredPanicExtendC  Op = 219
+	Op386FlagEQ               Op = 220
+	Op386FlagLT_ULT           Op = 221
+	Op386FlagLT_UGT           Op = 222
+	Op386FlagGT_UGT           Op = 223
+	Op386FlagGT_ULT           Op = 224
+	Op386FCHS                 Op = 225
+	Op386MOVSSconst1          Op = 226
+	Op386MOVSDconst1          Op = 227
+	Op386MOVSSconst2          Op = 228
+	Op386MOVSDconst2          Op = 229
 
-	OpAMD64ADDSS
-	OpAMD64ADDSD
-	OpAMD64SUBSS
-	OpAMD64SUBSD
-	OpAMD64MULSS
-	OpAMD64MULSD
-	OpAMD64DIVSS
-	OpAMD64DIVSD
-	OpAMD64MOVSSload
-	OpAMD64MOVSDload
-	OpAMD64MOVSSconst
-	OpAMD64MOVSDconst
-	OpAMD64MOVSSloadidx1
-	OpAMD64MOVSSloadidx4
-	OpAMD64MOVSDloadidx1
-	OpAMD64MOVSDloadidx8
-	OpAMD64MOVSSstore
-	OpAMD64MOVSDstore
-	OpAMD64MOVSSstoreidx1
-	OpAMD64MOVSSstoreidx4
-	OpAMD64MOVSDstoreidx1
-	OpAMD64MOVSDstoreidx8
-	OpAMD64ADDSSload
-	OpAMD64ADDSDload
-	OpAMD64SUBSSload
-	OpAMD64SUBSDload
-	OpAMD64MULSSload
-	OpAMD64MULSDload
-	OpAMD64DIVSSload
-	OpAMD64DIVSDload
-	OpAMD64ADDQ
-	OpAMD64ADDL
-	OpAMD64ADDQconst
-	OpAMD64ADDLconst
-	OpAMD64ADDQconstmodify
-	OpAMD64ADDLconstmodify
-	OpAMD64SUBQ
-	OpAMD64SUBL
-	OpAMD64SUBQconst
-	OpAMD64SUBLconst
-	OpAMD64MULQ
-	OpAMD64MULL
-	OpAMD64MULQconst
-	OpAMD64MULLconst
-	OpAMD64MULLU
-	OpAMD64MULQU
-	OpAMD64HMULQ
-	OpAMD64HMULL
-	OpAMD64HMULQU
-	OpAMD64HMULLU
-	OpAMD64AVGQU
-	OpAMD64DIVQ
-	OpAMD64DIVL
-	OpAMD64DIVW
-	OpAMD64DIVQU
-	OpAMD64DIVLU
-	OpAMD64DIVWU
-	OpAMD64NEGLflags
-	OpAMD64ADDQcarry
-	OpAMD64ADCQ
-	OpAMD64ADDQconstcarry
-	OpAMD64ADCQconst
-	OpAMD64SUBQborrow
-	OpAMD64SBBQ
-	OpAMD64SUBQconstborrow
-	OpAMD64SBBQconst
-	OpAMD64MULQU2
-	OpAMD64DIVQU2
-	OpAMD64ANDQ
-	OpAMD64ANDL
-	OpAMD64ANDQconst
-	OpAMD64ANDLconst
-	OpAMD64ANDQconstmodify
-	OpAMD64ANDLconstmodify
-	OpAMD64ORQ
-	OpAMD64ORL
-	OpAMD64ORQconst
-	OpAMD64ORLconst
-	OpAMD64ORQconstmodify
-	OpAMD64ORLconstmodify
-	OpAMD64XORQ
-	OpAMD64XORL
-	OpAMD64XORQconst
-	OpAMD64XORLconst
-	OpAMD64XORQconstmodify
-	OpAMD64XORLconstmodify
-	OpAMD64CMPQ
-	OpAMD64CMPL
-	OpAMD64CMPW
-	OpAMD64CMPB
-	OpAMD64CMPQconst
-	OpAMD64CMPLconst
-	OpAMD64CMPWconst
-	OpAMD64CMPBconst
-	OpAMD64CMPQload
-	OpAMD64CMPLload
-	OpAMD64CMPWload
-	OpAMD64CMPBload
-	OpAMD64CMPQconstload
-	OpAMD64CMPLconstload
-	OpAMD64CMPWconstload
-	OpAMD64CMPBconstload
-	OpAMD64UCOMISS
-	OpAMD64UCOMISD
-	OpAMD64BTL
-	OpAMD64BTQ
-	OpAMD64BTCL
-	OpAMD64BTCQ
-	OpAMD64BTRL
-	OpAMD64BTRQ
-	OpAMD64BTSL
-	OpAMD64BTSQ
-	OpAMD64BTLconst
-	OpAMD64BTQconst
-	OpAMD64BTCLconst
-	OpAMD64BTCQconst
-	OpAMD64BTRLconst
-	OpAMD64BTRQconst
-	OpAMD64BTSLconst
-	OpAMD64BTSQconst
-	OpAMD64BTCQmodify
-	OpAMD64BTCLmodify
-	OpAMD64BTSQmodify
-	OpAMD64BTSLmodify
-	OpAMD64BTRQmodify
-	OpAMD64BTRLmodify
-	OpAMD64BTCQconstmodify
-	OpAMD64BTCLconstmodify
-	OpAMD64BTSQconstmodify
-	OpAMD64BTSLconstmodify
-	OpAMD64BTRQconstmodify
-	OpAMD64BTRLconstmodify
-	OpAMD64TESTQ
-	OpAMD64TESTL
-	OpAMD64TESTW
-	OpAMD64TESTB
-	OpAMD64TESTQconst
-	OpAMD64TESTLconst
-	OpAMD64TESTWconst
-	OpAMD64TESTBconst
-	OpAMD64SHLQ
-	OpAMD64SHLL
-	OpAMD64SHLQconst
-	OpAMD64SHLLconst
-	OpAMD64SHRQ
-	OpAMD64SHRL
-	OpAMD64SHRW
-	OpAMD64SHRB
-	OpAMD64SHRQconst
-	OpAMD64SHRLconst
-	OpAMD64SHRWconst
-	OpAMD64SHRBconst
-	OpAMD64SARQ
-	OpAMD64SARL
-	OpAMD64SARW
-	OpAMD64SARB
-	OpAMD64SARQconst
-	OpAMD64SARLconst
-	OpAMD64SARWconst
-	OpAMD64SARBconst
-	OpAMD64ROLQ
-	OpAMD64ROLL
-	OpAMD64ROLW
-	OpAMD64ROLB
-	OpAMD64RORQ
-	OpAMD64RORL
-	OpAMD64RORW
-	OpAMD64RORB
-	OpAMD64ROLQconst
-	OpAMD64ROLLconst
-	OpAMD64ROLWconst
-	OpAMD64ROLBconst
-	OpAMD64ADDLload
-	OpAMD64ADDQload
-	OpAMD64SUBQload
-	OpAMD64SUBLload
-	OpAMD64ANDLload
-	OpAMD64ANDQload
-	OpAMD64ORQload
-	OpAMD64ORLload
-	OpAMD64XORQload
-	OpAMD64XORLload
-	OpAMD64ADDQmodify
-	OpAMD64SUBQmodify
-	OpAMD64ANDQmodify
-	OpAMD64ORQmodify
-	OpAMD64XORQmodify
-	OpAMD64ADDLmodify
-	OpAMD64SUBLmodify
-	OpAMD64ANDLmodify
-	OpAMD64ORLmodify
-	OpAMD64XORLmodify
-	OpAMD64NEGQ
-	OpAMD64NEGL
-	OpAMD64NOTQ
-	OpAMD64NOTL
-	OpAMD64BSFQ
-	OpAMD64BSFL
-	OpAMD64BSRQ
-	OpAMD64BSRL
-	OpAMD64CMOVQEQ
-	OpAMD64CMOVQNE
-	OpAMD64CMOVQLT
-	OpAMD64CMOVQGT
-	OpAMD64CMOVQLE
-	OpAMD64CMOVQGE
-	OpAMD64CMOVQLS
-	OpAMD64CMOVQHI
-	OpAMD64CMOVQCC
-	OpAMD64CMOVQCS
-	OpAMD64CMOVLEQ
-	OpAMD64CMOVLNE
-	OpAMD64CMOVLLT
-	OpAMD64CMOVLGT
-	OpAMD64CMOVLLE
-	OpAMD64CMOVLGE
-	OpAMD64CMOVLLS
-	OpAMD64CMOVLHI
-	OpAMD64CMOVLCC
-	OpAMD64CMOVLCS
-	OpAMD64CMOVWEQ
-	OpAMD64CMOVWNE
-	OpAMD64CMOVWLT
-	OpAMD64CMOVWGT
-	OpAMD64CMOVWLE
-	OpAMD64CMOVWGE
-	OpAMD64CMOVWLS
-	OpAMD64CMOVWHI
-	OpAMD64CMOVWCC
-	OpAMD64CMOVWCS
-	OpAMD64CMOVQEQF
-	OpAMD64CMOVQNEF
-	OpAMD64CMOVQGTF
-	OpAMD64CMOVQGEF
-	OpAMD64CMOVLEQF
-	OpAMD64CMOVLNEF
-	OpAMD64CMOVLGTF
-	OpAMD64CMOVLGEF
-	OpAMD64CMOVWEQF
-	OpAMD64CMOVWNEF
-	OpAMD64CMOVWGTF
-	OpAMD64CMOVWGEF
-	OpAMD64BSWAPQ
-	OpAMD64BSWAPL
-	OpAMD64POPCNTQ
-	OpAMD64POPCNTL
-	OpAMD64SQRTSD
-	OpAMD64ROUNDSD
-	OpAMD64SBBQcarrymask
-	OpAMD64SBBLcarrymask
-	OpAMD64SETEQ
-	OpAMD64SETNE
-	OpAMD64SETL
-	OpAMD64SETLE
-	OpAMD64SETG
-	OpAMD64SETGE
-	OpAMD64SETB
-	OpAMD64SETBE
-	OpAMD64SETA
-	OpAMD64SETAE
-	OpAMD64SETO
-	OpAMD64SETEQstore
-	OpAMD64SETNEstore
-	OpAMD64SETLstore
-	OpAMD64SETLEstore
-	OpAMD64SETGstore
-	OpAMD64SETGEstore
-	OpAMD64SETBstore
-	OpAMD64SETBEstore
-	OpAMD64SETAstore
-	OpAMD64SETAEstore
-	OpAMD64SETEQF
-	OpAMD64SETNEF
-	OpAMD64SETORD
-	OpAMD64SETNAN
-	OpAMD64SETGF
-	OpAMD64SETGEF
-	OpAMD64MOVBQSX
-	OpAMD64MOVBQZX
-	OpAMD64MOVWQSX
-	OpAMD64MOVWQZX
-	OpAMD64MOVLQSX
-	OpAMD64MOVLQZX
-	OpAMD64MOVLconst
-	OpAMD64MOVQconst
-	OpAMD64CVTTSD2SL
-	OpAMD64CVTTSD2SQ
-	OpAMD64CVTTSS2SL
-	OpAMD64CVTTSS2SQ
-	OpAMD64CVTSL2SS
-	OpAMD64CVTSL2SD
-	OpAMD64CVTSQ2SS
-	OpAMD64CVTSQ2SD
-	OpAMD64CVTSD2SS
-	OpAMD64CVTSS2SD
-	OpAMD64MOVQi2f
-	OpAMD64MOVQf2i
-	OpAMD64MOVLi2f
-	OpAMD64MOVLf2i
-	OpAMD64PXOR
-	OpAMD64LEAQ
-	OpAMD64LEAL
-	OpAMD64LEAW
-	OpAMD64LEAQ1
-	OpAMD64LEAL1
-	OpAMD64LEAW1
-	OpAMD64LEAQ2
-	OpAMD64LEAL2
-	OpAMD64LEAW2
-	OpAMD64LEAQ4
-	OpAMD64LEAL4
-	OpAMD64LEAW4
-	OpAMD64LEAQ8
-	OpAMD64LEAL8
-	OpAMD64LEAW8
-	OpAMD64MOVBload
-	OpAMD64MOVBQSXload
-	OpAMD64MOVWload
-	OpAMD64MOVWQSXload
-	OpAMD64MOVLload
-	OpAMD64MOVLQSXload
-	OpAMD64MOVQload
-	OpAMD64MOVBstore
-	OpAMD64MOVWstore
-	OpAMD64MOVLstore
-	OpAMD64MOVQstore
-	OpAMD64MOVOload
-	OpAMD64MOVOstore
-	OpAMD64MOVBloadidx1
-	OpAMD64MOVWloadidx1
-	OpAMD64MOVWloadidx2
-	OpAMD64MOVLloadidx1
-	OpAMD64MOVLloadidx4
-	OpAMD64MOVLloadidx8
-	OpAMD64MOVQloadidx1
-	OpAMD64MOVQloadidx8
-	OpAMD64MOVBstoreidx1
-	OpAMD64MOVWstoreidx1
-	OpAMD64MOVWstoreidx2
-	OpAMD64MOVLstoreidx1
-	OpAMD64MOVLstoreidx4
-	OpAMD64MOVLstoreidx8
-	OpAMD64MOVQstoreidx1
-	OpAMD64MOVQstoreidx8
-	OpAMD64MOVBstoreconst
-	OpAMD64MOVWstoreconst
-	OpAMD64MOVLstoreconst
-	OpAMD64MOVQstoreconst
-	OpAMD64MOVBstoreconstidx1
-	OpAMD64MOVWstoreconstidx1
-	OpAMD64MOVWstoreconstidx2
-	OpAMD64MOVLstoreconstidx1
-	OpAMD64MOVLstoreconstidx4
-	OpAMD64MOVQstoreconstidx1
-	OpAMD64MOVQstoreconstidx8
-	OpAMD64DUFFZERO
-	OpAMD64MOVOconst
-	OpAMD64REPSTOSQ
-	OpAMD64CALLstatic
-	OpAMD64CALLclosure
-	OpAMD64CALLinter
-	OpAMD64DUFFCOPY
-	OpAMD64REPMOVSQ
-	OpAMD64InvertFlags
-	OpAMD64LoweredGetG
-	OpAMD64LoweredGetClosurePtr
-	OpAMD64LoweredGetCallerPC
-	OpAMD64LoweredGetCallerSP
-	OpAMD64LoweredNilCheck
-	OpAMD64LoweredWB
-	OpAMD64LoweredPanicBoundsA
-	OpAMD64LoweredPanicBoundsB
-	OpAMD64LoweredPanicBoundsC
-	OpAMD64LoweredPanicExtendA
-	OpAMD64LoweredPanicExtendB
-	OpAMD64LoweredPanicExtendC
-	OpAMD64FlagEQ
-	OpAMD64FlagLT_ULT
-	OpAMD64FlagLT_UGT
-	OpAMD64FlagGT_UGT
-	OpAMD64FlagGT_ULT
-	OpAMD64MOVBatomicload
-	OpAMD64MOVLatomicload
-	OpAMD64MOVQatomicload
-	OpAMD64XCHGL
-	OpAMD64XCHGQ
-	OpAMD64XADDLlock
-	OpAMD64XADDQlock
-	OpAMD64AddTupleFirst32
-	OpAMD64AddTupleFirst64
-	OpAMD64CMPXCHGLlock
-	OpAMD64CMPXCHGQlock
-	OpAMD64ANDBlock
-	OpAMD64ORBlock
+	OpAMD64ADDSS                Op = 230
+	OpAMD64ADDSD                Op = 231
+	OpAMD64SUBSS                Op = 232
+	OpAMD64SUBSD                Op = 233
+	OpAMD64MULSS                Op = 234
+	OpAMD64MULSD                Op = 235
+	OpAMD64DIVSS                Op = 236
+	OpAMD64DIVSD                Op = 237
+	OpAMD64MOVSSload            Op = 238
+	OpAMD64MOVSDload            Op = 239
+	OpAMD64MOVSSconst           Op = 240
+	OpAMD64MOVSDconst           Op = 241
+	OpAMD64MOVSSloadidx1        Op = 242
+	OpAMD64MOVSSloadidx4        Op = 243
+	OpAMD64MOVSDloadidx1        Op = 244
+	OpAMD64MOVSDloadidx8        Op = 245
+	OpAMD64MOVSSstore           Op = 246
+	OpAMD64MOVSDstore           Op = 247
+	OpAMD64MOVSSstoreidx1       Op = 248
+	OpAMD64MOVSSstoreidx4       Op = 249
+	OpAMD64MOVSDstoreidx1       Op = 250
+	OpAMD64MOVSDstoreidx8       Op = 251
+	OpAMD64ADDSSload            Op = 252
+	OpAMD64ADDSDload            Op = 253
+	OpAMD64SUBSSload            Op = 254
+	OpAMD64SUBSDload            Op = 255
+	OpAMD64MULSSload            Op = 256
+	OpAMD64MULSDload            Op = 257
+	OpAMD64DIVSSload            Op = 258
+	OpAMD64DIVSDload            Op = 259
+	OpAMD64ADDQ                 Op = 260
+	OpAMD64ADDL                 Op = 261
+	OpAMD64ADDQconst            Op = 262
+	OpAMD64ADDLconst            Op = 263
+	OpAMD64ADDQconstmodify      Op = 264
+	OpAMD64ADDLconstmodify      Op = 265
+	OpAMD64SUBQ                 Op = 266
+	OpAMD64SUBL                 Op = 267
+	OpAMD64SUBQconst            Op = 268
+	OpAMD64SUBLconst            Op = 269
+	OpAMD64MULQ                 Op = 270
+	OpAMD64MULL                 Op = 271
+	OpAMD64MULQconst            Op = 272
+	OpAMD64MULLconst            Op = 273
+	OpAMD64MULLU                Op = 274
+	OpAMD64MULQU                Op = 275
+	OpAMD64HMULQ                Op = 276
+	OpAMD64HMULL                Op = 277
+	OpAMD64HMULQU               Op = 278
+	OpAMD64HMULLU               Op = 279
+	OpAMD64AVGQU                Op = 280
+	OpAMD64DIVQ                 Op = 281
+	OpAMD64DIVL                 Op = 282
+	OpAMD64DIVW                 Op = 283
+	OpAMD64DIVQU                Op = 284
+	OpAMD64DIVLU                Op = 285
+	OpAMD64DIVWU                Op = 286
+	OpAMD64NEGLflags            Op = 287
+	OpAMD64ADDQcarry            Op = 288
+	OpAMD64ADCQ                 Op = 289
+	OpAMD64ADDQconstcarry       Op = 290
+	OpAMD64ADCQconst            Op = 291
+	OpAMD64SUBQborrow           Op = 292
+	OpAMD64SBBQ                 Op = 293
+	OpAMD64SUBQconstborrow      Op = 294
+	OpAMD64SBBQconst            Op = 295
+	OpAMD64MULQU2               Op = 296
+	OpAMD64DIVQU2               Op = 297
+	OpAMD64ANDQ                 Op = 298
+	OpAMD64ANDL                 Op = 299
+	OpAMD64ANDQconst            Op = 300
+	OpAMD64ANDLconst            Op = 301
+	OpAMD64ANDQconstmodify      Op = 302
+	OpAMD64ANDLconstmodify      Op = 303
+	OpAMD64ORQ                  Op = 304
+	OpAMD64ORL                  Op = 305
+	OpAMD64ORQconst             Op = 306
+	OpAMD64ORLconst             Op = 307
+	OpAMD64ORQconstmodify       Op = 308
+	OpAMD64ORLconstmodify       Op = 309
+	OpAMD64XORQ                 Op = 310
+	OpAMD64XORL                 Op = 311
+	OpAMD64XORQconst            Op = 312
+	OpAMD64XORLconst            Op = 313
+	OpAMD64XORQconstmodify      Op = 314
+	OpAMD64XORLconstmodify      Op = 315
+	OpAMD64CMPQ                 Op = 316
+	OpAMD64CMPL                 Op = 317
+	OpAMD64CMPW                 Op = 318
+	OpAMD64CMPB                 Op = 319
+	OpAMD64CMPQconst            Op = 320
+	OpAMD64CMPLconst            Op = 321
+	OpAMD64CMPWconst            Op = 322
+	OpAMD64CMPBconst            Op = 323
+	OpAMD64CMPQload             Op = 324
+	OpAMD64CMPLload             Op = 325
+	OpAMD64CMPWload             Op = 326
+	OpAMD64CMPBload             Op = 327
+	OpAMD64CMPQconstload        Op = 328
+	OpAMD64CMPLconstload        Op = 329
+	OpAMD64CMPWconstload        Op = 330
+	OpAMD64CMPBconstload        Op = 331
+	OpAMD64UCOMISS              Op = 332
+	OpAMD64UCOMISD              Op = 333
+	OpAMD64BTL                  Op = 334
+	OpAMD64BTQ                  Op = 335
+	OpAMD64BTCL                 Op = 336
+	OpAMD64BTCQ                 Op = 337
+	OpAMD64BTRL                 Op = 338
+	OpAMD64BTRQ                 Op = 339
+	OpAMD64BTSL                 Op = 340
+	OpAMD64BTSQ                 Op = 341
+	OpAMD64BTLconst             Op = 342
+	OpAMD64BTQconst             Op = 343
+	OpAMD64BTCLconst            Op = 344
+	OpAMD64BTCQconst            Op = 345
+	OpAMD64BTRLconst            Op = 346
+	OpAMD64BTRQconst            Op = 347
+	OpAMD64BTSLconst            Op = 348
+	OpAMD64BTSQconst            Op = 349
+	OpAMD64BTCQmodify           Op = 350
+	OpAMD64BTCLmodify           Op = 351
+	OpAMD64BTSQmodify           Op = 352
+	OpAMD64BTSLmodify           Op = 353
+	OpAMD64BTRQmodify           Op = 354
+	OpAMD64BTRLmodify           Op = 355
+	OpAMD64BTCQconstmodify      Op = 356
+	OpAMD64BTCLconstmodify      Op = 357
+	OpAMD64BTSQconstmodify      Op = 358
+	OpAMD64BTSLconstmodify      Op = 359
+	OpAMD64BTRQconstmodify      Op = 360
+	OpAMD64BTRLconstmodify      Op = 361
+	OpAMD64TESTQ                Op = 362
+	OpAMD64TESTL                Op = 363
+	OpAMD64TESTW                Op = 364
+	OpAMD64TESTB                Op = 365
+	OpAMD64TESTQconst           Op = 366
+	OpAMD64TESTLconst           Op = 367
+	OpAMD64TESTWconst           Op = 368
+	OpAMD64TESTBconst           Op = 369
+	OpAMD64SHLQ                 Op = 370
+	OpAMD64SHLL                 Op = 371
+	OpAMD64SHLQconst            Op = 372
+	OpAMD64SHLLconst            Op = 373
+	OpAMD64SHRQ                 Op = 374
+	OpAMD64SHRL                 Op = 375
+	OpAMD64SHRW                 Op = 376
+	OpAMD64SHRB                 Op = 377
+	OpAMD64SHRQconst            Op = 378
+	OpAMD64SHRLconst            Op = 379
+	OpAMD64SHRWconst            Op = 380
+	OpAMD64SHRBconst            Op = 381
+	OpAMD64SARQ                 Op = 382
+	OpAMD64SARL                 Op = 383
+	OpAMD64SARW                 Op = 384
+	OpAMD64SARB                 Op = 385
+	OpAMD64SARQconst            Op = 386
+	OpAMD64SARLconst            Op = 387
+	OpAMD64SARWconst            Op = 388
+	OpAMD64SARBconst            Op = 389
+	OpAMD64ROLQ                 Op = 390
+	OpAMD64ROLL                 Op = 391
+	OpAMD64ROLW                 Op = 392
+	OpAMD64ROLB                 Op = 393
+	OpAMD64RORQ                 Op = 394
+	OpAMD64RORL                 Op = 395
+	OpAMD64RORW                 Op = 396
+	OpAMD64RORB                 Op = 397
+	OpAMD64ROLQconst            Op = 398
+	OpAMD64ROLLconst            Op = 399
+	OpAMD64ROLWconst            Op = 400
+	OpAMD64ROLBconst            Op = 401
+	OpAMD64ADDLload             Op = 402
+	OpAMD64ADDQload             Op = 403
+	OpAMD64SUBQload             Op = 404
+	OpAMD64SUBLload             Op = 405
+	OpAMD64ANDLload             Op = 406
+	OpAMD64ANDQload             Op = 407
+	OpAMD64ORQload              Op = 408
+	OpAMD64ORLload              Op = 409
+	OpAMD64XORQload             Op = 410
+	OpAMD64XORLload             Op = 411
+	OpAMD64ADDQmodify           Op = 412
+	OpAMD64SUBQmodify           Op = 413
+	OpAMD64ANDQmodify           Op = 414
+	OpAMD64ORQmodify            Op = 415
+	OpAMD64XORQmodify           Op = 416
+	OpAMD64ADDLmodify           Op = 417
+	OpAMD64SUBLmodify           Op = 418
+	OpAMD64ANDLmodify           Op = 419
+	OpAMD64ORLmodify            Op = 420
+	OpAMD64XORLmodify           Op = 421
+	OpAMD64NEGQ                 Op = 422
+	OpAMD64NEGL                 Op = 423
+	OpAMD64NOTQ                 Op = 424
+	OpAMD64NOTL                 Op = 425
+	OpAMD64BSFQ                 Op = 426
+	OpAMD64BSFL                 Op = 427
+	OpAMD64BSRQ                 Op = 428
+	OpAMD64BSRL                 Op = 429
+	OpAMD64CMOVQEQ              Op = 430
+	OpAMD64CMOVQNE              Op = 431
+	OpAMD64CMOVQLT              Op = 432
+	OpAMD64CMOVQGT              Op = 433
+	OpAMD64CMOVQLE              Op = 434
+	OpAMD64CMOVQGE              Op = 435
+	OpAMD64CMOVQLS              Op = 436
+	OpAMD64CMOVQHI              Op = 437
+	OpAMD64CMOVQCC              Op = 438
+	OpAMD64CMOVQCS              Op = 439
+	OpAMD64CMOVLEQ              Op = 440
+	OpAMD64CMOVLNE              Op = 441
+	OpAMD64CMOVLLT              Op = 442
+	OpAMD64CMOVLGT              Op = 443
+	OpAMD64CMOVLLE              Op = 444
+	OpAMD64CMOVLGE              Op = 445
+	OpAMD64CMOVLLS              Op = 446
+	OpAMD64CMOVLHI              Op = 447
+	OpAMD64CMOVLCC              Op = 448
+	OpAMD64CMOVLCS              Op = 449
+	OpAMD64CMOVWEQ              Op = 450
+	OpAMD64CMOVWNE              Op = 451
+	OpAMD64CMOVWLT              Op = 452
+	OpAMD64CMOVWGT              Op = 453
+	OpAMD64CMOVWLE              Op = 454
+	OpAMD64CMOVWGE              Op = 455
+	OpAMD64CMOVWLS              Op = 456
+	OpAMD64CMOVWHI              Op = 457
+	OpAMD64CMOVWCC              Op = 458
+	OpAMD64CMOVWCS              Op = 459
+	OpAMD64CMOVQEQF             Op = 460
+	OpAMD64CMOVQNEF             Op = 461
+	OpAMD64CMOVQGTF             Op = 462
+	OpAMD64CMOVQGEF             Op = 463
+	OpAMD64CMOVLEQF             Op = 464
+	OpAMD64CMOVLNEF             Op = 465
+	OpAMD64CMOVLGTF             Op = 466
+	OpAMD64CMOVLGEF             Op = 467
+	OpAMD64CMOVWEQF             Op = 468
+	OpAMD64CMOVWNEF             Op = 469
+	OpAMD64CMOVWGTF             Op = 470
+	OpAMD64CMOVWGEF             Op = 471
+	OpAMD64BSWAPQ               Op = 472
+	OpAMD64BSWAPL               Op = 473
+	OpAMD64POPCNTQ              Op = 474
+	OpAMD64POPCNTL              Op = 475
+	OpAMD64SQRTSD               Op = 476
+	OpAMD64ROUNDSD              Op = 477
+	OpAMD64SBBQcarrymask        Op = 478
+	OpAMD64SBBLcarrymask        Op = 479
+	OpAMD64SETEQ                Op = 480
+	OpAMD64SETNE                Op = 481
+	OpAMD64SETL                 Op = 482
+	OpAMD64SETLE                Op = 483
+	OpAMD64SETG                 Op = 484
+	OpAMD64SETGE                Op = 485
+	OpAMD64SETB                 Op = 486
+	OpAMD64SETBE                Op = 487
+	OpAMD64SETA                 Op = 488
+	OpAMD64SETAE                Op = 489
+	OpAMD64SETO                 Op = 490
+	OpAMD64SETEQstore           Op = 491
+	OpAMD64SETNEstore           Op = 492
+	OpAMD64SETLstore            Op = 493
+	OpAMD64SETLEstore           Op = 494
+	OpAMD64SETGstore            Op = 495
+	OpAMD64SETGEstore           Op = 496
+	OpAMD64SETBstore            Op = 497
+	OpAMD64SETBEstore           Op = 498
+	OpAMD64SETAstore            Op = 499
+	OpAMD64SETAEstore           Op = 500
+	OpAMD64SETEQF               Op = 501
+	OpAMD64SETNEF               Op = 502
+	OpAMD64SETORD               Op = 503
+	OpAMD64SETNAN               Op = 504
+	OpAMD64SETGF                Op = 505
+	OpAMD64SETGEF               Op = 506
+	OpAMD64MOVBQSX              Op = 507
+	OpAMD64MOVBQZX              Op = 508
+	OpAMD64MOVWQSX              Op = 509
+	OpAMD64MOVWQZX              Op = 510
+	OpAMD64MOVLQSX              Op = 511
+	OpAMD64MOVLQZX              Op = 512
+	OpAMD64MOVLconst            Op = 513
+	OpAMD64MOVQconst            Op = 514
+	OpAMD64CVTTSD2SL            Op = 515
+	OpAMD64CVTTSD2SQ            Op = 516
+	OpAMD64CVTTSS2SL            Op = 517
+	OpAMD64CVTTSS2SQ            Op = 518
+	OpAMD64CVTSL2SS             Op = 519
+	OpAMD64CVTSL2SD             Op = 520
+	OpAMD64CVTSQ2SS             Op = 521
+	OpAMD64CVTSQ2SD             Op = 522
+	OpAMD64CVTSD2SS             Op = 523
+	OpAMD64CVTSS2SD             Op = 524
+	OpAMD64MOVQi2f              Op = 525
+	OpAMD64MOVQf2i              Op = 526
+	OpAMD64MOVLi2f              Op = 527
+	OpAMD64MOVLf2i              Op = 528
+	OpAMD64PXOR                 Op = 529
+	OpAMD64LEAQ                 Op = 530
+	OpAMD64LEAL                 Op = 531
+	OpAMD64LEAW                 Op = 532
+	OpAMD64LEAQ1                Op = 533
+	OpAMD64LEAL1                Op = 534
+	OpAMD64LEAW1                Op = 535
+	OpAMD64LEAQ2                Op = 536
+	OpAMD64LEAL2                Op = 537
+	OpAMD64LEAW2                Op = 538
+	OpAMD64LEAQ4                Op = 539
+	OpAMD64LEAL4                Op = 540
+	OpAMD64LEAW4                Op = 541
+	OpAMD64LEAQ8                Op = 542
+	OpAMD64LEAL8                Op = 543
+	OpAMD64LEAW8                Op = 544
+	OpAMD64MOVBload             Op = 545
+	OpAMD64MOVBQSXload          Op = 546
+	OpAMD64MOVWload             Op = 547
+	OpAMD64MOVWQSXload          Op = 548
+	OpAMD64MOVLload             Op = 549
+	OpAMD64MOVLQSXload          Op = 550
+	OpAMD64MOVQload             Op = 551
+	OpAMD64MOVBstore            Op = 552
+	OpAMD64MOVWstore            Op = 553
+	OpAMD64MOVLstore            Op = 554
+	OpAMD64MOVQstore            Op = 555
+	OpAMD64MOVOload             Op = 556
+	OpAMD64MOVOstore            Op = 557
+	OpAMD64MOVBloadidx1         Op = 558
+	OpAMD64MOVWloadidx1         Op = 559
+	OpAMD64MOVWloadidx2         Op = 560
+	OpAMD64MOVLloadidx1         Op = 561
+	OpAMD64MOVLloadidx4         Op = 562
+	OpAMD64MOVLloadidx8         Op = 563
+	OpAMD64MOVQloadidx1         Op = 564
+	OpAMD64MOVQloadidx8         Op = 565
+	OpAMD64MOVBstoreidx1        Op = 566
+	OpAMD64MOVWstoreidx1        Op = 567
+	OpAMD64MOVWstoreidx2        Op = 568
+	OpAMD64MOVLstoreidx1        Op = 569
+	OpAMD64MOVLstoreidx4        Op = 570
+	OpAMD64MOVLstoreidx8        Op = 571
+	OpAMD64MOVQstoreidx1        Op = 572
+	OpAMD64MOVQstoreidx8        Op = 573
+	OpAMD64MOVBstoreconst       Op = 574
+	OpAMD64MOVWstoreconst       Op = 575
+	OpAMD64MOVLstoreconst       Op = 576
+	OpAMD64MOVQstoreconst       Op = 577
+	OpAMD64MOVBstoreconstidx1   Op = 578
+	OpAMD64MOVWstoreconstidx1   Op = 579
+	OpAMD64MOVWstoreconstidx2   Op = 580
+	OpAMD64MOVLstoreconstidx1   Op = 581
+	OpAMD64MOVLstoreconstidx4   Op = 582
+	OpAMD64MOVQstoreconstidx1   Op = 583
+	OpAMD64MOVQstoreconstidx8   Op = 584
+	OpAMD64DUFFZERO             Op = 585
+	OpAMD64MOVOconst            Op = 586
+	OpAMD64REPSTOSQ             Op = 587
+	OpAMD64CALLstatic           Op = 588
+	OpAMD64CALLclosure          Op = 589
+	OpAMD64CALLinter            Op = 590
+	OpAMD64DUFFCOPY             Op = 591
+	OpAMD64REPMOVSQ             Op = 592
+	OpAMD64InvertFlags          Op = 593
+	OpAMD64LoweredGetG          Op = 594
+	OpAMD64LoweredGetClosurePtr Op = 595
+	OpAMD64LoweredGetCallerPC   Op = 596
+	OpAMD64LoweredGetCallerSP   Op = 597
+	OpAMD64LoweredNilCheck      Op = 598
+	OpAMD64LoweredWB            Op = 599
+	OpAMD64LoweredPanicBoundsA  Op = 600
+	OpAMD64LoweredPanicBoundsB  Op = 601
+	OpAMD64LoweredPanicBoundsC  Op = 602
+	OpAMD64LoweredPanicExtendA  Op = 603
+	OpAMD64LoweredPanicExtendB  Op = 604
+	OpAMD64LoweredPanicExtendC  Op = 605
+	OpAMD64FlagEQ               Op = 606
+	OpAMD64FlagLT_ULT           Op = 607
+	OpAMD64FlagLT_UGT           Op = 608
+	OpAMD64FlagGT_UGT           Op = 609
+	OpAMD64FlagGT_ULT           Op = 610
+	OpAMD64MOVBatomicload       Op = 611
+	OpAMD64MOVLatomicload       Op = 612
+	OpAMD64MOVQatomicload       Op = 613
+	OpAMD64XCHGL                Op = 614
+	OpAMD64XCHGQ                Op = 615
+	OpAMD64XADDLlock            Op = 616
+	OpAMD64XADDQlock            Op = 617
+	OpAMD64AddTupleFirst32      Op = 618
+	OpAMD64AddTupleFirst64      Op = 619
+	OpAMD64CMPXCHGLlock         Op = 620
+	OpAMD64CMPXCHGQlock         Op = 621
+	OpAMD64ANDBlock             Op = 622
+	OpAMD64ORBlock              Op = 623
 
-	OpARMADD
-	OpARMADDconst
-	OpARMSUB
-	OpARMSUBconst
-	OpARMRSB
-	OpARMRSBconst
-	OpARMMUL
-	OpARMHMUL
-	OpARMHMULU
-	OpARMCALLudiv
-	OpARMADDS
-	OpARMADDSconst
-	OpARMADC
-	OpARMADCconst
-	OpARMSUBS
-	OpARMSUBSconst
-	OpARMRSBSconst
-	OpARMSBC
-	OpARMSBCconst
-	OpARMRSCconst
-	OpARMMULLU
-	OpARMMULA
-	OpARMMULS
-	OpARMADDF
-	OpARMADDD
-	OpARMSUBF
-	OpARMSUBD
-	OpARMMULF
-	OpARMMULD
-	OpARMNMULF
-	OpARMNMULD
-	OpARMDIVF
-	OpARMDIVD
-	OpARMMULAF
-	OpARMMULAD
-	OpARMMULSF
-	OpARMMULSD
-	OpARMAND
-	OpARMANDconst
-	OpARMOR
-	OpARMORconst
-	OpARMXOR
-	OpARMXORconst
-	OpARMBIC
-	OpARMBICconst
-	OpARMBFX
-	OpARMBFXU
-	OpARMMVN
-	OpARMNEGF
-	OpARMNEGD
-	OpARMSQRTD
-	OpARMCLZ
-	OpARMREV
-	OpARMREV16
-	OpARMRBIT
-	OpARMSLL
-	OpARMSLLconst
-	OpARMSRL
-	OpARMSRLconst
-	OpARMSRA
-	OpARMSRAconst
-	OpARMSRRconst
-	OpARMADDshiftLL
-	OpARMADDshiftRL
-	OpARMADDshiftRA
-	OpARMSUBshiftLL
-	OpARMSUBshiftRL
-	OpARMSUBshiftRA
-	OpARMRSBshiftLL
-	OpARMRSBshiftRL
-	OpARMRSBshiftRA
-	OpARMANDshiftLL
-	OpARMANDshiftRL
-	OpARMANDshiftRA
-	OpARMORshiftLL
-	OpARMORshiftRL
-	OpARMORshiftRA
-	OpARMXORshiftLL
-	OpARMXORshiftRL
-	OpARMXORshiftRA
-	OpARMXORshiftRR
-	OpARMBICshiftLL
-	OpARMBICshiftRL
-	OpARMBICshiftRA
-	OpARMMVNshiftLL
-	OpARMMVNshiftRL
-	OpARMMVNshiftRA
-	OpARMADCshiftLL
-	OpARMADCshiftRL
-	OpARMADCshiftRA
-	OpARMSBCshiftLL
-	OpARMSBCshiftRL
-	OpARMSBCshiftRA
-	OpARMRSCshiftLL
-	OpARMRSCshiftRL
-	OpARMRSCshiftRA
-	OpARMADDSshiftLL
-	OpARMADDSshiftRL
-	OpARMADDSshiftRA
-	OpARMSUBSshiftLL
-	OpARMSUBSshiftRL
-	OpARMSUBSshiftRA
-	OpARMRSBSshiftLL
-	OpARMRSBSshiftRL
-	OpARMRSBSshiftRA
-	OpARMADDshiftLLreg
-	OpARMADDshiftRLreg
-	OpARMADDshiftRAreg
-	OpARMSUBshiftLLreg
-	OpARMSUBshiftRLreg
-	OpARMSUBshiftRAreg
-	OpARMRSBshiftLLreg
-	OpARMRSBshiftRLreg
-	OpARMRSBshiftRAreg
-	OpARMANDshiftLLreg
-	OpARMANDshiftRLreg
-	OpARMANDshiftRAreg
-	OpARMORshiftLLreg
-	OpARMORshiftRLreg
-	OpARMORshiftRAreg
-	OpARMXORshiftLLreg
-	OpARMXORshiftRLreg
-	OpARMXORshiftRAreg
-	OpARMBICshiftLLreg
-	OpARMBICshiftRLreg
-	OpARMBICshiftRAreg
-	OpARMMVNshiftLLreg
-	OpARMMVNshiftRLreg
-	OpARMMVNshiftRAreg
-	OpARMADCshiftLLreg
-	OpARMADCshiftRLreg
-	OpARMADCshiftRAreg
-	OpARMSBCshiftLLreg
-	OpARMSBCshiftRLreg
-	OpARMSBCshiftRAreg
-	OpARMRSCshiftLLreg
-	OpARMRSCshiftRLreg
-	OpARMRSCshiftRAreg
-	OpARMADDSshiftLLreg
-	OpARMADDSshiftRLreg
-	OpARMADDSshiftRAreg
-	OpARMSUBSshiftLLreg
-	OpARMSUBSshiftRLreg
-	OpARMSUBSshiftRAreg
-	OpARMRSBSshiftLLreg
-	OpARMRSBSshiftRLreg
-	OpARMRSBSshiftRAreg
-	OpARMCMP
-	OpARMCMPconst
-	OpARMCMN
-	OpARMCMNconst
-	OpARMTST
-	OpARMTSTconst
-	OpARMTEQ
-	OpARMTEQconst
-	OpARMCMPF
-	OpARMCMPD
-	OpARMCMPshiftLL
-	OpARMCMPshiftRL
-	OpARMCMPshiftRA
-	OpARMCMNshiftLL
-	OpARMCMNshiftRL
-	OpARMCMNshiftRA
-	OpARMTSTshiftLL
-	OpARMTSTshiftRL
-	OpARMTSTshiftRA
-	OpARMTEQshiftLL
-	OpARMTEQshiftRL
-	OpARMTEQshiftRA
-	OpARMCMPshiftLLreg
-	OpARMCMPshiftRLreg
-	OpARMCMPshiftRAreg
-	OpARMCMNshiftLLreg
-	OpARMCMNshiftRLreg
-	OpARMCMNshiftRAreg
-	OpARMTSTshiftLLreg
-	OpARMTSTshiftRLreg
-	OpARMTSTshiftRAreg
-	OpARMTEQshiftLLreg
-	OpARMTEQshiftRLreg
-	OpARMTEQshiftRAreg
-	OpARMCMPF0
-	OpARMCMPD0
-	OpARMMOVWconst
-	OpARMMOVFconst
-	OpARMMOVDconst
-	OpARMMOVWaddr
-	OpARMMOVBload
-	OpARMMOVBUload
-	OpARMMOVHload
-	OpARMMOVHUload
-	OpARMMOVWload
-	OpARMMOVFload
-	OpARMMOVDload
-	OpARMMOVBstore
-	OpARMMOVHstore
-	OpARMMOVWstore
-	OpARMMOVFstore
-	OpARMMOVDstore
-	OpARMMOVWloadidx
-	OpARMMOVWloadshiftLL
-	OpARMMOVWloadshiftRL
-	OpARMMOVWloadshiftRA
-	OpARMMOVBUloadidx
-	OpARMMOVBloadidx
-	OpARMMOVHUloadidx
-	OpARMMOVHloadidx
-	OpARMMOVWstoreidx
-	OpARMMOVWstoreshiftLL
-	OpARMMOVWstoreshiftRL
-	OpARMMOVWstoreshiftRA
-	OpARMMOVBstoreidx
-	OpARMMOVHstoreidx
-	OpARMMOVBreg
-	OpARMMOVBUreg
-	OpARMMOVHreg
-	OpARMMOVHUreg
-	OpARMMOVWreg
-	OpARMMOVWnop
-	OpARMMOVWF
-	OpARMMOVWD
-	OpARMMOVWUF
-	OpARMMOVWUD
-	OpARMMOVFW
-	OpARMMOVDW
-	OpARMMOVFWU
-	OpARMMOVDWU
-	OpARMMOVFD
-	OpARMMOVDF
-	OpARMCMOVWHSconst
-	OpARMCMOVWLSconst
-	OpARMSRAcond
-	OpARMCALLstatic
-	OpARMCALLclosure
-	OpARMCALLinter
-	OpARMLoweredNilCheck
-	OpARMEqual
-	OpARMNotEqual
-	OpARMLessThan
-	OpARMLessEqual
-	OpARMGreaterThan
-	OpARMGreaterEqual
-	OpARMLessThanU
-	OpARMLessEqualU
-	OpARMGreaterThanU
-	OpARMGreaterEqualU
-	OpARMDUFFZERO
-	OpARMDUFFCOPY
-	OpARMLoweredZero
-	OpARMLoweredMove
-	OpARMLoweredGetClosurePtr
-	OpARMLoweredGetCallerSP
-	OpARMLoweredGetCallerPC
-	OpARMLoweredPanicBoundsA
-	OpARMLoweredPanicBoundsB
-	OpARMLoweredPanicBoundsC
-	OpARMLoweredPanicExtendA
-	OpARMLoweredPanicExtendB
-	OpARMLoweredPanicExtendC
-	OpARMFlagEQ
-	OpARMFlagLT_ULT
-	OpARMFlagLT_UGT
-	OpARMFlagGT_UGT
-	OpARMFlagGT_ULT
-	OpARMInvertFlags
-	OpARMLoweredWB
+	OpARMADD                  Op = 624
+	OpARMADDconst             Op = 625
+	OpARMSUB                  Op = 626
+	OpARMSUBconst             Op = 627
+	OpARMRSB                  Op = 628
+	OpARMRSBconst             Op = 629
+	OpARMMUL                  Op = 630
+	OpARMHMUL                 Op = 631
+	OpARMHMULU                Op = 632
+	OpARMCALLudiv             Op = 633
+	OpARMADDS                 Op = 634
+	OpARMADDSconst            Op = 635
+	OpARMADC                  Op = 636
+	OpARMADCconst             Op = 637
+	OpARMSUBS                 Op = 638
+	OpARMSUBSconst            Op = 639
+	OpARMRSBSconst            Op = 640
+	OpARMSBC                  Op = 641
+	OpARMSBCconst             Op = 642
+	OpARMRSCconst             Op = 643
+	OpARMMULLU                Op = 644
+	OpARMMULA                 Op = 645
+	OpARMMULS                 Op = 646
+	OpARMADDF                 Op = 647
+	OpARMADDD                 Op = 648
+	OpARMSUBF                 Op = 649
+	OpARMSUBD                 Op = 650
+	OpARMMULF                 Op = 651
+	OpARMMULD                 Op = 652
+	OpARMNMULF                Op = 653
+	OpARMNMULD                Op = 654
+	OpARMDIVF                 Op = 655
+	OpARMDIVD                 Op = 656
+	OpARMMULAF                Op = 657
+	OpARMMULAD                Op = 658
+	OpARMMULSF                Op = 659
+	OpARMMULSD                Op = 660
+	OpARMAND                  Op = 661
+	OpARMANDconst             Op = 662
+	OpARMOR                   Op = 663
+	OpARMORconst              Op = 664
+	OpARMXOR                  Op = 665
+	OpARMXORconst             Op = 666
+	OpARMBIC                  Op = 667
+	OpARMBICconst             Op = 668
+	OpARMBFX                  Op = 669
+	OpARMBFXU                 Op = 670
+	OpARMMVN                  Op = 671
+	OpARMNEGF                 Op = 672
+	OpARMNEGD                 Op = 673
+	OpARMSQRTD                Op = 674
+	OpARMCLZ                  Op = 675
+	OpARMREV                  Op = 676
+	OpARMREV16                Op = 677
+	OpARMRBIT                 Op = 678
+	OpARMSLL                  Op = 679
+	OpARMSLLconst             Op = 680
+	OpARMSRL                  Op = 681
+	OpARMSRLconst             Op = 682
+	OpARMSRA                  Op = 683
+	OpARMSRAconst             Op = 684
+	OpARMSRRconst             Op = 685
+	OpARMADDshiftLL           Op = 686
+	OpARMADDshiftRL           Op = 687
+	OpARMADDshiftRA           Op = 688
+	OpARMSUBshiftLL           Op = 689
+	OpARMSUBshiftRL           Op = 690
+	OpARMSUBshiftRA           Op = 691
+	OpARMRSBshiftLL           Op = 692
+	OpARMRSBshiftRL           Op = 693
+	OpARMRSBshiftRA           Op = 694
+	OpARMANDshiftLL           Op = 695
+	OpARMANDshiftRL           Op = 696
+	OpARMANDshiftRA           Op = 697
+	OpARMORshiftLL            Op = 698
+	OpARMORshiftRL            Op = 699
+	OpARMORshiftRA            Op = 700
+	OpARMXORshiftLL           Op = 701
+	OpARMXORshiftRL           Op = 702
+	OpARMXORshiftRA           Op = 703
+	OpARMXORshiftRR           Op = 704
+	OpARMBICshiftLL           Op = 705
+	OpARMBICshiftRL           Op = 706
+	OpARMBICshiftRA           Op = 707
+	OpARMMVNshiftLL           Op = 708
+	OpARMMVNshiftRL           Op = 709
+	OpARMMVNshiftRA           Op = 710
+	OpARMADCshiftLL           Op = 711
+	OpARMADCshiftRL           Op = 712
+	OpARMADCshiftRA           Op = 713
+	OpARMSBCshiftLL           Op = 714
+	OpARMSBCshiftRL           Op = 715
+	OpARMSBCshiftRA           Op = 716
+	OpARMRSCshiftLL           Op = 717
+	OpARMRSCshiftRL           Op = 718
+	OpARMRSCshiftRA           Op = 719
+	OpARMADDSshiftLL          Op = 720
+	OpARMADDSshiftRL          Op = 721
+	OpARMADDSshiftRA          Op = 722
+	OpARMSUBSshiftLL          Op = 723
+	OpARMSUBSshiftRL          Op = 724
+	OpARMSUBSshiftRA          Op = 725
+	OpARMRSBSshiftLL          Op = 726
+	OpARMRSBSshiftRL          Op = 727
+	OpARMRSBSshiftRA          Op = 728
+	OpARMADDshiftLLreg        Op = 729
+	OpARMADDshiftRLreg        Op = 730
+	OpARMADDshiftRAreg        Op = 731
+	OpARMSUBshiftLLreg        Op = 732
+	OpARMSUBshiftRLreg        Op = 733
+	OpARMSUBshiftRAreg        Op = 734
+	OpARMRSBshiftLLreg        Op = 735
+	OpARMRSBshiftRLreg        Op = 736
+	OpARMRSBshiftRAreg        Op = 737
+	OpARMANDshiftLLreg        Op = 738
+	OpARMANDshiftRLreg        Op = 739
+	OpARMANDshiftRAreg        Op = 740
+	OpARMORshiftLLreg         Op = 741
+	OpARMORshiftRLreg         Op = 742
+	OpARMORshiftRAreg         Op = 743
+	OpARMXORshiftLLreg        Op = 744
+	OpARMXORshiftRLreg        Op = 745
+	OpARMXORshiftRAreg        Op = 746
+	OpARMBICshiftLLreg        Op = 747
+	OpARMBICshiftRLreg        Op = 748
+	OpARMBICshiftRAreg        Op = 749
+	OpARMMVNshiftLLreg        Op = 750
+	OpARMMVNshiftRLreg        Op = 751
+	OpARMMVNshiftRAreg        Op = 752
+	OpARMADCshiftLLreg        Op = 753
+	OpARMADCshiftRLreg        Op = 754
+	OpARMADCshiftRAreg        Op = 755
+	OpARMSBCshiftLLreg        Op = 756
+	OpARMSBCshiftRLreg        Op = 757
+	OpARMSBCshiftRAreg        Op = 758
+	OpARMRSCshiftLLreg        Op = 759
+	OpARMRSCshiftRLreg        Op = 760
+	OpARMRSCshiftRAreg        Op = 761
+	OpARMADDSshiftLLreg       Op = 762
+	OpARMADDSshiftRLreg       Op = 763
+	OpARMADDSshiftRAreg       Op = 764
+	OpARMSUBSshiftLLreg       Op = 765
+	OpARMSUBSshiftRLreg       Op = 766
+	OpARMSUBSshiftRAreg       Op = 767
+	OpARMRSBSshiftLLreg       Op = 768
+	OpARMRSBSshiftRLreg       Op = 769
+	OpARMRSBSshiftRAreg       Op = 770
+	OpARMCMP                  Op = 771
+	OpARMCMPconst             Op = 772
+	OpARMCMN                  Op = 773
+	OpARMCMNconst             Op = 774
+	OpARMTST                  Op = 775
+	OpARMTSTconst             Op = 776
+	OpARMTEQ                  Op = 777
+	OpARMTEQconst             Op = 778
+	OpARMCMPF                 Op = 779
+	OpARMCMPD                 Op = 780
+	OpARMCMPshiftLL           Op = 781
+	OpARMCMPshiftRL           Op = 782
+	OpARMCMPshiftRA           Op = 783
+	OpARMCMNshiftLL           Op = 784
+	OpARMCMNshiftRL           Op = 785
+	OpARMCMNshiftRA           Op = 786
+	OpARMTSTshiftLL           Op = 787
+	OpARMTSTshiftRL           Op = 788
+	OpARMTSTshiftRA           Op = 789
+	OpARMTEQshiftLL           Op = 790
+	OpARMTEQshiftRL           Op = 791
+	OpARMTEQshiftRA           Op = 792
+	OpARMCMPshiftLLreg        Op = 793
+	OpARMCMPshiftRLreg        Op = 794
+	OpARMCMPshiftRAreg        Op = 795
+	OpARMCMNshiftLLreg        Op = 796
+	OpARMCMNshiftRLreg        Op = 797
+	OpARMCMNshiftRAreg        Op = 798
+	OpARMTSTshiftLLreg        Op = 799
+	OpARMTSTshiftRLreg        Op = 800
+	OpARMTSTshiftRAreg        Op = 801
+	OpARMTEQshiftLLreg        Op = 802
+	OpARMTEQshiftRLreg        Op = 803
+	OpARMTEQshiftRAreg        Op = 804
+	OpARMCMPF0                Op = 805
+	OpARMCMPD0                Op = 806
+	OpARMMOVWconst            Op = 807
+	OpARMMOVFconst            Op = 808
+	OpARMMOVDconst            Op = 809
+	OpARMMOVWaddr             Op = 810
+	OpARMMOVBload             Op = 811
+	OpARMMOVBUload            Op = 812
+	OpARMMOVHload             Op = 813
+	OpARMMOVHUload            Op = 814
+	OpARMMOVWload             Op = 815
+	OpARMMOVFload             Op = 816
+	OpARMMOVDload             Op = 817
+	OpARMMOVBstore            Op = 818
+	OpARMMOVHstore            Op = 819
+	OpARMMOVWstore            Op = 820
+	OpARMMOVFstore            Op = 821
+	OpARMMOVDstore            Op = 822
+	OpARMMOVWloadidx          Op = 823
+	OpARMMOVWloadshiftLL      Op = 824
+	OpARMMOVWloadshiftRL      Op = 825
+	OpARMMOVWloadshiftRA      Op = 826
+	OpARMMOVBUloadidx         Op = 827
+	OpARMMOVBloadidx          Op = 828
+	OpARMMOVHUloadidx         Op = 829
+	OpARMMOVHloadidx          Op = 830
+	OpARMMOVWstoreidx         Op = 831
+	OpARMMOVWstoreshiftLL     Op = 832
+	OpARMMOVWstoreshiftRL     Op = 833
+	OpARMMOVWstoreshiftRA     Op = 834
+	OpARMMOVBstoreidx         Op = 835
+	OpARMMOVHstoreidx         Op = 836
+	OpARMMOVBreg              Op = 837
+	OpARMMOVBUreg             Op = 838
+	OpARMMOVHreg              Op = 839
+	OpARMMOVHUreg             Op = 840
+	OpARMMOVWreg              Op = 841
+	OpARMMOVWnop              Op = 842
+	OpARMMOVWF                Op = 843
+	OpARMMOVWD                Op = 844
+	OpARMMOVWUF               Op = 845
+	OpARMMOVWUD               Op = 846
+	OpARMMOVFW                Op = 847
+	OpARMMOVDW                Op = 848
+	OpARMMOVFWU               Op = 849
+	OpARMMOVDWU               Op = 850
+	OpARMMOVFD                Op = 851
+	OpARMMOVDF                Op = 852
+	OpARMCMOVWHSconst         Op = 853
+	OpARMCMOVWLSconst         Op = 854
+	OpARMSRAcond              Op = 855
+	OpARMCALLstatic           Op = 856
+	OpARMCALLclosure          Op = 857
+	OpARMCALLinter            Op = 858
+	OpARMLoweredNilCheck      Op = 859
+	OpARMEqual                Op = 860
+	OpARMNotEqual             Op = 861
+	OpARMLessThan             Op = 862
+	OpARMLessEqual            Op = 863
+	OpARMGreaterThan          Op = 864
+	OpARMGreaterEqual         Op = 865
+	OpARMLessThanU            Op = 866
+	OpARMLessEqualU           Op = 867
+	OpARMGreaterThanU         Op = 868
+	OpARMGreaterEqualU        Op = 869
+	OpARMDUFFZERO             Op = 870
+	OpARMDUFFCOPY             Op = 871
+	OpARMLoweredZero          Op = 872
+	OpARMLoweredMove          Op = 873
+	OpARMLoweredGetClosurePtr Op = 874
+	OpARMLoweredGetCallerSP   Op = 875
+	OpARMLoweredGetCallerPC   Op = 876
+	OpARMLoweredPanicBoundsA  Op = 877
+	OpARMLoweredPanicBoundsB  Op = 878
+	OpARMLoweredPanicBoundsC  Op = 879
+	OpARMLoweredPanicExtendA  Op = 880
+	OpARMLoweredPanicExtendB  Op = 881
+	OpARMLoweredPanicExtendC  Op = 882
+	OpARMFlagEQ               Op = 883
+	OpARMFlagLT_ULT           Op = 884
+	OpARMFlagLT_UGT           Op = 885
+	OpARMFlagGT_UGT           Op = 886
+	OpARMFlagGT_ULT           Op = 887
+	OpARMInvertFlags          Op = 888
+	OpARMLoweredWB            Op = 889
 
-	OpARM64ADCSflags
-	OpARM64ADCzerocarry
-	OpARM64ADD
-	OpARM64ADDconst
-	OpARM64ADDSconstflags
-	OpARM64ADDSflags
-	OpARM64SUB
-	OpARM64SUBconst
-	OpARM64SBCSflags
-	OpARM64SUBSflags
-	OpARM64MUL
-	OpARM64MULW
-	OpARM64MNEG
-	OpARM64MNEGW
-	OpARM64MULH
-	OpARM64UMULH
-	OpARM64MULL
-	OpARM64UMULL
-	OpARM64DIV
-	OpARM64UDIV
-	OpARM64DIVW
-	OpARM64UDIVW
-	OpARM64MOD
-	OpARM64UMOD
-	OpARM64MODW
-	OpARM64UMODW
-	OpARM64FADDS
-	OpARM64FADDD
-	OpARM64FSUBS
-	OpARM64FSUBD
-	OpARM64FMULS
-	OpARM64FMULD
-	OpARM64FNMULS
-	OpARM64FNMULD
-	OpARM64FDIVS
-	OpARM64FDIVD
-	OpARM64AND
-	OpARM64ANDconst
-	OpARM64OR
-	OpARM64ORconst
-	OpARM64XOR
-	OpARM64XORconst
-	OpARM64BIC
-	OpARM64EON
-	OpARM64ORN
-	OpARM64LoweredMuluhilo
-	OpARM64MVN
-	OpARM64NEG
-	OpARM64NEGSflags
-	OpARM64NGCzerocarry
-	OpARM64FABSD
-	OpARM64FNEGS
-	OpARM64FNEGD
-	OpARM64FSQRTD
-	OpARM64REV
-	OpARM64REVW
-	OpARM64REV16W
-	OpARM64RBIT
-	OpARM64RBITW
-	OpARM64CLZ
-	OpARM64CLZW
-	OpARM64VCNT
-	OpARM64VUADDLV
-	OpARM64LoweredRound32F
-	OpARM64LoweredRound64F
-	OpARM64FMADDS
-	OpARM64FMADDD
-	OpARM64FNMADDS
-	OpARM64FNMADDD
-	OpARM64FMSUBS
-	OpARM64FMSUBD
-	OpARM64FNMSUBS
-	OpARM64FNMSUBD
-	OpARM64MADD
-	OpARM64MADDW
-	OpARM64MSUB
-	OpARM64MSUBW
-	OpARM64SLL
-	OpARM64SLLconst
-	OpARM64SRL
-	OpARM64SRLconst
-	OpARM64SRA
-	OpARM64SRAconst
-	OpARM64ROR
-	OpARM64RORW
-	OpARM64RORconst
-	OpARM64RORWconst
-	OpARM64EXTRconst
-	OpARM64EXTRWconst
-	OpARM64CMP
-	OpARM64CMPconst
-	OpARM64CMPW
-	OpARM64CMPWconst
-	OpARM64CMN
-	OpARM64CMNconst
-	OpARM64CMNW
-	OpARM64CMNWconst
-	OpARM64TST
-	OpARM64TSTconst
-	OpARM64TSTW
-	OpARM64TSTWconst
-	OpARM64FCMPS
-	OpARM64FCMPD
-	OpARM64FCMPS0
-	OpARM64FCMPD0
-	OpARM64MVNshiftLL
-	OpARM64MVNshiftRL
-	OpARM64MVNshiftRA
-	OpARM64NEGshiftLL
-	OpARM64NEGshiftRL
-	OpARM64NEGshiftRA
-	OpARM64ADDshiftLL
-	OpARM64ADDshiftRL
-	OpARM64ADDshiftRA
-	OpARM64SUBshiftLL
-	OpARM64SUBshiftRL
-	OpARM64SUBshiftRA
-	OpARM64ANDshiftLL
-	OpARM64ANDshiftRL
-	OpARM64ANDshiftRA
-	OpARM64ORshiftLL
-	OpARM64ORshiftRL
-	OpARM64ORshiftRA
-	OpARM64XORshiftLL
-	OpARM64XORshiftRL
-	OpARM64XORshiftRA
-	OpARM64BICshiftLL
-	OpARM64BICshiftRL
-	OpARM64BICshiftRA
-	OpARM64EONshiftLL
-	OpARM64EONshiftRL
-	OpARM64EONshiftRA
-	OpARM64ORNshiftLL
-	OpARM64ORNshiftRL
-	OpARM64ORNshiftRA
-	OpARM64CMPshiftLL
-	OpARM64CMPshiftRL
-	OpARM64CMPshiftRA
-	OpARM64CMNshiftLL
-	OpARM64CMNshiftRL
-	OpARM64CMNshiftRA
-	OpARM64TSTshiftLL
-	OpARM64TSTshiftRL
-	OpARM64TSTshiftRA
-	OpARM64BFI
-	OpARM64BFXIL
-	OpARM64SBFIZ
-	OpARM64SBFX
-	OpARM64UBFIZ
-	OpARM64UBFX
-	OpARM64MOVDconst
-	OpARM64FMOVSconst
-	OpARM64FMOVDconst
-	OpARM64MOVDaddr
-	OpARM64MOVBload
-	OpARM64MOVBUload
-	OpARM64MOVHload
-	OpARM64MOVHUload
-	OpARM64MOVWload
-	OpARM64MOVWUload
-	OpARM64MOVDload
-	OpARM64FMOVSload
-	OpARM64FMOVDload
-	OpARM64MOVDloadidx
-	OpARM64MOVWloadidx
-	OpARM64MOVWUloadidx
-	OpARM64MOVHloadidx
-	OpARM64MOVHUloadidx
-	OpARM64MOVBloadidx
-	OpARM64MOVBUloadidx
-	OpARM64FMOVSloadidx
-	OpARM64FMOVDloadidx
-	OpARM64MOVHloadidx2
-	OpARM64MOVHUloadidx2
-	OpARM64MOVWloadidx4
-	OpARM64MOVWUloadidx4
-	OpARM64MOVDloadidx8
-	OpARM64MOVBstore
-	OpARM64MOVHstore
-	OpARM64MOVWstore
-	OpARM64MOVDstore
-	OpARM64STP
-	OpARM64FMOVSstore
-	OpARM64FMOVDstore
-	OpARM64MOVBstoreidx
-	OpARM64MOVHstoreidx
-	OpARM64MOVWstoreidx
-	OpARM64MOVDstoreidx
-	OpARM64FMOVSstoreidx
-	OpARM64FMOVDstoreidx
-	OpARM64MOVHstoreidx2
-	OpARM64MOVWstoreidx4
-	OpARM64MOVDstoreidx8
-	OpARM64MOVBstorezero
-	OpARM64MOVHstorezero
-	OpARM64MOVWstorezero
-	OpARM64MOVDstorezero
-	OpARM64MOVQstorezero
-	OpARM64MOVBstorezeroidx
-	OpARM64MOVHstorezeroidx
-	OpARM64MOVWstorezeroidx
-	OpARM64MOVDstorezeroidx
-	OpARM64MOVHstorezeroidx2
-	OpARM64MOVWstorezeroidx4
-	OpARM64MOVDstorezeroidx8
-	OpARM64FMOVDgpfp
-	OpARM64FMOVDfpgp
-	OpARM64FMOVSgpfp
-	OpARM64FMOVSfpgp
-	OpARM64MOVBreg
-	OpARM64MOVBUreg
-	OpARM64MOVHreg
-	OpARM64MOVHUreg
-	OpARM64MOVWreg
-	OpARM64MOVWUreg
-	OpARM64MOVDreg
-	OpARM64MOVDnop
-	OpARM64SCVTFWS
-	OpARM64SCVTFWD
-	OpARM64UCVTFWS
-	OpARM64UCVTFWD
-	OpARM64SCVTFS
-	OpARM64SCVTFD
-	OpARM64UCVTFS
-	OpARM64UCVTFD
-	OpARM64FCVTZSSW
-	OpARM64FCVTZSDW
-	OpARM64FCVTZUSW
-	OpARM64FCVTZUDW
-	OpARM64FCVTZSS
-	OpARM64FCVTZSD
-	OpARM64FCVTZUS
-	OpARM64FCVTZUD
-	OpARM64FCVTSD
-	OpARM64FCVTDS
-	OpARM64FRINTAD
-	OpARM64FRINTMD
-	OpARM64FRINTND
-	OpARM64FRINTPD
-	OpARM64FRINTZD
-	OpARM64CSEL
-	OpARM64CSEL0
-	OpARM64CALLstatic
-	OpARM64CALLclosure
-	OpARM64CALLinter
-	OpARM64LoweredNilCheck
-	OpARM64Equal
-	OpARM64NotEqual
-	OpARM64LessThan
-	OpARM64LessEqual
-	OpARM64GreaterThan
-	OpARM64GreaterEqual
-	OpARM64LessThanU
-	OpARM64LessEqualU
-	OpARM64GreaterThanU
-	OpARM64GreaterEqualU
-	OpARM64LessThanF
-	OpARM64LessEqualF
-	OpARM64GreaterThanF
-	OpARM64GreaterEqualF
-	OpARM64DUFFZERO
-	OpARM64LoweredZero
-	OpARM64DUFFCOPY
-	OpARM64LoweredMove
-	OpARM64LoweredGetClosurePtr
-	OpARM64LoweredGetCallerSP
-	OpARM64LoweredGetCallerPC
-	OpARM64FlagEQ
-	OpARM64FlagLT_ULT
-	OpARM64FlagLT_UGT
-	OpARM64FlagGT_UGT
-	OpARM64FlagGT_ULT
-	OpARM64InvertFlags
-	OpARM64LDAR
-	OpARM64LDARB
-	OpARM64LDARW
-	OpARM64STLR
-	OpARM64STLRW
-	OpARM64LoweredAtomicExchange64
-	OpARM64LoweredAtomicExchange32
-	OpARM64LoweredAtomicAdd64
-	OpARM64LoweredAtomicAdd32
-	OpARM64LoweredAtomicAdd64Variant
-	OpARM64LoweredAtomicAdd32Variant
-	OpARM64LoweredAtomicCas64
-	OpARM64LoweredAtomicCas32
-	OpARM64LoweredAtomicAnd8
-	OpARM64LoweredAtomicOr8
-	OpARM64LoweredWB
-	OpARM64LoweredPanicBoundsA
-	OpARM64LoweredPanicBoundsB
-	OpARM64LoweredPanicBoundsC
+	OpARM64ADCSflags                 Op = 890
+	OpARM64ADCzerocarry              Op = 891
+	OpARM64ADD                       Op = 892
+	OpARM64ADDconst                  Op = 893
+	OpARM64ADDSconstflags            Op = 894
+	OpARM64ADDSflags                 Op = 895
+	OpARM64SUB                       Op = 896
+	OpARM64SUBconst                  Op = 897
+	OpARM64SBCSflags                 Op = 898
+	OpARM64SUBSflags                 Op = 899
+	OpARM64MUL                       Op = 900
+	OpARM64MULW                      Op = 901
+	OpARM64MNEG                      Op = 902
+	OpARM64MNEGW                     Op = 903
+	OpARM64MULH                      Op = 904
+	OpARM64UMULH                     Op = 905
+	OpARM64MULL                      Op = 906
+	OpARM64UMULL                     Op = 907
+	OpARM64DIV                       Op = 908
+	OpARM64UDIV                      Op = 909
+	OpARM64DIVW                      Op = 910
+	OpARM64UDIVW                     Op = 911
+	OpARM64MOD                       Op = 912
+	OpARM64UMOD                      Op = 913
+	OpARM64MODW                      Op = 914
+	OpARM64UMODW                     Op = 915
+	OpARM64FADDS                     Op = 916
+	OpARM64FADDD                     Op = 917
+	OpARM64FSUBS                     Op = 918
+	OpARM64FSUBD                     Op = 919
+	OpARM64FMULS                     Op = 920
+	OpARM64FMULD                     Op = 921
+	OpARM64FNMULS                    Op = 922
+	OpARM64FNMULD                    Op = 923
+	OpARM64FDIVS                     Op = 924
+	OpARM64FDIVD                     Op = 925
+	OpARM64AND                       Op = 926
+	OpARM64ANDconst                  Op = 927
+	OpARM64OR                        Op = 928
+	OpARM64ORconst                   Op = 929
+	OpARM64XOR                       Op = 930
+	OpARM64XORconst                  Op = 931
+	OpARM64BIC                       Op = 932
+	OpARM64EON                       Op = 933
+	OpARM64ORN                       Op = 934
+	OpARM64LoweredMuluhilo           Op = 935
+	OpARM64MVN                       Op = 936
+	OpARM64NEG                       Op = 937
+	OpARM64NEGSflags                 Op = 938
+	OpARM64NGCzerocarry              Op = 939
+	OpARM64FABSD                     Op = 940
+	OpARM64FNEGS                     Op = 941
+	OpARM64FNEGD                     Op = 942
+	OpARM64FSQRTD                    Op = 943
+	OpARM64REV                       Op = 944
+	OpARM64REVW                      Op = 945
+	OpARM64REV16W                    Op = 946
+	OpARM64RBIT                      Op = 947
+	OpARM64RBITW                     Op = 948
+	OpARM64CLZ                       Op = 949
+	OpARM64CLZW                      Op = 950
+	OpARM64VCNT                      Op = 951
+	OpARM64VUADDLV                   Op = 952
+	OpARM64LoweredRound32F           Op = 953
+	OpARM64LoweredRound64F           Op = 954
+	OpARM64FMADDS                    Op = 955
+	OpARM64FMADDD                    Op = 956
+	OpARM64FNMADDS                   Op = 957
+	OpARM64FNMADDD                   Op = 958
+	OpARM64FMSUBS                    Op = 959
+	OpARM64FMSUBD                    Op = 960
+	OpARM64FNMSUBS                   Op = 961
+	OpARM64FNMSUBD                   Op = 962
+	OpARM64MADD                      Op = 963
+	OpARM64MADDW                     Op = 964
+	OpARM64MSUB                      Op = 965
+	OpARM64MSUBW                     Op = 966
+	OpARM64SLL                       Op = 967
+	OpARM64SLLconst                  Op = 968
+	OpARM64SRL                       Op = 969
+	OpARM64SRLconst                  Op = 970
+	OpARM64SRA                       Op = 971
+	OpARM64SRAconst                  Op = 972
+	OpARM64ROR                       Op = 973
+	OpARM64RORW                      Op = 974
+	OpARM64RORconst                  Op = 975
+	OpARM64RORWconst                 Op = 976
+	OpARM64EXTRconst                 Op = 977
+	OpARM64EXTRWconst                Op = 978
+	OpARM64CMP                       Op = 979
+	OpARM64CMPconst                  Op = 980
+	OpARM64CMPW                      Op = 981
+	OpARM64CMPWconst                 Op = 982
+	OpARM64CMN                       Op = 983
+	OpARM64CMNconst                  Op = 984
+	OpARM64CMNW                      Op = 985
+	OpARM64CMNWconst                 Op = 986
+	OpARM64TST                       Op = 987
+	OpARM64TSTconst                  Op = 988
+	OpARM64TSTW                      Op = 989
+	OpARM64TSTWconst                 Op = 990
+	OpARM64FCMPS                     Op = 991
+	OpARM64FCMPD                     Op = 992
+	OpARM64FCMPS0                    Op = 993
+	OpARM64FCMPD0                    Op = 994
+	OpARM64MVNshiftLL                Op = 995
+	OpARM64MVNshiftRL                Op = 996
+	OpARM64MVNshiftRA                Op = 997
+	OpARM64NEGshiftLL                Op = 998
+	OpARM64NEGshiftRL                Op = 999
+	OpARM64NEGshiftRA                Op = 1000
+	OpARM64ADDshiftLL                Op = 1001
+	OpARM64ADDshiftRL                Op = 1002
+	OpARM64ADDshiftRA                Op = 1003
+	OpARM64SUBshiftLL                Op = 1004
+	OpARM64SUBshiftRL                Op = 1005
+	OpARM64SUBshiftRA                Op = 1006
+	OpARM64ANDshiftLL                Op = 1007
+	OpARM64ANDshiftRL                Op = 1008
+	OpARM64ANDshiftRA                Op = 1009
+	OpARM64ORshiftLL                 Op = 1010
+	OpARM64ORshiftRL                 Op = 1011
+	OpARM64ORshiftRA                 Op = 1012
+	OpARM64XORshiftLL                Op = 1013
+	OpARM64XORshiftRL                Op = 1014
+	OpARM64XORshiftRA                Op = 1015
+	OpARM64BICshiftLL                Op = 1016
+	OpARM64BICshiftRL                Op = 1017
+	OpARM64BICshiftRA                Op = 1018
+	OpARM64EONshiftLL                Op = 1019
+	OpARM64EONshiftRL                Op = 1020
+	OpARM64EONshiftRA                Op = 1021
+	OpARM64ORNshiftLL                Op = 1022
+	OpARM64ORNshiftRL                Op = 1023
+	OpARM64ORNshiftRA                Op = 1024
+	OpARM64CMPshiftLL                Op = 1025
+	OpARM64CMPshiftRL                Op = 1026
+	OpARM64CMPshiftRA                Op = 1027
+	OpARM64CMNshiftLL                Op = 1028
+	OpARM64CMNshiftRL                Op = 1029
+	OpARM64CMNshiftRA                Op = 1030
+	OpARM64TSTshiftLL                Op = 1031
+	OpARM64TSTshiftRL                Op = 1032
+	OpARM64TSTshiftRA                Op = 1033
+	OpARM64BFI                       Op = 1034
+	OpARM64BFXIL                     Op = 1035
+	OpARM64SBFIZ                     Op = 1036
+	OpARM64SBFX                      Op = 1037
+	OpARM64UBFIZ                     Op = 1038
+	OpARM64UBFX                      Op = 1039
+	OpARM64MOVDconst                 Op = 1040
+	OpARM64FMOVSconst                Op = 1041
+	OpARM64FMOVDconst                Op = 1042
+	OpARM64MOVDaddr                  Op = 1043
+	OpARM64MOVBload                  Op = 1044
+	OpARM64MOVBUload                 Op = 1045
+	OpARM64MOVHload                  Op = 1046
+	OpARM64MOVHUload                 Op = 1047
+	OpARM64MOVWload                  Op = 1048
+	OpARM64MOVWUload                 Op = 1049
+	OpARM64MOVDload                  Op = 1050
+	OpARM64FMOVSload                 Op = 1051
+	OpARM64FMOVDload                 Op = 1052
+	OpARM64MOVDloadidx               Op = 1053
+	OpARM64MOVWloadidx               Op = 1054
+	OpARM64MOVWUloadidx              Op = 1055
+	OpARM64MOVHloadidx               Op = 1056
+	OpARM64MOVHUloadidx              Op = 1057
+	OpARM64MOVBloadidx               Op = 1058
+	OpARM64MOVBUloadidx              Op = 1059
+	OpARM64FMOVSloadidx              Op = 1060
+	OpARM64FMOVDloadidx              Op = 1061
+	OpARM64MOVHloadidx2              Op = 1062
+	OpARM64MOVHUloadidx2             Op = 1063
+	OpARM64MOVWloadidx4              Op = 1064
+	OpARM64MOVWUloadidx4             Op = 1065
+	OpARM64MOVDloadidx8              Op = 1066
+	OpARM64MOVBstore                 Op = 1067
+	OpARM64MOVHstore                 Op = 1068
+	OpARM64MOVWstore                 Op = 1069
+	OpARM64MOVDstore                 Op = 1070
+	OpARM64STP                       Op = 1071
+	OpARM64FMOVSstore                Op = 1072
+	OpARM64FMOVDstore                Op = 1073
+	OpARM64MOVBstoreidx              Op = 1074
+	OpARM64MOVHstoreidx              Op = 1075
+	OpARM64MOVWstoreidx              Op = 1076
+	OpARM64MOVDstoreidx              Op = 1077
+	OpARM64FMOVSstoreidx             Op = 1078
+	OpARM64FMOVDstoreidx             Op = 1079
+	OpARM64MOVHstoreidx2             Op = 1080
+	OpARM64MOVWstoreidx4             Op = 1081
+	OpARM64MOVDstoreidx8             Op = 1082
+	OpARM64MOVBstorezero             Op = 1083
+	OpARM64MOVHstorezero             Op = 1084
+	OpARM64MOVWstorezero             Op = 1085
+	OpARM64MOVDstorezero             Op = 1086
+	OpARM64MOVQstorezero             Op = 1087
+	OpARM64MOVBstorezeroidx          Op = 1088
+	OpARM64MOVHstorezeroidx          Op = 1089
+	OpARM64MOVWstorezeroidx          Op = 1090
+	OpARM64MOVDstorezeroidx          Op = 1091
+	OpARM64MOVHstorezeroidx2         Op = 1092
+	OpARM64MOVWstorezeroidx4         Op = 1093
+	OpARM64MOVDstorezeroidx8         Op = 1094
+	OpARM64FMOVDgpfp                 Op = 1095
+	OpARM64FMOVDfpgp                 Op = 1096
+	OpARM64FMOVSgpfp                 Op = 1097
+	OpARM64FMOVSfpgp                 Op = 1098
+	OpARM64MOVBreg                   Op = 1099
+	OpARM64MOVBUreg                  Op = 1100
+	OpARM64MOVHreg                   Op = 1101
+	OpARM64MOVHUreg                  Op = 1102
+	OpARM64MOVWreg                   Op = 1103
+	OpARM64MOVWUreg                  Op = 1104
+	OpARM64MOVDreg                   Op = 1105
+	OpARM64MOVDnop                   Op = 1106
+	OpARM64SCVTFWS                   Op = 1107
+	OpARM64SCVTFWD                   Op = 1108
+	OpARM64UCVTFWS                   Op = 1109
+	OpARM64UCVTFWD                   Op = 1110
+	OpARM64SCVTFS                    Op = 1111
+	OpARM64SCVTFD                    Op = 1112
+	OpARM64UCVTFS                    Op = 1113
+	OpARM64UCVTFD                    Op = 1114
+	OpARM64FCVTZSSW                  Op = 1115
+	OpARM64FCVTZSDW                  Op = 1116
+	OpARM64FCVTZUSW                  Op = 1117
+	OpARM64FCVTZUDW                  Op = 1118
+	OpARM64FCVTZSS                   Op = 1119
+	OpARM64FCVTZSD                   Op = 1120
+	OpARM64FCVTZUS                   Op = 1121
+	OpARM64FCVTZUD                   Op = 1122
+	OpARM64FCVTSD                    Op = 1123
+	OpARM64FCVTDS                    Op = 1124
+	OpARM64FRINTAD                   Op = 1125
+	OpARM64FRINTMD                   Op = 1126
+	OpARM64FRINTND                   Op = 1127
+	OpARM64FRINTPD                   Op = 1128
+	OpARM64FRINTZD                   Op = 1129
+	OpARM64CSEL                      Op = 1130
+	OpARM64CSEL0                     Op = 1131
+	OpARM64CALLstatic                Op = 1132
+	OpARM64CALLclosure               Op = 1133
+	OpARM64CALLinter                 Op = 1134
+	OpARM64LoweredNilCheck           Op = 1135
+	OpARM64Equal                     Op = 1136
+	OpARM64NotEqual                  Op = 1137
+	OpARM64LessThan                  Op = 1138
+	OpARM64LessEqual                 Op = 1139
+	OpARM64GreaterThan               Op = 1140
+	OpARM64GreaterEqual              Op = 1141
+	OpARM64LessThanU                 Op = 1142
+	OpARM64LessEqualU                Op = 1143
+	OpARM64GreaterThanU              Op = 1144
+	OpARM64GreaterEqualU             Op = 1145
+	OpARM64LessThanF                 Op = 1146
+	OpARM64LessEqualF                Op = 1147
+	OpARM64GreaterThanF              Op = 1148
+	OpARM64GreaterEqualF             Op = 1149
+	OpARM64DUFFZERO                  Op = 1150
+	OpARM64LoweredZero               Op = 1151
+	OpARM64DUFFCOPY                  Op = 1152
+	OpARM64LoweredMove               Op = 1153
+	OpARM64LoweredGetClosurePtr      Op = 1154
+	OpARM64LoweredGetCallerSP        Op = 1155
+	OpARM64LoweredGetCallerPC        Op = 1156
+	OpARM64FlagEQ                    Op = 1157
+	OpARM64FlagLT_ULT                Op = 1158
+	OpARM64FlagLT_UGT                Op = 1159
+	OpARM64FlagGT_UGT                Op = 1160
+	OpARM64FlagGT_ULT                Op = 1161
+	OpARM64InvertFlags               Op = 1162
+	OpARM64LDAR                      Op = 1163
+	OpARM64LDARB                     Op = 1164
+	OpARM64LDARW                     Op = 1165
+	OpARM64STLR                      Op = 1166
+	OpARM64STLRW                     Op = 1167
+	OpARM64LoweredAtomicExchange64   Op = 1168
+	OpARM64LoweredAtomicExchange32   Op = 1169
+	OpARM64LoweredAtomicAdd64        Op = 1170
+	OpARM64LoweredAtomicAdd32        Op = 1171
+	OpARM64LoweredAtomicAdd64Variant Op = 1172
+	OpARM64LoweredAtomicAdd32Variant Op = 1173
+	OpARM64LoweredAtomicCas64        Op = 1174
+	OpARM64LoweredAtomicCas32        Op = 1175
+	OpARM64LoweredAtomicAnd8         Op = 1176
+	OpARM64LoweredAtomicOr8          Op = 1177
+	OpARM64LoweredWB                 Op = 1178
+	OpARM64LoweredPanicBoundsA       Op = 1179
+	OpARM64LoweredPanicBoundsB       Op = 1180
+	OpARM64LoweredPanicBoundsC       Op = 1181
 
-	OpMIPSADD
-	OpMIPSADDconst
-	OpMIPSSUB
-	OpMIPSSUBconst
-	OpMIPSMUL
-	OpMIPSMULT
-	OpMIPSMULTU
-	OpMIPSDIV
-	OpMIPSDIVU
-	OpMIPSADDF
-	OpMIPSADDD
-	OpMIPSSUBF
-	OpMIPSSUBD
-	OpMIPSMULF
-	OpMIPSMULD
-	OpMIPSDIVF
-	OpMIPSDIVD
-	OpMIPSAND
-	OpMIPSANDconst
-	OpMIPSOR
-	OpMIPSORconst
-	OpMIPSXOR
-	OpMIPSXORconst
-	OpMIPSNOR
-	OpMIPSNORconst
-	OpMIPSNEG
-	OpMIPSNEGF
-	OpMIPSNEGD
-	OpMIPSSQRTD
-	OpMIPSSLL
-	OpMIPSSLLconst
-	OpMIPSSRL
-	OpMIPSSRLconst
-	OpMIPSSRA
-	OpMIPSSRAconst
-	OpMIPSCLZ
-	OpMIPSSGT
-	OpMIPSSGTconst
-	OpMIPSSGTzero
-	OpMIPSSGTU
-	OpMIPSSGTUconst
-	OpMIPSSGTUzero
-	OpMIPSCMPEQF
-	OpMIPSCMPEQD
-	OpMIPSCMPGEF
-	OpMIPSCMPGED
-	OpMIPSCMPGTF
-	OpMIPSCMPGTD
-	OpMIPSMOVWconst
-	OpMIPSMOVFconst
-	OpMIPSMOVDconst
-	OpMIPSMOVWaddr
-	OpMIPSMOVBload
-	OpMIPSMOVBUload
-	OpMIPSMOVHload
-	OpMIPSMOVHUload
-	OpMIPSMOVWload
-	OpMIPSMOVFload
-	OpMIPSMOVDload
-	OpMIPSMOVBstore
-	OpMIPSMOVHstore
-	OpMIPSMOVWstore
-	OpMIPSMOVFstore
-	OpMIPSMOVDstore
-	OpMIPSMOVBstorezero
-	OpMIPSMOVHstorezero
-	OpMIPSMOVWstorezero
-	OpMIPSMOVBreg
-	OpMIPSMOVBUreg
-	OpMIPSMOVHreg
-	OpMIPSMOVHUreg
-	OpMIPSMOVWreg
-	OpMIPSMOVWnop
-	OpMIPSCMOVZ
-	OpMIPSCMOVZzero
-	OpMIPSMOVWF
-	OpMIPSMOVWD
-	OpMIPSTRUNCFW
-	OpMIPSTRUNCDW
-	OpMIPSMOVFD
-	OpMIPSMOVDF
-	OpMIPSCALLstatic
-	OpMIPSCALLclosure
-	OpMIPSCALLinter
-	OpMIPSLoweredAtomicLoad
-	OpMIPSLoweredAtomicStore
-	OpMIPSLoweredAtomicStorezero
-	OpMIPSLoweredAtomicExchange
-	OpMIPSLoweredAtomicAdd
-	OpMIPSLoweredAtomicAddconst
-	OpMIPSLoweredAtomicCas
-	OpMIPSLoweredAtomicAnd
-	OpMIPSLoweredAtomicOr
-	OpMIPSLoweredZero
-	OpMIPSLoweredMove
-	OpMIPSLoweredNilCheck
-	OpMIPSFPFlagTrue
-	OpMIPSFPFlagFalse
-	OpMIPSLoweredGetClosurePtr
-	OpMIPSLoweredGetCallerSP
-	OpMIPSLoweredGetCallerPC
-	OpMIPSLoweredWB
-	OpMIPSLoweredPanicBoundsA
-	OpMIPSLoweredPanicBoundsB
-	OpMIPSLoweredPanicBoundsC
-	OpMIPSLoweredPanicExtendA
-	OpMIPSLoweredPanicExtendB
-	OpMIPSLoweredPanicExtendC
+	OpMIPSADD                    Op = 1182
+	OpMIPSADDconst               Op = 1183
+	OpMIPSSUB                    Op = 1184
+	OpMIPSSUBconst               Op = 1185
+	OpMIPSMUL                    Op = 1186
+	OpMIPSMULT                   Op = 1187
+	OpMIPSMULTU                  Op = 1188
+	OpMIPSDIV                    Op = 1189
+	OpMIPSDIVU                   Op = 1190
+	OpMIPSADDF                   Op = 1191
+	OpMIPSADDD                   Op = 1192
+	OpMIPSSUBF                   Op = 1193
+	OpMIPSSUBD                   Op = 1194
+	OpMIPSMULF                   Op = 1195
+	OpMIPSMULD                   Op = 1196
+	OpMIPSDIVF                   Op = 1197
+	OpMIPSDIVD                   Op = 1198
+	OpMIPSAND                    Op = 1199
+	OpMIPSANDconst               Op = 1200
+	OpMIPSOR                     Op = 1201
+	OpMIPSORconst                Op = 1202
+	OpMIPSXOR                    Op = 1203
+	OpMIPSXORconst               Op = 1204
+	OpMIPSNOR                    Op = 1205
+	OpMIPSNORconst               Op = 1206
+	OpMIPSNEG                    Op = 1207
+	OpMIPSNEGF                   Op = 1208
+	OpMIPSNEGD                   Op = 1209
+	OpMIPSSQRTD                  Op = 1210
+	OpMIPSSLL                    Op = 1211
+	OpMIPSSLLconst               Op = 1212
+	OpMIPSSRL                    Op = 1213
+	OpMIPSSRLconst               Op = 1214
+	OpMIPSSRA                    Op = 1215
+	OpMIPSSRAconst               Op = 1216
+	OpMIPSCLZ                    Op = 1217
+	OpMIPSSGT                    Op = 1218
+	OpMIPSSGTconst               Op = 1219
+	OpMIPSSGTzero                Op = 1220
+	OpMIPSSGTU                   Op = 1221
+	OpMIPSSGTUconst              Op = 1222
+	OpMIPSSGTUzero               Op = 1223
+	OpMIPSCMPEQF                 Op = 1224
+	OpMIPSCMPEQD                 Op = 1225
+	OpMIPSCMPGEF                 Op = 1226
+	OpMIPSCMPGED                 Op = 1227
+	OpMIPSCMPGTF                 Op = 1228
+	OpMIPSCMPGTD                 Op = 1229
+	OpMIPSMOVWconst              Op = 1230
+	OpMIPSMOVFconst              Op = 1231
+	OpMIPSMOVDconst              Op = 1232
+	OpMIPSMOVWaddr               Op = 1233
+	OpMIPSMOVBload               Op = 1234
+	OpMIPSMOVBUload              Op = 1235
+	OpMIPSMOVHload               Op = 1236
+	OpMIPSMOVHUload              Op = 1237
+	OpMIPSMOVWload               Op = 1238
+	OpMIPSMOVFload               Op = 1239
+	OpMIPSMOVDload               Op = 1240
+	OpMIPSMOVBstore              Op = 1241
+	OpMIPSMOVHstore              Op = 1242
+	OpMIPSMOVWstore              Op = 1243
+	OpMIPSMOVFstore              Op = 1244
+	OpMIPSMOVDstore              Op = 1245
+	OpMIPSMOVBstorezero          Op = 1246
+	OpMIPSMOVHstorezero          Op = 1247
+	OpMIPSMOVWstorezero          Op = 1248
+	OpMIPSMOVBreg                Op = 1249
+	OpMIPSMOVBUreg               Op = 1250
+	OpMIPSMOVHreg                Op = 1251
+	OpMIPSMOVHUreg               Op = 1252
+	OpMIPSMOVWreg                Op = 1253
+	OpMIPSMOVWnop                Op = 1254
+	OpMIPSCMOVZ                  Op = 1255
+	OpMIPSCMOVZzero              Op = 1256
+	OpMIPSMOVWF                  Op = 1257
+	OpMIPSMOVWD                  Op = 1258
+	OpMIPSTRUNCFW                Op = 1259
+	OpMIPSTRUNCDW                Op = 1260
+	OpMIPSMOVFD                  Op = 1261
+	OpMIPSMOVDF                  Op = 1262
+	OpMIPSCALLstatic             Op = 1263
+	OpMIPSCALLclosure            Op = 1264
+	OpMIPSCALLinter              Op = 1265
+	OpMIPSLoweredAtomicLoad      Op = 1266
+	OpMIPSLoweredAtomicStore     Op = 1267
+	OpMIPSLoweredAtomicStorezero Op = 1268
+	OpMIPSLoweredAtomicExchange  Op = 1269
+	OpMIPSLoweredAtomicAdd       Op = 1270
+	OpMIPSLoweredAtomicAddconst  Op = 1271
+	OpMIPSLoweredAtomicCas       Op = 1272
+	OpMIPSLoweredAtomicAnd       Op = 1273
+	OpMIPSLoweredAtomicOr        Op = 1274
+	OpMIPSLoweredZero            Op = 1275
+	OpMIPSLoweredMove            Op = 1276
+	OpMIPSLoweredNilCheck        Op = 1277
+	OpMIPSFPFlagTrue             Op = 1278
+	OpMIPSFPFlagFalse            Op = 1279
+	OpMIPSLoweredGetClosurePtr   Op = 1280
+	OpMIPSLoweredGetCallerSP     Op = 1281
+	OpMIPSLoweredGetCallerPC     Op = 1282
+	OpMIPSLoweredWB              Op = 1283
+	OpMIPSLoweredPanicBoundsA    Op = 1284
+	OpMIPSLoweredPanicBoundsB    Op = 1285
+	OpMIPSLoweredPanicBoundsC    Op = 1286
+	OpMIPSLoweredPanicExtendA    Op = 1287
+	OpMIPSLoweredPanicExtendB    Op = 1288
+	OpMIPSLoweredPanicExtendC    Op = 1289
 
-	OpMIPS64ADDV
-	OpMIPS64ADDVconst
-	OpMIPS64SUBV
-	OpMIPS64SUBVconst
-	OpMIPS64MULV
-	OpMIPS64MULVU
-	OpMIPS64DIVV
-	OpMIPS64DIVVU
-	OpMIPS64ADDF
-	OpMIPS64ADDD
-	OpMIPS64SUBF
-	OpMIPS64SUBD
-	OpMIPS64MULF
-	OpMIPS64MULD
-	OpMIPS64DIVF
-	OpMIPS64DIVD
-	OpMIPS64AND
-	OpMIPS64ANDconst
-	OpMIPS64OR
-	OpMIPS64ORconst
-	OpMIPS64XOR
-	OpMIPS64XORconst
-	OpMIPS64NOR
-	OpMIPS64NORconst
-	OpMIPS64NEGV
-	OpMIPS64NEGF
-	OpMIPS64NEGD
-	OpMIPS64SQRTD
-	OpMIPS64SLLV
-	OpMIPS64SLLVconst
-	OpMIPS64SRLV
-	OpMIPS64SRLVconst
-	OpMIPS64SRAV
-	OpMIPS64SRAVconst
-	OpMIPS64SGT
-	OpMIPS64SGTconst
-	OpMIPS64SGTU
-	OpMIPS64SGTUconst
-	OpMIPS64CMPEQF
-	OpMIPS64CMPEQD
-	OpMIPS64CMPGEF
-	OpMIPS64CMPGED
-	OpMIPS64CMPGTF
-	OpMIPS64CMPGTD
-	OpMIPS64MOVVconst
-	OpMIPS64MOVFconst
-	OpMIPS64MOVDconst
-	OpMIPS64MOVVaddr
-	OpMIPS64MOVBload
-	OpMIPS64MOVBUload
-	OpMIPS64MOVHload
-	OpMIPS64MOVHUload
-	OpMIPS64MOVWload
-	OpMIPS64MOVWUload
-	OpMIPS64MOVVload
-	OpMIPS64MOVFload
-	OpMIPS64MOVDload
-	OpMIPS64MOVBstore
-	OpMIPS64MOVHstore
-	OpMIPS64MOVWstore
-	OpMIPS64MOVVstore
-	OpMIPS64MOVFstore
-	OpMIPS64MOVDstore
-	OpMIPS64MOVBstorezero
-	OpMIPS64MOVHstorezero
-	OpMIPS64MOVWstorezero
-	OpMIPS64MOVVstorezero
-	OpMIPS64MOVBreg
-	OpMIPS64MOVBUreg
-	OpMIPS64MOVHreg
-	OpMIPS64MOVHUreg
-	OpMIPS64MOVWreg
-	OpMIPS64MOVWUreg
-	OpMIPS64MOVVreg
-	OpMIPS64MOVVnop
-	OpMIPS64MOVWF
-	OpMIPS64MOVWD
-	OpMIPS64MOVVF
-	OpMIPS64MOVVD
-	OpMIPS64TRUNCFW
-	OpMIPS64TRUNCDW
-	OpMIPS64TRUNCFV
-	OpMIPS64TRUNCDV
-	OpMIPS64MOVFD
-	OpMIPS64MOVDF
-	OpMIPS64CALLstatic
-	OpMIPS64CALLclosure
-	OpMIPS64CALLinter
-	OpMIPS64DUFFZERO
-	OpMIPS64LoweredZero
-	OpMIPS64LoweredMove
-	OpMIPS64LoweredAtomicLoad8
-	OpMIPS64LoweredAtomicLoad32
-	OpMIPS64LoweredAtomicLoad64
-	OpMIPS64LoweredAtomicStore32
-	OpMIPS64LoweredAtomicStore64
-	OpMIPS64LoweredAtomicStorezero32
-	OpMIPS64LoweredAtomicStorezero64
-	OpMIPS64LoweredAtomicExchange32
-	OpMIPS64LoweredAtomicExchange64
-	OpMIPS64LoweredAtomicAdd32
-	OpMIPS64LoweredAtomicAdd64
-	OpMIPS64LoweredAtomicAddconst32
-	OpMIPS64LoweredAtomicAddconst64
-	OpMIPS64LoweredAtomicCas32
-	OpMIPS64LoweredAtomicCas64
-	OpMIPS64LoweredNilCheck
-	OpMIPS64FPFlagTrue
-	OpMIPS64FPFlagFalse
-	OpMIPS64LoweredGetClosurePtr
-	OpMIPS64LoweredGetCallerSP
-	OpMIPS64LoweredGetCallerPC
-	OpMIPS64LoweredWB
-	OpMIPS64LoweredPanicBoundsA
-	OpMIPS64LoweredPanicBoundsB
-	OpMIPS64LoweredPanicBoundsC
+	OpMIPS64ADDV                     Op = 1290
+	OpMIPS64ADDVconst                Op = 1291
+	OpMIPS64SUBV                     Op = 1292
+	OpMIPS64SUBVconst                Op = 1293
+	OpMIPS64MULV                     Op = 1294
+	OpMIPS64MULVU                    Op = 1295
+	OpMIPS64DIVV                     Op = 1296
+	OpMIPS64DIVVU                    Op = 1297
+	OpMIPS64ADDF                     Op = 1298
+	OpMIPS64ADDD                     Op = 1299
+	OpMIPS64SUBF                     Op = 1300
+	OpMIPS64SUBD                     Op = 1301
+	OpMIPS64MULF                     Op = 1302
+	OpMIPS64MULD                     Op = 1303
+	OpMIPS64DIVF                     Op = 1304
+	OpMIPS64DIVD                     Op = 1305
+	OpMIPS64AND                      Op = 1306
+	OpMIPS64ANDconst                 Op = 1307
+	OpMIPS64OR                       Op = 1308
+	OpMIPS64ORconst                  Op = 1309
+	OpMIPS64XOR                      Op = 1310
+	OpMIPS64XORconst                 Op = 1311
+	OpMIPS64NOR                      Op = 1312
+	OpMIPS64NORconst                 Op = 1313
+	OpMIPS64NEGV                     Op = 1314
+	OpMIPS64NEGF                     Op = 1315
+	OpMIPS64NEGD                     Op = 1316
+	OpMIPS64SQRTD                    Op = 1317
+	OpMIPS64SLLV                     Op = 1318
+	OpMIPS64SLLVconst                Op = 1319
+	OpMIPS64SRLV                     Op = 1320
+	OpMIPS64SRLVconst                Op = 1321
+	OpMIPS64SRAV                     Op = 1322
+	OpMIPS64SRAVconst                Op = 1323
+	OpMIPS64SGT                      Op = 1324
+	OpMIPS64SGTconst                 Op = 1325
+	OpMIPS64SGTU                     Op = 1326
+	OpMIPS64SGTUconst                Op = 1327
+	OpMIPS64CMPEQF                   Op = 1328
+	OpMIPS64CMPEQD                   Op = 1329
+	OpMIPS64CMPGEF                   Op = 1330
+	OpMIPS64CMPGED                   Op = 1331
+	OpMIPS64CMPGTF                   Op = 1332
+	OpMIPS64CMPGTD                   Op = 1333
+	OpMIPS64MOVVconst                Op = 1334
+	OpMIPS64MOVFconst                Op = 1335
+	OpMIPS64MOVDconst                Op = 1336
+	OpMIPS64MOVVaddr                 Op = 1337
+	OpMIPS64MOVBload                 Op = 1338
+	OpMIPS64MOVBUload                Op = 1339
+	OpMIPS64MOVHload                 Op = 1340
+	OpMIPS64MOVHUload                Op = 1341
+	OpMIPS64MOVWload                 Op = 1342
+	OpMIPS64MOVWUload                Op = 1343
+	OpMIPS64MOVVload                 Op = 1344
+	OpMIPS64MOVFload                 Op = 1345
+	OpMIPS64MOVDload                 Op = 1346
+	OpMIPS64MOVBstore                Op = 1347
+	OpMIPS64MOVHstore                Op = 1348
+	OpMIPS64MOVWstore                Op = 1349
+	OpMIPS64MOVVstore                Op = 1350
+	OpMIPS64MOVFstore                Op = 1351
+	OpMIPS64MOVDstore                Op = 1352
+	OpMIPS64MOVBstorezero            Op = 1353
+	OpMIPS64MOVHstorezero            Op = 1354
+	OpMIPS64MOVWstorezero            Op = 1355
+	OpMIPS64MOVVstorezero            Op = 1356
+	OpMIPS64MOVBreg                  Op = 1357
+	OpMIPS64MOVBUreg                 Op = 1358
+	OpMIPS64MOVHreg                  Op = 1359
+	OpMIPS64MOVHUreg                 Op = 1360
+	OpMIPS64MOVWreg                  Op = 1361
+	OpMIPS64MOVWUreg                 Op = 1362
+	OpMIPS64MOVVreg                  Op = 1363
+	OpMIPS64MOVVnop                  Op = 1364
+	OpMIPS64MOVWF                    Op = 1365
+	OpMIPS64MOVWD                    Op = 1366
+	OpMIPS64MOVVF                    Op = 1367
+	OpMIPS64MOVVD                    Op = 1368
+	OpMIPS64TRUNCFW                  Op = 1369
+	OpMIPS64TRUNCDW                  Op = 1370
+	OpMIPS64TRUNCFV                  Op = 1371
+	OpMIPS64TRUNCDV                  Op = 1372
+	OpMIPS64MOVFD                    Op = 1373
+	OpMIPS64MOVDF                    Op = 1374
+	OpMIPS64CALLstatic               Op = 1375
+	OpMIPS64CALLclosure              Op = 1376
+	OpMIPS64CALLinter                Op = 1377
+	OpMIPS64DUFFZERO                 Op = 1378
+	OpMIPS64LoweredZero              Op = 1379
+	OpMIPS64LoweredMove              Op = 1380
+	OpMIPS64LoweredAtomicLoad8       Op = 1381
+	OpMIPS64LoweredAtomicLoad32      Op = 1382
+	OpMIPS64LoweredAtomicLoad64      Op = 1383
+	OpMIPS64LoweredAtomicStore32     Op = 1384
+	OpMIPS64LoweredAtomicStore64     Op = 1385
+	OpMIPS64LoweredAtomicStorezero32 Op = 1386
+	OpMIPS64LoweredAtomicStorezero64 Op = 1387
+	OpMIPS64LoweredAtomicExchange32  Op = 1388
+	OpMIPS64LoweredAtomicExchange64  Op = 1389
+	OpMIPS64LoweredAtomicAdd32       Op = 1390
+	OpMIPS64LoweredAtomicAdd64       Op = 1391
+	OpMIPS64LoweredAtomicAddconst32  Op = 1392
+	OpMIPS64LoweredAtomicAddconst64  Op = 1393
+	OpMIPS64LoweredAtomicCas32       Op = 1394
+	OpMIPS64LoweredAtomicCas64       Op = 1395
+	OpMIPS64LoweredNilCheck          Op = 1396
+	OpMIPS64FPFlagTrue               Op = 1397
+	OpMIPS64FPFlagFalse              Op = 1398
+	OpMIPS64LoweredGetClosurePtr     Op = 1399
+	OpMIPS64LoweredGetCallerSP       Op = 1400
+	OpMIPS64LoweredGetCallerPC       Op = 1401
+	OpMIPS64LoweredWB                Op = 1402
+	OpMIPS64LoweredPanicBoundsA      Op = 1403
+	OpMIPS64LoweredPanicBoundsB      Op = 1404
+	OpMIPS64LoweredPanicBoundsC      Op = 1405
 
-	OpPPC64ADD
-	OpPPC64ADDconst
-	OpPPC64FADD
-	OpPPC64FADDS
-	OpPPC64SUB
-	OpPPC64FSUB
-	OpPPC64FSUBS
-	OpPPC64MULLD
-	OpPPC64MULLW
-	OpPPC64MULHD
-	OpPPC64MULHW
-	OpPPC64MULHDU
-	OpPPC64MULHWU
-	OpPPC64LoweredMuluhilo
-	OpPPC64FMUL
-	OpPPC64FMULS
-	OpPPC64FMADD
-	OpPPC64FMADDS
-	OpPPC64FMSUB
-	OpPPC64FMSUBS
-	OpPPC64SRAD
-	OpPPC64SRAW
-	OpPPC64SRD
-	OpPPC64SRW
-	OpPPC64SLD
-	OpPPC64SLW
-	OpPPC64ROTL
-	OpPPC64ROTLW
-	OpPPC64LoweredAdd64Carry
-	OpPPC64ADDconstForCarry
-	OpPPC64MaskIfNotCarry
-	OpPPC64SRADconst
-	OpPPC64SRAWconst
-	OpPPC64SRDconst
-	OpPPC64SRWconst
-	OpPPC64SLDconst
-	OpPPC64SLWconst
-	OpPPC64ROTLconst
-	OpPPC64ROTLWconst
-	OpPPC64CNTLZD
-	OpPPC64CNTLZW
-	OpPPC64CNTTZD
-	OpPPC64CNTTZW
-	OpPPC64POPCNTD
-	OpPPC64POPCNTW
-	OpPPC64POPCNTB
-	OpPPC64FDIV
-	OpPPC64FDIVS
-	OpPPC64DIVD
-	OpPPC64DIVW
-	OpPPC64DIVDU
-	OpPPC64DIVWU
-	OpPPC64FCTIDZ
-	OpPPC64FCTIWZ
-	OpPPC64FCFID
-	OpPPC64FCFIDS
-	OpPPC64FRSP
-	OpPPC64MFVSRD
-	OpPPC64MTVSRD
-	OpPPC64AND
-	OpPPC64ANDN
-	OpPPC64ANDCC
-	OpPPC64OR
-	OpPPC64ORN
-	OpPPC64ORCC
-	OpPPC64NOR
-	OpPPC64XOR
-	OpPPC64XORCC
-	OpPPC64EQV
-	OpPPC64NEG
-	OpPPC64FNEG
-	OpPPC64FSQRT
-	OpPPC64FSQRTS
-	OpPPC64FFLOOR
-	OpPPC64FCEIL
-	OpPPC64FTRUNC
-	OpPPC64FROUND
-	OpPPC64FABS
-	OpPPC64FNABS
-	OpPPC64FCPSGN
-	OpPPC64ORconst
-	OpPPC64XORconst
-	OpPPC64ANDconst
-	OpPPC64ANDCCconst
-	OpPPC64MOVBreg
-	OpPPC64MOVBZreg
-	OpPPC64MOVHreg
-	OpPPC64MOVHZreg
-	OpPPC64MOVWreg
-	OpPPC64MOVWZreg
-	OpPPC64MOVBZload
-	OpPPC64MOVHload
-	OpPPC64MOVHZload
-	OpPPC64MOVWload
-	OpPPC64MOVWZload
-	OpPPC64MOVDload
-	OpPPC64MOVDBRload
-	OpPPC64MOVWBRload
-	OpPPC64MOVHBRload
-	OpPPC64MOVBZloadidx
-	OpPPC64MOVHloadidx
-	OpPPC64MOVHZloadidx
-	OpPPC64MOVWloadidx
-	OpPPC64MOVWZloadidx
-	OpPPC64MOVDloadidx
-	OpPPC64MOVHBRloadidx
-	OpPPC64MOVWBRloadidx
-	OpPPC64MOVDBRloadidx
-	OpPPC64FMOVDloadidx
-	OpPPC64FMOVSloadidx
-	OpPPC64MOVDBRstore
-	OpPPC64MOVWBRstore
-	OpPPC64MOVHBRstore
-	OpPPC64FMOVDload
-	OpPPC64FMOVSload
-	OpPPC64MOVBstore
-	OpPPC64MOVHstore
-	OpPPC64MOVWstore
-	OpPPC64MOVDstore
-	OpPPC64FMOVDstore
-	OpPPC64FMOVSstore
-	OpPPC64MOVBstoreidx
-	OpPPC64MOVHstoreidx
-	OpPPC64MOVWstoreidx
-	OpPPC64MOVDstoreidx
-	OpPPC64FMOVDstoreidx
-	OpPPC64FMOVSstoreidx
-	OpPPC64MOVHBRstoreidx
-	OpPPC64MOVWBRstoreidx
-	OpPPC64MOVDBRstoreidx
-	OpPPC64MOVBstorezero
-	OpPPC64MOVHstorezero
-	OpPPC64MOVWstorezero
-	OpPPC64MOVDstorezero
-	OpPPC64MOVDaddr
-	OpPPC64MOVDconst
-	OpPPC64FMOVDconst
-	OpPPC64FMOVSconst
-	OpPPC64FCMPU
-	OpPPC64CMP
-	OpPPC64CMPU
-	OpPPC64CMPW
-	OpPPC64CMPWU
-	OpPPC64CMPconst
-	OpPPC64CMPUconst
-	OpPPC64CMPWconst
-	OpPPC64CMPWUconst
-	OpPPC64Equal
-	OpPPC64NotEqual
-	OpPPC64LessThan
-	OpPPC64FLessThan
-	OpPPC64LessEqual
-	OpPPC64FLessEqual
-	OpPPC64GreaterThan
-	OpPPC64FGreaterThan
-	OpPPC64GreaterEqual
-	OpPPC64FGreaterEqual
-	OpPPC64LoweredGetClosurePtr
-	OpPPC64LoweredGetCallerSP
-	OpPPC64LoweredGetCallerPC
-	OpPPC64LoweredNilCheck
-	OpPPC64LoweredRound32F
-	OpPPC64LoweredRound64F
-	OpPPC64CALLstatic
-	OpPPC64CALLclosure
-	OpPPC64CALLinter
-	OpPPC64LoweredZero
-	OpPPC64LoweredMove
-	OpPPC64LoweredAtomicStore32
-	OpPPC64LoweredAtomicStore64
-	OpPPC64LoweredAtomicLoad8
-	OpPPC64LoweredAtomicLoad32
-	OpPPC64LoweredAtomicLoad64
-	OpPPC64LoweredAtomicLoadPtr
-	OpPPC64LoweredAtomicAdd32
-	OpPPC64LoweredAtomicAdd64
-	OpPPC64LoweredAtomicExchange32
-	OpPPC64LoweredAtomicExchange64
-	OpPPC64LoweredAtomicCas64
-	OpPPC64LoweredAtomicCas32
-	OpPPC64LoweredAtomicAnd8
-	OpPPC64LoweredAtomicOr8
-	OpPPC64LoweredWB
-	OpPPC64LoweredPanicBoundsA
-	OpPPC64LoweredPanicBoundsB
-	OpPPC64LoweredPanicBoundsC
-	OpPPC64InvertFlags
-	OpPPC64FlagEQ
-	OpPPC64FlagLT
-	OpPPC64FlagGT
+	OpPPC64ADD                     Op = 1406
+	OpPPC64ADDconst                Op = 1407
+	OpPPC64FADD                    Op = 1408
+	OpPPC64FADDS                   Op = 1409
+	OpPPC64SUB                     Op = 1410
+	OpPPC64FSUB                    Op = 1411
+	OpPPC64FSUBS                   Op = 1412
+	OpPPC64MULLD                   Op = 1413
+	OpPPC64MULLW                   Op = 1414
+	OpPPC64MULHD                   Op = 1415
+	OpPPC64MULHW                   Op = 1416
+	OpPPC64MULHDU                  Op = 1417
+	OpPPC64MULHWU                  Op = 1418
+	OpPPC64LoweredMuluhilo         Op = 1419
+	OpPPC64FMUL                    Op = 1420
+	OpPPC64FMULS                   Op = 1421
+	OpPPC64FMADD                   Op = 1422
+	OpPPC64FMADDS                  Op = 1423
+	OpPPC64FMSUB                   Op = 1424
+	OpPPC64FMSUBS                  Op = 1425
+	OpPPC64SRAD                    Op = 1426
+	OpPPC64SRAW                    Op = 1427
+	OpPPC64SRD                     Op = 1428
+	OpPPC64SRW                     Op = 1429
+	OpPPC64SLD                     Op = 1430
+	OpPPC64SLW                     Op = 1431
+	OpPPC64ROTL                    Op = 1432
+	OpPPC64ROTLW                   Op = 1433
+	OpPPC64LoweredAdd64Carry       Op = 1434
+	OpPPC64ADDconstForCarry        Op = 1435
+	OpPPC64MaskIfNotCarry          Op = 1436
+	OpPPC64SRADconst               Op = 1437
+	OpPPC64SRAWconst               Op = 1438
+	OpPPC64SRDconst                Op = 1439
+	OpPPC64SRWconst                Op = 1440
+	OpPPC64SLDconst                Op = 1441
+	OpPPC64SLWconst                Op = 1442
+	OpPPC64ROTLconst               Op = 1443
+	OpPPC64ROTLWconst              Op = 1444
+	OpPPC64CNTLZD                  Op = 1445
+	OpPPC64CNTLZW                  Op = 1446
+	OpPPC64CNTTZD                  Op = 1447
+	OpPPC64CNTTZW                  Op = 1448
+	OpPPC64POPCNTD                 Op = 1449
+	OpPPC64POPCNTW                 Op = 1450
+	OpPPC64POPCNTB                 Op = 1451
+	OpPPC64FDIV                    Op = 1452
+	OpPPC64FDIVS                   Op = 1453
+	OpPPC64DIVD                    Op = 1454
+	OpPPC64DIVW                    Op = 1455
+	OpPPC64DIVDU                   Op = 1456
+	OpPPC64DIVWU                   Op = 1457
+	OpPPC64FCTIDZ                  Op = 1458
+	OpPPC64FCTIWZ                  Op = 1459
+	OpPPC64FCFID                   Op = 1460
+	OpPPC64FCFIDS                  Op = 1461
+	OpPPC64FRSP                    Op = 1462
+	OpPPC64MFVSRD                  Op = 1463
+	OpPPC64MTVSRD                  Op = 1464
+	OpPPC64AND                     Op = 1465
+	OpPPC64ANDN                    Op = 1466
+	OpPPC64ANDCC                   Op = 1467
+	OpPPC64OR                      Op = 1468
+	OpPPC64ORN                     Op = 1469
+	OpPPC64ORCC                    Op = 1470
+	OpPPC64NOR                     Op = 1471
+	OpPPC64XOR                     Op = 1472
+	OpPPC64XORCC                   Op = 1473
+	OpPPC64EQV                     Op = 1474
+	OpPPC64NEG                     Op = 1475
+	OpPPC64FNEG                    Op = 1476
+	OpPPC64FSQRT                   Op = 1477
+	OpPPC64FSQRTS                  Op = 1478
+	OpPPC64FFLOOR                  Op = 1479
+	OpPPC64FCEIL                   Op = 1480
+	OpPPC64FTRUNC                  Op = 1481
+	OpPPC64FROUND                  Op = 1482
+	OpPPC64FABS                    Op = 1483
+	OpPPC64FNABS                   Op = 1484
+	OpPPC64FCPSGN                  Op = 1485
+	OpPPC64ORconst                 Op = 1486
+	OpPPC64XORconst                Op = 1487
+	OpPPC64ANDconst                Op = 1488
+	OpPPC64ANDCCconst              Op = 1489
+	OpPPC64MOVBreg                 Op = 1490
+	OpPPC64MOVBZreg                Op = 1491
+	OpPPC64MOVHreg                 Op = 1492
+	OpPPC64MOVHZreg                Op = 1493
+	OpPPC64MOVWreg                 Op = 1494
+	OpPPC64MOVWZreg                Op = 1495
+	OpPPC64MOVBZload               Op = 1496
+	OpPPC64MOVHload                Op = 1497
+	OpPPC64MOVHZload               Op = 1498
+	OpPPC64MOVWload                Op = 1499
+	OpPPC64MOVWZload               Op = 1500
+	OpPPC64MOVDload                Op = 1501
+	OpPPC64MOVDBRload              Op = 1502
+	OpPPC64MOVWBRload              Op = 1503
+	OpPPC64MOVHBRload              Op = 1504
+	OpPPC64MOVBZloadidx            Op = 1505
+	OpPPC64MOVHloadidx             Op = 1506
+	OpPPC64MOVHZloadidx            Op = 1507
+	OpPPC64MOVWloadidx             Op = 1508
+	OpPPC64MOVWZloadidx            Op = 1509
+	OpPPC64MOVDloadidx             Op = 1510
+	OpPPC64MOVHBRloadidx           Op = 1511
+	OpPPC64MOVWBRloadidx           Op = 1512
+	OpPPC64MOVDBRloadidx           Op = 1513
+	OpPPC64FMOVDloadidx            Op = 1514
+	OpPPC64FMOVSloadidx            Op = 1515
+	OpPPC64MOVDBRstore             Op = 1516
+	OpPPC64MOVWBRstore             Op = 1517
+	OpPPC64MOVHBRstore             Op = 1518
+	OpPPC64FMOVDload               Op = 1519
+	OpPPC64FMOVSload               Op = 1520
+	OpPPC64MOVBstore               Op = 1521
+	OpPPC64MOVHstore               Op = 1522
+	OpPPC64MOVWstore               Op = 1523
+	OpPPC64MOVDstore               Op = 1524
+	OpPPC64FMOVDstore              Op = 1525
+	OpPPC64FMOVSstore              Op = 1526
+	OpPPC64MOVBstoreidx            Op = 1527
+	OpPPC64MOVHstoreidx            Op = 1528
+	OpPPC64MOVWstoreidx            Op = 1529
+	OpPPC64MOVDstoreidx            Op = 1530
+	OpPPC64FMOVDstoreidx           Op = 1531
+	OpPPC64FMOVSstoreidx           Op = 1532
+	OpPPC64MOVHBRstoreidx          Op = 1533
+	OpPPC64MOVWBRstoreidx          Op = 1534
+	OpPPC64MOVDBRstoreidx          Op = 1535
+	OpPPC64MOVBstorezero           Op = 1536
+	OpPPC64MOVHstorezero           Op = 1537
+	OpPPC64MOVWstorezero           Op = 1538
+	OpPPC64MOVDstorezero           Op = 1539
+	OpPPC64MOVDaddr                Op = 1540
+	OpPPC64MOVDconst               Op = 1541
+	OpPPC64FMOVDconst              Op = 1542
+	OpPPC64FMOVSconst              Op = 1543
+	OpPPC64FCMPU                   Op = 1544
+	OpPPC64CMP                     Op = 1545
+	OpPPC64CMPU                    Op = 1546
+	OpPPC64CMPW                    Op = 1547
+	OpPPC64CMPWU                   Op = 1548
+	OpPPC64CMPconst                Op = 1549
+	OpPPC64CMPUconst               Op = 1550
+	OpPPC64CMPWconst               Op = 1551
+	OpPPC64CMPWUconst              Op = 1552
+	OpPPC64Equal                   Op = 1553
+	OpPPC64NotEqual                Op = 1554
+	OpPPC64LessThan                Op = 1555
+	OpPPC64FLessThan               Op = 1556
+	OpPPC64LessEqual               Op = 1557
+	OpPPC64FLessEqual              Op = 1558
+	OpPPC64GreaterThan             Op = 1559
+	OpPPC64FGreaterThan            Op = 1560
+	OpPPC64GreaterEqual            Op = 1561
+	OpPPC64FGreaterEqual           Op = 1562
+	OpPPC64LoweredGetClosurePtr    Op = 1563
+	OpPPC64LoweredGetCallerSP      Op = 1564
+	OpPPC64LoweredGetCallerPC      Op = 1565
+	OpPPC64LoweredNilCheck         Op = 1566
+	OpPPC64LoweredRound32F         Op = 1567
+	OpPPC64LoweredRound64F         Op = 1568
+	OpPPC64CALLstatic              Op = 1569
+	OpPPC64CALLclosure             Op = 1570
+	OpPPC64CALLinter               Op = 1571
+	OpPPC64LoweredZero             Op = 1572
+	OpPPC64LoweredMove             Op = 1573
+	OpPPC64LoweredAtomicStore32    Op = 1574
+	OpPPC64LoweredAtomicStore64    Op = 1575
+	OpPPC64LoweredAtomicLoad8      Op = 1576
+	OpPPC64LoweredAtomicLoad32     Op = 1577
+	OpPPC64LoweredAtomicLoad64     Op = 1578
+	OpPPC64LoweredAtomicLoadPtr    Op = 1579
+	OpPPC64LoweredAtomicAdd32      Op = 1580
+	OpPPC64LoweredAtomicAdd64      Op = 1581
+	OpPPC64LoweredAtomicExchange32 Op = 1582
+	OpPPC64LoweredAtomicExchange64 Op = 1583
+	OpPPC64LoweredAtomicCas64      Op = 1584
+	OpPPC64LoweredAtomicCas32      Op = 1585
+	OpPPC64LoweredAtomicAnd8       Op = 1586
+	OpPPC64LoweredAtomicOr8        Op = 1587
+	OpPPC64LoweredWB               Op = 1588
+	OpPPC64LoweredPanicBoundsA     Op = 1589
+	OpPPC64LoweredPanicBoundsB     Op = 1590
+	OpPPC64LoweredPanicBoundsC     Op = 1591
+	OpPPC64InvertFlags             Op = 1592
+	OpPPC64FlagEQ                  Op = 1593
+	OpPPC64FlagLT                  Op = 1594
+	OpPPC64FlagGT                  Op = 1595
 
-	OpS390XFADDS
-	OpS390XFADD
-	OpS390XFSUBS
-	OpS390XFSUB
-	OpS390XFMULS
-	OpS390XFMUL
-	OpS390XFDIVS
-	OpS390XFDIV
-	OpS390XFNEGS
-	OpS390XFNEG
-	OpS390XFMADDS
-	OpS390XFMADD
-	OpS390XFMSUBS
-	OpS390XFMSUB
-	OpS390XLPDFR
-	OpS390XLNDFR
-	OpS390XCPSDR
-	OpS390XFIDBR
-	OpS390XFMOVSload
-	OpS390XFMOVDload
-	OpS390XFMOVSconst
-	OpS390XFMOVDconst
-	OpS390XFMOVSloadidx
-	OpS390XFMOVDloadidx
-	OpS390XFMOVSstore
-	OpS390XFMOVDstore
-	OpS390XFMOVSstoreidx
-	OpS390XFMOVDstoreidx
-	OpS390XADD
-	OpS390XADDW
-	OpS390XADDconst
-	OpS390XADDWconst
-	OpS390XADDload
-	OpS390XADDWload
-	OpS390XSUB
-	OpS390XSUBW
-	OpS390XSUBconst
-	OpS390XSUBWconst
-	OpS390XSUBload
-	OpS390XSUBWload
-	OpS390XMULLD
-	OpS390XMULLW
-	OpS390XMULLDconst
-	OpS390XMULLWconst
-	OpS390XMULLDload
-	OpS390XMULLWload
-	OpS390XMULHD
-	OpS390XMULHDU
-	OpS390XDIVD
-	OpS390XDIVW
-	OpS390XDIVDU
-	OpS390XDIVWU
-	OpS390XMODD
-	OpS390XMODW
-	OpS390XMODDU
-	OpS390XMODWU
-	OpS390XAND
-	OpS390XANDW
-	OpS390XANDconst
-	OpS390XANDWconst
-	OpS390XANDload
-	OpS390XANDWload
-	OpS390XOR
-	OpS390XORW
-	OpS390XORconst
-	OpS390XORWconst
-	OpS390XORload
-	OpS390XORWload
-	OpS390XXOR
-	OpS390XXORW
-	OpS390XXORconst
-	OpS390XXORWconst
-	OpS390XXORload
-	OpS390XXORWload
-	OpS390XADDC
-	OpS390XADDCconst
-	OpS390XADDE
-	OpS390XSUBC
-	OpS390XSUBE
-	OpS390XCMP
-	OpS390XCMPW
-	OpS390XCMPU
-	OpS390XCMPWU
-	OpS390XCMPconst
-	OpS390XCMPWconst
-	OpS390XCMPUconst
-	OpS390XCMPWUconst
-	OpS390XFCMPS
-	OpS390XFCMP
-	OpS390XSLD
-	OpS390XSLW
-	OpS390XSLDconst
-	OpS390XSLWconst
-	OpS390XSRD
-	OpS390XSRW
-	OpS390XSRDconst
-	OpS390XSRWconst
-	OpS390XSRAD
-	OpS390XSRAW
-	OpS390XSRADconst
-	OpS390XSRAWconst
-	OpS390XRLLG
-	OpS390XRLL
-	OpS390XRLLGconst
-	OpS390XRLLconst
-	OpS390XNEG
-	OpS390XNEGW
-	OpS390XNOT
-	OpS390XNOTW
-	OpS390XFSQRT
-	OpS390XMOVDEQ
-	OpS390XMOVDNE
-	OpS390XMOVDLT
-	OpS390XMOVDLE
-	OpS390XMOVDGT
-	OpS390XMOVDGE
-	OpS390XMOVDGTnoinv
-	OpS390XMOVDGEnoinv
-	OpS390XMOVBreg
-	OpS390XMOVBZreg
-	OpS390XMOVHreg
-	OpS390XMOVHZreg
-	OpS390XMOVWreg
-	OpS390XMOVWZreg
-	OpS390XMOVDreg
-	OpS390XMOVDnop
-	OpS390XMOVDconst
-	OpS390XLDGR
-	OpS390XLGDR
-	OpS390XCFDBRA
-	OpS390XCGDBRA
-	OpS390XCFEBRA
-	OpS390XCGEBRA
-	OpS390XCEFBRA
-	OpS390XCDFBRA
-	OpS390XCEGBRA
-	OpS390XCDGBRA
-	OpS390XLEDBR
-	OpS390XLDEBR
-	OpS390XMOVDaddr
-	OpS390XMOVDaddridx
-	OpS390XMOVBZload
-	OpS390XMOVBload
-	OpS390XMOVHZload
-	OpS390XMOVHload
-	OpS390XMOVWZload
-	OpS390XMOVWload
-	OpS390XMOVDload
-	OpS390XMOVWBR
-	OpS390XMOVDBR
-	OpS390XMOVHBRload
-	OpS390XMOVWBRload
-	OpS390XMOVDBRload
-	OpS390XMOVBstore
-	OpS390XMOVHstore
-	OpS390XMOVWstore
-	OpS390XMOVDstore
-	OpS390XMOVHBRstore
-	OpS390XMOVWBRstore
-	OpS390XMOVDBRstore
-	OpS390XMVC
-	OpS390XMOVBZloadidx
-	OpS390XMOVBloadidx
-	OpS390XMOVHZloadidx
-	OpS390XMOVHloadidx
-	OpS390XMOVWZloadidx
-	OpS390XMOVWloadidx
-	OpS390XMOVDloadidx
-	OpS390XMOVHBRloadidx
-	OpS390XMOVWBRloadidx
-	OpS390XMOVDBRloadidx
-	OpS390XMOVBstoreidx
-	OpS390XMOVHstoreidx
-	OpS390XMOVWstoreidx
-	OpS390XMOVDstoreidx
-	OpS390XMOVHBRstoreidx
-	OpS390XMOVWBRstoreidx
-	OpS390XMOVDBRstoreidx
-	OpS390XMOVBstoreconst
-	OpS390XMOVHstoreconst
-	OpS390XMOVWstoreconst
-	OpS390XMOVDstoreconst
-	OpS390XCLEAR
-	OpS390XCALLstatic
-	OpS390XCALLclosure
-	OpS390XCALLinter
-	OpS390XInvertFlags
-	OpS390XLoweredGetG
-	OpS390XLoweredGetClosurePtr
-	OpS390XLoweredGetCallerSP
-	OpS390XLoweredGetCallerPC
-	OpS390XLoweredNilCheck
-	OpS390XLoweredRound32F
-	OpS390XLoweredRound64F
-	OpS390XLoweredWB
-	OpS390XLoweredPanicBoundsA
-	OpS390XLoweredPanicBoundsB
-	OpS390XLoweredPanicBoundsC
-	OpS390XFlagEQ
-	OpS390XFlagLT
-	OpS390XFlagGT
-	OpS390XFlagOV
-	OpS390XMOVBZatomicload
-	OpS390XMOVWZatomicload
-	OpS390XMOVDatomicload
-	OpS390XMOVWatomicstore
-	OpS390XMOVDatomicstore
-	OpS390XLAA
-	OpS390XLAAG
-	OpS390XAddTupleFirst32
-	OpS390XAddTupleFirst64
-	OpS390XLoweredAtomicCas32
-	OpS390XLoweredAtomicCas64
-	OpS390XLoweredAtomicExchange32
-	OpS390XLoweredAtomicExchange64
-	OpS390XFLOGR
-	OpS390XPOPCNT
-	OpS390XSumBytes2
-	OpS390XSumBytes4
-	OpS390XSumBytes8
-	OpS390XSTMG2
-	OpS390XSTMG3
-	OpS390XSTMG4
-	OpS390XSTM2
-	OpS390XSTM3
-	OpS390XSTM4
-	OpS390XLoweredMove
-	OpS390XLoweredZero
+	OpS390XFADDS                   Op = 1596
+	OpS390XFADD                    Op = 1597
+	OpS390XFSUBS                   Op = 1598
+	OpS390XFSUB                    Op = 1599
+	OpS390XFMULS                   Op = 1600
+	OpS390XFMUL                    Op = 1601
+	OpS390XFDIVS                   Op = 1602
+	OpS390XFDIV                    Op = 1603
+	OpS390XFNEGS                   Op = 1604
+	OpS390XFNEG                    Op = 1605
+	OpS390XFMADDS                  Op = 1606
+	OpS390XFMADD                   Op = 1607
+	OpS390XFMSUBS                  Op = 1608
+	OpS390XFMSUB                   Op = 1609
+	OpS390XLPDFR                   Op = 1610
+	OpS390XLNDFR                   Op = 1611
+	OpS390XCPSDR                   Op = 1612
+	OpS390XFIDBR                   Op = 1613
+	OpS390XFMOVSload               Op = 1614
+	OpS390XFMOVDload               Op = 1615
+	OpS390XFMOVSconst              Op = 1616
+	OpS390XFMOVDconst              Op = 1617
+	OpS390XFMOVSloadidx            Op = 1618
+	OpS390XFMOVDloadidx            Op = 1619
+	OpS390XFMOVSstore              Op = 1620
+	OpS390XFMOVDstore              Op = 1621
+	OpS390XFMOVSstoreidx           Op = 1622
+	OpS390XFMOVDstoreidx           Op = 1623
+	OpS390XADD                     Op = 1624
+	OpS390XADDW                    Op = 1625
+	OpS390XADDconst                Op = 1626
+	OpS390XADDWconst               Op = 1627
+	OpS390XADDload                 Op = 1628
+	OpS390XADDWload                Op = 1629
+	OpS390XSUB                     Op = 1630
+	OpS390XSUBW                    Op = 1631
+	OpS390XSUBconst                Op = 1632
+	OpS390XSUBWconst               Op = 1633
+	OpS390XSUBload                 Op = 1634
+	OpS390XSUBWload                Op = 1635
+	OpS390XMULLD                   Op = 1636
+	OpS390XMULLW                   Op = 1637
+	OpS390XMULLDconst              Op = 1638
+	OpS390XMULLWconst              Op = 1639
+	OpS390XMULLDload               Op = 1640
+	OpS390XMULLWload               Op = 1641
+	OpS390XMULHD                   Op = 1642
+	OpS390XMULHDU                  Op = 1643
+	OpS390XDIVD                    Op = 1644
+	OpS390XDIVW                    Op = 1645
+	OpS390XDIVDU                   Op = 1646
+	OpS390XDIVWU                   Op = 1647
+	OpS390XMODD                    Op = 1648
+	OpS390XMODW                    Op = 1649
+	OpS390XMODDU                   Op = 1650
+	OpS390XMODWU                   Op = 1651
+	OpS390XAND                     Op = 1652
+	OpS390XANDW                    Op = 1653
+	OpS390XANDconst                Op = 1654
+	OpS390XANDWconst               Op = 1655
+	OpS390XANDload                 Op = 1656
+	OpS390XANDWload                Op = 1657
+	OpS390XOR                      Op = 1658
+	OpS390XORW                     Op = 1659
+	OpS390XORconst                 Op = 1660
+	OpS390XORWconst                Op = 1661
+	OpS390XORload                  Op = 1662
+	OpS390XORWload                 Op = 1663
+	OpS390XXOR                     Op = 1664
+	OpS390XXORW                    Op = 1665
+	OpS390XXORconst                Op = 1666
+	OpS390XXORWconst               Op = 1667
+	OpS390XXORload                 Op = 1668
+	OpS390XXORWload                Op = 1669
+	OpS390XADDC                    Op = 1670
+	OpS390XADDCconst               Op = 1671
+	OpS390XADDE                    Op = 1672
+	OpS390XSUBC                    Op = 1673
+	OpS390XSUBE                    Op = 1674
+	OpS390XCMP                     Op = 1675
+	OpS390XCMPW                    Op = 1676
+	OpS390XCMPU                    Op = 1677
+	OpS390XCMPWU                   Op = 1678
+	OpS390XCMPconst                Op = 1679
+	OpS390XCMPWconst               Op = 1680
+	OpS390XCMPUconst               Op = 1681
+	OpS390XCMPWUconst              Op = 1682
+	OpS390XFCMPS                   Op = 1683
+	OpS390XFCMP                    Op = 1684
+	OpS390XSLD                     Op = 1685
+	OpS390XSLW                     Op = 1686
+	OpS390XSLDconst                Op = 1687
+	OpS390XSLWconst                Op = 1688
+	OpS390XSRD                     Op = 1689
+	OpS390XSRW                     Op = 1690
+	OpS390XSRDconst                Op = 1691
+	OpS390XSRWconst                Op = 1692
+	OpS390XSRAD                    Op = 1693
+	OpS390XSRAW                    Op = 1694
+	OpS390XSRADconst               Op = 1695
+	OpS390XSRAWconst               Op = 1696
+	OpS390XRLLG                    Op = 1697
+	OpS390XRLL                     Op = 1698
+	OpS390XRLLGconst               Op = 1699
+	OpS390XRLLconst                Op = 1700
+	OpS390XNEG                     Op = 1701
+	OpS390XNEGW                    Op = 1702
+	OpS390XNOT                     Op = 1703
+	OpS390XNOTW                    Op = 1704
+	OpS390XFSQRT                   Op = 1705
+	OpS390XMOVDEQ                  Op = 1706
+	OpS390XMOVDNE                  Op = 1707
+	OpS390XMOVDLT                  Op = 1708
+	OpS390XMOVDLE                  Op = 1709
+	OpS390XMOVDGT                  Op = 1710
+	OpS390XMOVDGE                  Op = 1711
+	OpS390XMOVDGTnoinv             Op = 1712
+	OpS390XMOVDGEnoinv             Op = 1713
+	OpS390XMOVBreg                 Op = 1714
+	OpS390XMOVBZreg                Op = 1715
+	OpS390XMOVHreg                 Op = 1716
+	OpS390XMOVHZreg                Op = 1717
+	OpS390XMOVWreg                 Op = 1718
+	OpS390XMOVWZreg                Op = 1719
+	OpS390XMOVDreg                 Op = 1720
+	OpS390XMOVDnop                 Op = 1721
+	OpS390XMOVDconst               Op = 1722
+	OpS390XLDGR                    Op = 1723
+	OpS390XLGDR                    Op = 1724
+	OpS390XCFDBRA                  Op = 1725
+	OpS390XCGDBRA                  Op = 1726
+	OpS390XCFEBRA                  Op = 1727
+	OpS390XCGEBRA                  Op = 1728
+	OpS390XCEFBRA                  Op = 1729
+	OpS390XCDFBRA                  Op = 1730
+	OpS390XCEGBRA                  Op = 1731
+	OpS390XCDGBRA                  Op = 1732
+	OpS390XLEDBR                   Op = 1733
+	OpS390XLDEBR                   Op = 1734
+	OpS390XMOVDaddr                Op = 1735
+	OpS390XMOVDaddridx             Op = 1736
+	OpS390XMOVBZload               Op = 1737
+	OpS390XMOVBload                Op = 1738
+	OpS390XMOVHZload               Op = 1739
+	OpS390XMOVHload                Op = 1740
+	OpS390XMOVWZload               Op = 1741
+	OpS390XMOVWload                Op = 1742
+	OpS390XMOVDload                Op = 1743
+	OpS390XMOVWBR                  Op = 1744
+	OpS390XMOVDBR                  Op = 1745
+	OpS390XMOVHBRload              Op = 1746
+	OpS390XMOVWBRload              Op = 1747
+	OpS390XMOVDBRload              Op = 1748
+	OpS390XMOVBstore               Op = 1749
+	OpS390XMOVHstore               Op = 1750
+	OpS390XMOVWstore               Op = 1751
+	OpS390XMOVDstore               Op = 1752
+	OpS390XMOVHBRstore             Op = 1753
+	OpS390XMOVWBRstore             Op = 1754
+	OpS390XMOVDBRstore             Op = 1755
+	OpS390XMVC                     Op = 1756
+	OpS390XMOVBZloadidx            Op = 1757
+	OpS390XMOVBloadidx             Op = 1758
+	OpS390XMOVHZloadidx            Op = 1759
+	OpS390XMOVHloadidx             Op = 1760
+	OpS390XMOVWZloadidx            Op = 1761
+	OpS390XMOVWloadidx             Op = 1762
+	OpS390XMOVDloadidx             Op = 1763
+	OpS390XMOVHBRloadidx           Op = 1764
+	OpS390XMOVWBRloadidx           Op = 1765
+	OpS390XMOVDBRloadidx           Op = 1766
+	OpS390XMOVBstoreidx            Op = 1767
+	OpS390XMOVHstoreidx            Op = 1768
+	OpS390XMOVWstoreidx            Op = 1769
+	OpS390XMOVDstoreidx            Op = 1770
+	OpS390XMOVHBRstoreidx          Op = 1771
+	OpS390XMOVWBRstoreidx          Op = 1772
+	OpS390XMOVDBRstoreidx          Op = 1773
+	OpS390XMOVBstoreconst          Op = 1774
+	OpS390XMOVHstoreconst          Op = 1775
+	OpS390XMOVWstoreconst          Op = 1776
+	OpS390XMOVDstoreconst          Op = 1777
+	OpS390XCLEAR                   Op = 1778
+	OpS390XCALLstatic              Op = 1779
+	OpS390XCALLclosure             Op = 1780
+	OpS390XCALLinter               Op = 1781
+	OpS390XInvertFlags             Op = 1782
+	OpS390XLoweredGetG             Op = 1783
+	OpS390XLoweredGetClosurePtr    Op = 1784
+	OpS390XLoweredGetCallerSP      Op = 1785
+	OpS390XLoweredGetCallerPC      Op = 1786
+	OpS390XLoweredNilCheck         Op = 1787
+	OpS390XLoweredRound32F         Op = 1788
+	OpS390XLoweredRound64F         Op = 1789
+	OpS390XLoweredWB               Op = 1790
+	OpS390XLoweredPanicBoundsA     Op = 1791
+	OpS390XLoweredPanicBoundsB     Op = 1792
+	OpS390XLoweredPanicBoundsC     Op = 1793
+	OpS390XFlagEQ                  Op = 1794
+	OpS390XFlagLT                  Op = 1795
+	OpS390XFlagGT                  Op = 1796
+	OpS390XFlagOV                  Op = 1797
+	OpS390XMOVBZatomicload         Op = 1798
+	OpS390XMOVWZatomicload         Op = 1799
+	OpS390XMOVDatomicload          Op = 1800
+	OpS390XMOVWatomicstore         Op = 1801
+	OpS390XMOVDatomicstore         Op = 1802
+	OpS390XLAA                     Op = 1803
+	OpS390XLAAG                    Op = 1804
+	OpS390XAddTupleFirst32         Op = 1805
+	OpS390XAddTupleFirst64         Op = 1806
+	OpS390XLoweredAtomicCas32      Op = 1807
+	OpS390XLoweredAtomicCas64      Op = 1808
+	OpS390XLoweredAtomicExchange32 Op = 1809
+	OpS390XLoweredAtomicExchange64 Op = 1810
+	OpS390XFLOGR                   Op = 1811
+	OpS390XPOPCNT                  Op = 1812
+	OpS390XSumBytes2               Op = 1813
+	OpS390XSumBytes4               Op = 1814
+	OpS390XSumBytes8               Op = 1815
+	OpS390XSTMG2                   Op = 1816
+	OpS390XSTMG3                   Op = 1817
+	OpS390XSTMG4                   Op = 1818
+	OpS390XSTM2                    Op = 1819
+	OpS390XSTM3                    Op = 1820
+	OpS390XSTM4                    Op = 1821
+	OpS390XLoweredMove             Op = 1822
+	OpS390XLoweredZero             Op = 1823
 
-	OpWasmLoweredStaticCall
-	OpWasmLoweredClosureCall
-	OpWasmLoweredInterCall
-	OpWasmLoweredAddr
-	OpWasmLoweredMove
-	OpWasmLoweredZero
-	OpWasmLoweredGetClosurePtr
-	OpWasmLoweredGetCallerPC
-	OpWasmLoweredGetCallerSP
-	OpWasmLoweredNilCheck
-	OpWasmLoweredWB
-	OpWasmLoweredRound32F
-	OpWasmLoweredConvert
-	OpWasmSelect
-	OpWasmI64Load8U
-	OpWasmI64Load8S
-	OpWasmI64Load16U
-	OpWasmI64Load16S
-	OpWasmI64Load32U
-	OpWasmI64Load32S
-	OpWasmI64Load
-	OpWasmI64Store8
-	OpWasmI64Store16
-	OpWasmI64Store32
-	OpWasmI64Store
-	OpWasmF32Load
-	OpWasmF64Load
-	OpWasmF32Store
-	OpWasmF64Store
-	OpWasmI64Const
-	OpWasmF64Const
-	OpWasmI64Eqz
-	OpWasmI64Eq
-	OpWasmI64Ne
-	OpWasmI64LtS
-	OpWasmI64LtU
-	OpWasmI64GtS
-	OpWasmI64GtU
-	OpWasmI64LeS
-	OpWasmI64LeU
-	OpWasmI64GeS
-	OpWasmI64GeU
-	OpWasmF64Eq
-	OpWasmF64Ne
-	OpWasmF64Lt
-	OpWasmF64Gt
-	OpWasmF64Le
-	OpWasmF64Ge
-	OpWasmI64Add
-	OpWasmI64AddConst
-	OpWasmI64Sub
-	OpWasmI64Mul
-	OpWasmI64DivS
-	OpWasmI64DivU
-	OpWasmI64RemS
-	OpWasmI64RemU
-	OpWasmI64And
-	OpWasmI64Or
-	OpWasmI64Xor
-	OpWasmI64Shl
-	OpWasmI64ShrS
-	OpWasmI64ShrU
-	OpWasmF64Neg
-	OpWasmF64Add
-	OpWasmF64Sub
-	OpWasmF64Mul
-	OpWasmF64Div
-	OpWasmI64TruncSatF64S
-	OpWasmI64TruncSatF64U
-	OpWasmF64ConvertI64S
-	OpWasmF64ConvertI64U
-	OpWasmI64Extend8S
-	OpWasmI64Extend16S
-	OpWasmI64Extend32S
-	OpWasmF64Sqrt
-	OpWasmF64Trunc
-	OpWasmF64Ceil
-	OpWasmF64Floor
-	OpWasmF64Nearest
-	OpWasmF64Abs
-	OpWasmF64Copysign
-	OpWasmI64Ctz
-	OpWasmI64Clz
-	OpWasmI64Rotl
-	OpWasmI64Popcnt
+	OpWasmLoweredStaticCall    Op = 1824
+	OpWasmLoweredClosureCall   Op = 1825
+	OpWasmLoweredInterCall     Op = 1826
+	OpWasmLoweredAddr          Op = 1827
+	OpWasmLoweredMove          Op = 1828
+	OpWasmLoweredZero          Op = 1829
+	OpWasmLoweredGetClosurePtr Op = 1830
+	OpWasmLoweredGetCallerPC   Op = 1831
+	OpWasmLoweredGetCallerSP   Op = 1832
+	OpWasmLoweredNilCheck      Op = 1833
+	OpWasmLoweredWB            Op = 1834
+	OpWasmLoweredRound32F      Op = 1835
+	OpWasmLoweredConvert       Op = 1836
+	OpWasmSelect               Op = 1837
+	OpWasmI64Load8U            Op = 1838
+	OpWasmI64Load8S            Op = 1839
+	OpWasmI64Load16U           Op = 1840
+	OpWasmI64Load16S           Op = 1841
+	OpWasmI64Load32U           Op = 1842
+	OpWasmI64Load32S           Op = 1843
+	OpWasmI64Load              Op = 1844
+	OpWasmI64Store8            Op = 1845
+	OpWasmI64Store16           Op = 1846
+	OpWasmI64Store32           Op = 1847
+	OpWasmI64Store             Op = 1848
+	OpWasmF32Load              Op = 1849
+	OpWasmF64Load              Op = 1850
+	OpWasmF32Store             Op = 1851
+	OpWasmF64Store             Op = 1852
+	OpWasmI64Const             Op = 1853
+	OpWasmF64Const             Op = 1854
+	OpWasmI64Eqz               Op = 1855
+	OpWasmI64Eq                Op = 1856
+	OpWasmI64Ne                Op = 1857
+	OpWasmI64LtS               Op = 1858
+	OpWasmI64LtU               Op = 1859
+	OpWasmI64GtS               Op = 1860
+	OpWasmI64GtU               Op = 1861
+	OpWasmI64LeS               Op = 1862
+	OpWasmI64LeU               Op = 1863
+	OpWasmI64GeS               Op = 1864
+	OpWasmI64GeU               Op = 1865
+	OpWasmF64Eq                Op = 1866
+	OpWasmF64Ne                Op = 1867
+	OpWasmF64Lt                Op = 1868
+	OpWasmF64Gt                Op = 1869
+	OpWasmF64Le                Op = 1870
+	OpWasmF64Ge                Op = 1871
+	OpWasmI64Add               Op = 1872
+	OpWasmI64AddConst          Op = 1873
+	OpWasmI64Sub               Op = 1874
+	OpWasmI64Mul               Op = 1875
+	OpWasmI64DivS              Op = 1876
+	OpWasmI64DivU              Op = 1877
+	OpWasmI64RemS              Op = 1878
+	OpWasmI64RemU              Op = 1879
+	OpWasmI64And               Op = 1880
+	OpWasmI64Or                Op = 1881
+	OpWasmI64Xor               Op = 1882
+	OpWasmI64Shl               Op = 1883
+	OpWasmI64ShrS              Op = 1884
+	OpWasmI64ShrU              Op = 1885
+	OpWasmF64Neg               Op = 1886
+	OpWasmF64Add               Op = 1887
+	OpWasmF64Sub               Op = 1888
+	OpWasmF64Mul               Op = 1889
+	OpWasmF64Div               Op = 1890
+	OpWasmI64TruncSatF64S      Op = 1891
+	OpWasmI64TruncSatF64U      Op = 1892
+	OpWasmF64ConvertI64S       Op = 1893
+	OpWasmF64ConvertI64U       Op = 1894
+	OpWasmI64Extend8S          Op = 1895
+	OpWasmI64Extend16S         Op = 1896
+	OpWasmI64Extend32S         Op = 1897
+	OpWasmF64Sqrt              Op = 1898
+	OpWasmF64Trunc             Op = 1899
+	OpWasmF64Ceil              Op = 1900
+	OpWasmF64Floor             Op = 1901
+	OpWasmF64Nearest           Op = 1902
+	OpWasmF64Abs               Op = 1903
+	OpWasmF64Copysign          Op = 1904
+	OpWasmI64Ctz               Op = 1905
+	OpWasmI64Clz               Op = 1906
+	OpWasmI64Rotl              Op = 1907
+	OpWasmI64Popcnt            Op = 1908
 
-	OpAdd8
-	OpAdd16
-	OpAdd32
-	OpAdd64
-	OpAddPtr
-	OpAdd32F
-	OpAdd64F
-	OpSub8
-	OpSub16
-	OpSub32
-	OpSub64
-	OpSubPtr
-	OpSub32F
-	OpSub64F
-	OpMul8
-	OpMul16
-	OpMul32
-	OpMul64
-	OpMul32F
-	OpMul64F
-	OpDiv32F
-	OpDiv64F
-	OpHmul32
-	OpHmul32u
-	OpHmul64
-	OpHmul64u
-	OpMul32uhilo
-	OpMul64uhilo
-	OpMul32uover
-	OpMul64uover
-	OpAvg32u
-	OpAvg64u
-	OpDiv8
-	OpDiv8u
-	OpDiv16
-	OpDiv16u
-	OpDiv32
-	OpDiv32u
-	OpDiv64
-	OpDiv64u
-	OpDiv128u
-	OpMod8
-	OpMod8u
-	OpMod16
-	OpMod16u
-	OpMod32
-	OpMod32u
-	OpMod64
-	OpMod64u
-	OpAnd8
-	OpAnd16
-	OpAnd32
-	OpAnd64
-	OpOr8
-	OpOr16
-	OpOr32
-	OpOr64
-	OpXor8
-	OpXor16
-	OpXor32
-	OpXor64
-	OpLsh8x8
-	OpLsh8x16
-	OpLsh8x32
-	OpLsh8x64
-	OpLsh16x8
-	OpLsh16x16
-	OpLsh16x32
-	OpLsh16x64
-	OpLsh32x8
-	OpLsh32x16
-	OpLsh32x32
-	OpLsh32x64
-	OpLsh64x8
-	OpLsh64x16
-	OpLsh64x32
-	OpLsh64x64
-	OpRsh8x8
-	OpRsh8x16
-	OpRsh8x32
-	OpRsh8x64
-	OpRsh16x8
-	OpRsh16x16
-	OpRsh16x32
-	OpRsh16x64
-	OpRsh32x8
-	OpRsh32x16
-	OpRsh32x32
-	OpRsh32x64
-	OpRsh64x8
-	OpRsh64x16
-	OpRsh64x32
-	OpRsh64x64
-	OpRsh8Ux8
-	OpRsh8Ux16
-	OpRsh8Ux32
-	OpRsh8Ux64
-	OpRsh16Ux8
-	OpRsh16Ux16
-	OpRsh16Ux32
-	OpRsh16Ux64
-	OpRsh32Ux8
-	OpRsh32Ux16
-	OpRsh32Ux32
-	OpRsh32Ux64
-	OpRsh64Ux8
-	OpRsh64Ux16
-	OpRsh64Ux32
-	OpRsh64Ux64
-	OpEq8
-	OpEq16
-	OpEq32
-	OpEq64
-	OpEqPtr
-	OpEqInter
-	OpEqSlice
-	OpEq32F
-	OpEq64F
-	OpNeq8
-	OpNeq16
-	OpNeq32
-	OpNeq64
-	OpNeqPtr
-	OpNeqInter
-	OpNeqSlice
-	OpNeq32F
-	OpNeq64F
-	OpLess8
-	OpLess8U
-	OpLess16
-	OpLess16U
-	OpLess32
-	OpLess32U
-	OpLess64
-	OpLess64U
-	OpLess32F
-	OpLess64F
-	OpLeq8
-	OpLeq8U
-	OpLeq16
-	OpLeq16U
-	OpLeq32
-	OpLeq32U
-	OpLeq64
-	OpLeq64U
-	OpLeq32F
-	OpLeq64F
-	OpGreater8
-	OpGreater8U
-	OpGreater16
-	OpGreater16U
-	OpGreater32
-	OpGreater32U
-	OpGreater64
-	OpGreater64U
-	OpGreater32F
-	OpGreater64F
-	OpGeq8
-	OpGeq8U
-	OpGeq16
-	OpGeq16U
-	OpGeq32
-	OpGeq32U
-	OpGeq64
-	OpGeq64U
-	OpGeq32F
-	OpGeq64F
-	OpCondSelect
-	OpAndB
-	OpOrB
-	OpEqB
-	OpNeqB
-	OpNot
-	OpNeg8
-	OpNeg16
-	OpNeg32
-	OpNeg64
-	OpNeg32F
-	OpNeg64F
-	OpCom8
-	OpCom16
-	OpCom32
-	OpCom64
-	OpCtz8
-	OpCtz16
-	OpCtz32
-	OpCtz64
-	OpCtz8NonZero
-	OpCtz16NonZero
-	OpCtz32NonZero
-	OpCtz64NonZero
-	OpBitLen8
-	OpBitLen16
-	OpBitLen32
-	OpBitLen64
-	OpBswap32
-	OpBswap64
-	OpBitRev8
-	OpBitRev16
-	OpBitRev32
-	OpBitRev64
-	OpPopCount8
-	OpPopCount16
-	OpPopCount32
-	OpPopCount64
-	OpRotateLeft8
-	OpRotateLeft16
-	OpRotateLeft32
-	OpRotateLeft64
-	OpSqrt
-	OpFloor
-	OpCeil
-	OpTrunc
-	OpRound
-	OpRoundToEven
-	OpAbs
-	OpCopysign
-	OpPhi
-	OpCopy
-	OpConvert
-	OpConstBool
-	OpConstString
-	OpConstNil
-	OpConst8
-	OpConst16
-	OpConst32
-	OpConst64
-	OpConst32F
-	OpConst64F
-	OpConstInterface
-	OpConstSlice
-	OpInitMem
-	OpArg
-	OpAddr
-	OpLocalAddr
-	OpSP
-	OpSB
-	OpLoad
-	OpStore
-	OpMove
-	OpZero
-	OpStoreWB
-	OpMoveWB
-	OpZeroWB
-	OpWB
-	OpPanicBounds
-	OpPanicExtend
-	OpClosureCall
-	OpStaticCall
-	OpInterCall
-	OpSignExt8to16
-	OpSignExt8to32
-	OpSignExt8to64
-	OpSignExt16to32
-	OpSignExt16to64
-	OpSignExt32to64
-	OpZeroExt8to16
-	OpZeroExt8to32
-	OpZeroExt8to64
-	OpZeroExt16to32
-	OpZeroExt16to64
-	OpZeroExt32to64
-	OpTrunc16to8
-	OpTrunc32to8
-	OpTrunc32to16
-	OpTrunc64to8
-	OpTrunc64to16
-	OpTrunc64to32
-	OpCvt32to32F
-	OpCvt32to64F
-	OpCvt64to32F
-	OpCvt64to64F
-	OpCvt32Fto32
-	OpCvt32Fto64
-	OpCvt64Fto32
-	OpCvt64Fto64
-	OpCvt32Fto64F
-	OpCvt64Fto32F
-	OpRound32F
-	OpRound64F
-	OpIsNonNil
-	OpIsInBounds
-	OpIsSliceInBounds
-	OpNilCheck
-	OpGetG
-	OpGetClosurePtr
-	OpGetCallerPC
-	OpGetCallerSP
-	OpPtrIndex
-	OpOffPtr
-	OpSliceMake
-	OpSlicePtr
-	OpSliceLen
-	OpSliceCap
-	OpComplexMake
-	OpComplexReal
-	OpComplexImag
-	OpStringMake
-	OpStringPtr
-	OpStringLen
-	OpIMake
-	OpITab
-	OpIData
-	OpStructMake0
-	OpStructMake1
-	OpStructMake2
-	OpStructMake3
-	OpStructMake4
-	OpStructSelect
-	OpArrayMake0
-	OpArrayMake1
-	OpArraySelect
-	OpStoreReg
-	OpLoadReg
-	OpFwdRef
-	OpUnknown
-	OpVarDef
-	OpVarKill
-	OpVarLive
-	OpKeepAlive
-	OpInlMark
-	OpInt64Make
-	OpInt64Hi
-	OpInt64Lo
-	OpAdd32carry
-	OpAdd32withcarry
-	OpSub32carry
-	OpSub32withcarry
-	OpAdd64carry
-	OpSub64borrow
-	OpSignmask
-	OpZeromask
-	OpSlicemask
-	OpCvt32Uto32F
-	OpCvt32Uto64F
-	OpCvt32Fto32U
-	OpCvt64Fto32U
-	OpCvt64Uto32F
-	OpCvt64Uto64F
-	OpCvt32Fto64U
-	OpCvt64Fto64U
-	OpSelect0
-	OpSelect1
-	OpAtomicLoad8
-	OpAtomicLoad32
-	OpAtomicLoad64
-	OpAtomicLoadPtr
-	OpAtomicLoadAcq32
-	OpAtomicStore32
-	OpAtomicStore64
-	OpAtomicStorePtrNoWB
-	OpAtomicStoreRel32
-	OpAtomicExchange32
-	OpAtomicExchange64
-	OpAtomicAdd32
-	OpAtomicAdd64
-	OpAtomicCompareAndSwap32
-	OpAtomicCompareAndSwap64
-	OpAtomicCompareAndSwapRel32
-	OpAtomicAnd8
-	OpAtomicOr8
-	OpAtomicAdd32Variant
-	OpAtomicAdd64Variant
-	OpClobber
+	OpAdd8                      Op = 1909
+	OpAdd16                     Op = 1910
+	OpAdd32                     Op = 1911
+	OpAdd64                     Op = 1912
+	OpAddPtr                    Op = 1913
+	OpAdd32F                    Op = 1914
+	OpAdd64F                    Op = 1915
+	OpSub8                      Op = 1916
+	OpSub16                     Op = 1917
+	OpSub32                     Op = 1918
+	OpSub64                     Op = 1919
+	OpSubPtr                    Op = 1920
+	OpSub32F                    Op = 1921
+	OpSub64F                    Op = 1922
+	OpMul8                      Op = 1923
+	OpMul16                     Op = 1924
+	OpMul32                     Op = 1925
+	OpMul64                     Op = 1926
+	OpMul32F                    Op = 1927
+	OpMul64F                    Op = 1928
+	OpDiv32F                    Op = 1929
+	OpDiv64F                    Op = 1930
+	OpHmul32                    Op = 1931
+	OpHmul32u                   Op = 1932
+	OpHmul64                    Op = 1933
+	OpHmul64u                   Op = 1934
+	OpMul32uhilo                Op = 1935
+	OpMul64uhilo                Op = 1936
+	OpMul32uover                Op = 1937
+	OpMul64uover                Op = 1938
+	OpAvg32u                    Op = 1939
+	OpAvg64u                    Op = 1940
+	OpDiv8                      Op = 1941
+	OpDiv8u                     Op = 1942
+	OpDiv16                     Op = 1943
+	OpDiv16u                    Op = 1944
+	OpDiv32                     Op = 1945
+	OpDiv32u                    Op = 1946
+	OpDiv64                     Op = 1947
+	OpDiv64u                    Op = 1948
+	OpDiv128u                   Op = 1949
+	OpMod8                      Op = 1950
+	OpMod8u                     Op = 1951
+	OpMod16                     Op = 1952
+	OpMod16u                    Op = 1953
+	OpMod32                     Op = 1954
+	OpMod32u                    Op = 1955
+	OpMod64                     Op = 1956
+	OpMod64u                    Op = 1957
+	OpAnd8                      Op = 1958
+	OpAnd16                     Op = 1959
+	OpAnd32                     Op = 1960
+	OpAnd64                     Op = 1961
+	OpOr8                       Op = 1962
+	OpOr16                      Op = 1963
+	OpOr32                      Op = 1964
+	OpOr64                      Op = 1965
+	OpXor8                      Op = 1966
+	OpXor16                     Op = 1967
+	OpXor32                     Op = 1968
+	OpXor64                     Op = 1969
+	OpLsh8x8                    Op = 1970
+	OpLsh8x16                   Op = 1971
+	OpLsh8x32                   Op = 1972
+	OpLsh8x64                   Op = 1973
+	OpLsh16x8                   Op = 1974
+	OpLsh16x16                  Op = 1975
+	OpLsh16x32                  Op = 1976
+	OpLsh16x64                  Op = 1977
+	OpLsh32x8                   Op = 1978
+	OpLsh32x16                  Op = 1979
+	OpLsh32x32                  Op = 1980
+	OpLsh32x64                  Op = 1981
+	OpLsh64x8                   Op = 1982
+	OpLsh64x16                  Op = 1983
+	OpLsh64x32                  Op = 1984
+	OpLsh64x64                  Op = 1985
+	OpRsh8x8                    Op = 1986
+	OpRsh8x16                   Op = 1987
+	OpRsh8x32                   Op = 1988
+	OpRsh8x64                   Op = 1989
+	OpRsh16x8                   Op = 1990
+	OpRsh16x16                  Op = 1991
+	OpRsh16x32                  Op = 1992
+	OpRsh16x64                  Op = 1993
+	OpRsh32x8                   Op = 1994
+	OpRsh32x16                  Op = 1995
+	OpRsh32x32                  Op = 1996
+	OpRsh32x64                  Op = 1997
+	OpRsh64x8                   Op = 1998
+	OpRsh64x16                  Op = 1999
+	OpRsh64x32                  Op = 2000
+	OpRsh64x64                  Op = 2001
+	OpRsh8Ux8                   Op = 2002
+	OpRsh8Ux16                  Op = 2003
+	OpRsh8Ux32                  Op = 2004
+	OpRsh8Ux64                  Op = 2005
+	OpRsh16Ux8                  Op = 2006
+	OpRsh16Ux16                 Op = 2007
+	OpRsh16Ux32                 Op = 2008
+	OpRsh16Ux64                 Op = 2009
+	OpRsh32Ux8                  Op = 2010
+	OpRsh32Ux16                 Op = 2011
+	OpRsh32Ux32                 Op = 2012
+	OpRsh32Ux64                 Op = 2013
+	OpRsh64Ux8                  Op = 2014
+	OpRsh64Ux16                 Op = 2015
+	OpRsh64Ux32                 Op = 2016
+	OpRsh64Ux64                 Op = 2017
+	OpEq8                       Op = 2018
+	OpEq16                      Op = 2019
+	OpEq32                      Op = 2020
+	OpEq64                      Op = 2021
+	OpEqPtr                     Op = 2022
+	OpEqInter                   Op = 2023
+	OpEqSlice                   Op = 2024
+	OpEq32F                     Op = 2025
+	OpEq64F                     Op = 2026
+	OpNeq8                      Op = 2027
+	OpNeq16                     Op = 2028
+	OpNeq32                     Op = 2029
+	OpNeq64                     Op = 2030
+	OpNeqPtr                    Op = 2031
+	OpNeqInter                  Op = 2032
+	OpNeqSlice                  Op = 2033
+	OpNeq32F                    Op = 2034
+	OpNeq64F                    Op = 2035
+	OpLess8                     Op = 2036
+	OpLess8U                    Op = 2037
+	OpLess16                    Op = 2038
+	OpLess16U                   Op = 2039
+	OpLess32                    Op = 2040
+	OpLess32U                   Op = 2041
+	OpLess64                    Op = 2042
+	OpLess64U                   Op = 2043
+	OpLess32F                   Op = 2044
+	OpLess64F                   Op = 2045
+	OpLeq8                      Op = 2046
+	OpLeq8U                     Op = 2047
+	OpLeq16                     Op = 2048
+	OpLeq16U                    Op = 2049
+	OpLeq32                     Op = 2050
+	OpLeq32U                    Op = 2051
+	OpLeq64                     Op = 2052
+	OpLeq64U                    Op = 2053
+	OpLeq32F                    Op = 2054
+	OpLeq64F                    Op = 2055
+	OpGreater8                  Op = 2056
+	OpGreater8U                 Op = 2057
+	OpGreater16                 Op = 2058
+	OpGreater16U                Op = 2059
+	OpGreater32                 Op = 2060
+	OpGreater32U                Op = 2061
+	OpGreater64                 Op = 2062
+	OpGreater64U                Op = 2063
+	OpGreater32F                Op = 2064
+	OpGreater64F                Op = 2065
+	OpGeq8                      Op = 2066
+	OpGeq8U                     Op = 2067
+	OpGeq16                     Op = 2068
+	OpGeq16U                    Op = 2069
+	OpGeq32                     Op = 2070
+	OpGeq32U                    Op = 2071
+	OpGeq64                     Op = 2072
+	OpGeq64U                    Op = 2073
+	OpGeq32F                    Op = 2074
+	OpGeq64F                    Op = 2075
+	OpCondSelect                Op = 2076
+	OpAndB                      Op = 2077
+	OpOrB                       Op = 2078
+	OpEqB                       Op = 2079
+	OpNeqB                      Op = 2080
+	OpNot                       Op = 2081
+	OpNeg8                      Op = 2082
+	OpNeg16                     Op = 2083
+	OpNeg32                     Op = 2084
+	OpNeg64                     Op = 2085
+	OpNeg32F                    Op = 2086
+	OpNeg64F                    Op = 2087
+	OpCom8                      Op = 2088
+	OpCom16                     Op = 2089
+	OpCom32                     Op = 2090
+	OpCom64                     Op = 2091
+	OpCtz8                      Op = 2092
+	OpCtz16                     Op = 2093
+	OpCtz32                     Op = 2094
+	OpCtz64                     Op = 2095
+	OpCtz8NonZero               Op = 2096
+	OpCtz16NonZero              Op = 2097
+	OpCtz32NonZero              Op = 2098
+	OpCtz64NonZero              Op = 2099
+	OpBitLen8                   Op = 2100
+	OpBitLen16                  Op = 2101
+	OpBitLen32                  Op = 2102
+	OpBitLen64                  Op = 2103
+	OpBswap32                   Op = 2104
+	OpBswap64                   Op = 2105
+	OpBitRev8                   Op = 2106
+	OpBitRev16                  Op = 2107
+	OpBitRev32                  Op = 2108
+	OpBitRev64                  Op = 2109
+	OpPopCount8                 Op = 2110
+	OpPopCount16                Op = 2111
+	OpPopCount32                Op = 2112
+	OpPopCount64                Op = 2113
+	OpRotateLeft8               Op = 2114
+	OpRotateLeft16              Op = 2115
+	OpRotateLeft32              Op = 2116
+	OpRotateLeft64              Op = 2117
+	OpSqrt                      Op = 2118
+	OpFloor                     Op = 2119
+	OpCeil                      Op = 2120
+	OpTrunc                     Op = 2121
+	OpRound                     Op = 2122
+	OpRoundToEven               Op = 2123
+	OpAbs                       Op = 2124
+	OpCopysign                  Op = 2125
+	OpPhi                       Op = 2126
+	OpCopy                      Op = 2127
+	OpConvert                   Op = 2128
+	OpConstBool                 Op = 2129
+	OpConstString               Op = 2130
+	OpConstNil                  Op = 2131
+	OpConst8                    Op = 2132
+	OpConst16                   Op = 2133
+	OpConst32                   Op = 2134
+	OpConst64                   Op = 2135
+	OpConst32F                  Op = 2136
+	OpConst64F                  Op = 2137
+	OpConstInterface            Op = 2138
+	OpConstSlice                Op = 2139
+	OpInitMem                   Op = 2140
+	OpArg                       Op = 2141
+	OpAddr                      Op = 2142
+	OpLocalAddr                 Op = 2143
+	OpSP                        Op = 2144
+	OpSB                        Op = 2145
+	OpLoad                      Op = 2147
+	OpStore                     Op = 2148
+	OpMove                      Op = 2149
+	OpZero                      Op = 2150
+	OpStoreWB                   Op = 2151
+	OpMoveWB                    Op = 2152
+	OpZeroWB                    Op = 2153
+	OpWB                        Op = 2154
+	OpPanicBounds               Op = 2155
+	OpPanicExtend               Op = 2156
+	OpClosureCall               Op = 2157
+	OpStaticCall                Op = 2158
+	OpInterCall                 Op = 2159
+	OpSignExt8to16              Op = 2160
+	OpSignExt8to32              Op = 2161
+	OpSignExt8to64              Op = 2162
+	OpSignExt16to32             Op = 2163
+	OpSignExt16to64             Op = 2164
+	OpSignExt32to64             Op = 2165
+	OpZeroExt8to16              Op = 2166
+	OpZeroExt8to32              Op = 2167
+	OpZeroExt8to64              Op = 2168
+	OpZeroExt16to32             Op = 2169
+	OpZeroExt16to64             Op = 2170
+	OpZeroExt32to64             Op = 2171
+	OpTrunc16to8                Op = 2172
+	OpTrunc32to8                Op = 2173
+	OpTrunc32to16               Op = 2174
+	OpTrunc64to8                Op = 2175
+	OpTrunc64to16               Op = 2176
+	OpTrunc64to32               Op = 2177
+	OpCvt32to32F                Op = 2178
+	OpCvt32to64F                Op = 2179
+	OpCvt64to32F                Op = 2180
+	OpCvt64to64F                Op = 2181
+	OpCvt32Fto32                Op = 2182
+	OpCvt32Fto64                Op = 2183
+	OpCvt64Fto32                Op = 2184
+	OpCvt64Fto64                Op = 2185
+	OpCvt32Fto64F               Op = 2186
+	OpCvt64Fto32F               Op = 2187
+	OpRound32F                  Op = 2188
+	OpRound64F                  Op = 2189
+	OpIsNonNil                  Op = 2190
+	OpIsInBounds                Op = 2191
+	OpIsSliceInBounds           Op = 2192
+	OpNilCheck                  Op = 2193
+	OpGetG                      Op = 2194
+	OpGetClosurePtr             Op = 2195
+	OpGetCallerPC               Op = 2196
+	OpGetCallerSP               Op = 2197
+	OpPtrIndex                  Op = 2198
+	OpOffPtr                    Op = 2199
+	OpSliceMake                 Op = 2200
+	OpSlicePtr                  Op = 2201
+	OpSliceLen                  Op = 2202
+	OpSliceCap                  Op = 2203
+	OpComplexMake               Op = 2204
+	OpComplexReal               Op = 2205
+	OpComplexImag               Op = 2206
+	OpStringMake                Op = 2207
+	OpStringPtr                 Op = 2208
+	OpStringLen                 Op = 2209
+	OpIMake                     Op = 2210
+	OpITab                      Op = 2211
+	OpIData                     Op = 2212
+	OpStructMake0               Op = 2213
+	OpStructMake1               Op = 2214
+	OpStructMake2               Op = 2215
+	OpStructMake3               Op = 2216
+	OpStructMake4               Op = 2217
+	OpStructSelect              Op = 2218
+	OpArrayMake0                Op = 2219
+	OpArrayMake1                Op = 2220
+	OpArraySelect               Op = 2221
+	OpStoreReg                  Op = 2222
+	OpLoadReg                   Op = 2223
+	OpFwdRef                    Op = 2224
+	OpUnknown                   Op = 2225
+	OpVarDef                    Op = 2226
+	OpVarKill                   Op = 2227
+	OpVarLive                   Op = 2228
+	OpKeepAlive                 Op = 2229
+	OpInlMark                   Op = 2230
+	OpInt64Make                 Op = 2231
+	OpInt64Hi                   Op = 2232
+	OpInt64Lo                   Op = 2233
+	OpAdd32carry                Op = 2234
+	OpAdd32withcarry            Op = 2235
+	OpSub32carry                Op = 2236
+	OpSub32withcarry            Op = 2237
+	OpAdd64carry                Op = 2238
+	OpSub64borrow               Op = 2239
+	OpSignmask                  Op = 2240
+	OpZeromask                  Op = 2241
+	OpSlicemask                 Op = 2242
+	OpCvt32Uto32F               Op = 2243
+	OpCvt32Uto64F               Op = 2244
+	OpCvt32Fto32U               Op = 2245
+	OpCvt64Fto32U               Op = 2246
+	OpCvt64Uto32F               Op = 2247
+	OpCvt64Uto64F               Op = 2248
+	OpCvt32Fto64U               Op = 2249
+	OpCvt64Fto64U               Op = 2250
+	OpSelect0                   Op = 2251
+	OpSelect1                   Op = 2252
+	OpAtomicLoad8               Op = 2253
+	OpAtomicLoad32              Op = 2254
+	OpAtomicLoad64              Op = 2255
+	OpAtomicLoadPtr             Op = 2256
+	OpAtomicLoadAcq32           Op = 2257
+	OpAtomicStore32             Op = 2258
+	OpAtomicStore64             Op = 2259
+	OpAtomicStorePtrNoWB        Op = 2260
+	OpAtomicStoreRel32          Op = 2261
+	OpAtomicExchange32          Op = 2262
+	OpAtomicExchange64          Op = 2263
+	OpAtomicAdd32               Op = 2264
+	OpAtomicAdd64               Op = 2265
+	OpAtomicCompareAndSwap32    Op = 2266
+	OpAtomicCompareAndSwap64    Op = 2267
+	OpAtomicCompareAndSwapRel32 Op = 2268
+	OpAtomicAnd8                Op = 2269
+	OpAtomicOr8                 Op = 2270
+	OpAtomicAdd32Variant        Op = 2271
+	OpAtomicAdd64Variant        Op = 2272
+	OpClobber                   Op = 2273
 )
 
 var opcodeTable = [...]opInfo{
