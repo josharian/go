@@ -1453,6 +1453,7 @@
 // Remove redundant ops
 // Not in generic rules, because they may appear after lowering e. g. Slicemask
 (NEG(Q|L) (NEG(Q|L) x)) -> x
+(NEG(Q|L) (SUB(Q|L) x y)) -> (SUB(Q|L) y x)
 
 // Convert constant subtracts to constant adds
 (SUBQconst [c] x) && c != -(1<<31) -> (ADDQconst [-c] x)
