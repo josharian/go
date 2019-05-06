@@ -5,6 +5,7 @@
 package runtime
 
 import (
+	"math/bits"
 	"runtime/internal/atomic"
 	"runtime/internal/sys"
 	"unsafe"
@@ -824,17 +825,51 @@ func step(p []byte, pc *uintptr, val *int32, first bool) (newp []byte, ok bool) 
 
 // readvarint reads a varint from p.
 func readvarint(p []byte) (read uint32, val uint32) {
-	var v, shift, n uint32
-	for {
-		b := p[n]
-		n++
-		v |= uint32(b&0x7F) << (shift & 31)
-		if b&0x80 == 0 {
-			break
+	if len(p) < 8 {
+		// Branch-y version.
+		var v, shift, n uint32
+		for {
+			b := p[n]
+			n++
+			v |= uint32(b&0x7F) << (shift & 31)
+			if b&0x80 == 0 {
+				break
+			}
+			shift += 7
 		}
-		shift += 7
+		return n, v
 	}
-	return n, v
+
+	// Branch-free version.
+	// Load all 8 bytes into a uint64.
+	x := uint64(p[0])<<0 |
+		uint64(p[1])<<8 |
+		uint64(p[2])<<16 |
+		uint64(p[3])<<24 |
+		uint64(p[4])<<32 |
+		uint64(p[5])<<40 |
+		uint64(p[6])<<48 |
+		uint64(p[7])<<56
+
+	// Zero all bits that are not part of the varint.
+	// Do this by sign-extending the continuation bit and using that as a mask.
+	a := int64(int8(x)) & int64(int16(x)) & int64(int32(x))
+	xr := x >> 8
+	b := int64(int16(xr)) & int64(int32(xr))
+	x &= uint64(a) & uint64(b<<8|0xff)
+
+	// Mask to keep only the continuation bits and then count to the furthest one
+	// to determine how many bytes from the input were used.
+	read = uint32(bits.Len64(x&0x8080808080))/8 + 1
+
+	// Construct the value.
+	val = uint32((x>>0)&127)<<(0*7) |
+		uint32((x>>8)&127)<<(1*7) |
+		uint32((x>>16)&127)<<(2*7) |
+		uint32((x>>24)&127)<<(3*7) |
+		uint32((x>>32)&127)<<(4*7)
+
+	return read, val
 }
 
 type stackmap struct {
