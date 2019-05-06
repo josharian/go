@@ -1455,6 +1455,13 @@
 (NEG(Q|L) (NEG(Q|L) x)) -> x
 (NEG(Q|L) (SUB(Q|L) x y)) -> (SUB(Q|L) y x)
 
+// TODO: measure whether this helps
+// Rewrite -(c+x) to c+(-x) in the hopes that the resulting expressions can be reduced further.
+// The c can be constant folded further, and if x is (y-z), then -x can reduce to (z-y).
+// (Maybe instead recognize particular patterns?)
+(NEGQ <t> (ADDQconst [c] x)) -> (ADDQconst [-c] (NEGQ <t> x))
+(NEGL <t> (ADDLconst [c] x)) -> (ADDLconst [int64(-int32(c))] (NEGL <t> x))
+
 // Convert constant subtracts to constant adds
 (SUBQconst [c] x) && c != -(1<<31) -> (ADDQconst [-c] x)
 (SUBLconst [c] x) -> (ADDLconst [int64(int32(-c))] x)
