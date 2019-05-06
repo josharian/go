@@ -5,6 +5,7 @@
 package ssa
 
 import (
+	"bytes"
 	"cmd/compile/internal/types"
 	"cmd/internal/obj"
 	"cmd/internal/objabi"
@@ -124,6 +125,35 @@ func applyRewrite(f *Func, rb blockRewriter, rv valueRewriter) {
 				tail[j] = nil
 			}
 			b.Values = b.Values[:j]
+		}
+	}
+
+	switch f.pass.name {
+	case "opt", "late opt", "lower":
+		for _, b := range f.Blocks {
+			for _, v := range b.Values {
+				switch v.Op {
+				case OpCom64, OpCom32, OpCom16, OpCom8,
+					OpAMD64NEGQ, OpAMD64NEGL, OpAMD64NOTQ, OpAMD64NOTL:
+					buf := new(bytes.Buffer)
+					for {
+						buf.WriteString(v.Op.String())
+						buf.WriteString(" ")
+						if len(v.Args) == 1 {
+							v = v.Args[0]
+							continue
+						}
+						buf.WriteString("(")
+						for _, a := range v.Args {
+							buf.WriteString(a.Op.String())
+							buf.WriteString(" ")
+						}
+						buf.WriteString(")")
+						break
+					}
+					fmt.Println(buf.String())
+				}
+			}
 		}
 	}
 }
