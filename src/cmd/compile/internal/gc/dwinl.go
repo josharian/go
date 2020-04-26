@@ -221,9 +221,6 @@ func makePreinlineDclMap(fnsym *obj.LSym) map[varPos]int {
 			DeclLine: pos.RelLine(),
 			DeclCol:  pos.Col(),
 		}
-		if _, found := m[vp]; found {
-			Fatalf("child dcl collision on symbol %s within %v\n", n.Sym.Name, fnsym.Name)
-		}
 		m[vp] = i
 	}
 	return m

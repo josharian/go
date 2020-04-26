@@ -1584,12 +1584,6 @@ func (p *noder) pragma(pos syntax.Pos, blankLine bool, text string, old syntax.P
 		}
 		fallthrough
 	case strings.HasPrefix(text, "go:cgo_"):
-		// For security, we disallow //go:cgo_* directives other
-		// than cgo_import_dynamic outside cgo-generated files.
-		// Exception: they are allowed in the standard library, for runtime and syscall.
-		if !isCgoGeneratedFile(pos) && !compiling_std {
-			p.error(syntax.Error{Pos: pos, Msg: fmt.Sprintf("//%s only allowed in cgo-generated code", text)})
-		}
 		p.pragcgo(pos, text)
 		fallthrough // because of //go:cgo_unsafe_args
 	default:
