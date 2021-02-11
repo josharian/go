@@ -99,15 +99,27 @@ func (c *UDPConn) SyscallConn() (syscall.RawConn, error) {
 }
 
 // ReadFromUDP acts like ReadFrom but returns a UDPAddr.
-func (c *UDPConn) ReadFromUDP(b []byte) (int, *UDPAddr, error) {
-	if !c.ok() {
-		return 0, nil, syscall.EINVAL
+func (c *UDPConn) ReadFromUDP(b []byte) (n int, addr *UDPAddr, err error) {
+	// TODO: Explain why this is so stilted (answer: outlining)
+	var a UDPAddr
+	n, err = c.readFromUDP(b, &a)
+	if err != syscall.EINVAL {
+		// TODO: explain
+		addr = &a
 	}
-	n, addr, err := c.readFrom(b)
+	return
+}
+
+// readFromUDP implements ReadFromUDP.
+func (c *UDPConn) readFromUDP(b []byte, addr *UDPAddr) (int, error) {
+	if !c.ok() {
+		return 0, syscall.EINVAL
+	}
+	n, err := c.readFrom(b, addr)
 	if err != nil {
 		err = &OpError{Op: "read", Net: c.fd.net, Source: c.fd.laddr, Addr: c.fd.raddr, Err: err}
 	}
-	return n, addr, err
+	return n, err
 }
 
 // ReadFrom implements the PacketConn ReadFrom method.
@@ -115,14 +127,15 @@ func (c *UDPConn) ReadFrom(b []byte) (int, Addr, error) {
 	if !c.ok() {
 		return 0, nil, syscall.EINVAL
 	}
-	n, addr, err := c.readFrom(b)
+	var addr UDPAddr
+	n, err := c.readFrom(b, &addr)
 	if err != nil {
 		err = &OpError{Op: "read", Net: c.fd.net, Source: c.fd.laddr, Addr: c.fd.raddr, Err: err}
 	}
-	if addr == nil {
+	if addr.IP == nil {
 		return n, nil, err
 	}
-	return n, addr, err
+	return n, &addr, err
 }
 
 // ReadMsgUDP reads a message from c, copying the payload into b and
