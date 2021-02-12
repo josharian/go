@@ -80,6 +80,13 @@ func (c *UDPConn) writeTo(b []byte, addr *UDPAddr) (int, error) {
 	return c.fd.writeTo(b, sa)
 }
 
+func (c *udpWriterTo) writeTo(b []byte, sa syscall.Sockaddr) (int, error) {
+	if c.conn.fd.isConnected {
+		return 0, ErrWriteToConnected
+	}
+	return c.conn.fd.writeTo(b, c.sa)
+}
+
 func (c *UDPConn) writeMsg(b, oob []byte, addr *UDPAddr) (n, oobn int, err error) {
 	if c.fd.isConnected && addr != nil {
 		return 0, 0, ErrWriteToConnected

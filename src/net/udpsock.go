@@ -6,6 +6,7 @@ package net
 
 import (
 	"context"
+	"io"
 	"syscall"
 )
 
@@ -167,6 +168,37 @@ func (c *UDPConn) WriteTo(b []byte, addr Addr) (int, error) {
 	n, err := c.writeTo(b, a)
 	if err != nil {
 		err = &OpError{Op: "write", Net: c.fd.net, Source: c.fd.laddr, Addr: a.opAddr(), Err: err}
+	}
+	return n, err
+}
+
+// WriterTo returns an io.Writer that writes UDP packets to addr.
+// This is more efficient than WriteTo when many packets will be sent to the same addr.
+func (c *UDPConn) WriterTo(addr Addr) (io.Writer, error) {
+	a, ok := addr.(*UDPAddr)
+	if !ok {
+		return nil, &OpError{Op: "write", Net: c.fd.net, Source: c.fd.laddr, Addr: addr, Err: syscall.EINVAL}
+	}
+	sa, err := a.sockaddr(c.fd.family)
+	if err != nil {
+		return nil, err
+	}
+	return &udpWriterTo{c, a, sa}, nil
+}
+
+type udpWriterTo struct {
+	conn *UDPConn
+	addr *UDPAddr
+	sa   syscall.Sockaddr
+}
+
+func (c *udpWriterTo) Write(b []byte) (int, error) {
+	if !c.conn.ok() {
+		return 0, syscall.EINVAL
+	}
+	n, err := c.writeTo(b, c.sa)
+	if err != nil {
+		err = &OpError{Op: "write", Net: c.conn.fd.net, Source: c.conn.fd.laddr, Addr: c.addr.opAddr(), Err: err}
 	}
 	return n, err
 }
